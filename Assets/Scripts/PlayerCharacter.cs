@@ -5,7 +5,14 @@ using UnityEngine;
 public class PlayerCharacter : Character
 {
 
-	protected override void Move(float delta)
+    public SpriteRenderer characterView;
+
+    public override void Spawn()
+    {
+        
+    }
+
+    protected override void Move(float delta)
 	{
 		transform.Translate(Vector3.right * moveSpeed * delta);
 	}

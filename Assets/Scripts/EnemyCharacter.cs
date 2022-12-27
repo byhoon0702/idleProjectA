@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class EnemyCharacter : Character
 {
-	protected override void Move(float delta)
+    public SpriteRenderer characterView;
+
+    public override void Spawn()
+    {
+
+    }
+    protected override void Move(float delta)
 	{
 		transform.Translate(Vector3.left * moveSpeed * delta);
 	}
