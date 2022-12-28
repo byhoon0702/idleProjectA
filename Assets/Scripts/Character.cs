@@ -47,12 +47,8 @@ public class CharacterData
 	}
 }
 
-public interface CharacterFSM
+public interface CharacterFSM : FiniteStateMachine
 {
-	void OnEnter();
-	void OnUpdate(float time);
-	void OnExit();
-
 }
 
 public class IdleState : CharacterFSM
@@ -173,7 +169,7 @@ public class Character : MonoBehaviour
 
 	public CharacterAnimation characterAnimation;
 
-	public CharacterFSM currentfsm;
+	public FiniteStateMachine currentfsm;
 
 	public IdleState idleState;
 	public MoveState moveState;
