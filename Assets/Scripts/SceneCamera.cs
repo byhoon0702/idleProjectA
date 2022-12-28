@@ -10,6 +10,7 @@ public class SceneCamera : MonoBehaviour
 	public static SceneCamera it => instance;
 	public float speed;
 
+	public Camera camera => m_camera;
 	protected Camera m_camera;
 	protected Transform m_camera_transform;
 
@@ -22,15 +23,15 @@ public class SceneCamera : MonoBehaviour
 	}
 	void Start()
 	{
-		
+
 
 		Debug.Log(m_camera.ViewportToWorldPoint(new Vector3(1, 0.5f, m_camera.nearClipPlane)));
 	}
 
-    public void FindPlayers()
-    {
-        players = GameObject.FindObjectsOfType<PlayerCharacter>();
-    }
+	public void FindPlayers()
+	{
+		players = GameObject.FindObjectsOfType<PlayerCharacter>();
+	}
 	public Vector2 GetCameraEdgePosition(Vector2 pivot)
 	{
 		return m_camera.ViewportToWorldPoint(new Vector3(pivot.x, pivot.y, m_camera.nearClipPlane));

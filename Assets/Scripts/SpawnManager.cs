@@ -9,11 +9,13 @@ public class SpawnManager : MonoBehaviour
 	private static SpawnManager instance;
 	public static SpawnManager it => instance;
 
+	public Transform playerRoot;
+	public Transform enemyRoot;
 	public EnemyCharacter enemyCharacter;
-    public PlayerCharacter playerCharacter;
+	public PlayerCharacter playerCharacter;
 
-    public int playerCount;
-    public int enemyCount;
+	public int playerCount;
+	public int enemyCount;
 	public Rect spawnArea;
 
 	private void Awake()
@@ -23,48 +25,49 @@ public class SpawnManager : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-        SpawnPlayers();
+		SpawnPlayers();
 
-        Invoke("SpawnEnemies", 1);
+		Invoke("SpawnEnemies", 1);
 
-    }
+	}
 
-    private void SpawnPlayers()
-    {
-        var edge = SceneCamera.it.GetCameraEdgePosition(new Vector2(0f, 0.5f));
-        float spawnX = edge.x + spawnArea.x;
-        float spawnY = spawnArea.y;
+	private void SpawnPlayers()
+	{
+		var edge = SceneCamera.it.GetCameraEdgePosition(new Vector2(0f, 0.5f));
+		float spawnX = edge.x + spawnArea.x;
+		float spawnY = spawnArea.y;
 
-        float cellX = spawnArea.width / 5;
-        float cellY = spawnArea.height / 5;
-        Vector2[] grid = new Vector2[25];
-        for (int y = 0; y < 5; y++)
-        {
-            for (int x = 0; x < 5; x++)
-            {
-                grid[(y * 5) + x] = new Vector2(cellX * x + spawnX, cellY * y + spawnY);
-            }
-        }
+		float cellX = spawnArea.width / 5;
+		float cellY = spawnArea.height / 5;
+		Vector2[] grid = new Vector2[25];
+		for (int y = 0; y < 5; y++)
+		{
+			for (int x = 0; x < 5; x++)
+			{
+				grid[(y * 5) + x] = new Vector2(cellX * x + spawnX, cellY * y + spawnY);
+			}
+		}
 
-        List<int> indexlist = new List<int>();
-        for (int i = 0; i < playerCount; i++)
-        {
-            PlayerCharacter player = Instantiate(playerCharacter);
-            player.Spawn();
-            player.moveSpeed = Random.Range(1f, 1.2f);
-            int index = Random.Range(0, 25);
+		List<int> indexlist = new List<int>();
+		for (int i = 0; i < playerCount; i++)
+		{
+			PlayerCharacter player = Instantiate(playerCharacter);
+			player.transform.SetParent(playerRoot);
+			player.Spawn();
+			player.moveSpeed = Random.Range(1f, 1.2f);
+			int index = Random.Range(0, 25);
 
-            while (indexlist.Contains(index))
-            {
-                index = Random.Range(0, 25);
-            }
-            player.gameObject.SetActive(true);
-            player.transform.position = grid[index];
-            indexlist.Add(index);
-        }
+			while (indexlist.Contains(index))
+			{
+				index = Random.Range(0, 25);
+			}
+			player.gameObject.SetActive(true);
+			player.transform.position = grid[index];
+			indexlist.Add(index);
+		}
 
-        SceneCamera.it.FindPlayers();
-    }
+		SceneCamera.it.FindPlayers();
+	}
 	private void SpawnEnemies()
 	{
 		var edge = SceneCamera.it.GetCameraEdgePosition(new Vector2(1f, 0.5f));
@@ -88,9 +91,10 @@ public class SpawnManager : MonoBehaviour
 		for (int i = 0; i < enemyCount; i++)
 		{
 			EnemyCharacter enemy = Instantiate(enemyCharacter);
-            enemy.Spawn();
+			enemy.transform.SetParent(enemyRoot);
+			enemy.Spawn();
 
-            enemy.moveSpeed = Random.Range(1f, 1.2f);
+			enemy.moveSpeed = Random.Range(1f, 1.2f);
 			int index = Random.Range(0, 25);
 
 			while (indexlist.Contains(index))
