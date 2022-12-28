@@ -10,7 +10,7 @@ public class SceneCamera : MonoBehaviour
 	public static SceneCamera it => instance;
 	public float speed;
 
-	public Camera camera => m_camera;
+	public Camera sceneCamera => m_camera;
 	protected Camera m_camera;
 	protected Transform m_camera_transform;
 
@@ -23,9 +23,7 @@ public class SceneCamera : MonoBehaviour
 	}
 	void Start()
 	{
-
-
-		Debug.Log(m_camera.ViewportToWorldPoint(new Vector3(1, 0.5f, m_camera.nearClipPlane)));
+		//Debug.Log(m_camera.ViewportToWorldPoint(new Vector3(1, 0.5f, m_camera.nearClipPlane)));
 	}
 
 	public void FindPlayers()
@@ -60,7 +58,7 @@ public class SceneCamera : MonoBehaviour
 
 			if (diff < distance)
 			{
-				m_camera_transform.Translate(Vector3.right * speed * Time.deltaTime);
+				m_camera_transform.Translate(Vector3.right * player.data.moveSpeed * Time.deltaTime);
 				break;
 			}
 		}

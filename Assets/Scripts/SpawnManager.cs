@@ -9,6 +9,7 @@ public class SpawnManager : MonoBehaviour
 	private static SpawnManager instance;
 	public static SpawnManager it => instance;
 
+	public CharacterDataSheet characterDataSheet;
 	public Transform playerRoot;
 	public Transform enemyRoot;
 	public EnemyCharacter enemyCharacter;
@@ -53,8 +54,8 @@ public class SpawnManager : MonoBehaviour
 		{
 			PlayerCharacter player = Instantiate(playerCharacter);
 			player.transform.SetParent(playerRoot);
-			player.Spawn();
-			player.moveSpeed = Random.Range(1f, 1.2f);
+			player.Spawn(characterDataSheet.characterDataSheets[Random.Range(0, 3)]);
+			player.data.moveSpeed = Random.Range(1f, 1.2f);
 			int index = Random.Range(0, 25);
 
 			while (indexlist.Contains(index))
@@ -92,9 +93,9 @@ public class SpawnManager : MonoBehaviour
 		{
 			EnemyCharacter enemy = Instantiate(enemyCharacter);
 			enemy.transform.SetParent(enemyRoot);
-			enemy.Spawn();
+			enemy.Spawn(characterDataSheet.characterDataSheets[Random.Range(0, 3)]);
 
-			enemy.moveSpeed = Random.Range(1f, 1.2f);
+			enemy.data.moveSpeed = Random.Range(1f, 1.2f);
 			int index = Random.Range(0, 25);
 
 			while (indexlist.Contains(index))
