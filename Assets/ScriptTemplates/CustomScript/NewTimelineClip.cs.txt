@@ -1,0 +1,26 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
+
+[System.Serializable]
+public class #SCRIPTNAME# : PlayableAsset
+{
+    [SerializeField]
+    private BasePlayableBehaviour template = new BasePlayableBehaviour();	//커스텀 PlayableBehaviour 로 변경
+
+    public ClipCaps clipCaps
+    {
+        get { return ClipCaps.None; }
+    }
+
+    // Factory method that generates a playable based on this asset
+    public override Playable CreatePlayable(PlayableGraph graph, GameObject go)
+    {
+		//template 초기화 코드 필요
+
+        var playable = ScriptPlayable<BasePlayableBehaviour>.Create(graph, template);
+        return playable;
+    }
+}

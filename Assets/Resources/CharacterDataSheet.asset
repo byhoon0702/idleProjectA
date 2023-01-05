@@ -1,0 +1,302 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 768d14b9968686848ac6cc01e39576d4, type: 3}
+  m_Name: CharacterDataSheet
+  m_EditorClassIdentifier: 
+  characterDataSheets:
+  - name: Landrock(Warrior)
+    resource: vk01
+    tid: 1
+    classType: 0
+    race: 0
+    element: 0
+    grade: 0
+    starlevel: 0
+    hp:
+      Value: 5000
+      Exp: 0
+    attackRange: 1
+    attackSpeed: 1
+    attackTime: 1
+    attackRate: 1
+    attackDamage:
+      Value: 150
+      Exp: 0
+    criticalRatio: 0.2
+    criticalDamageRatio: 1
+    moveSpeed: 1
+    searchTime: 0.1
+    searchRange: 10
+    skillID: Landrock_sk1
+    attackType: 0
+    rankType: 0
+  - name: Gilius(Warrior)
+    resource: sw01
+    tid: 2
+    classType: 0
+    race: 0
+    element: 0
+    grade: 0
+    starlevel: 0
+    hp:
+      Value: 5000
+      Exp: 0
+    attackRange: 1
+    attackSpeed: 1
+    attackTime: 1
+    attackRate: 1
+    attackDamage:
+      Value: 150
+      Exp: 0
+    criticalRatio: 0.2
+    criticalDamageRatio: 1
+    moveSpeed: 1
+    searchTime: 0.1
+    searchRange: 10
+    skillID: Gilius_sk1
+    attackType: 0
+    rankType: 0
+  - name: Serina(Archer)
+    resource: dragon_vk
+    tid: 3
+    classType: 1
+    race: 0
+    element: 0
+    grade: 0
+    starlevel: 0
+    hp:
+      Value: 2000
+      Exp: 0
+    attackRange: 5
+    attackSpeed: 1
+    attackTime: 1
+    attackRate: 1
+    attackDamage:
+      Value: 400
+      Exp: 0
+    criticalRatio: 0.2
+    criticalDamageRatio: 1
+    moveSpeed: 1
+    searchTime: 0.1
+    searchRange: 10
+    skillID: Serina_sk1
+    attackType: 1
+    rankType: 0
+  - name: Mirfiana(Archer)
+    resource: vk01
+    tid: 4
+    classType: 1
+    race: 0
+    element: 0
+    grade: 0
+    starlevel: 0
+    hp:
+      Value: 2000
+      Exp: 0
+    attackRange: 5
+    attackSpeed: 1
+    attackTime: 1
+    attackRate: 1
+    attackDamage:
+      Value: 400
+      Exp: 0
+    criticalRatio: 0.2
+    criticalDamageRatio: 1
+    moveSpeed: 1
+    searchTime: 0.1
+    searchRange: 10
+    skillID: Mirfiana_sk1
+    attackType: 1
+    rankType: 0
+  - name: Haru(Wizard)
+    resource: vk01
+    tid: 5
+    classType: 2
+    race: 0
+    element: 0
+    grade: 0
+    starlevel: 0
+    hp:
+      Value: 1000
+      Exp: 0
+    attackRange: 5
+    attackSpeed: 1
+    attackTime: 1
+    attackRate: 1
+    attackDamage:
+      Value: 300
+      Exp: 0
+    criticalRatio: 0.2
+    criticalDamageRatio: 1
+    moveSpeed: 1
+    searchTime: 0.1
+    searchRange: 10
+    skillID: Haru_sk1
+    attackType: 2
+    rankType: 0
+  enemyCharacterDataSheets:
+  - name: SkeletonWarrior
+    resource: skeleton
+    tid: 32
+    classType: 0
+    race: 0
+    element: 0
+    grade: 0
+    starlevel: 0
+    hp:
+      Value: 1333
+      Exp: 0
+    attackRange: 1
+    attackSpeed: 1
+    attackTime: 1
+    attackRate: 1
+    attackDamage:
+      Value: 100
+      Exp: 0
+    criticalRatio: 0.2
+    criticalDamageRatio: 1
+    moveSpeed: 1
+    searchTime: 0.1
+    searchRange: 5
+    skillID: 
+    attackType: 0
+    rankType: 0
+  - name: SkeletonArcher
+    resource: skeleton
+    tid: 33
+    classType: 1
+    race: 0
+    element: 0
+    grade: 0
+    starlevel: 0
+    hp:
+      Value: 3332
+      Exp: 0
+    attackRange: 3
+    attackSpeed: 1
+    attackTime: 1
+    attackRate: 1
+    attackDamage:
+      Value: 50
+      Exp: 0
+    criticalRatio: 0.2
+    criticalDamageRatio: 1
+    moveSpeed: 1
+    searchTime: 0.1
+    searchRange: 5
+    skillID: 
+    attackType: 1
+    rankType: 0
+  - name: SkeletonWizard
+    resource: skeleton
+    tid: 34
+    classType: 2
+    race: 0
+    element: 0
+    grade: 0
+    starlevel: 0
+    hp:
+      Value: 111
+      Exp: 0
+    attackRange: 4
+    attackSpeed: 1
+    attackTime: 1
+    attackRate: 1
+    attackDamage:
+      Value: 122
+      Exp: 0
+    criticalRatio: 0.2
+    criticalDamageRatio: 1
+    moveSpeed: 1
+    searchTime: 0.1
+    searchRange: 5
+    skillID: 
+    attackType: 2
+    rankType: 0
+  - name: SkeletonBoss
+    resource: skeleton
+    tid: 35
+    classType: 0
+    race: 0
+    element: 0
+    grade: 0
+    starlevel: 0
+    hp:
+      Value: 11100
+      Exp: 1
+    attackRange: 4
+    attackSpeed: 1
+    attackTime: 1
+    attackRate: 1
+    attackDamage:
+      Value: 122
+      Exp: 0
+    criticalRatio: 0.2
+    criticalDamageRatio: 1
+    moveSpeed: 1
+    searchTime: 0.1
+    searchRange: 5
+    skillID: 
+    attackType: 2
+    rankType: 0
+  - name: Gem
+    resource: skeleton
+    tid: 36
+    classType: 3
+    race: 0
+    element: 0
+    grade: 0
+    starlevel: 0
+    hp:
+      Value: 111
+      Exp: 0
+    attackRange: 4
+    attackSpeed: 1
+    attackTime: 1
+    attackRate: 1
+    attackDamage:
+      Value: 122
+      Exp: 0
+    criticalRatio: 0.2
+    criticalDamageRatio: 1
+    moveSpeed: 0
+    searchTime: 1
+    searchRange: 5
+    skillID: 
+    attackType: 0
+    rankType: 0
+  - name: Viking
+    resource: viking
+    tid: 37
+    classType: 0
+    race: 0
+    element: 0
+    grade: 0
+    starlevel: 0
+    hp:
+      Value: 111
+      Exp: 0
+    attackRange: 4
+    attackSpeed: 1
+    attackTime: 1
+    attackRate: 1
+    attackDamage:
+      Value: 122
+      Exp: 0
+    criticalRatio: 0.2
+    criticalDamageRatio: 1
+    moveSpeed: 1
+    searchTime: 1
+    searchRange: 5
+    skillID: 
+    attackType: 0
+    rankType: 0

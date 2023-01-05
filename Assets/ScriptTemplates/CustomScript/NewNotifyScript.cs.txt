@@ -1,0 +1,17 @@
+﻿using gplat;
+using gplat;
+using System;
+using UnityEngine;
+
+namespace client.handler
+{
+    public class #SCRIPTNAME# : ScenePacketHandler<#SCRIPTNAME# >
+    {
+        public override Result process()
+        {
+            var root = GameObject.FindObjectOfType<SceneBase>();
+            root.Enter(sceneMsg);
+            return m_gen_result;
+        }
+    }
+}
