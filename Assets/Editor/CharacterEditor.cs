@@ -48,8 +48,9 @@ public class CharacterEditor : Editor
 	{
 		EditorGUILayout.LabelField(new GUIContent("적용중인 컨디션 어빌리티"), "PreToolbar");
 
-		EditorGUILayout.LabelField($"AttackDamageRatio: {character.conditionModule.ability.attackDamageRatio}");
+		EditorGUILayout.LabelField($"AttackPowerUpRatio: {character.conditionModule.ability.attackPowerUpRatio}");
 		EditorGUILayout.LabelField($"AttackSpeedRatio: {character.conditionModule.ability.attackSpeedRatio}");
+		EditorGUILayout.LabelField($"ReduceDefenseRatio: {character.conditionModule.ability.reducedDefenseRatio}");
 		EditorGUILayout.LabelField($"CriticalUpRatio: {character.conditionModule.ability.criticalUpRatio}");
 		EditorGUILayout.LabelField($"MoveSpeedUpRatio: {character.conditionModule.ability.moveSpeedUpRatio}");
 

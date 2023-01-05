@@ -10,6 +10,6 @@ public static class SkillDictionary
 		{ typeof(Landrock_sk1).ToString(), new object[] { new Landrock_sk1Data(new KnockbackConditionData(0.5f, 1), new ReducedDefenseConditionData(0.05f, 4), 3, 1.12f, 5) } },
 		{ typeof(Mirfiana_sk1).ToString(), new object[] { new Mirfiana_sk1Data(new StunConditionData(2), 11.42f, 8) } },
 		{ typeof(Haru_sk1).ToString(), new object[] { new Haru_sk1Data(new PoisonConditionData(0.4f, 5), 3.39f, 0.5f, 7) } },
-		{ typeof(Gilius_sk1).ToString(), new object[] { new Gilius_sk1Data(new DamageUpConditionData(0.084f, 6), new CriticalUpConditionData(0.035f, 6), 5.46f, 10) } }
+		{ typeof(Gilius_sk1).ToString(), new object[] { new Gilius_sk1Data(new AttackPowerUpConditionData(0.084f, 6), new CriticalUpConditionData(0.035f, 6), 5.46f, 10) } }
 	};
 }

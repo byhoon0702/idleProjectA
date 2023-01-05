@@ -6,9 +6,9 @@ public class BezierProjectile : Projectile
 	public Vector3[] points = new Vector3[4];
 	public float speed = 1;
 	public Vector3 size;
-	public override void Spawn(Transform _origin, Character _attacker, Character _targetCharacter, IdleNumber _damage)
+	public override void Spawn(Transform _origin, Character _attacker, Character _targetCharacter, IdleNumber _attackPower)
 	{
-		base.Spawn(_origin, _attacker, _targetCharacter, _damage);
+		base.Spawn(_origin, _attacker, _targetCharacter, _attackPower);
 		duration = 1 / speed;
 		points[0] = _origin.position;
 		points[1] = SetPoint(_origin.position);
@@ -16,9 +16,9 @@ public class BezierProjectile : Projectile
 		points[3] = targetPos;
 	}
 
-	public override void Spawn(Vector3 origin, Vector3 targetPos, IdleNumber damage)
+	public override void Spawn(Vector3 origin, Vector3 targetPos, IdleNumber _attackPower)
 	{
-		base.Spawn(origin, targetPos, damage);
+		base.Spawn(origin, targetPos, _attackPower);
 	}
 
 	private Vector3 SetPoint(Vector3 origin)

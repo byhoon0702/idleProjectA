@@ -70,7 +70,7 @@ public class Warrior : CharacterClass
 		{
 			if (owner.target != null)
 			{
-				SkillUtility.SimpleDamage(owner, owner.target, owner.info.DefaultDamage(), Color.white);
+				SkillUtility.SimpleAttack(owner, owner.target, owner.info.AttackPower(), Color.white);
 			}
 		}
 	}

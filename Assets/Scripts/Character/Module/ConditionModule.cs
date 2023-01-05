@@ -9,12 +9,17 @@ public class ConditionAbility
 	/// <summary>
 	/// 공격력 증가 비율
 	/// </summary>
-	public float attackDamageRatio;
+	public float attackPowerUpRatio;
 
 	/// <summary>
 	/// 공격속도 증가 비율
 	/// </summary>
 	public float attackSpeedRatio;
+
+	/// <summary>
+	/// 피해감소량 증가비율
+	/// </summary>
+	public float reducedDefenseRatio;
 
 	/// <summary>
 	/// 크리티컬 증가 비율
@@ -34,20 +39,21 @@ public class ConditionAbility
 	/// </summary>
 	public void Calculate(ConditionModule _module)
 	{
-		attackDamageRatio = CalculateAttackDamageRatio(_module);
+		attackPowerUpRatio = CalculateAttackPowerRatio(_module);
 		attackSpeedRatio = CalcutateAttackSpeedRatio(_module);
+		reducedDefenseRatio = CalculateReduceDefenseRatio(_module);
 		criticalUpRatio = CalculateCriticalUpRatio(_module);
 		moveSpeedUpRatio = CalculateMoveSpeedUpRatio(_module);
 	}
 
-	private float CalculateAttackDamageRatio(ConditionModule _module)
+	private float CalculateAttackPowerRatio(ConditionModule _module)
 	{
 		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.DamageUp);
+		var conditions = _module.GetConditions(UnitCondition.AttackPowerUp);
 
 		foreach (var condition in conditions)
 		{
-			outTotal += (condition as DamageUpCondition).ratio;
+			outTotal += (condition as AttackPowerUpCondition).ratio;
 		}
 
 		return outTotal;
@@ -61,6 +67,19 @@ public class ConditionAbility
 		foreach (var condition in conditions)
 		{
 			outTotal += (condition as AttackSpeedUpCondition).ratio;
+		}
+
+		return outTotal;
+	}
+
+	private float CalculateReduceDefenseRatio(ConditionModule _module)
+	{
+		float outTotal = 0;
+		var conditions = _module.GetConditions(UnitCondition.ReducedDefense);
+
+		foreach (var condition in conditions)
+		{
+			outTotal += (condition as ReducedDefenseCondition).ratio;
 		}
 
 		return outTotal;
@@ -86,7 +105,7 @@ public class ConditionAbility
 
 		foreach (var condition in conditions)
 		{
-			outTotal += (condition as CriticalUpCondition).ratio;
+			outTotal += (condition as MoveSpeedUpCondition).ratio;
 		}
 
 		return outTotal;

@@ -34,7 +34,7 @@ public enum UnitCondition
 	/// <summary>
 	/// 공격력 증가
 	/// </summary>
-	DamageUp,
+	AttackPowerUp,
 	/// <summary>
 	/// 크리티컬확률 증가
 	/// </summary>

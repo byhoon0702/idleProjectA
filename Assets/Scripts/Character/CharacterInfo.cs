@@ -8,12 +8,22 @@ public class CharacterInfo
 	/// <summary>
 	/// 랜덤 대미지 범위
 	/// </summary>
-	public const float DAMAGE_RANGE = 0.1f;
+	public const float ATTACK_POWER_RANGE = 0.1f;
 
 	/// <summary>
 	/// 크리티컬 확률 최대치
 	/// </summary>
 	public const float CRITICAL_MAX_RATIO = 0.8f;
+
+	/// <summary>
+	/// 받는 피해 최소량
+	/// </summary>
+	public const float MIN_REDUCE_DEFENSE_MUL = 0.01f;
+
+	/// <summary>
+	/// 받는 피해 최대량
+	/// </summary>
+	public const float MAX_REDUCE_DEFENSE_MUL = 5;
 
 
 
@@ -30,17 +40,27 @@ public class CharacterInfo
 		controlSide = _controlSide;
 	}
 
-	public IdleNumber DefaultDamage(bool _random = true)
+	public IdleNumber AttackPower(bool _random = true)
 	{
-		float multifly = 1 + owner.conditionModule.ability.attackDamageRatio;
-		IdleNumber total = data.attackDamage * multifly;
+		float multifly = 1 + owner.conditionModule.ability.attackPowerUpRatio;
+		IdleNumber total = data.attackPower * multifly;
 
 		if (_random)
 		{
-			total += total * Random.Range(-DAMAGE_RANGE, DAMAGE_RANGE);
+			total += total * Random.Range(-ATTACK_POWER_RANGE, ATTACK_POWER_RANGE);
 		}
 
 		return total;
+	}
+
+	/// <summary>
+	/// 피해감소(받는 피해량). 1이 기본값
+	/// </summary>
+	/// <returns></returns>
+	public float ReduceDefenseMul()
+	{
+		//float total = 1 + (1 - owner.conditionModule.ability.reducedDefenseRatio);
+		return 1;
 	}
 
 	/// <summary>
@@ -64,7 +84,7 @@ public class CharacterInfo
 	/// </summary>
 	public float CriticalMultifly()
 	{
-		float total = 1 + data.criticalDamageRatio;
+		float total = 1 + data.criticalChangeUpRatio;
 
 		return total;
 	}

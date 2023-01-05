@@ -63,7 +63,7 @@ public class CharacterData
 	public float attackTime = 1;
 	[Range(0.1f, 2f)]
 	public float attackRate = 1;
-	public IdleNumber attackDamage;
+	public IdleNumber attackPower;
 
 	/// <summary>
 	/// 치명타확률
@@ -72,7 +72,7 @@ public class CharacterData
 	/// <summary>
 	/// 치명타 피해량
 	/// </summary>
-	public float criticalDamageRatio = 1;
+	public float criticalChangeUpRatio = 1;
 
 	public float moveSpeed = 1;
 	public float searchTime = 1f;
@@ -100,7 +100,7 @@ public class CharacterData
 		data.attackTime = attackTime;
 		data.moveSpeed = moveSpeed;
 		data.attackRate = attackRate;
-		data.attackDamage = attackDamage;
+		data.attackPower = attackPower;
 		data.searchTime = searchTime;
 		data.searchRange = searchRange;
 		data.skillID = skillID;

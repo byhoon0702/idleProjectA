@@ -23,18 +23,18 @@ public class Landrock_sk1Data : SkillBaseData
 	/// <summary>
 	/// 대미지 배율
 	/// </summary>
-	public float damageMul;
+	public float attackPowerMul;
 
 
 	/// <summary>
 	/// 전방의 적 다수를 넉백시키며 공격력의 112%만큼 피해를 입히고 4초 동안 대상의 받는 피해량을 5% 증가시킨다.
 	/// </summary>
-	public Landrock_sk1Data(KnockbackConditionData _knockbackData, ReducedDefenseConditionData _reducedDefenseData, float _attackRange, float _damageMul, float _cooltime) : base(_cooltime)
+	public Landrock_sk1Data(KnockbackConditionData _knockbackData, ReducedDefenseConditionData _reducedDefenseData, float _attackRange, float _attackPowerMul, float _cooltime) : base(_cooltime)
 	{
 		knockbackData = _knockbackData;
 		reducedDefenseConditionData = _reducedDefenseData;
 		attackRange = _attackRange;
-		damageMul = _damageMul;
+		attackPowerMul = _attackPowerMul;
 	}
 }
 
@@ -74,7 +74,7 @@ public class Landrock_sk1 : SkillBase
 		{
 			target.conditionModule.AddCondition(new KnockbackCondition(owner, skillData.knockbackData));
 			target.conditionModule.AddCondition(new ReducedDefenseCondition(owner, skillData.reducedDefenseConditionData));
-			SkillUtility.SimpleDamage(owner, target, owner.info.DefaultDamage() * skillData.damageMul, fontColor);
+			SkillUtility.SimpleAttack(owner, target, owner.info.AttackPower() * skillData.attackPowerMul, fontColor);
 		}
 	}
 }

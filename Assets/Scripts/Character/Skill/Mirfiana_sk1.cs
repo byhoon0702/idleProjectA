@@ -12,16 +12,16 @@ public class Mirfiana_sk1Data : SkillBaseData
 	/// <summary>
 	/// 대미지 증가배율
 	/// </summary>
-	public float damageMul;
+	public float attackPowerMul;
 
 
 	/// <summary>
 	/// 체력이 가장 많은 적에게 공격력 1142%만큼 피해를 입히고 치명타 적중시 2초 동안 기절 상태로 만든다.
 	/// </summary>
-	public Mirfiana_sk1Data(StunConditionData _stunData, float _damageMul, float _cooltime) : base(_cooltime)
+	public Mirfiana_sk1Data(StunConditionData _stunData, float _attackPowerMul, float _cooltime) : base(_cooltime)
 	{
 		stunData = _stunData;
-		damageMul = _damageMul;
+		attackPowerMul = _attackPowerMul;
 	}
 }
 
@@ -68,7 +68,7 @@ public class Mirfiana_sk1 : SkillBase
 			}
 		}
 
-		SkillUtility.SimpleDamage(owner, target, owner.info.DefaultDamage() * skillData.damageMul, fontColor);
+		SkillUtility.SimpleAttack(owner, target, owner.info.AttackPower() * skillData.attackPowerMul, fontColor);
 		target.conditionModule.AddCondition(new StunCondition(owner, skillData.stunData));
 	}
 }

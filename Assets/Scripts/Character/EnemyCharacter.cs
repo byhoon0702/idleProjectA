@@ -18,6 +18,8 @@ public class EnemyCharacter : Character
 			var cam = SceneCamera.it.sceneCamera;
 			model.transform.LookAt(model.transform.position + cam.transform.rotation * Vector3.forward, cam.transform.rotation * Vector3.up);
 			characterView = model;
+			gameObject.AddComponent<SphereCollider>();
+			gameObject.tag = "Enemy";
 		}
 		Init();
 	}
@@ -27,28 +29,28 @@ public class EnemyCharacter : Character
 		transform.Translate(Vector3.left * info.MoveSpeed() * delta);
 	}
 
-	public override void Hit(Character _attacker, IdleNumber _damage, Color _color, float _criticalMul = 1)
+	public override void Hit(Character _attacker, IdleNumber _attackPower, Color _color, float _criticalMul = 1)
 	{
-		IdleNumber totalDamage = _damage * _criticalMul;
+		IdleNumber totalAttackPower = _attackPower * _criticalMul;
 		bool isCriticalAttack = _criticalMul > 1;
 
 		if (info.data.hp > 0)
 		{
 			SceneCamera.it.ShakeCamera();
-			GameUIManager.it.ShowFloatingText(totalDamage.ToString(), _color, characterAnimation.CenterPivot.position, isCriticalAttack);
+			GameUIManager.it.ShowFloatingText(totalAttackPower.ToString(), _color, characterAnimation.CenterPivot.position, isCriticalAttack);
 		}
-		info.data.hp -= totalDamage;
+		info.data.hp -= totalAttackPower;
 
-		GameManager.it.battleRecord.RecordDamage(_attacker.charID, totalDamage, isCriticalAttack);
+		GameManager.it.battleRecord.RecordAttackPower(_attacker.charID, totalAttackPower, isCriticalAttack);
 
 	}
 
-	public override void Heal(Character _attacker, IdleNumber _damage, Color _color)
+	public override void Heal(Character _attacker, IdleNumber _attackPower, Color _color)
 	{
-		base.Heal(_attacker, _damage, _color);
+		base.Heal(_attacker, _attackPower, _color);
 		if (currentState != StateType.DEATH)
 		{
-			IdleNumber newHP = info.data.hp + _damage;
+			IdleNumber newHP = info.data.hp + _attackPower;
 
 			if (rawData.hp.GetValue() < newHP.GetValue())
 			{
@@ -58,7 +60,7 @@ public class EnemyCharacter : Character
 			IdleNumber addHP = newHP - info.data.hp;
 			info.data.hp += addHP;
 			GameManager.it.battleRecord.RecordHeal(_attacker.charID, addHP);
-			GameUIManager.it.ShowFloatingText(_damage.ToString(), _color, characterAnimation.CenterPivot.position, false);
+			GameUIManager.it.ShowFloatingText(_attackPower.ToString(), _color, characterAnimation.CenterPivot.position, false);
 		}
 	}
 }

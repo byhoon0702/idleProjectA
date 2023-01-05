@@ -34,7 +34,7 @@ public class ProjectileManager : MonoBehaviour
 		}
 
 
-		projectile.Spawn(character.characterAnimation.CenterPivot, character, character.target, character.info.DefaultDamage());
+		projectile.Spawn(character.characterAnimation.CenterPivot, character, character.target, character.info.AttackPower());
 
 		return projectile;
 	}

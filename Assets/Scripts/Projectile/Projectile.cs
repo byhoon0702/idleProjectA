@@ -4,7 +4,7 @@ public class Projectile : MonoBehaviour
 {
 	//추후 변경될 변수
 	public SpriteRenderer projectileView;
-	public IdleNumber damage;
+	public IdleNumber attackPower;
 	public Character attacker;
 	public Character targetCharacter;
 	protected Vector3 targetPos;
@@ -19,23 +19,23 @@ public class Projectile : MonoBehaviour
 	protected float vy;
 	protected float elapsetimd = 0;
 	protected bool dontmove = false;
-	public virtual void Spawn(Transform origin, Character _attacker, Character _targetCharacter, IdleNumber _damage)
+	public virtual void Spawn(Transform origin, Character _attacker, Character _targetCharacter, IdleNumber _attackPower)
 	{
 		transform.position = origin.position;
 		attacker = _attacker;
 		targetCharacter = _targetCharacter;
 
-		damage = _damage;
+		attackPower = _attackPower;
 		targetPos = _targetCharacter.characterAnimation.CenterPivot.position;
 		//Vector2 dir = targetPos - origin.position;
 		//var dirAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 		//lookRotation = new Vector3(0, 0, dirAngle);
 		//transform.eulerAngles = lookRotation;
 	}
-	public virtual void Spawn(Vector3 origin, Vector3 targetPos, IdleNumber damage)
+	public virtual void Spawn(Vector3 origin, Vector3 targetPos, IdleNumber _attackPower)
 	{
 		transform.position = origin;
-		this.damage = damage;
+		attackPower = _attackPower;
 		dontmove = false;
 		//Vector2 dir = targetPos - origin;
 		//var dirAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
@@ -61,7 +61,7 @@ public class Projectile : MonoBehaviour
 			return;
 		}
 
-		SkillUtility.SimpleDamage(attacker, targetCharacter, damage, Color.white);
+		SkillUtility.SimpleAttack(attacker, targetCharacter, attackPower, Color.white);
 
 		Destroy(gameObject);
 	}

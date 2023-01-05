@@ -277,12 +277,12 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 
 	}
 
-	public virtual void Hit(Character in_attacker, IdleNumber damage, Color _color, float _criticalMul)
+	public virtual void Hit(Character _attacker, IdleNumber _attackPower, Color _color, float _criticalMul)
 	{
 
 	}
 
-	public virtual void Heal(Character _attacker, IdleNumber _damage, Color _color)
+	public virtual void Heal(Character _attacker, IdleNumber _attackPower, Color _color)
 	{
 
 	}

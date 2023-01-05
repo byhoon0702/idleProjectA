@@ -1,9 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using UnityEngine.Pool;
+using DG.Tweening;
 
 public class GameUIManager : MonoBehaviour
 {
@@ -13,50 +14,121 @@ public class GameUIManager : MonoBehaviour
 	public Canvas mainCanvas;
 	public FloatingText resource;
 
-	public List<FloatingText> tmpFloatings;
+	public Image fadeCurtain;
+
+	public RectTransform floatingUIGroup;
+	public RectTransform statusUIGroup;
+
+	public IObjectPool<FloatingText> floatingTextPool;
+	public IObjectPool<CharacterStatusUI> characterStatusPool;
 
 	private void Awake()
 	{
 		instance = this;
+		floatingTextPool = new ObjectPool<FloatingText>(CreateFloatingText, OnGetFloatingtext, OnReleaseFloatingText, OnDestroyFloatingText);
+		characterStatusPool = new ObjectPool<CharacterStatusUI>(CreateCharacterStatusUI, OnGetCharacterStatusUI, OnReleaseCharacterStatusUI, OnDestroyCharacterStatusUI);
 	}
 
-	void Start()
-	{
-		Debug.Log($"{Screen.width} {Screen.height}");
-		for (int i = 0; i < 10; i++)
-		{
-			CreateFloatingText();
-		}
-	}
-	FloatingText CreateFloatingText()
+	#region FloatingTextPool
+
+	private FloatingText CreateFloatingText()
 	{
 		FloatingText tmp = Instantiate(resource);
 		tmp.gameObject.SetActive(false);
-		tmp.transform.SetParent(mainCanvas.transform);
-		tmpFloatings.Add(tmp);
+		tmp.transform.SetParent(floatingUIGroup.transform);
+		tmp.SetManagedPool(floatingTextPool);
+
 		return tmp;
 	}
 
-	public void ShowFloatingText(string text, Color color, Vector3 position)
+	private void OnGetFloatingtext(FloatingText floatingtext)
 	{
-		Vector3 pos = SceneCamera.it.GetComponent<Camera>().WorldToScreenPoint(position);
+		floatingtext.gameObject.SetActive(true);
+	}
 
-		float halfX = Screen.width / 2;
-		float halfY = Screen.height / 2;
+	private void OnReleaseFloatingText(FloatingText floatingtext)
+	{
+		floatingtext.gameObject.SetActive(false);
+	}
+	private void OnDestroyFloatingText(FloatingText floatingtext)
+	{
+		Destroy(floatingtext.gameObject);
+	}
+	#endregion
 
-		Vector2 uipos = new Vector2(pos.x - halfX, pos.y - halfY);
-		for (int i = 0; i < tmpFloatings.Count; i++)
+	#region CharacterStatusPool
+
+	private CharacterStatusUI CreateCharacterStatusUI()
+	{
+		CharacterStatusUI tmp = Instantiate(Resources.Load<CharacterStatusUI>("CharacterStatusBar"));
+		tmp.gameObject.SetActive(false);
+		tmp.transform.SetParent(statusUIGroup.transform);
+		tmp.SetManagedPool(characterStatusPool);
+
+		return tmp;
+	}
+
+	private void OnGetCharacterStatusUI(CharacterStatusUI characterstatusui)
+	{
+		characterstatusui.gameObject.SetActive(false);
+	}
+
+	private void OnReleaseCharacterStatusUI(CharacterStatusUI characterstatusui)
+	{
+		characterstatusui.gameObject.SetActive(false);
+	}
+	private void OnDestroyCharacterStatusUI(CharacterStatusUI characterstatusui)
+	{
+		Destroy(characterstatusui.gameObject);
+	}
+	#endregion
+	public void ReleaseAllPool()
+	{
+
+		floatingTextPool.Clear();
+
+		characterStatusPool.Clear();
+
+	}
+
+
+	public void FadeCurtain(bool fadeIn)
+	{
+		if (fadeIn)
 		{
-			if (tmpFloatings[i].gameObject.activeInHierarchy == false)
-			{
-				tmpFloatings[i].Show(text, color, uipos);
-				return;
-			}
+			fadeCurtain.DOFade(1, 0.5f);
 		}
+		else
+		{
+			fadeCurtain.DOFade(0, 0.5f);
+		}
+	}
 
-		var floatingtext = CreateFloatingText();
-		floatingtext.Show(text, color, uipos);
+	public Vector2 ToUIPosition(Vector3 worldPosition)
+	{
+		Vector2 uipos;
 
+		Vector2 screenPosition = SceneCamera.it.WorldToScreenPoint(worldPosition);
+		RectTransformUtility.ScreenPointToLocalPointInRectangle(mainCanvas.transform as RectTransform, screenPosition, null, out uipos);
+
+
+		return uipos;
+	}
+	public void ShowCharacterGauge(Character character)
+	{
+		// UI초기화
+		CharacterStatusUI statusUI = characterStatusPool.Get();
+		statusUI.gameObject.SetActive(false);
+		statusUI.transform.SetParent(statusUIGroup.transform, false);
+		statusUI.Init(character);
+
+	}
+	public void ShowFloatingText(string text, Color color, Vector3 position, bool isCritical, bool isPlayer = false)
+	{
+		Vector2 uipos = ToUIPosition(position);
+
+		var floatingtext = floatingTextPool.Get();
+		floatingtext.Show(text, color, uipos, isCritical, isPlayer);
 	}
 
 }

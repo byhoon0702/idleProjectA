@@ -5,9 +5,9 @@ public class ParabolaProjectile : Projectile
 	public float angle;
 	private Vector3 velocityXZ;
 	private Vector3 calculateVector;
-	public override void Spawn(Transform _origin, Character _attacker, Character _targetCharacter, IdleNumber _damage)
+	public override void Spawn(Transform _origin, Character _attacker, Character _targetCharacter, IdleNumber _attackPower)
 	{
-		base.Spawn(_origin, _attacker, _targetCharacter, _damage);
+		base.Spawn(_origin, _attacker, _targetCharacter, _attackPower);
 
 		distance = Vector3.Distance(_origin.position, targetPos);
 		float velocity = distance / (Mathf.Sin(2 * angle * Mathf.Deg2Rad) / gravity);
@@ -23,9 +23,9 @@ public class ParabolaProjectile : Projectile
 
 	}
 
-	public override void Spawn(Vector3 _origin, Vector3 _targetPos, IdleNumber _damage)
+	public override void Spawn(Vector3 _origin, Vector3 _targetPos, IdleNumber _attackPower)
 	{
-		base.Spawn(_origin, _targetPos, _damage);
+		base.Spawn(_origin, _targetPos, _attackPower);
 
 		distance = Vector3.Distance(_origin, targetPos);
 		float velocity = distance / (Mathf.Sin(2 * angle * Mathf.Deg2Rad) / gravity);

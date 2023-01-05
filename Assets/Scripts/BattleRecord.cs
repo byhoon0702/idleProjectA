@@ -18,13 +18,13 @@ public class BattleRecord
 		}
 	}
 
-	public void RecordDamage(Int32 _charID, IdleNumber _damage, bool _critical)
+	public void RecordAttackPower(Int32 _charID, IdleNumber _attackPower, bool _critical)
 	{
 		foreach(var record in records)
 		{
 			if(record.charID == _charID)
 			{
-				record.damage += _damage;
+				record.attackPower += _attackPower;
 				if(_critical)
 				{
 					record.criticalCount++;
@@ -87,7 +87,7 @@ public class BattleRecord
 public class RecordData
 {
 	public Int32 charID;
-	public IdleNumber damage = new IdleNumber();
+	public IdleNumber attackPower = new IdleNumber();
 	public Int32 criticalCount;
 	public IdleNumber heal = new IdleNumber();
 	public Int32 attackCount;
@@ -95,6 +95,6 @@ public class RecordData
 
 	public string ToStringEditor()
 	{
-		return $"Dmg: {damage.ToString()}, Heal: {heal.ToString()}, AtkCount: {attackCount}, CriCount: {criticalCount}, SklCount: {skillCount}";
+		return $"AttackPower: {attackPower.ToString()}, Heal: {heal.ToString()}, AtkCount: {attackCount}, CriCount: {criticalCount}, SklCount: {skillCount}";
 	}
 }

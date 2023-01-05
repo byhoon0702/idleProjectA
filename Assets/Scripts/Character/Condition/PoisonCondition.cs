@@ -12,7 +12,7 @@ public class PoisonConditionData
 	/// <summary>
 	/// 초당 들어가는 대미지
 	/// </summary>
-	public float tickDamageMul;
+	public float tickAttackPowerMul;
 
 	/// <summary>
 	/// 지속시간
@@ -20,9 +20,9 @@ public class PoisonConditionData
 	public float duration;
 
 
-	public PoisonConditionData(float _tickDamageMul, float _duration)
+	public PoisonConditionData(float _tickAttackPowerUpMul, float _duration)
 	{
-		tickDamageMul = _tickDamageMul;
+		tickAttackPowerMul = _tickAttackPowerUpMul;
 		duration = _duration;
 	}
 }
@@ -36,22 +36,22 @@ public class PoisonCondition : ConditionBase
 	public override string effectPath => "";
 
 	private PoisonConditionData conditionData;
-	private float lastTickDamage;
+	private float lastTickAttackPower;
 
 	public PoisonCondition(Character _attacker, PoisonConditionData _conditionData) : base(_attacker, _conditionData.duration)
 	{
 		conditionData = _conditionData;
-		lastTickDamage = _conditionData.duration;
+		lastTickAttackPower = _conditionData.duration;
 	}
 
 	public override void Update(float dt)
 	{
 		base.Update(dt);
 
-		if (this.lastTickDamage - PoisonConditionData.TICK >= this.remainTime)
+		if (this.lastTickAttackPower - PoisonConditionData.TICK >= this.remainTime)
 		{
-			this.lastTickDamage -= PoisonConditionData.TICK;
-			SkillUtility.SimpleDamage(attacker, character, attacker.info.DefaultDamage() * conditionData.tickDamageMul, Color.blue, false);
+			this.lastTickAttackPower -= PoisonConditionData.TICK;
+			SkillUtility.SimpleAttack(attacker, character, attacker.info.AttackPower() * conditionData.tickAttackPowerMul, Color.blue, false);
 		}
 	}
 }

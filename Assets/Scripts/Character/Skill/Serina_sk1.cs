@@ -68,7 +68,7 @@ public class Serina_sk1 : SkillBase
 			target.conditionModule.AddCondition(new AttackSpeedUpCondition(owner, skillData.attackSpeedUpData));
 			target.conditionModule.AddCondition(new MoveSpeedUpCondition(owner, skillData.moveSpeedUpData));
 
-			target.Heal(target, target.info.DefaultDamage() * skillData.healMul, fontColor);
+			target.Heal(target, target.info.AttackPower() * skillData.healMul, fontColor);
 		}
 	}
 }

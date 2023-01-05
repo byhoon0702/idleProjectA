@@ -9,7 +9,7 @@ public static class SkillUtility
 	/// <summary>
 	/// 타겟에게 대미지를 준다.
 	/// </summary>
-	public static void SimpleDamage(Character _attacker, Character _target, IdleNumber _damage, Color _color, bool checkCritical = true)
+	public static void SimpleAttack(Character _attacker, Character _target, IdleNumber _attackPower, Color _color, bool checkCritical = true)
 	{
 		bool isCritical = _attacker.info.IsCritical();
 		float criticalMul = 1;
@@ -18,7 +18,7 @@ public static class SkillUtility
 			criticalMul = _attacker.info.CriticalMultifly();
 		}
 
-		_target.Hit(_attacker, _damage, _color, criticalMul);
+		_target.Hit(_attacker, _attackPower, _color, criticalMul);
 	}
 
 	///// <summary>

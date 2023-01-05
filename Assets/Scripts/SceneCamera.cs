@@ -1,31 +1,47 @@
-using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
-
+﻿using DG.Tweening;
 using UnityEngine;
 
 public class SceneCamera : MonoBehaviour
 {
+	public float shakeAmount = 0.3f;
 	private static SceneCamera instance;
 	public static SceneCamera it => instance;
 	public float speed;
 
 	public Camera sceneCamera => m_camera;
-	protected Camera m_camera;
+	[SerializeField] private Camera m_camera;
 	protected Transform m_camera_transform;
 
 	protected PlayerCharacter[] players;
+	protected Vector3 originPos;
+
+	private bool canCameraMove = false;
 	void Awake()
 	{
 		instance = this;
-		m_camera = transform.GetComponent<Camera>();
+
 		m_camera_transform = transform;
+		originPos = transform.position;
 	}
-	void Start()
+	public void ResetToStart()
 	{
-		//Debug.Log(m_camera.ViewportToWorldPoint(new Vector3(1, 0.5f, m_camera.nearClipPlane)));
+		StopCameraMove();
+		transform.position = originPos;
 	}
 
+	public void ActivateCameraMove()
+	{
+		canCameraMove = true;
+	}
+	public void StopCameraMove()
+	{
+		canCameraMove = false;
+	}
+
+	public Vector3 WorldToScreenPoint(Vector3 position)
+	{
+		return sceneCamera.WorldToScreenPoint(position);
+	}
 	public void FindPlayers()
 	{
 		players = GameObject.FindObjectsOfType<PlayerCharacter>();
@@ -38,9 +54,16 @@ public class SceneCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-
-		//m_camera_transform.Translate(speed * Time.deltaTime);
+		if (canCameraMove == false)
+		{
+			return;
+		}
 		CameraMove();
+	}
+	public void ShakeCamera()
+	{
+		m_camera.transform.localPosition = Random.insideUnitCircle * shakeAmount;
+		m_camera.transform.DOLocalMove(Vector3.zero, 0.1f);
 	}
 
 	void CameraMove()
@@ -49,19 +72,18 @@ public class SceneCamera : MonoBehaviour
 		{
 			return;
 		}
-		Vector3 near = m_camera_transform.position;
+		Vector3 near = transform.position;
 		float distance = 1f;
 		for (int i = 0; i < players.Length; i++)
 		{
 			var player = players[i];
-			var diff = m_camera_transform.position.x - player.transform.position.x;
+			var diff = transform.position.x - player.transform.position.x;
 
 			if (diff < distance)
 			{
-				m_camera_transform.Translate(Vector3.right * player.data.moveSpeed * Time.deltaTime);
+				transform.Translate(Vector3.right * player.info.MoveSpeed() * Time.deltaTime);
 				break;
 			}
 		}
-
 	}
 }

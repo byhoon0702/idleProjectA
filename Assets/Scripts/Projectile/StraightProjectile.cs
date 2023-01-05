@@ -8,9 +8,9 @@ public class StraightProjectile : Projectile
 	public float speed;
 
 	private Vector3 direction;
-	public override void Spawn(Transform _origin, Character _attacker, Character _targetCharacter, IdleNumber _damage)
+	public override void Spawn(Transform _origin, Character _attacker, Character _targetCharacter, IdleNumber _attackPower)
 	{
-		base.Spawn(_origin, _attacker, _targetCharacter, _damage);
+		base.Spawn(_origin, _attacker, _targetCharacter, _attackPower);
 
 
 		direction = (targetPos - _origin.position).normalized;
@@ -19,9 +19,9 @@ public class StraightProjectile : Projectile
 
 		duration = distance / speed;
 	}
-	public override void Spawn(Vector3 origin, Vector3 targetPos, IdleNumber damage)
+	public override void Spawn(Vector3 origin, Vector3 targetPos, IdleNumber _attackPower)
 	{
-		base.Spawn(origin, targetPos, damage);
+		base.Spawn(origin, targetPos, _attackPower);
 
 		direction = (targetPos - origin).normalized;
 

@@ -13,7 +13,7 @@ public class Haru_sk1Data : SkillBaseData
 	/// <summary>
 	/// 대미지 증가배율
 	/// </summary>
-	public float damageMul;
+	public float attackPowerMul;
 
 	/// <summary>
 	/// 독대미지 적용확률
@@ -25,10 +25,10 @@ public class Haru_sk1Data : SkillBaseData
 	/// 적 전체에게 공격력의 339%만큼 피해를 입히고 50%확률로 5초동안 40%만큼 지속 피해를 입힌다.
 	/// </summary>
 	/// <param name="_cooltime"></param>
-	public Haru_sk1Data(PoisonConditionData _poisonData, float _damageMul, float _poisonProbability, float _cooltime) : base(_cooltime)
+	public Haru_sk1Data(PoisonConditionData _poisonData, float _attackPowerMul, float _poisonProbability, float _cooltime) : base(_cooltime)
 	{
 		poisonData = _poisonData;
-		damageMul = _damageMul;
+		attackPowerMul = _attackPowerMul;
 		poisonProbability = _poisonProbability;
 	}
 }
@@ -73,7 +73,7 @@ public class Haru_sk1 : SkillBase
 				target.conditionModule.AddCondition(new PoisonCondition(owner, skillData.poisonData));
 			}
 
-			SkillUtility.SimpleDamage(owner, target, target.info.DefaultDamage() * skillData.damageMul, fontColor);
+			SkillUtility.SimpleAttack(owner, target, target.info.AttackPower() * skillData.attackPowerMul, fontColor);
 		}
 	}
 }
