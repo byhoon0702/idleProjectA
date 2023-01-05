@@ -1,0 +1,42 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using cli = gplat.network.unity;
+namespace requester
+{
+    public class #SCRIPTNAME#
+        : cli.PacketRequestHandler<namespace.req,namespace.ack>
+    {
+        protected override gplat.Result onResponse()
+        {
+            m_gen_result = ackMsgResult();
+            if(m_gen_result.fail())
+            {
+                return m_gen_result;
+            }
+            return m_gen_result;
+        }
+
+        public override gplat.Result onRequestFail()
+        {
+            m_log.ErrorFormat("{0} failed. please retry (you should open dialog box)", detailReqMessageId());
+            return m_gen_result;
+        }
+
+        public override void onCleanup()
+        {
+            if(m_gen_result.exceptionOccurred())
+            {
+                gplat.Log.logger("exception.protocol").ErrorFormat("{0}", m_gen_result);
+                popupException(send_log: true);
+            }
+            else if(m_gen_result.fail())
+            {
+                m_log.ErrorFormat("fail: {0}", m_gen_result);
+            }
+        }
+    }
+}

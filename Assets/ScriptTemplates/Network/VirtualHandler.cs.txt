@@ -1,0 +1,19 @@
+using System;
+using System.Reflection;
+
+namespace virtual_server.handler
+{
+	public class #SCRIPTNAME# : gen.VirtualServerMessageHandler<T1,T2> //namespace.req, namespace.ack
+	{
+		public override gplat.Result process()
+		{
+			m_log.InfoFormat("RECV_MSG:{0}", reqMsg.ToString());
+			return m_gen_result;
+		}
+		public override void cleanup()
+		{
+			relay(ackMsg);
+		}
+	}
+
+}

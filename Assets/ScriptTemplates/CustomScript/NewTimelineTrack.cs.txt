@@ -1,0 +1,13 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
+
+[TrackColor(214f/255f, 214f / 255f, 214f / 255f)]
+[TrackBindingType(typeof(MonoBehaviour))]	//Custom MonoBehaviour로 변경
+[TrackClipType(typeof(PlayableAsset))]		//Custom PlayableAsset으로 변경
+public class #SCRIPTNAME# : TrackAsset
+{
+
+}
