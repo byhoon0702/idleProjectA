@@ -30,17 +30,50 @@ GraphicsSettings:
     m_Shader: {fileID: 102, guid: 0000000000000000f000000000000000, type: 0}
   m_VideoShadersIncludeMode: 2
   m_AlwaysIncludedShaders:
-  - {fileID: 7, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 15104, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 15105, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 15106, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 10770, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 10783, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 16000, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 16001, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 17000, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 4800000, guid: 66ad3ba1bcf8a5849b1158651ffe75a2, type: 3}
+  - {fileID: 4800000, guid: 2b9fd692806e0c943ae45bea9a16aa6c, type: 3}
+  - {fileID: 4800000, guid: 91e53f5c3c253b747969c3b2252c098a, type: 3}
+  - {fileID: 4800000, guid: 0ff25a38da9f9b947b5724ffd8624729, type: 3}
+  - {fileID: 4800000, guid: 4b6f6576120945749be416487e740432, type: 3}
+  - {fileID: 4800000, guid: 77831cdbd22df6d489f01c3b61f1eede, type: 3}
+  - {fileID: 4800000, guid: 93983b287a59acf428407e9e94b20bc5, type: 3}
+  - {fileID: 4800000, guid: 40b4c9453fc39dc4eb93a3dcecc9d57a, type: 3}
+  - {fileID: 4800000, guid: bf39b09379e34274fac2dc98f8d429aa, type: 3}
+  - {fileID: 4800000, guid: 5ef7a94a233b97344b9d2f1d8810b3d9, type: 3}
+  - {fileID: 4800000, guid: 048f832df6939fc459d3c9ef3d10ed56, type: 3}
+  - {fileID: 4800000, guid: ef3dddd6cb95e944fae57b1392706bf1, type: 3}
+  - {fileID: 4800000, guid: 298fd46c52ecff84381b1a723bb8f7a2, type: 3}
+  - {fileID: 4800000, guid: 1923bea4986cf2947910fba3de8358d5, type: 3}
+  - {fileID: 4800000, guid: 60f0c5ea1ad7d6d4ab03c23db6da6775, type: 3}
+  - {fileID: 4800000, guid: 37eca3a7aca1b7647bc46dec750ddc6f, type: 3}
+  - {fileID: 4800000, guid: 8d8ca8b4a0408d34f97ee870a7e8f56d, type: 3}
+  - {fileID: 4800000, guid: 8eacfdf6bee6b2040824c4b26f2b089a, type: 3}
+  - {fileID: 4800000, guid: 21798b26d3a26b6429f17ca1f5393578, type: 3}
+  - {fileID: 4800000, guid: 4d032cdb827addd4aaf8a67ec9ec60fa, type: 3}
+  - {fileID: 4800000, guid: d853fe02ba4b57b49abc20881df2b559, type: 3}
+  - {fileID: 4800000, guid: 7c49efe6c1b735a4eb25143b92bda37f, type: 3}
+  - {fileID: 4800000, guid: 99860c2f557dc344dbc80db6863627c5, type: 3}
+  - {fileID: 4800000, guid: 2ab2fbdc46a493b4a98d483fbe12f865, type: 3}
+  - {fileID: 4800000, guid: c363ecfaa57880c47adb695528349077, type: 3}
+  - {fileID: 4800000, guid: e29baab16f91c3940bdf93c591ada97f, type: 3}
+  - {fileID: 4800000, guid: 64d3f2ed73d7ceb4e91ae017c3eb9204, type: 3}
+  - {fileID: 4800000, guid: 7ca4ade7b4d0cd14a915e31e50bfd876, type: 3}
+  - {fileID: 4800000, guid: 43db037ba9bd2944a9d49c1919a47b0e, type: 3}
+  - {fileID: 4800000, guid: 3420348c5651b744e9dd3883ca2c1936, type: 3}
+  - {fileID: 4800000, guid: 96b3ff2ddc4de0b44b412e1f7f6a63dc, type: 3}
+  - {fileID: 4800000, guid: afd1ed5665bf72c4ca117c50058e1664, type: 3}
+  - {fileID: 4800000, guid: 683ede6e6c629b243b061141d043316d, type: 3}
+  - {fileID: 4800000, guid: ecfa8f5732b504ef98fba10aa18d0326, type: 3}
+  - {fileID: 4800000, guid: 9d7e8f87435780644abb4acdfd72a2f0, type: 3}
   m_PreloadedShaders: []
   m_PreloadShadersBatchTimeLimit: -1
   m_SpritesDefaultMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_CustomRenderPipeline: {fileID: 11400000, guid: a112597539a07da45a36da54eb2cb7ec, type: 2}
+  m_CustomRenderPipeline: {fileID: 11400000, guid: 34dec015c5a1f3d41b890ac21174b497, type: 2}
   m_TransparencySortMode: 0
   m_TransparencySortAxis: {x: 0, y: 0, z: 1}
   m_DefaultRenderingPath: 1
@@ -64,4 +97,4 @@ GraphicsSettings:
   m_DefaultRenderingLayerMask: 1
   m_LogWhenShaderIsCompiled: 0
   m_SRPDefaultSettings:
-    UnityEngine.Rendering.Universal.UniversalRenderPipeline: {fileID: 11400000, guid: 024371cc676bdd4479c9a8ed4acc6a8e, type: 2}
+    UnityEngine.Rendering.Universal.UniversalRenderPipeline: {fileID: 11400000, guid: 9102680d434ddc94596d297d09451603, type: 2}
