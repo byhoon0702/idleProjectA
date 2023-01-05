@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-public class NormalAttackState : CharacterFSM
+public class AttackState : CharacterFSM
 {
 	private Character owner;
 	private SkillModule skillModule => owner.skillModule;
@@ -31,7 +31,7 @@ public class NormalAttackState : CharacterFSM
 			// 스킬을 사용할 수 있으면 무조건 스킬우선사용
 			skillModule.skillAttack.Action();
 			GameManager.it.battleRecord.RecordSkillCount(owner.charID);
-			VLog.SkillLog($"[{owner.info.data.name}({owner.charID})] 스킬 사용. SkillName: {skillModule.skillAttack.GetType()}", owner);
+			VLog.SkillLog($"[{owner.info.charNameAndCharId}] 스킬 사용. SkillName: {skillModule.skillAttack.GetType()}", owner);
 		}
 		else if (skillModule.defaultAttack != null && skillModule.defaultAttack.Usable())
 		{

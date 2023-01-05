@@ -29,10 +29,10 @@ public class EnemyCharacter : Character
 		transform.Translate(Vector3.left * info.MoveSpeed() * delta);
 	}
 
-	public override void Hit(Character _attacker, IdleNumber _attackPower, Color _color, float _criticalMul = 1)
+	public override void Hit(Character _attacker, IdleNumber _attackPower, Color _color, float _criticalChanceMul = 1)
 	{
-		IdleNumber totalAttackPower = _attackPower * _criticalMul;
-		bool isCriticalAttack = _criticalMul > 1;
+		IdleNumber totalAttackPower = _attackPower * _criticalChanceMul * _attacker.info.DamageMul();
+		bool isCriticalAttack = _criticalChanceMul > 1;
 
 		if (info.data.hp > 0)
 		{

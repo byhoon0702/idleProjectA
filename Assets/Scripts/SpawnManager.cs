@@ -26,6 +26,9 @@ public class SpawnManager : MonoBehaviour
 	public EnemyCharacter rewardCharacter = null;
 	public EnemyCharacter bossCharacter = null;
 
+
+	public float lineDiff = 1;
+
 	public bool IsAllEnemyDead
 	{
 		get
@@ -103,8 +106,8 @@ public class SpawnManager : MonoBehaviour
 	{
 		var edge = SceneCamera.it.GetCameraEdgePosition(new Vector2(0f, 0.5f));
 		float spawnX = edge.x + spawnArea.x;
-		float spawnY = spawnArea.y;
 
+		float spawnY = spawnArea.y;
 		float cellX = spawnArea.width / 5;
 		float cellY = spawnArea.height / 5;
 		Vector3[] grid = new Vector3[25];
@@ -112,7 +115,7 @@ public class SpawnManager : MonoBehaviour
 		{
 			for (int x = 0; x < 5; x++)
 			{
-				grid[(y * 5) + x] = new Vector3(cellX * x + spawnX, 0, cellY * y + spawnY);
+				grid[(y * 5) + x] = new Vector3(cellX * x + spawnX - (lineDiff * y), 0, cellY * y + spawnY);
 			}
 		}
 
@@ -188,7 +191,7 @@ public class SpawnManager : MonoBehaviour
 		{
 			for (int x = 0; x < 5; x++)
 			{
-				grid[(y * 5) + x] = new Vector3(cellX * x + spawnX, 0, cellY * y + spawnY);
+				grid[(y * 5) + x] = new Vector3(cellX * x + spawnX + (lineDiff * y), 0, cellY * y + spawnY);
 			}
 		}
 

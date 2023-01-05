@@ -10,26 +10,46 @@ public class ConditionAbility
 	/// 공격력 증가 비율
 	/// </summary>
 	public float attackPowerUpRatio;
+	/// <summary>
+	/// 공격력 감소 비율
+	/// </summary>
+	public float attackPowerDownRatio;
 
 	/// <summary>
 	/// 공격속도 증가 비율
 	/// </summary>
-	public float attackSpeedRatio;
-
+	public float attackSpeedUpRatio;
 	/// <summary>
-	/// 피해감소량 증가비율
+	/// 공격속도 감소 비율
 	/// </summary>
-	public float reducedDefenseRatio;
+	public float attackSpeedDownRatio;
 
 	/// <summary>
 	/// 크리티컬 증가 비율
 	/// </summary>
-	public float criticalUpRatio;
+	public float criticalChanceUpRatio;
+	/// <summary>
+	/// 크리티컬 감소 비율
+	/// </summary>
+	public float criticalChanceDownRatio;
+
+	/// <summary>
+	/// 피해증가 비율
+	/// </summary>
+	public float damageUpRatio;
+	/// <summary>
+	/// 피해감소 비율
+	/// </summary>
+	public float damageDownRatio;
 
 	/// <summary>
 	/// 이동속도 증가 비율
 	/// </summary>
 	public float moveSpeedUpRatio;
+	/// <summary>
+	/// 이동속도 감소 비율
+	/// </summary>
+	public float moveSpeedDownRatio;
 
 
 
@@ -39,14 +59,23 @@ public class ConditionAbility
 	/// </summary>
 	public void Calculate(ConditionModule _module)
 	{
-		attackPowerUpRatio = CalculateAttackPowerRatio(_module);
-		attackSpeedRatio = CalcutateAttackSpeedRatio(_module);
-		reducedDefenseRatio = CalculateReduceDefenseRatio(_module);
-		criticalUpRatio = CalculateCriticalUpRatio(_module);
+		attackPowerUpRatio = CalculateAttackPowerUpRatio(_module);
+		attackPowerDownRatio = CalculateAttackPowerDownRatio(_module);
+
+		attackSpeedUpRatio = CalcutateAttackSpeedUpRatio(_module);
+		attackSpeedDownRatio = CalculateAttackSpeedDownRatio(_module);
+
+		criticalChanceUpRatio = CalculateCriticalChanceUpRatio(_module);
+		criticalChanceDownRatio = CalculateCriticalChanceDownRatio(_module);
+
+		damageUpRatio = CalculateDamageUpRatio(_module);
+		damageDownRatio = CalculateDamageDownRatio(_module);
+
 		moveSpeedUpRatio = CalculateMoveSpeedUpRatio(_module);
+		moveSpeedDownRatio = CalculateMoveSpeedDownRatio(_module);
 	}
 
-	private float CalculateAttackPowerRatio(ConditionModule _module)
+	private float CalculateAttackPowerUpRatio(ConditionModule _module)
 	{
 		float outTotal = 0;
 		var conditions = _module.GetConditions(UnitCondition.AttackPowerUp);
@@ -59,7 +88,20 @@ public class ConditionAbility
 		return outTotal;
 	}
 
-	private float CalcutateAttackSpeedRatio(ConditionModule _module)
+	private float CalculateAttackPowerDownRatio(ConditionModule _module)
+	{
+		float outTotal = 0;
+		var conditions = _module.GetConditions(UnitCondition.AttackPowerDown);
+
+		foreach (var condition in conditions)
+		{
+			outTotal += (condition as AttackPowerDownCondition).ratio;
+		}
+
+		return outTotal;
+	}
+
+	private float CalcutateAttackSpeedUpRatio(ConditionModule _module)
 	{
 		float outTotal = 0;
 		var conditions = _module.GetConditions(UnitCondition.AttackSpeedUp);
@@ -72,27 +114,67 @@ public class ConditionAbility
 		return outTotal;
 	}
 
-	private float CalculateReduceDefenseRatio(ConditionModule _module)
+	private float CalculateAttackSpeedDownRatio(ConditionModule _module)
 	{
 		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.ReducedDefense);
+		var conditions = _module.GetConditions(UnitCondition.AttackSpeedDown);
 
 		foreach (var condition in conditions)
 		{
-			outTotal += (condition as ReducedDefenseCondition).ratio;
+			outTotal += (condition as AttackSpeedDownCondition).ratio;
 		}
 
 		return outTotal;
 	}
 
-	private float CalculateCriticalUpRatio(ConditionModule _module)
+	private float CalculateDamageUpRatio(ConditionModule _module)
 	{
 		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.CriticalUp);
+		var conditions = _module.GetConditions(UnitCondition.DamageUp);
 
 		foreach (var condition in conditions)
 		{
-			outTotal += (condition as CriticalUpCondition).ratio;
+			outTotal += (condition as DamageUpCondition).ratio;
+		}
+
+		return outTotal;
+	}
+
+
+	private float CalculateDamageDownRatio(ConditionModule _module)
+	{
+		float outTotal = 0;
+		var conditions = _module.GetConditions(UnitCondition.DamageDown);
+
+		foreach (var condition in conditions)
+		{
+			outTotal += (condition as DamageDownCondition).ratio;
+		}
+
+		return outTotal;
+	}
+
+	private float CalculateCriticalChanceUpRatio(ConditionModule _module)
+	{
+		float outTotal = 0;
+		var conditions = _module.GetConditions(UnitCondition.CriticalChanceUp);
+
+		foreach (var condition in conditions)
+		{
+			outTotal += (condition as CriticalChanceUpCondition).ratio;
+		}
+
+		return outTotal;
+	}
+
+	private float CalculateCriticalChanceDownRatio(ConditionModule _module)
+	{
+		float outTotal = 0;
+		var conditions = _module.GetConditions(UnitCondition.CriticalChanceDown);
+
+		foreach (var condition in conditions)
+		{
+			outTotal += (condition as CriticalChanceDownCondition).ratio;
 		}
 
 		return outTotal;
@@ -106,6 +188,19 @@ public class ConditionAbility
 		foreach (var condition in conditions)
 		{
 			outTotal += (condition as MoveSpeedUpCondition).ratio;
+		}
+
+		return outTotal;
+	}
+
+	private float CalculateMoveSpeedDownRatio(ConditionModule _module)
+	{
+		float outTotal = 0;
+		var conditions = _module.GetConditions(UnitCondition.MoveSpeedDown);
+
+		foreach (var condition in conditions)
+		{
+			outTotal += (condition as MoveSpeedDownCondition).ratio;
 		}
 
 		return outTotal;
@@ -186,7 +281,7 @@ public sealed class ConditionModule
 
 		// 컨디션 등록 델리게이트
 		this.onAddCondition?.Invoke(condition);
-		VLog.SkillLog($"Add Condition. Unit: {character.info.data.name}, Condition: {condition.GetType()}");
+		VLog.ConditionLog($"Add Condition. Unit: {character.info.charNameAndCharId}, Condition: {condition.GetType()}");
 	}
 
 	/// <summary>
@@ -198,7 +293,7 @@ public sealed class ConditionModule
 		{
 			if (this.conditions[i].conditionType == condition)
 			{
-				VLog.SkillLog($"Remove Condition. Unit: {character.info.data.name}, Condition: {conditions[i].conditionType}");
+				VLog.ConditionLog($"Remove Condition. Unit: {character.info.charNameAndCharId}, Condition: {conditions[i].conditionType}");
 
 				// 제거되는 컨디션
 				UnitCondition removeCondition = this.conditions[i].conditionType;
@@ -259,7 +354,7 @@ public sealed class ConditionModule
 			// 컨디션을 종료할 수 있으면
 			if (this.conditions[i].IsEnd())
 			{
-				VLog.Log($"Remove Condition. Unit: {character.info.data.name}, Condition: {conditions[i].GetType()}");
+				VLog.ConditionLog($"Remove Condition. Unit: {character.info.charNameAndCharId}, Condition: {conditions[i].GetType()}");
 
 				// 제거되는 컨디션
 				UnitCondition removeCondition = this.conditions[i].conditionType;

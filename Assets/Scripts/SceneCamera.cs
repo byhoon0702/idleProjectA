@@ -82,6 +82,8 @@ public class SceneCamera : MonoBehaviour
 			if (diff < distance)
 			{
 				transform.Translate(Vector3.right * player.info.MoveSpeed() * Time.deltaTime);
+
+				GameManager.it.mapController.Scroll(Vector3.right * player.info.MoveSpeed() * Time.deltaTime);
 				break;
 			}
 		}

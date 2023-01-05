@@ -10,7 +10,7 @@ public class PlayerCharacter : Character
 	{
 		rawData = _data;
 		info = new CharacterInfo(this, _data, ControlSide.PLAYER);
-
+		side = 1;
 		SetCharacterClass();
 
 		if (characterView == null)
@@ -32,44 +32,44 @@ public class PlayerCharacter : Character
 	private Vector3 SimpleCrowdAI(float _deltatime)
 	{
 		moveDirection = Vector3.right * side;
-		if (elapsedTime < 0.1f)
-		{
-			elapsedTime += _deltatime;
-			return moveDirection;
-		}
-		elapsedTime = 0;
+		//if (elapsedTime < 0.1f)
+		//{
+		//	elapsedTime += _deltatime;
+		//	return moveDirection;
+		//}
+		//elapsedTime = 0;
 		//오른쪽
-		if (Physics.Raycast(transform.position, Vector3.right * side, out raycastHit, 1))
-		{
-			if (raycastHit.transform.tag == transform.tag)
-			{
-				moveDirection = Vector3.zero;
-			}
-		}
-		//왼쪽
-		if (Physics.Raycast(transform.position, Vector3.left * side, out raycastHit, 1))
-		{
-			if (raycastHit.transform.tag == transform.tag)
-			{
+		//if (Physics.Raycast(transform.position, Vector3.right * side, out raycastHit, 1))
+		//{
+		//	if (raycastHit.transform.tag == transform.tag)
+		//	{
+		//		moveDirection = Vector3.zero;
+		//	}
+		//}
+		////왼쪽
+		//if (Physics.Raycast(transform.position, Vector3.left * side, out raycastHit, 1))
+		//{
+		//	if (raycastHit.transform.tag == transform.tag)
+		//	{
 
-			}
-		}
-		//Z+
-		if (Physics.Raycast(transform.position, Vector3.forward, out raycastHit, 1))
-		{
-			if (raycastHit.transform.tag == transform.tag)
-			{
-				moveDirection += Vector3.back;
-			}
-		}
-		//Z-
-		if (Physics.Raycast(transform.position, Vector3.back, out raycastHit, 1))
-		{
-			if (raycastHit.transform.tag == transform.tag)
-			{
-				moveDirection += Vector3.forward;
-			}
-		}
+		//	}
+		//}
+		////Z+
+		//if (Physics.Raycast(transform.position, Vector3.forward, out raycastHit, 1))
+		//{
+		//	if (raycastHit.transform.tag == transform.tag)
+		//	{
+		//		moveDirection += Vector3.back;
+		//	}
+		//}
+		////Z-
+		//if (Physics.Raycast(transform.position, Vector3.back, out raycastHit, 1))
+		//{
+		//	if (raycastHit.transform.tag == transform.tag)
+		//	{
+		//		moveDirection += Vector3.forward;
+		//	}
+		//}
 
 		return moveDirection;
 	}
@@ -83,14 +83,13 @@ public class PlayerCharacter : Character
 		transform.Translate(moveDirection * info.MoveSpeed() * _delta);
 	}
 
-	public override void Hit(Character _attacker, IdleNumber _attackPower, Color _color, float _criticalMul = 1)
+	public override void Hit(Character _attacker, IdleNumber _attackPower, Color _color, float _criticalChanceMul = 1)
 	{
-		IdleNumber totalAttackPower = _attackPower * _criticalMul;
-		bool isCriticalAttack = _criticalMul > 1;
+		IdleNumber totalAttackPower = _attackPower * _criticalChanceMul * _attacker.info.DamageMul();
+		bool isCriticalAttack = _criticalChanceMul > 1;
 
 		if (info.data.hp > 0)
 		{
-
 			GameUIManager.it.ShowFloatingText(totalAttackPower.ToString(), _color, characterAnimation.CenterPivot.position, isCriticalAttack, isPlayer: true);
 
 		}

@@ -13,7 +13,7 @@ public class Gilius_sk1Data : SkillBaseData
 	/// <summary>
 	/// 치명타확률 증가 데이터
 	/// </summary>
-	public CriticalUpConditionData criticalUpData;
+	public CriticalChanceUpConditionData criticalChanceUpData;
 
 	/// <summary>
 	/// 힐량 증가량
@@ -25,10 +25,10 @@ public class Gilius_sk1Data : SkillBaseData
 	/// 아군 전체를 공격력의 546%만큼 회복시키고 6초동안 공격력을 8.4%, 치명률을 3.5% 증가시킨다.
 	/// </summary>
 	/// <param name="_cooltime"></param>
-	public Gilius_sk1Data(AttackPowerUpConditionData _attackPowerUpData, CriticalUpConditionData _criticalUpData, float _healMul, float _cooltime) : base(_cooltime)
+	public Gilius_sk1Data(AttackPowerUpConditionData _attackPowerUpData, CriticalChanceUpConditionData _criticalChanceUpData, float _healMul, float _cooltime) : base(_cooltime)
 	{
 		attackPowerUpData = _attackPowerUpData;
-		criticalUpData = _criticalUpData;
+		criticalChanceUpData = _criticalChanceUpData;
 		healMul = _healMul;
 	}
 }
@@ -67,7 +67,7 @@ public class Gilius_sk1 : SkillBase
 		foreach (var target in targetList)
 		{
 			target.conditionModule.AddCondition(new AttackPowerUpCondition(owner, skillData.attackPowerUpData));
-			target.conditionModule.AddCondition(new CriticalUpCondition(owner, skillData.criticalUpData));
+			target.conditionModule.AddCondition(new CriticalChanceUpCondition(owner, skillData.criticalChanceUpData));
 
 			target.Heal(target, target.info.AttackPower() * skillData.healMul, fontColor);
 		}

@@ -13,7 +13,7 @@ public class Landrock_sk1Data : SkillBaseData
 	/// <summary>
 	/// 방어감소 데이터
 	/// </summary>
-	public ReducedDefenseConditionData reducedDefenseConditionData;
+	public DamageDownConditionData damageDownConditionData;
 
 	/// <summary>
 	/// 공격범위
@@ -27,12 +27,12 @@ public class Landrock_sk1Data : SkillBaseData
 
 
 	/// <summary>
-	/// 전방의 적 다수를 넉백시키며 공격력의 112%만큼 피해를 입히고 4초 동안 대상의 받는 피해량을 5% 증가시킨다.
+	/// 전방의 적 다수를 넉백시키며 공격력의 112%만큼 피해를 입히고 4초 동안 대상의 받는 방어력을 5% 증가시킨다.
 	/// </summary>
-	public Landrock_sk1Data(KnockbackConditionData _knockbackData, ReducedDefenseConditionData _reducedDefenseData, float _attackRange, float _attackPowerMul, float _cooltime) : base(_cooltime)
+	public Landrock_sk1Data(KnockbackConditionData _knockbackData, DamageDownConditionData _damageDownData, float _attackRange, float _attackPowerMul, float _cooltime) : base(_cooltime)
 	{
 		knockbackData = _knockbackData;
-		reducedDefenseConditionData = _reducedDefenseData;
+		damageDownConditionData = _damageDownData;
 		attackRange = _attackRange;
 		attackPowerMul = _attackPowerMul;
 	}
@@ -73,7 +73,7 @@ public class Landrock_sk1 : SkillBase
 		foreach (var target in targetList)
 		{
 			target.conditionModule.AddCondition(new KnockbackCondition(owner, skillData.knockbackData));
-			target.conditionModule.AddCondition(new ReducedDefenseCondition(owner, skillData.reducedDefenseConditionData));
+			target.conditionModule.AddCondition(new DamageDownCondition(owner, skillData.damageDownConditionData));
 			SkillUtility.SimpleAttack(owner, target, owner.info.AttackPower() * skillData.attackPowerMul, fontColor);
 		}
 	}

@@ -60,6 +60,7 @@ public class CharacterManager : MonoBehaviour
 		return outCharacters;
 	}
 
+
 	public List<Character> GetEnemyCharacters(bool _includeDeathChar = false)
 	{
 		List<Character> outCharacters = new List<Character>();
@@ -67,5 +68,11 @@ public class CharacterManager : MonoBehaviour
 		outCharacters.AddRange(enemyGroup.GetComponentsInChildren<Character>(_includeDeathChar));
 
 		return outCharacters;
+	}
+
+
+	public void Avoid()
+	{
+
 	}
 }

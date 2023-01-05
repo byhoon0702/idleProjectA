@@ -1,10 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
-
-public class AttackSpeedUpConditionData
+﻿public class AttackSpeedUpConditionData
 {
 	/// <summary>
 	/// 공격속도 증가비율

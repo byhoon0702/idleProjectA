@@ -1,10 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
-
-public class MoveSpeedUpConditionData
+﻿public class MoveSpeedUpConditionData
 {
 	/// <summary>
 	/// 이동속도 증가비율

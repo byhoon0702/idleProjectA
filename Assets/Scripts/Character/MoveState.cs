@@ -25,7 +25,7 @@ public class MoveState : CharacterFSM
 		{
 			skillModule.skillAttack.Action();
 			GameManager.it.battleRecord.RecordSkillCount(owner.charID);
-			VLog.SkillLog($"[{owner.info.data.name}({owner.charID})] 스킬 사용. SkillName: {skillModule.skillAttack.GetType()}", owner);
+			VLog.SkillLog($"[{owner.info.charNameAndCharId}] 스킬 사용. SkillName: {skillModule.skillAttack.GetType()}", owner);
 		}
 
 		if (owner.IsTargetAlive() == false)

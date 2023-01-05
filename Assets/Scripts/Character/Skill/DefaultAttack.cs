@@ -8,7 +8,7 @@
 	}
 
 	public override string iconPath => string.Empty;
-	public override float cooltimeTimeScale => 1 + owner.conditionModule.ability.attackSpeedRatio;
+	public override float cooltimeTimeScale => base.cooltimeTimeScale * owner.info.AttackSpeedMul();
 
 	private IDefaultAttackEvent attackEvent;
 

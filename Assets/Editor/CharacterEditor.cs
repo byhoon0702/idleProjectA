@@ -31,7 +31,7 @@ public class CharacterEditor : Editor
 
 	private void ShowRecordData()
 	{
-		EditorGUILayout.LabelField(new GUIContent($"Record {character.info.data.name}({character.charID})"), "PreToolbar");
+		EditorGUILayout.LabelField(new GUIContent($"Record {character.info.charNameAndCharId}"), "PreToolbar");
 		RecordData record = GameManager.it.battleRecord.GetCharacterRecord(character.charID);
 		if (record == null)
 		{
@@ -48,11 +48,11 @@ public class CharacterEditor : Editor
 	{
 		EditorGUILayout.LabelField(new GUIContent("적용중인 컨디션 어빌리티"), "PreToolbar");
 
-		EditorGUILayout.LabelField($"AttackPowerUpRatio: {character.conditionModule.ability.attackPowerUpRatio}");
-		EditorGUILayout.LabelField($"AttackSpeedRatio: {character.conditionModule.ability.attackSpeedRatio}");
-		EditorGUILayout.LabelField($"ReduceDefenseRatio: {character.conditionModule.ability.reducedDefenseRatio}");
-		EditorGUILayout.LabelField($"CriticalUpRatio: {character.conditionModule.ability.criticalUpRatio}");
-		EditorGUILayout.LabelField($"MoveSpeedUpRatio: {character.conditionModule.ability.moveSpeedUpRatio}");
+		EditorGUILayout.LabelField($"[AttackPowerRatio] Up: {character.conditionModule.ability.attackPowerUpRatio} / Down: {character.conditionModule.ability.attackPowerDownRatio}");
+		EditorGUILayout.LabelField($"[AttackSpeedRatio] Up: {character.conditionModule.ability.attackSpeedUpRatio} / Down: {character.conditionModule.ability.attackSpeedDownRatio}");
+		EditorGUILayout.LabelField($"[CriticalChanceRatio] Up: {character.conditionModule.ability.criticalChanceUpRatio} / Down: {character.conditionModule.ability.criticalChanceDownRatio}");
+		EditorGUILayout.LabelField($"[DamageRatio] Up: {character.conditionModule.ability.damageUpRatio} / Down: {character.conditionModule.ability.damageDownRatio}");
+		EditorGUILayout.LabelField($"[MoveSpeedRatio] Up: {character.conditionModule.ability.moveSpeedUpRatio} / Down: {character.conditionModule.ability.moveSpeedDownRatio}");
 
 		EditorGUILayout.Space();
 		EditorGUILayout.LabelField(new GUIContent("적용중인 컨디션"), "PreToolbar");
@@ -72,9 +72,9 @@ public class CharacterEditor : Editor
 		{
 			character.conditionModule.AddCondition(new StunCondition(character, new StunConditionData(5)));
 		}
-		if (GUILayout.Button("ReducedDefense"))
+		if (GUILayout.Button("Damage Down"))
 		{
-			character.conditionModule.AddCondition(new ReducedDefenseCondition(character, new ReducedDefenseConditionData(0.5f, 5)));
+			character.conditionModule.AddCondition(new DamageDownCondition(character, new DamageDownConditionData(0.5f, 5)));
 		}
 		if (GUILayout.Button("Poison"))
 		{

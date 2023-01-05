@@ -68,7 +68,7 @@ public class CharacterData
 	/// <summary>
 	/// 치명타확률
 	/// </summary>
-	public float criticalRatio = 0.2f;
+	public float criticalChanceRatio = 0.2f;
 	/// <summary>
 	/// 치명타 피해량
 	/// </summary>

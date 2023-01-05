@@ -60,7 +60,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 
 	public IdleState idleState;
 	public MoveState moveState;
-	public NormalAttackState attackState;
+	public AttackState attackState;
 	public DeadState deadStaet;
 
 	public StateType currentState;
@@ -99,7 +99,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 
 		idleState = new IdleState();
 		moveState = new MoveState();
-		attackState = new NormalAttackState();
+		attackState = new AttackState();
 		deadStaet = new DeadState();
 
 		idleState.Init(this);
@@ -201,7 +201,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 
 		if (target != null)
 		{
-			targetString = $"{target.info.data.name}({target.charID})";
+			targetString = $"{target.info.charNameAndCharId}";
 		}
 		else
 		{
@@ -210,13 +210,13 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 
 		if (_target != null)
 		{
-			newTargetString = $"{_target.info.data.name}({_target.charID})";
+			newTargetString = $"{_target.info.charNameAndCharId}";
 		}
 		else
 		{
 			newTargetString = $"NewTarget:null";
 		}
-		VLog.AILog($"[{info.data.name}({charID})] 타겟변경. {targetString} -> {newTargetString}", this);
+		VLog.AILog($"[{info.charNameAndCharId}] 타겟변경. {targetString} -> {newTargetString}", this);
 
 		// 타겟변경
 		target = _target;
@@ -277,7 +277,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 
 	}
 
-	public virtual void Hit(Character _attacker, IdleNumber _attackPower, Color _color, float _criticalMul)
+	public virtual void Hit(Character _attacker, IdleNumber _attackPower, Color _color, float _criticalChanceMul)
 	{
 
 	}

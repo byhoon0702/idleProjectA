@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 public interface FiniteStateMachine
 {
 	void OnEnter();
@@ -39,6 +37,8 @@ public class GameManager : MonoBehaviour
 	private static GameManager instance;
 	public static GameManager it => instance;
 	public float gameSpeed = 1;
+
+	public MapController mapController;
 
 	public LoadingState loadingState;
 	public BGLoadState bgloadState;

@@ -61,7 +61,13 @@ public class Projectile : MonoBehaviour
 			return;
 		}
 
-		SkillUtility.SimpleAttack(attacker, targetCharacter, attackPower, Color.white);
+		Color color = Color.red;
+		if (attacker.info.controlSide == ControlSide.PLAYER)
+		{
+			color = Color.white;
+		}
+
+		SkillUtility.SimpleAttack(attacker, targetCharacter, attackPower, color);
 
 		Destroy(gameObject);
 	}

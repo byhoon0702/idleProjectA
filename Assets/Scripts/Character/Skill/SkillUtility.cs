@@ -9,16 +9,16 @@ public static class SkillUtility
 	/// <summary>
 	/// 타겟에게 대미지를 준다.
 	/// </summary>
-	public static void SimpleAttack(Character _attacker, Character _target, IdleNumber _attackPower, Color _color, bool checkCritical = true)
+	public static void SimpleAttack(Character _attacker, Character _target, IdleNumber _attackPower, Color _color, bool _checkCritical = true)
 	{
 		bool isCritical = _attacker.info.IsCritical();
-		float criticalMul = 1;
-		if (isCritical)
+		float criticalChanceMul = 1;
+		if (_checkCritical && isCritical)
 		{
-			criticalMul = _attacker.info.CriticalMultifly();
+			criticalChanceMul = _attacker.info.CriticalDamageMultifly();
 		}
 
-		_target.Hit(_attacker, _attackPower, _color, criticalMul);
+		_target.Hit(_attacker, _attackPower, _color, criticalChanceMul);
 	}
 
 	///// <summary>

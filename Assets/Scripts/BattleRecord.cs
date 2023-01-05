@@ -11,9 +11,7 @@ public class BattleRecord
 	{
 		foreach (var character in _characters)
 		{
-			RecordData record = new RecordData();
-			record.charID = character.charID;
-
+			RecordData record = new RecordData(character.charID);
 			records.Add(record);
 		}
 	}
@@ -32,6 +30,15 @@ public class BattleRecord
 				return;
 			}
 		}
+
+		RecordData newRecord = new RecordData(_charID);
+		newRecord.attackPower += _attackPower;
+		if (_critical)
+		{
+			newRecord.criticalCount++;
+		}
+
+		records.Add(newRecord);
 	}
 
 	public void RecordHeal(Int32 _charID, IdleNumber _heal)
@@ -44,6 +51,11 @@ public class BattleRecord
 				return;
 			}
 		}
+
+		RecordData newRecord = new RecordData(_charID);
+		newRecord.heal += _heal;
+
+		records.Add(newRecord);
 	}
 
 	public void RecordAttackCount(Int32 _charID)
@@ -56,6 +68,11 @@ public class BattleRecord
 				return;
 			}
 		}
+
+		RecordData newRecord = new RecordData(_charID);
+		newRecord.attackCount++;
+
+		records.Add(newRecord);
 	}
 
 	public void RecordSkillCount(Int32 _charID)
@@ -68,6 +85,11 @@ public class BattleRecord
 				return;
 			}
 		}
+
+		RecordData newRecord = new RecordData(_charID);
+		newRecord.skillCount++;
+
+		records.Add(newRecord);
 	}
 
 	public RecordData GetCharacterRecord(Int32 _charID)
@@ -92,6 +114,11 @@ public class RecordData
 	public IdleNumber heal = new IdleNumber();
 	public Int32 attackCount;
 	public Int32 skillCount;
+
+	public RecordData(Int32 _charID)
+	{
+		charID = _charID;
+	}
 
 	public string ToStringEditor()
 	{

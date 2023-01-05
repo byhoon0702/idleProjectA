@@ -19,35 +19,42 @@ public static class VLog
 		Debug.LogError(_message, _context);
 	}
 
-	/// <summary>
-	/// 스킬로그
-	/// </summary>
+	public static void ConditionLog(object _message, Object _context = null)
+	{
+		//Debug.Log($"[Condition] {_message}", _context);
+	}
+
 	public static void SkillLog(object _message, Object _context = null)
 	{
-		Debug.Log(_message, _context);
+		Debug.Log($"[Skill] {_message}", _context);
 	}
 	public static void SkillLogError(object _message, Object _context = null)
 	{
-		Debug.LogError(_message, _context);
+		Debug.LogError($"[Skill] {_message}", _context);
 	}
 
 	public static void ScheduleLog(object _message, Object _context = null)
 	{
-		Debug.Log(_message, _context);
+		Debug.Log($"[Schedule] {_message}", _context);
 	}
 
 	public static void ScheduleLogError(object _message, Object _context = null)
 	{
-		Debug.LogError(_message, _context);
+		Debug.LogError($"[Schedule] {_message}", _context);
 	}
 
 	public static void AILog(object _message, Object _context = null)
 	{
-		Debug.Log(_message, _context);
+		//Debug.Log($"[AI] {_message}", _context);
 	}
 
 	public static void AILogWarning(object _message, Object _context = null)
 	{
-		Debug.LogWarning(_message, _context);
+		Debug.LogWarning($"[AI] {_message}", _context);
+	}
+
+	public static void BattleRecordLog(object _message, Object _context = null)
+	{
+		Debug.Log($"[Record] {_message}", _context);
 	}
 }
