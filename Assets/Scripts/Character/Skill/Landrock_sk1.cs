@@ -60,7 +60,7 @@ public class Landrock_sk1 : SkillBase
 		base.Action();
 
 		List<Character> searchList;
-		if (character is PlayerCharacter)
+		if (owner is PlayerCharacter)
 		{
 			searchList = CharacterManager.it.GetEnemyCharacters();
 		}
@@ -69,12 +69,12 @@ public class Landrock_sk1 : SkillBase
 			searchList = CharacterManager.it.GetPlayerCharacters();
 		}
 
-		var targetList = SkillUtility.GetCharacterRange(character.transform.position, skillData.attackRange, searchList, false);
+		var targetList = SkillUtility.GetCharacterRange(owner.transform.position, skillData.attackRange, searchList, false);
 		foreach (var target in targetList)
 		{
-			target.conditionModule.AddCondition(new KnockbackCondition(character, skillData.knockbackData));
-			target.conditionModule.AddCondition(new ReducedDefenseCondition(character, skillData.reducedDefenseConditionData));
-			SkillUtility.SimpleDamage(character, target, character.info.DefaultDamage() * skillData.damageMul, fontColor);
+			target.conditionModule.AddCondition(new KnockbackCondition(owner, skillData.knockbackData));
+			target.conditionModule.AddCondition(new ReducedDefenseCondition(owner, skillData.reducedDefenseConditionData));
+			SkillUtility.SimpleDamage(owner, target, owner.info.DefaultDamage() * skillData.damageMul, fontColor);
 		}
 	}
 }

@@ -166,7 +166,6 @@ public class SpawnManager : MonoBehaviour
 		player.transform.SetParent(playerRoot);
 		player.transform.position = pos;
 		player.Spawn(_characterData);
-		player.info.data.moveSpeed = Random.Range(1f, 1.2f);
 
 		return player;
 	}
@@ -239,23 +238,20 @@ public class SpawnManager : MonoBehaviour
 		enemyCharacter.transform.position = pos;
 		enemyCharacter.Spawn(_characterData);
 
-		enemyCharacter.info.data.moveSpeed = enemyCharacter.info.data.moveSpeed * Random.Range(1f, 1.2f);
 		return enemyCharacter;
 	}
 
 	public void ClearCharacters()
 	{
 		// 체력 게이지 등도 같이 삭제해야 함.
-		for (int i = 0; i < playerDictionary.Count; i++)
+		foreach (var unit in playerDictionary)
 		{
-			var player = playerDictionary[i];
-			Destroy(player.gameObject);
+			Destroy(unit.Value.gameObject);
 		}
 
-		for (int i = 0; i < enemyDictionary.Count; i++)
+		foreach (var unit in enemyDictionary)
 		{
-			var enemy = enemyDictionary[i];
-			Destroy(enemy.gameObject);
+			Destroy(unit.Value.gameObject);
 		}
 
 		playerDictionary.Clear();

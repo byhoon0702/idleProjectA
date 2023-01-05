@@ -9,75 +9,82 @@ public static class SkillUtility
 	/// <summary>
 	/// 타겟에게 대미지를 준다.
 	/// </summary>
-	public static void SimpleDamage(Character _attacker, Character _target, IdleNumber _damage, Color _color)
+	public static void SimpleDamage(Character _attacker, Character _target, IdleNumber _damage, Color _color, bool checkCritical = true)
 	{
-		_target.Hit(_attacker, _damage, _color);
+		bool isCritical = _attacker.info.IsCritical();
+		float criticalMul = 1;
+		if (isCritical)
+		{
+			criticalMul = _attacker.info.CriticalMultifly();
+		}
+
+		_target.Hit(_attacker, _damage, _color, criticalMul);
 	}
 
 	///// <summary>
 	///// 특정위치에 범위공격을 가한다.
 	///// mySide : 공격하는 사람의 진영. 반대 side의 유닛에게 대미지를 준다.
 	///// </summary>
-	public static void SimpleRangeDamage(Character _attacker, Vector3 position, float radius, List<Character> _searchList, IdleNumber _damage, string hitEffectPath, string hitSoundPath)
-	{
-		var characters = GetCharacterRange(position, radius, _searchList);
-		//KUtils.DebugDrawSphere(position, radius);
-
-		for (int i = 0; i < characters.Count; i++)
-		{
-			//자기 자신이면 무시한다.
-			if (characters[i] == _attacker)
-			{
-				continue;
-			}
-
-			characters[i].Hit(_attacker, _damage, Color.white);
-
-			///////////////////////////////////////////
-			// 이펙트 처리
-			//bool useHitEffect = !string.IsNullOrEmpty(hitEffectPath);
-			//bool useHitSound = !string.IsNullOrEmpty(hitSoundPath);
-
-			// 이펙트를 재생해야 한다면
-			//if (useHitEffect || useHitSound)
-			//{
-			//	Vector3 targetPoint; // 히트지점을 계산해야됨.
-			//
-			//	// 발화점과, 히트 유닛간의 레이를 쏜다.
-			//	Ray ray = new Ray(position, characters[i].transform.position - position);
-			//	RaycastHit hit;
-			//
-			//	Debug.DrawRay(ray.origin, ray.direction, Color.red, 3);
-			//	if (Physics.Raycast(ray, out hit, radius, Layers.Unit, QueryTriggerInteraction.Collide))
-			//	{
-			//		// 레이로 검출이 된다면 검출된 지점에 히트이펙트
-			//		targetPoint = hit.point;
-			//	}
-			//	else
-			//	{
-			//		// 레이로 검출이 되지 않는다면 맞은 유닛에 그냥 표시
-			//		targetPoint = characters[i].pivots.center.position;
-			//	}
-			//
-			//
-			//	// 이펙트가 필요하면 생성
-			//	if (useHitEffect)
-			//	{
-			//		ParticleSystem ps = ObjectPoolManager.inst.Get<ParticleSystem>(hitEffectPath);
-			//		ps.transform.position = targetPoint;
-			//		ps.transform.localRotation = Quaternion.identity;
-			//		ps.transform.localScale = Vector3.one;
-			//		ps.Play();
-			//	}
-			//
-			//	// 사운드가 필요하면 재생
-			//	if (useHitSound)
-			//	{
-			//		SoundManager.inst.PlaySound(hitSoundPath, targetPoint);
-			//	}
-			//}
-		}
-	}
+	//public static void SimpleRangeDamage(Character _attacker, Vector3 position, float radius, List<Character> _searchList, IdleNumber _damage, string hitEffectPath, string hitSoundPath)
+	//{
+	//	var characters = GetCharacterRange(position, radius, _searchList);
+	//	//KUtils.DebugDrawSphere(position, radius);
+	//
+	//	for (int i = 0; i < characters.Count; i++)
+	//	{
+	//		//자기 자신이면 무시한다.
+	//		if (characters[i] == _attacker)
+	//		{
+	//			continue;
+	//		}
+	//
+	//		characters[i].Hit(_attacker, _damage, Color.white);
+	//
+	//		///////////////////////////////////////////
+	//		// 이펙트 처리
+	//		//bool useHitEffect = !string.IsNullOrEmpty(hitEffectPath);
+	//		//bool useHitSound = !string.IsNullOrEmpty(hitSoundPath);
+	//
+	//		// 이펙트를 재생해야 한다면
+	//		//if (useHitEffect || useHitSound)
+	//		//{
+	//		//	Vector3 targetPoint; // 히트지점을 계산해야됨.
+	//		//
+	//		//	// 발화점과, 히트 유닛간의 레이를 쏜다.
+	//		//	Ray ray = new Ray(position, characters[i].transform.position - position);
+	//		//	RaycastHit hit;
+	//		//
+	//		//	Debug.DrawRay(ray.origin, ray.direction, Color.red, 3);
+	//		//	if (Physics.Raycast(ray, out hit, radius, Layers.Unit, QueryTriggerInteraction.Collide))
+	//		//	{
+	//		//		// 레이로 검출이 된다면 검출된 지점에 히트이펙트
+	//		//		targetPoint = hit.point;
+	//		//	}
+	//		//	else
+	//		//	{
+	//		//		// 레이로 검출이 되지 않는다면 맞은 유닛에 그냥 표시
+	//		//		targetPoint = characters[i].pivots.center.position;
+	//		//	}
+	//		//
+	//		//
+	//		//	// 이펙트가 필요하면 생성
+	//		//	if (useHitEffect)
+	//		//	{
+	//		//		ParticleSystem ps = ObjectPoolManager.inst.Get<ParticleSystem>(hitEffectPath);
+	//		//		ps.transform.position = targetPoint;
+	//		//		ps.transform.localRotation = Quaternion.identity;
+	//		//		ps.transform.localScale = Vector3.one;
+	//		//		ps.Play();
+	//		//	}
+	//		//
+	//		//	// 사운드가 필요하면 재생
+	//		//	if (useHitSound)
+	//		//	{
+	//		//		SoundManager.inst.PlaySound(hitSoundPath, targetPoint);
+	//		//	}
+	//		//}
+	//	}
+	//}
 
 	/// <summary>
 	/// 포지션 위치에서 범위안에 있는 유닛들을 찾아줌

@@ -53,7 +53,7 @@ public class Serina_sk1 : SkillBase
 	{
 		base.Action();
 		List<Character> targetList;
-		if (character is PlayerCharacter)
+		if (owner is PlayerCharacter)
 		{
 			targetList = CharacterManager.it.GetPlayerCharacters();
 		}
@@ -65,8 +65,8 @@ public class Serina_sk1 : SkillBase
 		// 힐하면 풀피됨
 		foreach (var target in targetList)
 		{
-			target.conditionModule.AddCondition(new AttackSpeedUpCondition(character, skillData.attackSpeedUpData));
-			target.conditionModule.AddCondition(new MoveSpeedUpCondition(character, skillData.moveSpeedUpData));
+			target.conditionModule.AddCondition(new AttackSpeedUpCondition(owner, skillData.attackSpeedUpData));
+			target.conditionModule.AddCondition(new MoveSpeedUpCondition(owner, skillData.moveSpeedUpData));
 
 			target.Heal(target, target.info.DefaultDamage() * skillData.healMul, fontColor);
 		}

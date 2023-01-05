@@ -4,6 +4,95 @@ using UnityEngine;
 
 
 
+public class ConditionAbility
+{
+	/// <summary>
+	/// 공격력 증가 비율
+	/// </summary>
+	public float attackDamageRatio;
+
+	/// <summary>
+	/// 공격속도 증가 비율
+	/// </summary>
+	public float attackSpeedRatio;
+
+	/// <summary>
+	/// 크리티컬 증가 비율
+	/// </summary>
+	public float criticalUpRatio;
+
+	/// <summary>
+	/// 이동속도 증가 비율
+	/// </summary>
+	public float moveSpeedUpRatio;
+
+
+
+
+	/// <summary>
+	/// 컨디션 정보가 변화할때마다 호출해서 데이터를 최신화 시킬수 있어야 함
+	/// </summary>
+	public void Calculate(ConditionModule _module)
+	{
+		attackDamageRatio = CalculateAttackDamageRatio(_module);
+		attackSpeedRatio = CalcutateAttackSpeedRatio(_module);
+		criticalUpRatio = CalculateCriticalUpRatio(_module);
+		moveSpeedUpRatio = CalculateMoveSpeedUpRatio(_module);
+	}
+
+	private float CalculateAttackDamageRatio(ConditionModule _module)
+	{
+		float outTotal = 0;
+		var conditions = _module.GetConditions(UnitCondition.DamageUp);
+
+		foreach (var condition in conditions)
+		{
+			outTotal += (condition as DamageUpCondition).ratio;
+		}
+
+		return outTotal;
+	}
+
+	private float CalcutateAttackSpeedRatio(ConditionModule _module)
+	{
+		float outTotal = 0;
+		var conditions = _module.GetConditions(UnitCondition.AttackSpeedUp);
+
+		foreach (var condition in conditions)
+		{
+			outTotal += (condition as AttackSpeedUpCondition).ratio;
+		}
+
+		return outTotal;
+	}
+
+	private float CalculateCriticalUpRatio(ConditionModule _module)
+	{
+		float outTotal = 0;
+		var conditions = _module.GetConditions(UnitCondition.CriticalUp);
+
+		foreach (var condition in conditions)
+		{
+			outTotal += (condition as CriticalUpCondition).ratio;
+		}
+
+		return outTotal;
+	}
+
+	private float CalculateMoveSpeedUpRatio(ConditionModule _module)
+	{
+		float outTotal = 0;
+		var conditions = _module.GetConditions(UnitCondition.MoveSpeedUp);
+
+		foreach (var condition in conditions)
+		{
+			outTotal += (condition as CriticalUpCondition).ratio;
+		}
+
+		return outTotal;
+	}
+}
+
 public sealed class ConditionModule
 {
 	/// <summary>
@@ -13,6 +102,8 @@ public sealed class ConditionModule
 
 	private Character character;
 	private Dictionary<string, ParticleSystem> effects = new Dictionary<string, ParticleSystem>();
+
+	public ConditionAbility ability { get; private set; }
 
 	/// <summary>
 	/// 컨디션이 추가될때 호출된다.
@@ -30,6 +121,7 @@ public sealed class ConditionModule
 	public ConditionModule(Character _character)
 	{
 		character = _character;
+		ability = new ConditionAbility();
 	}
 
 	/// <summary>
@@ -53,6 +145,7 @@ public sealed class ConditionModule
 
 		// 컨디션 최종추가
 		this.conditions.Add(condition);
+		ability.Calculate(this);
 
 		// 이펙트 추가
 		string conditionTypeKey = condition.conditionType.ToString();
@@ -95,6 +188,7 @@ public sealed class ConditionModule
 				this.onRemoveCondition?.Invoke(this.conditions[i]);
 				this.conditions[i].Finish();
 				this.conditions.RemoveAt(i);
+				ability.Calculate(this);
 
 				TryRemoveEffect(removeCondition);
 				break;
@@ -114,6 +208,21 @@ public sealed class ConditionModule
 		}
 
 		return false;
+	}
+
+	public List<ConditionBase> GetConditions(UnitCondition _condition)
+	{
+		List<ConditionBase> outConditions = new List<ConditionBase>();
+
+		foreach(var condition in conditions)
+		{
+			if(condition.conditionType == _condition)
+			{
+				outConditions.Add(condition);
+			}
+		}
+
+		return outConditions;
 	}
 
 	/// <summary>
@@ -140,6 +249,7 @@ public sealed class ConditionModule
 				this.onRemoveCondition?.Invoke(this.conditions[i]);
 				this.conditions[i].Finish();
 				this.conditions.RemoveAt(i--);
+				ability.Calculate(this);
 
 				TryRemoveEffect(removeCondition);
 			}
@@ -167,6 +277,7 @@ public sealed class ConditionModule
 
 		this.conditions.Clear();
 		this.effects.Clear();
+		ability = new ConditionAbility();
 	}
 
 	private bool TryRemoveEffect(UnitCondition condition)

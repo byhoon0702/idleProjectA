@@ -17,7 +17,7 @@ public abstract class SkillBase
 	/// <summary>
 	/// 해당 스킬을 사용하는 캐릭터
 	/// </summary>
-	public Character character;
+	public Character owner;
 
 
 	/// <summary>
@@ -50,6 +50,11 @@ public abstract class SkillBase
 	public float skillUseRemainTime { get; set; }
 
 	/// <summary>
+	/// 쿨타임 감소 속도
+	/// </summary>
+	public virtual float cooltimeTimeScale => 1;
+
+	/// <summary>
 	/// 타겟이 있어야만 스킬을 사용할 수 있다
 	/// </summary>
 	public virtual bool needAttackState => true;
@@ -72,7 +77,7 @@ public abstract class SkillBase
 	/// </summary>
 	public void SetCharacter(Character _character)
 	{
-		character = _character;
+		owner = _character;
 
 		SetCooltime();
 		coolDowning = true;
@@ -109,10 +114,10 @@ public abstract class SkillBase
 		bool check_cooltime = remainCooltime <= 0;
 
 		// 스턴 상태
-		bool check_no_stun = character.conditionModule.HasCondition(UnitCondition.Stun) == false;
+		bool check_no_stun = owner.conditionModule.HasCondition(UnitCondition.Stun) == false;
 
 		// 공격중일때만 필요한경우 
-		bool check_target = needAttackState ? character.currentState == StateType.ATTACK : true;
+		bool check_target = needAttackState ? owner.currentState == StateType.ATTACK : true;
 
 
 
@@ -126,5 +131,25 @@ public abstract class SkillBase
 	{
 		remainCooltime = cooltime;
 		skillUseRemainTime = skillUseTime;
+	}
+
+	public void UpdateCoolTime(float _dt)
+	{
+		float totalTime = _dt * cooltimeTimeScale;
+
+		if (skillUseRemainTime > 0)
+		{
+			// 스킬이 지속되는동안엔 쿨타임 감소가 되지 않는다.
+			skillUseRemainTime -= totalTime;
+		}
+		else
+		{
+			// 스킬 사용시간이 끝나면 쿨타임을 감소시킨다
+			remainCooltime -= totalTime;
+			if (remainCooltime <= 0)
+			{
+				Ready();
+			}
+		}
 	}
 }

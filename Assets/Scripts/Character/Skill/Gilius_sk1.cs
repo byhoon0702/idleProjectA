@@ -54,7 +54,7 @@ public class Gilius_sk1 : SkillBase
 	{
 		base.Action();
 		List<Character> targetList;
-		if (character is PlayerCharacter)
+		if (owner is PlayerCharacter)
 		{
 			targetList = CharacterManager.it.GetPlayerCharacters();
 		}
@@ -66,8 +66,8 @@ public class Gilius_sk1 : SkillBase
 		// 힐하면 풀피됨
 		foreach (var target in targetList)
 		{
-			target.conditionModule.AddCondition(new DamageUpCondition(character, skillData.damageUpData));
-			target.conditionModule.AddCondition(new CriticalUpCondition(character, skillData.criticalUpData));
+			target.conditionModule.AddCondition(new DamageUpCondition(owner, skillData.damageUpData));
+			target.conditionModule.AddCondition(new CriticalUpCondition(owner, skillData.criticalUpData));
 
 			target.Heal(target, target.info.DefaultDamage() * skillData.healMul, fontColor);
 		}

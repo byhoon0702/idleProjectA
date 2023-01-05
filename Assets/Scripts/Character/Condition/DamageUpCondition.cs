@@ -7,7 +7,7 @@ using UnityEngine;
 public class DamageUpConditionData
 {
 	/// <summary>
-	/// 공격속도 증가비율
+	/// 공격력 증가비율
 	/// </summary>
 	public float ratio;
 

@@ -27,7 +27,7 @@ public class BezierProjectile : Projectile
 
 		point.x += Mathf.Cos(UnityEngine.Random.Range(0, 360f) * Mathf.Deg2Rad) * size.x;
 		point.y += Mathf.Sin(UnityEngine.Random.Range(0, 360f) * Mathf.Deg2Rad) * size.y;
-		point.z += Mathf.Cos(UnityEngine.Random.Range(0, 360f) * Mathf.Deg2Rad) * size.z;
+
 		return point;
 	}
 

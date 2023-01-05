@@ -74,8 +74,6 @@ public class Warrior : CharacterClass
 			}
 		}
 	}
-
-
 }
 
 public class Archer : CharacterClass

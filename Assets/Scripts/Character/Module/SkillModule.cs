@@ -70,20 +70,7 @@ public sealed class SkillModule
 				continue;
 			}
 
-			if (skills[i].skillUseRemainTime > 0)
-			{
-				// 스킬이 지속되는동안엔 쿨타임 감소가 되지 않는다.
-				skills[i].skillUseRemainTime -= _dt;
-			}
-			else
-			{
-				// 스킬 사용시간이 끝나면 쿨타임을 감소시킨다
-				skills[i].remainCooltime -= _dt;
-				if (skills[i].remainCooltime <= 0)
-				{
-					skills[i].Ready();
-				}
-			}
+			skills[i].UpdateCoolTime(_dt);
 		}
 	}
 

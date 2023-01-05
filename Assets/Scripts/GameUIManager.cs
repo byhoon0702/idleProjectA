@@ -123,12 +123,12 @@ public class GameUIManager : MonoBehaviour
 		statusUI.Init(character);
 
 	}
-	public void ShowFloatingText(string text, Color color, Vector3 position, bool isPlayer = false)
+	public void ShowFloatingText(string text, Color color, Vector3 position, bool isCritical, bool isPlayer = false)
 	{
 		Vector2 uipos = ToUIPosition(position);
 
 		var floatingtext = floatingTextPool.Get();
-		floatingtext.Show(text, color, uipos, isPlayer);
+		floatingtext.Show(text, color, uipos, isCritical, isPlayer);
 	}
 
 }

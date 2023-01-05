@@ -46,7 +46,7 @@ public class Mirfiana_sk1 : SkillBase
 		base.Action();
 
 		List<Character> searchList;
-		if (character is PlayerCharacter)
+		if (owner is PlayerCharacter)
 		{
 			searchList = CharacterManager.it.GetEnemyCharacters();
 		}
@@ -55,10 +55,10 @@ public class Mirfiana_sk1 : SkillBase
 			searchList = CharacterManager.it.GetPlayerCharacters();
 		}
 
-		var targetList = SkillUtility.GetCharacterRange(character.transform.position, character.info.data.attackRange, searchList, false);
+		var targetList = SkillUtility.GetCharacterRange(owner.transform.position, owner.info.data.attackRange, searchList, false);
 
 		// 체력이 가장 많은 적 찾기
-		Character target = character.target;
+		Character target = owner.target;
 
 		foreach (var checkTarget in targetList)
 		{
@@ -68,7 +68,7 @@ public class Mirfiana_sk1 : SkillBase
 			}
 		}
 
-		SkillUtility.SimpleDamage(character, target, character.info.DefaultDamage() * skillData.damageMul, fontColor);
-		target.conditionModule.AddCondition(new StunCondition(character, skillData.stunData));
+		SkillUtility.SimpleDamage(owner, target, owner.info.DefaultDamage() * skillData.damageMul, fontColor);
+		target.conditionModule.AddCondition(new StunCondition(owner, skillData.stunData));
 	}
 }

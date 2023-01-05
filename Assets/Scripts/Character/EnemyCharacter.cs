@@ -5,7 +5,7 @@ public class EnemyCharacter : Character
 	public override void Spawn(CharacterData data)
 	{
 		rawData = data;
-		info = new CharacterInfo(data, ControlSide.ENEMY);
+		info = new CharacterInfo(this, data, ControlSide.ENEMY);
 
 		SetCharacterClass();
 
@@ -24,19 +24,22 @@ public class EnemyCharacter : Character
 
 	public override void Move(float delta)
 	{
-		transform.Translate(Vector3.left * info.data.moveSpeed * delta);
+		transform.Translate(Vector3.left * info.MoveSpeed() * delta);
 	}
 
-	public override void Hit(Character _attacker, IdleNumber _damage, Color _color)
+	public override void Hit(Character _attacker, IdleNumber _damage, Color _color, float _criticalMul = 1)
 	{
+		IdleNumber totalDamage = _damage * _criticalMul;
+		bool isCriticalAttack = _criticalMul > 1;
+
 		if (info.data.hp > 0)
 		{
 			SceneCamera.it.ShakeCamera();
-			GameUIManager.it.ShowFloatingText(_damage.ToString(), _color, characterAnimation.CenterPivot.position);
+			GameUIManager.it.ShowFloatingText(totalDamage.ToString(), _color, characterAnimation.CenterPivot.position, isCriticalAttack);
 		}
-		info.data.hp -= _damage;
+		info.data.hp -= totalDamage;
 
-		GameManager.it.battleRecord.RecordDamage(_attacker.charID, _damage);
+		GameManager.it.battleRecord.RecordDamage(_attacker.charID, totalDamage, isCriticalAttack);
 
 	}
 
@@ -55,7 +58,7 @@ public class EnemyCharacter : Character
 			IdleNumber addHP = newHP - info.data.hp;
 			info.data.hp += addHP;
 			GameManager.it.battleRecord.RecordHeal(_attacker.charID, addHP);
-			GameUIManager.it.ShowFloatingText(_damage.ToString(), _color, characterAnimation.CenterPivot.position);
+			GameUIManager.it.ShowFloatingText(_damage.ToString(), _color, characterAnimation.CenterPivot.position, false);
 		}
 	}
 }

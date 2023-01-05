@@ -40,6 +40,7 @@ public class LoadingState : RootState
 	{
 
 		GameUIManager.it.ReleaseAllPool();
+		SpawnManager.it.ClearCharacters();
 		elapsedTime = 0;
 		//FadeIn
 		//Clear Object 
@@ -187,6 +188,19 @@ public class BattleState : RootState
 
 			//	}
 			//}
+		}
+		// 보스전
+		else if (StageManager.it.CurrentStageType == StageManager.StageType.BOSS)
+		{
+			if (SpawnManager.it.IsAllEnemyDead == true)
+			{
+				// 웨이브가 끝남
+				if (SpawnManager.it.SpawnEnemies(waveCount++) == false)
+				{
+					StageManager.it.ClearStage();
+					StageManager.it.PlayNormalStage();
+				}
+			}
 		}
 	}
 }

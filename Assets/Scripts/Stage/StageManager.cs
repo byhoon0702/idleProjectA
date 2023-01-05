@@ -131,7 +131,7 @@ public class StageManager : MonoBehaviour
 	{
 		if (dictionaryBossStage.ContainsKey(_act) == true)
 		{
-			var dic = dictionaryNormalStage[_act];
+			var dic = dictionaryBossStage[_act];
 			if (dic.Count >= _stage)
 			{
 				return dic[_stage].Clone();
@@ -168,6 +168,9 @@ public class StageManager : MonoBehaviour
 		switch (CurrentStageType)
 		{
 			case StageType.BOSS:
+				currentStageInfo = GetNextNormalStageInfo(currentStageInfo);
+				currentAct = currentStageInfo.act;
+				currentStage = currentStageInfo.stage;
 				break;
 			case StageType.NORMAL1:
 			case StageType.NORMAL2:

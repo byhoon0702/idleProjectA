@@ -24,7 +24,8 @@ public class CharacterEditor : Editor
 
 		EditorGUILayout.Space();
 		ShowRecordData();
-		ShowConditionTest();
+		//ShowConditionTest(); // 필요하면 주석해제
+		EditorGUILayout.Space();
 		ShowConditionList();
 	}
 
@@ -45,6 +46,15 @@ public class CharacterEditor : Editor
 
 	private void ShowConditionList()
 	{
+		EditorGUILayout.LabelField(new GUIContent("적용중인 컨디션 어빌리티"), "PreToolbar");
+
+		EditorGUILayout.LabelField($"AttackDamageRatio: {character.conditionModule.ability.attackDamageRatio}");
+		EditorGUILayout.LabelField($"AttackSpeedRatio: {character.conditionModule.ability.attackSpeedRatio}");
+		EditorGUILayout.LabelField($"CriticalUpRatio: {character.conditionModule.ability.criticalUpRatio}");
+		EditorGUILayout.LabelField($"MoveSpeedUpRatio: {character.conditionModule.ability.moveSpeedUpRatio}");
+
+		EditorGUILayout.Space();
+		EditorGUILayout.LabelField(new GUIContent("적용중인 컨디션"), "PreToolbar");
 		foreach (var condition in character.conditionModule.conditions)
 		{
 			EditorGUILayout.LabelField($"{condition.conditionType}, Duration: {condition.duration}");

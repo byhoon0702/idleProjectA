@@ -19,13 +19,22 @@ public class FloatingText : MonoBehaviour
 		managedPool = pool;
 	}
 
-	public void Show(string text, Color color, Vector2 position, bool isPlayer = false)
+	public void Show(string text, Color color, Vector2 position, bool critical, bool isPlayer = false)
 	{
 		gameObject.SetActive(true);
 		floatingTextMesh.color = color;
 		floatingTextMesh.text = text;
 		rectTransform = (transform as RectTransform);
 		rectTransform.anchoredPosition = position;
+
+		if(critical)
+		{
+			floatingTextMesh.transform.localScale = Vector3.one * 2;
+		}
+		else
+		{
+			floatingTextMesh.transform.localScale = Vector3.one;
+		}
 
 
 		void FadeFont()

@@ -55,7 +55,7 @@ public class Haru_sk1 : SkillBase
 
 		base.Action();
 		List<Character> targetList;
-		if (character is PlayerCharacter)
+		if (owner is PlayerCharacter)
 		{
 			targetList = CharacterManager.it.GetEnemyCharacters();
 		}
@@ -70,10 +70,10 @@ public class Haru_sk1 : SkillBase
 		{
 			if (addPoison)
 			{
-				target.conditionModule.AddCondition(new PoisonCondition(character, skillData.poisonData));
+				target.conditionModule.AddCondition(new PoisonCondition(owner, skillData.poisonData));
 			}
 
-			SkillUtility.SimpleDamage(character, target, target.info.DefaultDamage() * skillData.damageMul, fontColor);
+			SkillUtility.SimpleDamage(owner, target, target.info.DefaultDamage() * skillData.damageMul, fontColor);
 		}
 	}
 }

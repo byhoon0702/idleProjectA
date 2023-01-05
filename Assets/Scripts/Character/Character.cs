@@ -277,7 +277,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 
 	}
 
-	public virtual void Hit(Character in_attacker, IdleNumber damage, Color _color)
+	public virtual void Hit(Character in_attacker, IdleNumber damage, Color _color, float _criticalMul)
 	{
 
 	}

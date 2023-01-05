@@ -51,7 +51,7 @@ public class PoisonCondition : ConditionBase
 		if (this.lastTickDamage - PoisonConditionData.TICK >= this.remainTime)
 		{
 			this.lastTickDamage -= PoisonConditionData.TICK;
-			SkillUtility.SimpleDamage(attacker, character, attacker.info.DefaultDamage() * conditionData.tickDamageMul, Color.blue);
+			SkillUtility.SimpleDamage(attacker, character, attacker.info.DefaultDamage() * conditionData.tickDamageMul, Color.blue, false);
 		}
 	}
 }

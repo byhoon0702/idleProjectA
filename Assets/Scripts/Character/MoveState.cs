@@ -48,7 +48,7 @@ public class MoveState : CharacterFSM
 			{
 				if (distance > owner.info.data.attackRange)
 				{
-					owner.transform.Translate(direction * owner.info.data.moveSpeed * time);
+					owner.transform.Translate(direction * owner.info.MoveSpeed() * time);
 				}
 				else
 				{
