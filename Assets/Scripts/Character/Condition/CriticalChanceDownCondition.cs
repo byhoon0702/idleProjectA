@@ -1,14 +1,21 @@
-﻿public class CriticalChanceDownConditionData
+﻿[System.Serializable]
+public class CriticalChanceDownConditionData
 {
 	/// <summary>
 	/// 크리티컬 확률 감소 비율
 	/// </summary>
-	public float ratio;
+	public float ratio = 0.5f;
 
 	/// <summary>
 	/// 지속시간
 	/// </summary>
-	public float duration;
+	public float duration = 5;
+
+
+	public CriticalChanceDownConditionData()
+	{
+
+	}
 
 	public CriticalChanceDownConditionData(float _ratio, float _duration)
 	{
@@ -19,7 +26,7 @@
 
 public class CriticalChanceDownCondition : ConditionBase
 {
-	public override UnitCondition conditionType => UnitCondition.CriticalChanceDown;
+	public override CharacterCondition conditionType => CharacterCondition.CriticalChanceDown;
 
 	public override string iconPath => "";
 

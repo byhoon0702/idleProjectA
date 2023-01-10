@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-
+[System.Serializable]
 public class PoisonConditionData
 {
 	/// <summary>
@@ -12,13 +12,18 @@ public class PoisonConditionData
 	/// <summary>
 	/// 초당 들어가는 대미지
 	/// </summary>
-	public float tickAttackPowerMul;
+	public float tickAttackPowerMul = 0.1f;
 
 	/// <summary>
 	/// 지속시간
 	/// </summary>
-	public float duration;
+	public float duration = 5;
 
+
+	public PoisonConditionData()
+	{
+
+	}
 
 	public PoisonConditionData(float _tickAttackPowerUpMul, float _duration)
 	{
@@ -29,7 +34,7 @@ public class PoisonConditionData
 
 public class PoisonCondition : ConditionBase
 {
-	public override UnitCondition conditionType => UnitCondition.Poison;
+	public override CharacterCondition conditionType => CharacterCondition.Poison;
 
 	public override string iconPath => "";
 
@@ -51,7 +56,7 @@ public class PoisonCondition : ConditionBase
 		if (this.lastTickAttackPower - PoisonConditionData.TICK >= this.remainTime)
 		{
 			this.lastTickAttackPower -= PoisonConditionData.TICK;
-			SkillUtility.SimpleAttack(attacker, character, attacker.info.AttackPower() * conditionData.tickAttackPowerMul, Color.blue, false);
+			SkillUtility.SimpleAttack(attacker, character, attacker.info.AttackPower() * conditionData.tickAttackPowerMul, conditionName, Color.blue, false);
 		}
 	}
 }

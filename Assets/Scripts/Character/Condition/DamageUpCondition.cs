@@ -1,14 +1,22 @@
-﻿public class DamageUpConditionData
+﻿
+[System.Serializable]
+public class DamageUpConditionData
 {
 	/// <summary>
 	/// 피해증가량
 	/// </summary>
-	public float ratio;
+	public float ratio = 0.5f;
 
 	/// <summary>
 	/// 시간
 	/// </summary>
-	public float duration;
+	public float duration = 5;
+
+
+	public DamageUpConditionData()
+	{
+
+	}
 
 	public DamageUpConditionData(float _ratio, float _duration)
 	{
@@ -19,7 +27,7 @@
 
 public class DamageUpCondition : ConditionBase
 {
-	public override UnitCondition conditionType => UnitCondition.DamageUp;
+	public override CharacterCondition conditionType => CharacterCondition.DamageUp;
 
 	public override string iconPath => "";
 

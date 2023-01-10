@@ -31,13 +31,13 @@ public abstract class CharacterClass
 				return;
 			}
 
-			if (SkillDictionary.dic.ContainsKey(id) == false)
+			if (SkillMeta.it.dic.ContainsKey(id) == false)
 			{
 				VLog.SkillLogError($"스킬 생성정보를 찾을 수 없음. Skill ID: {id}");
 				return;
 			}
 
-			var paramerts = SkillDictionary.dic[id];
+			var paramerts = SkillMeta.it.dic[id];
 			object classObject;
 			SkillBase skill;
 
@@ -70,7 +70,7 @@ public class Warrior : CharacterClass
 		{
 			if (owner.target != null)
 			{
-				SkillUtility.SimpleAttack(owner, owner.target, owner.info.AttackPower(), Color.white);
+				SkillUtility.SimpleAttack(owner, owner.target, owner.info.AttackPower(), owner.skillModule.defaultAttack.name, Color.white);
 			}
 		}
 	}

@@ -17,7 +17,7 @@ public class ProjectileManager : MonoBehaviour
 	public Projectile Create(Character character)
 	{
 		Projectile projectile = null;
-		switch (character.info.data.attackType)
+		switch (character.info.jobData.attackType)
 		{
 			case AttackType.RANGED:
 				projectile = Instantiate(parabolaProjectileResource) as Projectile;
@@ -25,7 +25,6 @@ public class ProjectileManager : MonoBehaviour
 			case AttackType.MAGIC:
 				projectile = Instantiate(bezierProjectileResource) as Projectile;
 				break;
-
 		}
 
 		if (projectile == null)

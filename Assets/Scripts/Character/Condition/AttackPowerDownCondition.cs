@@ -1,15 +1,21 @@
-﻿public class AttackPowerDownConditionData
+﻿[System.Serializable]
+public class AttackPowerDownConditionData
 {
 	/// <summary>
 	/// 공격력 감소비율
 	/// </summary>
-	public float ratio;
+	public float ratio = 0.5f;
 
 	/// <summary>
 	/// 지속시간
 	/// </summary>
-	public float duration;
+	public float duration = 5;
 
+
+	public AttackPowerDownConditionData()
+	{
+
+	}
 
 	public AttackPowerDownConditionData(float _ratio, float _duration)
 	{
@@ -20,7 +26,7 @@
 
 public class AttackPowerDownCondition : ConditionBase
 {
-	public override UnitCondition conditionType => UnitCondition.AttackPowerDown;
+	public override CharacterCondition conditionType => CharacterCondition.AttackPowerDown;
 	public override string iconPath => "";
 
 	public override string effectPath => "";

@@ -1,15 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
+﻿[System.Serializable]
 public class StunConditionData
 {
 	/// <summary>
 	/// 스턴시간
 	/// </summary>
-	public float duration;
+	public float duration = 5;
 
+
+	public StunConditionData()
+	{
+
+	}
 
 	public StunConditionData(float _duration)
 	{
@@ -20,7 +21,7 @@ public class StunConditionData
 public class StunCondition : ConditionBase
 {
 
-	public override UnitCondition conditionType => UnitCondition.Stun;
+	public override CharacterCondition conditionType => CharacterCondition.Stun;
 
 	public override string iconPath => "";
 

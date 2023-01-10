@@ -12,6 +12,7 @@ public class PresetDataSheetEditor : Editor
 
 	bool playerFoldout;
 	bool enemyFoldout;
+
 	private void OnEnable()
 	{
 		dataSheet = target as PresetDataSheet;
@@ -81,24 +82,12 @@ public class PresetDataSheetEditor : Editor
 		EditorGUILayout.LabelField("파티");
 		List<int> idList = new List<int>();
 		List<string> nameList = new List<string>();
-		if (enemy)
-		{
-			for (int i = 0; i < dataSheet.characterDataSheet.enemyCharacterDataSheets.Count; i++)
-			{
-				var enemydata = dataSheet.characterDataSheet.enemyCharacterDataSheets[i];
-				idList.Add((int)enemydata.tid);
-				nameList.Add($"{enemydata.tid} : {enemydata.name}");
-			}
-		}
-		else
 
+		for (int i = 0; i < dataSheet.characterDataSheet.dataSheet.infos.Count; i++)
 		{
-			for (int i = 0; i < dataSheet.characterDataSheet.characterDataSheets.Count; i++)
-			{
-				var playerdata = dataSheet.characterDataSheet.characterDataSheets[i];
-				idList.Add((int)playerdata.tid);
-				nameList.Add($"{playerdata.tid} : {playerdata.name}");
-			}
+			var playerdata = dataSheet.characterDataSheet.dataSheet.infos[i];
+			idList.Add((int)playerdata.tid);
+			nameList.Add($"{playerdata.tid} : {playerdata.name}");
 		}
 
 		var currentpreset = partyList;

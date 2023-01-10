@@ -4,209 +4,6 @@ using UnityEngine;
 
 
 
-public class ConditionAbility
-{
-	/// <summary>
-	/// 공격력 증가 비율
-	/// </summary>
-	public float attackPowerUpRatio;
-	/// <summary>
-	/// 공격력 감소 비율
-	/// </summary>
-	public float attackPowerDownRatio;
-
-	/// <summary>
-	/// 공격속도 증가 비율
-	/// </summary>
-	public float attackSpeedUpRatio;
-	/// <summary>
-	/// 공격속도 감소 비율
-	/// </summary>
-	public float attackSpeedDownRatio;
-
-	/// <summary>
-	/// 크리티컬 증가 비율
-	/// </summary>
-	public float criticalChanceUpRatio;
-	/// <summary>
-	/// 크리티컬 감소 비율
-	/// </summary>
-	public float criticalChanceDownRatio;
-
-	/// <summary>
-	/// 피해증가 비율
-	/// </summary>
-	public float damageUpRatio;
-	/// <summary>
-	/// 피해감소 비율
-	/// </summary>
-	public float damageDownRatio;
-
-	/// <summary>
-	/// 이동속도 증가 비율
-	/// </summary>
-	public float moveSpeedUpRatio;
-	/// <summary>
-	/// 이동속도 감소 비율
-	/// </summary>
-	public float moveSpeedDownRatio;
-
-
-
-
-	/// <summary>
-	/// 컨디션 정보가 변화할때마다 호출해서 데이터를 최신화 시킬수 있어야 함
-	/// </summary>
-	public void Calculate(ConditionModule _module)
-	{
-		attackPowerUpRatio = CalculateAttackPowerUpRatio(_module);
-		attackPowerDownRatio = CalculateAttackPowerDownRatio(_module);
-
-		attackSpeedUpRatio = CalcutateAttackSpeedUpRatio(_module);
-		attackSpeedDownRatio = CalculateAttackSpeedDownRatio(_module);
-
-		criticalChanceUpRatio = CalculateCriticalChanceUpRatio(_module);
-		criticalChanceDownRatio = CalculateCriticalChanceDownRatio(_module);
-
-		damageUpRatio = CalculateDamageUpRatio(_module);
-		damageDownRatio = CalculateDamageDownRatio(_module);
-
-		moveSpeedUpRatio = CalculateMoveSpeedUpRatio(_module);
-		moveSpeedDownRatio = CalculateMoveSpeedDownRatio(_module);
-	}
-
-	private float CalculateAttackPowerUpRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.AttackPowerUp);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as AttackPowerUpCondition).ratio;
-		}
-
-		return outTotal;
-	}
-
-	private float CalculateAttackPowerDownRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.AttackPowerDown);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as AttackPowerDownCondition).ratio;
-		}
-
-		return outTotal;
-	}
-
-	private float CalcutateAttackSpeedUpRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.AttackSpeedUp);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as AttackSpeedUpCondition).ratio;
-		}
-
-		return outTotal;
-	}
-
-	private float CalculateAttackSpeedDownRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.AttackSpeedDown);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as AttackSpeedDownCondition).ratio;
-		}
-
-		return outTotal;
-	}
-
-	private float CalculateDamageUpRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.DamageUp);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as DamageUpCondition).ratio;
-		}
-
-		return outTotal;
-	}
-
-
-	private float CalculateDamageDownRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.DamageDown);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as DamageDownCondition).ratio;
-		}
-
-		return outTotal;
-	}
-
-	private float CalculateCriticalChanceUpRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.CriticalChanceUp);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as CriticalChanceUpCondition).ratio;
-		}
-
-		return outTotal;
-	}
-
-	private float CalculateCriticalChanceDownRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.CriticalChanceDown);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as CriticalChanceDownCondition).ratio;
-		}
-
-		return outTotal;
-	}
-
-	private float CalculateMoveSpeedUpRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.MoveSpeedUp);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as MoveSpeedUpCondition).ratio;
-		}
-
-		return outTotal;
-	}
-
-	private float CalculateMoveSpeedDownRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(UnitCondition.MoveSpeedDown);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as MoveSpeedDownCondition).ratio;
-		}
-
-		return outTotal;
-	}
-}
-
 public sealed class ConditionModule
 {
 	/// <summary>
@@ -241,28 +38,24 @@ public sealed class ConditionModule
 	/// <summary>
 	/// 컨디션 추가
 	/// </summary>
-	/// <param name="condition"></param>
-	public void AddCondition(ConditionBase condition)
+	/// <param name="_condition"></param>
+	public void AddCondition(ConditionBase _condition)
 	{
-		// 다른 컨디션들에 따라 지금 등록되는 컨디션을 최종적용한다.
-		for (int i = 0; i < this.conditions.Count; i++)
+		// 해당 컨디션을 적용할 수 있는지
+		if(Applicable(_condition) == false)
 		{
-			// 컨디션 종류가 같다면
-			if (this.conditions[i].conditionType == condition.conditionType)
-			{
-				// FIXME: 중복처리는 일단 보류. 일단 다 적용되도 문제는 없는거 같다.
-			}
+			return;
 		}
 
 		// 컨디션을 적용할 유닛 등록
-		condition.character = character;
+		_condition.character = character;
 
 		// 컨디션 최종추가
-		this.conditions.Add(condition);
+		this.conditions.Add(_condition);
 		ability.Calculate(this);
 
 		// 이펙트 추가
-		string conditionTypeKey = condition.conditionType.ToString();
+		string conditionTypeKey = _condition.conditionType.ToString();
 		// 관련 이펙트가 생성되지 않았고 && 이펙트가 지정되에 있을 때 // 이펙트처리 by myoung1 2022/01/02
 		//if (!this.effects.ContainsKey(conditionTypeKey) && !string.IsNullOrEmpty(condition.effectPath))
 		//{
@@ -277,17 +70,17 @@ public sealed class ConditionModule
 		//}
 
 		// 컨디션 초기화가 끝낫음을 알린다.
-		condition.Start();
+		_condition.Start();
 
 		// 컨디션 등록 델리게이트
-		this.onAddCondition?.Invoke(condition);
-		VLog.ConditionLog($"Add Condition. Unit: {character.info.charNameAndCharId}, Condition: {condition.GetType()}");
+		this.onAddCondition?.Invoke(_condition);
+		VLog.ConditionLog($"Add Condition. Unit: {character.info.charNameAndCharId}, Condition: {_condition.GetType()}");
 	}
 
 	/// <summary>
 	/// 컨디션 강제 종료
 	/// </summary>
-	public void RemoveCondition(UnitCondition condition)
+	public void RemoveCondition(CharacterCondition condition)
 	{
 		for (int i = 0; i < this.conditions.Count; i++)
 		{
@@ -296,7 +89,7 @@ public sealed class ConditionModule
 				VLog.ConditionLog($"Remove Condition. Unit: {character.info.charNameAndCharId}, Condition: {conditions[i].conditionType}");
 
 				// 제거되는 컨디션
-				UnitCondition removeCondition = this.conditions[i].conditionType;
+				CharacterCondition removeCondition = this.conditions[i].conditionType;
 
 				// 컨디션을 제거한다.
 				this.onRemoveCondition?.Invoke(this.conditions[i]);
@@ -313,7 +106,7 @@ public sealed class ConditionModule
 	/// <summary>
 	/// 컨디션을 가지고 있는지
 	/// </summary>
-	public bool HasCondition(UnitCondition condition)
+	public bool HasCondition(CharacterCondition condition)
 	{
 		for (int i = 0; i < this.conditions.Count; i++)
 		{
@@ -324,7 +117,7 @@ public sealed class ConditionModule
 		return false;
 	}
 
-	public List<ConditionBase> GetConditions(UnitCondition _condition)
+	public List<ConditionBase> GetConditions(CharacterCondition _condition)
 	{
 		List<ConditionBase> outConditions = new List<ConditionBase>();
 
@@ -357,7 +150,7 @@ public sealed class ConditionModule
 				VLog.ConditionLog($"Remove Condition. Unit: {character.info.charNameAndCharId}, Condition: {conditions[i].GetType()}");
 
 				// 제거되는 컨디션
-				UnitCondition removeCondition = this.conditions[i].conditionType;
+				CharacterCondition removeCondition = this.conditions[i].conditionType;
 
 				// 컨디션을 종료한다.
 				this.onRemoveCondition?.Invoke(this.conditions[i]);
@@ -394,7 +187,7 @@ public sealed class ConditionModule
 		ability = new ConditionAbility();
 	}
 
-	private bool TryRemoveEffect(UnitCondition condition)
+	private bool TryRemoveEffect(CharacterCondition condition)
 	{
 		//string effectKey = condition.ToString(); // check by myoung1. 2023/01/02
 		//
@@ -408,5 +201,38 @@ public sealed class ConditionModule
 		//}
 
 		return false;
+	}
+
+	/// <summary>
+	/// 컨디션 적용이 가능한지 여부
+	/// </summary>
+	private bool Applicable(ConditionBase _condition)
+	{
+		// 캐릭터별 저항 체크
+		if(character.info.ConditionApplicable(_condition) == false)
+		{
+			return false;
+		}
+
+		// 다른 컨디션들에 따라 지금 등록되는 컨디션을 최종적용한다.
+		for (int i = 0 ; i < this.conditions.Count ; i++)
+		{
+			// 컨디션 종류가 같다면
+			if (this.conditions[i].conditionType == _condition.conditionType)
+			{
+				if (_condition.conditionType == CharacterCondition.Knockback)
+				{
+					// 넉백이 적용중일땐 더 들어오지 않음
+					return false;
+				}
+				if (_condition.conditionType == CharacterCondition.Stun)
+				{
+					// 스턴이 적용중일땐 더 들어오지 않음
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }

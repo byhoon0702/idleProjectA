@@ -11,6 +11,7 @@ public class DeadState : CharacterFSM
 	}
 	public void OnEnter()
 	{
+		owner.DisposeModel();
 		owner.gameObject.SetActive(false);
 		owner.SetTarget(null); // 죽으면 타겟을 비워줌
 		owner.conditionModule.Collect();

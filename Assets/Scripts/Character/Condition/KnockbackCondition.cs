@@ -1,19 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-
+[System.Serializable]
 public class KnockbackConditionData
 {
 	/// <summary>
 	/// 넉백시간
 	/// </summary>
-	public float duration;
+	public float duration = 0.5f;
 
 	/// <summary>
 	/// 넉백거리
 	/// </summary>
-	public float distance;
+	public float distance = 5;
+
+
+	public KnockbackConditionData()
+	{
+
+	}
 
 	public KnockbackConditionData(float _duration, float _distance)
 	{
@@ -23,7 +27,7 @@ public class KnockbackConditionData
 }
 public class KnockbackCondition : ConditionBase
 {
-	public override UnitCondition conditionType => UnitCondition.Knockback;
+	public override CharacterCondition conditionType => CharacterCondition.Knockback;
 	public override string iconPath => null;
 	public override string effectPath => null;
 

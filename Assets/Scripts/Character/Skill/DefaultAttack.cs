@@ -1,4 +1,9 @@
-﻿public class DefaultAttack : SkillBase
+﻿
+public class DefaultAttackData : SkillBaseData
+{
+}
+
+public class DefaultAttack : SkillBase
 {
 	public override float skillUseTime => 0;
 

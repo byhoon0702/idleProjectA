@@ -30,14 +30,12 @@ public class AttackState : CharacterFSM
 		{
 			// 스킬을 사용할 수 있으면 무조건 스킬우선사용
 			skillModule.skillAttack.Action();
-			GameManager.it.battleRecord.RecordSkillCount(owner.charID);
-			VLog.SkillLog($"[{owner.info.charNameAndCharId}] 스킬 사용. SkillName: {skillModule.skillAttack.GetType()}", owner);
+			VLog.SkillLog($"[{owner.info.charNameAndCharId}] 스킬 사용. SkillName: {skillModule.skillAttack.name}", owner);
 		}
 		else if (skillModule.defaultAttack != null && skillModule.defaultAttack.Usable())
 		{
 			// 기본공격
 			skillModule.defaultAttack.Action();
-			GameManager.it.battleRecord.RecordAttackCount(owner.charID);
 		}
 	}
 }

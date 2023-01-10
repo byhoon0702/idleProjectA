@@ -5,6 +5,7 @@
 		elapsedTime = 0;
 		GameManager.it.battleRecord = new BattleRecord();
 		GameManager.it.battleRecord.InitCharacter(CharacterManager.it.GetCharacters(true));
+		UIController.it.ReadyBattleRecord();
 	}
 
 	public override void OnExit()

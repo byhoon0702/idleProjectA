@@ -1,14 +1,21 @@
-﻿public class AttackSpeedDownConditionData
+﻿[System.Serializable]
+public class AttackSpeedDownConditionData
 {
 	/// <summary>
 	/// 공격속도 증가비율
 	/// </summary>
-	public float ratio;
+	public float ratio = 0.5f;
 
 	/// <summary>
 	/// 지속시간
 	/// </summary>
-	public float duration;
+	public float duration = 5;
+
+
+	public AttackSpeedDownConditionData()
+	{
+
+	}
 
 	public AttackSpeedDownConditionData(float _ratio, float _duration)
 	{
@@ -19,7 +26,7 @@
 
 public class AttackSpeedDownCondition : ConditionBase
 {
-	public override UnitCondition conditionType => UnitCondition.AttackSpeedDown;
+	public override CharacterCondition conditionType => CharacterCondition.AttackSpeedDown;
 
 	public override string iconPath => "";
 

@@ -7,6 +7,8 @@ public class UIController : MonoBehaviour
 	private static UIController instance;
 	public static UIController it => instance;
 
+	[SerializeField] private UIBattleRecord uiBattleRecord;
+
 	[SerializeField] private TextMeshProUGUI textStageTitle;
 
 	[SerializeField] Button buttonPlayBoss;
@@ -48,5 +50,15 @@ public class UIController : MonoBehaviour
 	public void ShowDefeatNavigator()
 	{
 		// 패배시 강화컨텐츠 네비게이션
+	}
+
+	public void ReadyBattleRecord()
+	{
+		uiBattleRecord.Ready();
+	}
+
+	public void UpdateBattleRecord()
+	{
+		uiBattleRecord.UpdateDamage();
 	}
 }

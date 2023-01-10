@@ -379,28 +379,18 @@ MonoBehaviour:
     name: 
     resource: 
     tid: 0
-    classType: 0
-    race: 0
+    classTid: 0
+    raceTid: 0
     element: 0
     grade: 0
     starlevel: 0
     hp:
       Value: 0
       Exp: 0
-    attackRange: 1
-    attackSpeed: 1
-    attackTime: 1
-    attackRate: 1
     attackPower:
       Value: 0
       Exp: 0
-    criticalChanceRatio: 0.2
-    criticalChangeUpRatio: 1
-    moveSpeed: 1
-    searchTime: 1
-    searchRange: 1
     skillID: 
-    attackType: 0
     rankType: 0
   characterAnimation: {fileID: 0}
   currentState: 0
@@ -999,6 +989,7 @@ GameObject:
   - component: {fileID: 1143395399}
   - component: {fileID: 1143395400}
   - component: {fileID: 1143395403}
+  - component: {fileID: 1143395404}
   - component: {fileID: 1143395402}
   - component: {fileID: 1143395401}
   m_Layer: 0
@@ -1019,7 +1010,8 @@ Transform:
   m_LocalPosition: {x: 50, y: 50, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1509900415}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1035,7 +1027,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db169dce718fa7c4e84ad6a23effbf6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterDataSheet: {fileID: 11400000, guid: 7bb6c4823af0f7d40b3fc2c590e85d05, type: 2}
+  characterDataSheet:
+    infos: []
   presetDataSheet: {fileID: 11400000, guid: 2bd39f5d3547bcc429151d528e012e1b, type: 2}
   playerRoot: {fileID: 1776112150}
   enemyRoot: {fileID: 1270444693}
@@ -1050,7 +1043,7 @@ MonoBehaviour:
     height: -5
   rewardCharacter: {fileID: 0}
   bossCharacter: {fileID: 0}
-  lineDiff: 0.3
+  lineDiff: 1
 --- !u!114 &1143395400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1082,6 +1075,7 @@ MonoBehaviour:
   gameSpeed: 1
   mapController: {fileID: 782454260}
   currentState: 0
+  config: {fileID: 0}
 --- !u!114 &1143395402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1110,6 +1104,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalStageDataSheet: {fileID: 11400000, guid: 5d348caf8fc9f774da8c4a4f8f494388, type: 2}
   bossStageDataSheet: {fileID: 11400000, guid: dc83b3ad00743de4c91afcd0ec2d7c69, type: 2}
+--- !u!114 &1143395404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1143395395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76a0170440398564ca713b07f62d5e7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modelParentTransform: {fileID: 1509900415}
 --- !u!1 &1270444692
 GameObject:
   m_ObjectHideFlags: 0
@@ -1225,6 +1232,50 @@ Transform:
   m_Father: {fileID: 782454261}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1509900414
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1509900415}
+  - component: {fileID: 1509900416}
+  m_Layer: 0
+  m_Name: Model
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1509900415
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1509900414}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1143395397}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1509900416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1509900414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9c7d02e9b309d45b63132eda49219f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1644628235
 GameObject:
   m_ObjectHideFlags: 0
@@ -1337,28 +1388,18 @@ MonoBehaviour:
     name: 
     resource: 
     tid: 0
-    classType: 0
-    race: 0
+    classTid: 0
+    raceTid: 0
     element: 0
     grade: 0
     starlevel: 0
     hp:
       Value: 0
       Exp: 0
-    attackRange: 1
-    attackSpeed: 1
-    attackTime: 1
-    attackRate: 1
     attackPower:
       Value: 0
       Exp: 0
-    criticalChanceRatio: 0.2
-    criticalChangeUpRatio: 1
-    moveSpeed: 1
-    searchTime: 1
-    searchRange: 1
     skillID: 
-    attackType: 0
     rankType: 0
   characterAnimation: {fileID: 0}
   currentState: 0
@@ -2290,6 +2331,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7956671501803357227, guid: d806902ba91811147b192e618eb26fd3, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8534150467606439647, guid: d806902ba91811147b192e618eb26fd3, type: 3}
+      propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

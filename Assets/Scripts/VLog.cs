@@ -4,6 +4,13 @@ using UnityEngine;
 
 public static class VLog 
 {
+	public static bool showConditionLog = false;
+	public static bool showSkillLog = false;
+	public static bool showScheduleLog = false;
+	public static bool showAILog = false;
+	public static bool showBattleLog = false;
+
+
 	public static void Log(object _message, Object _context = null)
 	{
 		Debug.Log(_message, _context);
@@ -21,12 +28,18 @@ public static class VLog
 
 	public static void ConditionLog(object _message, Object _context = null)
 	{
-		//Debug.Log($"[Condition] {_message}", _context);
+		if (showConditionLog)
+		{
+			Debug.Log($"[Condition] {_message}", _context);
+		}
 	}
 
 	public static void SkillLog(object _message, Object _context = null)
 	{
-		Debug.Log($"[Skill] {_message}", _context);
+		if (showSkillLog)
+		{
+			Debug.Log($"[Skill] {_message}", _context);
+		}
 	}
 	public static void SkillLogError(object _message, Object _context = null)
 	{
@@ -35,7 +48,10 @@ public static class VLog
 
 	public static void ScheduleLog(object _message, Object _context = null)
 	{
-		Debug.Log($"[Schedule] {_message}", _context);
+		if (showScheduleLog)
+		{
+			Debug.Log($"[Schedule] {_message}", _context);
+		}
 	}
 
 	public static void ScheduleLogError(object _message, Object _context = null)
@@ -45,7 +61,10 @@ public static class VLog
 
 	public static void AILog(object _message, Object _context = null)
 	{
-		//Debug.Log($"[AI] {_message}", _context);
+		if (showAILog)
+		{
+			Debug.Log($"[AI] {_message}", _context);
+		}
 	}
 
 	public static void AILogWarning(object _message, Object _context = null)
@@ -55,6 +74,9 @@ public static class VLog
 
 	public static void BattleRecordLog(object _message, Object _context = null)
 	{
-		Debug.Log($"[Record] {_message}", _context);
+		if (showBattleLog)
+		{
+			Debug.Log($"[Record] {_message}", _context);
+		}
 	}
 }

@@ -10,8 +10,12 @@ public class StageManager : MonoBehaviour
 	public enum StageType
 	{
 		NONE,
+		// 웨이브 전멸시 다음 웨이브
 		NORMAL1,
+		// 일정 주기로 웨이브 무조건 스폰
 		NORMAL2,
+		// 일정 주기로 무한 스폰
+		INFINITE,
 		BOSS
 	}
 
@@ -24,6 +28,10 @@ public class StageManager : MonoBehaviour
 		public int act;
 		public int stage;
 
+		public string bgCloseName;
+		public string bgMiddleName;
+		public string bgFarName;
+
 		public List<int> listEnemyWavePreset = new List<int>();
 
 		public StageInfo Clone()
@@ -31,9 +39,15 @@ public class StageManager : MonoBehaviour
 			StageInfo info = new StageInfo();
 
 			info.stageType = stageType;
+
 			info.areaName = areaName;
 			info.act = act;
 			info.stage = stage;
+
+			info.bgCloseName = bgCloseName;
+			info.bgMiddleName = bgMiddleName;
+			info.bgFarName = bgFarName;
+
 			info.listEnemyWavePreset.AddRange(listEnemyWavePreset);
 
 			return info;
@@ -168,9 +182,12 @@ public class StageManager : MonoBehaviour
 		switch (CurrentStageType)
 		{
 			case StageType.BOSS:
-				currentStageInfo = GetNextNormalStageInfo(currentStageInfo);
-				currentAct = currentStageInfo.act;
-				currentStage = currentStageInfo.stage;
+				{
+					currentStageInfo = GetNextNormalStageInfo(currentStageInfo);
+					currentAct = currentStageInfo.act;
+					currentStage = currentStageInfo.stage;
+					UnitModelPoolManager.it.ClearPool();
+				}
 				break;
 			case StageType.NORMAL1:
 			case StageType.NORMAL2:

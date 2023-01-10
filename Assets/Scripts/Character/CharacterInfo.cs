@@ -1,46 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 public class CharacterInfo
 {
-	/// <summary>
-	/// 랜덤 대미지 범위
-	/// </summary>
-	public const float ATTACK_POWER_RANGE = 0.1f;
-
-	/// <summary>
-	/// 공격속도 최소치
-	/// </summary>
-	public const float ATTACK_SPEED_MIN = 0.1f;
-
-	/// <summary>
-	/// 공격속도 최대치
-	/// </summary>
-	public const float ATTACK_SPEED_MAX = 3;
-
-	/// <summary>
-	/// 크리티컬 확률 최대치
-	/// </summary>
-	public const float CRITICAL_CHANCE_MAX_RATIO = 0.8f;
-
-	/// <summary>
-	/// 받는 피해 최소량
-	/// </summary>
-	public const float MIN_DAMAGE_MUL = 0.01f;
-
-	/// <summary>
-	/// 받는 피해 최대량
-	/// </summary>
-	public const float MAX_DAMAGE_MUL = 5;
-
-
-
 	public Character owner;
 	public CharacterData data;
 	public ControlSide controlSide;
-
+	public JobData jobData;
+	public RaceData raceData;
 	/// <summary>
 	/// UI표시용
 	/// </summary>
@@ -57,7 +24,15 @@ public class CharacterInfo
 		owner = _owner;
 
 		data = _data.Clone();
+
+		InitDatas();
 		controlSide = _controlSide;
+	}
+
+	void InitDatas()
+	{
+		jobData = DataManager.it.Get<JobDataSheet>().Get(data.classTid);
+		raceData = DataManager.it.Get<RaceDataSheet>().Get(data.raceTid);
 	}
 
 	public IdleNumber AttackPower(bool _random = true)
@@ -69,7 +44,7 @@ public class CharacterInfo
 
 		if (_random)
 		{
-			total += total * Random.Range(-ATTACK_POWER_RANGE, ATTACK_POWER_RANGE);
+			total += total * Random.Range(-ConfigMeta.it.ATTACK_POWER_RANGE, ConfigMeta.it.ATTACK_POWER_RANGE);
 		}
 
 		return total;
@@ -82,7 +57,7 @@ public class CharacterInfo
 	{
 		float total = 1 + owner.conditionModule.ability.attackSpeedUpRatio - owner.conditionModule.ability.attackSpeedDownRatio;
 
-		total = Mathf.Clamp(total, ATTACK_SPEED_MIN, ATTACK_SPEED_MAX);
+		total = Mathf.Clamp(total, ConfigMeta.it.ATTACK_SPEED_MIN, ConfigMeta.it.ATTACK_SPEED_MAX);
 
 		return total;
 	}
@@ -96,7 +71,7 @@ public class CharacterInfo
 		float conditionTotalRatio = owner.conditionModule.ability.damageUpRatio - owner.conditionModule.ability.damageDownRatio;
 		float total = 1 + conditionTotalRatio;
 
-		total = Mathf.Clamp(total, MIN_DAMAGE_MUL, MAX_DAMAGE_MUL);
+		total = Mathf.Clamp(total, ConfigMeta.it.MIN_DAMAGE_MUL, ConfigMeta.it.MAX_DAMAGE_MUL);
 
 		return total;
 	}
@@ -106,24 +81,38 @@ public class CharacterInfo
 	/// </summary>
 	public bool IsCritical()
 	{
-		float conditionTotalRatio = owner.conditionModule.ability.criticalChanceUpRatio - owner.conditionModule.ability.criticalChanceDownRatio;
-		float total = data.criticalChanceRatio + conditionTotalRatio;
-
-
-		if(total > CRITICAL_CHANCE_MAX_RATIO)
-		{
-			total = CRITICAL_CHANCE_MAX_RATIO;
-		}
-
+		float total = CriticalChanceRatio();
 		return SkillUtility.Cumulative(total);
 	}
-	
+
+	public float attackTime
+	{
+		get
+		{
+			return 1;
+		}
+	}
+
+	public float CriticalChanceRatio()
+	{
+		float conditionTotalRatio = owner.conditionModule.ability.criticalChanceUpRatio - owner.conditionModule.ability.criticalChanceDownRatio;
+		float total = jobData.criticalRate + conditionTotalRatio;
+
+
+		if (total > ConfigMeta.it.CRITICAL_CHANCE_MAX_RATIO)
+		{
+			total = ConfigMeta.it.CRITICAL_CHANCE_MAX_RATIO;
+		}
+
+		return total;
+	}
+
 	/// <summary>
 	/// 크리티컬 대미지 총 증가량(줄 대미지에 곱하면 됩니다)
 	/// </summary>
 	public float CriticalDamageMultifly()
 	{
-		float total = 1;
+		float total = 1 + jobData.criticalPowerRate;
 
 		return total;
 	}
@@ -137,8 +126,27 @@ public class CharacterInfo
 		float conditionTotalRatio = owner.conditionModule.ability.moveSpeedUpRatio - owner.conditionModule.ability.moveSpeedDownRatio;
 		float mul = 1 + conditionTotalRatio;
 
-		float total = data.moveSpeed * mul;
+		float total = jobData.moveSpeed * mul;
 
 		return total;
+	}
+
+	/// <summary>
+	/// true면 컨디션 적용 안됨
+	/// </summary>
+	public bool ConditionApplicable(ConditionBase _condition)
+	{
+		switch (_condition.conditionType)
+		{
+			case CharacterCondition.Knockback:
+			case CharacterCondition.Stun:
+				if (data.rankType == RankType.BOSS || data.rankType == RankType.FINISH_GEM)
+				{
+					return false;
+				}
+				break;
+		}
+
+		return true;
 	}
 }

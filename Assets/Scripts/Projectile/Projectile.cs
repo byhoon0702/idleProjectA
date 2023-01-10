@@ -67,7 +67,7 @@ public class Projectile : MonoBehaviour
 			color = Color.white;
 		}
 
-		SkillUtility.SimpleAttack(attacker, targetCharacter, attackPower, color);
+		SkillUtility.SimpleAttack(attacker, targetCharacter, attackPower, gameObject.name, color);
 
 		Destroy(gameObject);
 	}

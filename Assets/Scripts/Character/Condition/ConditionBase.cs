@@ -12,7 +12,17 @@ public abstract class ConditionBase
 	/// <summary>
 	/// 컨디션 타입
 	/// </summary>
-	public abstract UnitCondition conditionType { get; }
+	public abstract CharacterCondition conditionType { get; }
+
+	/// <summary>
+	/// 컨디션이름(UI표시용)
+	/// </summary>
+	public string conditionName => GetType().ToString();
+
+	/// <summary>
+	/// 컨디션 키
+	/// </summary>
+	public string conditionKey => GetType().ToString();
 
 	/// <summary>
 	/// UI에 표시되는 아이콘 이미지 경로

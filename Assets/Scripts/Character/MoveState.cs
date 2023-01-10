@@ -24,8 +24,7 @@ public class MoveState : CharacterFSM
 		if (skillModule.skillAttack != null && skillModule.skillAttack.Usable())
 		{
 			skillModule.skillAttack.Action();
-			GameManager.it.battleRecord.RecordSkillCount(owner.charID);
-			VLog.SkillLog($"[{owner.info.charNameAndCharId}] 스킬 사용. SkillName: {skillModule.skillAttack.GetType()}", owner);
+			VLog.SkillLog($"[{owner.info.charNameAndCharId}] 스킬 사용. SkillName: {skillModule.skillAttack.name}", owner);
 		}
 
 		if (owner.IsTargetAlive() == false)
@@ -46,7 +45,7 @@ public class MoveState : CharacterFSM
 			var distance = Vector3.Distance(owner.target.transform.position, owner.transform.position);
 			//if (distance < owner.info.data.pursuitDistance)
 			{
-				if (distance > owner.info.data.attackRange)
+				if (distance > owner.info.jobData.attackRange)
 				{
 					owner.transform.Translate(direction * owner.info.MoveSpeed() * time);
 				}

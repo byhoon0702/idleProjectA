@@ -27,51 +27,52 @@
 			return;
 		}
 
-		// 몹을 전부 무찔렀을 때 리스폰하는 방식
-		if (StageManager.it.CurrentStageType == StageManager.StageType.NORMAL1)
+		switch (StageManager.it.CurrentStageType)
 		{
-			if (SpawnManager.it.IsAllEnemyDead == true)
-			{
-				// 웨이브가 끝남
-				if (SpawnManager.it.SpawnEnemies(waveCount++) == false)
+			case StageManager.StageType.BOSS:
+			case StageManager.StageType.NORMAL1:
 				{
-					StageManager.it.ClearStage();
-					StageManager.it.PlayNormalStage();
+					if (SpawnManager.it.IsAllEnemyDead == true)
+					{
+						// 웨이브가 끝남
+						if (SpawnManager.it.SpawnEnemies(waveCount++) == false)
+						{
+							StageManager.it.ClearStage();
+							StageManager.it.PlayNormalStage();
+						}
+					}
 				}
-			}
-		}
-		// 일정 시간마다 적이 리스폰되는 방식
-		else if (StageManager.it.CurrentStageType == StageManager.StageType.NORMAL2)
-		{
-			if (isWaveEnd == true)
-			{
-				if (SpawnManager.it.IsAllEnemyDead == true)
+				break;
+			case StageManager.StageType.NORMAL2:
 				{
-					StageManager.it.ClearStage();
-					StageManager.it.PlayNormalStage();
+					if (isWaveEnd == true)
+					{
+						if (SpawnManager.it.IsAllEnemyDead == true)
+						{
+							StageManager.it.ClearStage();
+							StageManager.it.PlayNormalStage();
+						}
+					}
+					if (elapsedTime >= 5f)
+					{
+						elapsedTime = 0;
+						if (SpawnManager.it.SpawnEnemies(waveCount++) == false)
+						{
+							isWaveEnd = true;
+						}
+					}
 				}
-			}
-			if (elapsedTime >= 5f)
-			{
-				elapsedTime = 0;
-				if (SpawnManager.it.SpawnEnemies(waveCount++) == false)
+				break;
+			case StageManager.StageType.INFINITE:
 				{
-					isWaveEnd = true;
+					if (elapsedTime >= 5f)
+					{
+						elapsedTime = 0;
+						SpawnManager.it.ClearDeadEnemy();
+						SpawnManager.it.SpawnEnemies(waveCount++);
+					}
 				}
-			}
-		}
-		// 보스전
-		else if (StageManager.it.CurrentStageType == StageManager.StageType.BOSS)
-		{
-			if (SpawnManager.it.IsAllEnemyDead == true)
-			{
-				// 웨이브가 끝남
-				if (SpawnManager.it.SpawnEnemies(waveCount++) == false)
-				{
-					StageManager.it.ClearStage();
-					StageManager.it.PlayNormalStage();
-				}
-			}
+				break;
 		}
 	}
 }

@@ -1,36 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
-
+/// <summary>
+/// 적 전체에게 공격력의 339%만큼 피해를 입히고 50%확률로 5초동안 40%만큼 지속 피해를 입힌다.
+/// </summary>
+[Serializable]
 public class Haru_sk1Data : SkillBaseData
 {
 	/// <summary>
 	/// 독대미지 정보
 	/// </summary>
-	public PoisonConditionData poisonData;
+	public PoisonConditionData poisonData = new PoisonConditionData();
 
 	/// <summary>
 	/// 대미지 증가배율
 	/// </summary>
-	public float attackPowerMul;
+	public float attackPowerMul = 1;
 
 	/// <summary>
 	/// 독대미지 적용확률
 	/// </summary>
-	public float poisonProbability;
-
-
-	/// <summary>
-	/// 적 전체에게 공격력의 339%만큼 피해를 입히고 50%확률로 5초동안 40%만큼 지속 피해를 입힌다.
-	/// </summary>
-	/// <param name="_cooltime"></param>
-	public Haru_sk1Data(PoisonConditionData _poisonData, float _attackPowerMul, float _poisonProbability, float _cooltime) : base(_cooltime)
-	{
-		poisonData = _poisonData;
-		attackPowerMul = _attackPowerMul;
-		poisonProbability = _poisonProbability;
-	}
+	public float poisonProbability = 0.5f;
 }
 
 
@@ -73,7 +65,7 @@ public class Haru_sk1 : SkillBase
 				target.conditionModule.AddCondition(new PoisonCondition(owner, skillData.poisonData));
 			}
 
-			SkillUtility.SimpleAttack(owner, target, target.info.AttackPower() * skillData.attackPowerMul, fontColor);
+			SkillUtility.SimpleAttack(owner, target, target.info.AttackPower() * skillData.attackPowerMul, name, fontColor);
 		}
 	}
 }

@@ -1,14 +1,22 @@
-﻿public class AttackPowerUpConditionData
+﻿[System.Serializable]
+public class AttackPowerUpConditionData
 {
 	/// <summary>
 	/// 공격력 증가비율
 	/// </summary>
-	public float ratio;
+	public float ratio = 0.5f;
 
 	/// <summary>
 	/// 지속시간
 	/// </summary>
-	public float duration;
+	public float duration = 5;
+
+
+
+	public AttackPowerUpConditionData()
+	{
+
+	}
 
 	public AttackPowerUpConditionData(float _ratio, float _duration)
 	{
@@ -19,7 +27,7 @@
 
 public class AttackPowerUpCondition : ConditionBase
 {
-	public override UnitCondition conditionType => UnitCondition.AttackPowerUp;
+	public override CharacterCondition conditionType => CharacterCondition.AttackPowerUp;
 	public override string iconPath => "";
 
 	public override string effectPath => "";

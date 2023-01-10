@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd15194f3dd71814a8d49d0a888e4590, type: 3}
+  m_Name: CharacterDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    infos:
+    - name: Land
+      resource: vk01
+      tid: 1
+      classTid: 1
+      raceTid: 1
+      element: 0
+      grade: 0
+      starlevel: 0
+      hp:
+        Value: 10000
+        Exp: 0
+      attackPower:
+        Value: 100
+        Exp: 0
+      skillID: 1
+      rankType: 0
+    - name: sfasdfa
+      resource: sw01
+      tid: 2
+      classTid: 2
+      raceTid: 1
+      element: 0
+      grade: 0
+      starlevel: 0
+      hp:
+        Value: 10000
+        Exp: 0
+      attackPower:
+        Value: 100
+        Exp: 0
+      skillID: 1
+      rankType: 0
+    - name: asdfasdf
+      resource: vk01
+      tid: 3
+      classTid: 3
+      raceTid: 1
+      element: 0
+      grade: 0
+      starlevel: 0
+      hp:
+        Value: 10000
+        Exp: 0
+      attackPower:
+        Value: 100
+        Exp: 0
+      skillID: 1
+      rankType: 0
+    - name: enemy
+      resource: skeleton
+      tid: 3
+      classTid: 3
+      raceTid: 1
+      element: 0
+      grade: 0
+      starlevel: 0
+      hp:
+        Value: 10000
+        Exp: 0
+      attackPower:
+        Value: 100
+        Exp: 0
+      skillID: 1
+      rankType: 0

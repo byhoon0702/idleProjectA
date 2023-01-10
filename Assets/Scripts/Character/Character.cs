@@ -85,12 +85,13 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 
 	protected GameObject characterView;
 
-
 	// Start is called before the first frame update
 	public void Init()
 	{
 		// 스킬초기화
-		skillModule = new SkillModule(this, new DefaultAttack(new SkillBaseData(info.data.attackTime)));
+		var skillData = ScriptableObject.CreateInstance<DefaultAttackData>();
+		skillData.cooltime = info.attackTime;
+		skillModule = new SkillModule(this, new DefaultAttack(skillData));
 		InitSkill(skillModule);
 
 		conditionModule = new ConditionModule(this);
@@ -126,7 +127,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 		}
 
 
-		switch (info.data.classType)
+		switch (info.jobData.classType)
 		{
 			case ClassType.WARRIOR:
 				characterClass = new Warrior(this);
@@ -150,7 +151,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 			return;
 		}
 
-		if (conditionModule.HasCondition(UnitCondition.Knockback))
+		if (conditionModule.HasCondition(CharacterCondition.Knockback))
 		{
 			// 넉백은 Move, Attack상태 이동 불가
 			if (stateType == StateType.MOVE || stateType == StateType.ATTACK)
@@ -159,7 +160,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 			}
 		}
 
-		if (conditionModule.HasCondition(UnitCondition.Stun))
+		if (conditionModule.HasCondition(CharacterCondition.Stun))
 		{
 			// 스턴은 Move, Attack상태 이동 불가
 			if (stateType == StateType.MOVE || stateType == StateType.ATTACK)
@@ -167,6 +168,8 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 				return;
 			}
 		}
+
+		VLog.AILog($"{info.charNameAndCharId} StateChange {currentState} -> {stateType}");
 
 		currentState = stateType;
 		currentfsm?.OnExit();
@@ -186,6 +189,11 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 				break;
 		}
 		currentfsm?.OnEnter();
+	}
+
+	public void DisposeModel()
+	{
+		UnitModelPoolManager.it.ReturnModel(characterView);
 	}
 
 	public virtual void Spawn(CharacterData data)
@@ -277,12 +285,12 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 
 	}
 
-	public virtual void Hit(Character _attacker, IdleNumber _attackPower, Color _color, float _criticalChanceMul)
+	public virtual void Hit(Character _attacker, IdleNumber _attackPower, string _attackName, Color _color, float _criticalChanceMul)
 	{
 
 	}
 
-	public virtual void Heal(Character _attacker, IdleNumber _attackPower, Color _color)
+	public virtual void Heal(Character _attacker, IdleNumber _attackPower, string _healName, Color _color)
 	{
 
 	}
@@ -315,7 +323,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 				// 타겟이 죽은경우 타겟을 지워준다.
 				SetTarget(null);
 			}
-			else if (Vector3.Distance(transform.position, target.transform.position) <= info.data.searchRange)
+			else if (Vector3.Distance(transform.position, target.transform.position) <= info.jobData.searchRange)
 			{
 				// 타겟이 멀어진경우, 타겟을 지워준다
 				SetTarget(null);
@@ -323,7 +331,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 		}
 
 
-		if (searchInterval > info.data.searchTime)
+		if (searchInterval > info.jobData.searchTime)
 		{
 			searchInterval = 0;
 
@@ -343,7 +351,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 				}
 				infos.Sort((a, b) => { return a.distance.CompareTo(b.distance); });
 
-				if (infos[0].distance <= info.data.searchRange)
+				if (infos[0].distance <= info.jobData.searchRange)
 				{
 					newTarget = _searchTargets[infos[0].index];
 				}

@@ -127,7 +127,7 @@ public class SpawnManager : MonoBehaviour
 				continue;
 			}
 
-			CharacterData characterData = characterDataSheet.GetData(slot.characterTid);
+			CharacterData characterData = DataManager.it.Get<CharacterDataSheet>().GetData(slot.characterTid);
 
 			int index = slot.coord.y * 5 + slot.coord.x;
 			PlayerCharacter player = MakePlayer(characterData, i, grid[index]);
@@ -175,7 +175,14 @@ public class SpawnManager : MonoBehaviour
 
 	public bool SpawnEnemies(int _waveCount = 0)
 	{
-		if (StageManager.it.CurrentStageInfo.listEnemyWavePreset.Count <= _waveCount)
+		int waveCount = _waveCount;
+
+		// 무한리젠던전
+		if (StageManager.it.CurrentStageType == StageManager.StageType.INFINITE)
+		{
+			waveCount %= StageManager.it.CurrentStageInfo.listEnemyWavePreset.Count;
+		}
+		else if (StageManager.it.CurrentStageInfo.listEnemyWavePreset.Count <= waveCount)
 		{
 			return false;
 		}
@@ -195,7 +202,7 @@ public class SpawnManager : MonoBehaviour
 			}
 		}
 
-		int enemyPartyPresetIndex = StageManager.it.CurrentStageInfo.listEnemyWavePreset[_waveCount];
+		int enemyPartyPresetIndex = StageManager.it.CurrentStageInfo.listEnemyWavePreset[waveCount];
 		var enemyPartyDatas = presetDataSheet.enemypartyPresetDatas[enemyPartyPresetIndex];
 
 		for (int i = 0; i < enemyPartyDatas.partySlots.Count; i++)
@@ -205,7 +212,7 @@ public class SpawnManager : MonoBehaviour
 			{
 				continue;
 			}
-			CharacterData characterData = characterDataSheet.GetEnemyData(slot.characterTid);
+			CharacterData characterData = DataManager.it.Get<CharacterDataSheet>().GetData(slot.characterTid);
 			int index = slot.coord.y * 5 + slot.coord.x;
 
 			EnemyCharacter enemy = MakeEnemy(characterData, _waveCount, i, grid[index]);
@@ -241,6 +248,8 @@ public class SpawnManager : MonoBehaviour
 		enemyCharacter.transform.position = pos;
 		enemyCharacter.Spawn(_characterData);
 
+		GameManager.it.battleRecord.InitCharacter(enemyCharacter);
+
 		return enemyCharacter;
 	}
 
@@ -249,18 +258,37 @@ public class SpawnManager : MonoBehaviour
 		// 체력 게이지 등도 같이 삭제해야 함.
 		foreach (var unit in playerDictionary)
 		{
+			unit.Value.DisposeModel();
 			Destroy(unit.Value.gameObject);
 		}
 
 		foreach (var unit in enemyDictionary)
 		{
+			unit.Value.DisposeModel();
 			Destroy(unit.Value.gameObject);
 		}
 
 		playerDictionary.Clear();
 		enemyDictionary.Clear();
+	}
 
-		SceneCamera.it.FindPlayers();
+	public void ClearDeadEnemy()
+	{
+		List<int> deleteEnemyKey = new List<int>();
+
+		foreach (var unit in enemyDictionary)
+		{
+			if (unit.Value.IsAlive() == false)
+			{
+				Destroy(unit.Value.gameObject);
+				deleteEnemyKey.Add(unit.Key);
+			}
+		}
+
+		for (int i = 0; i < deleteEnemyKey.Count; i++)
+		{
+			enemyDictionary.Remove(deleteEnemyKey[i]);
+		}
 	}
 
 	private void OnDrawGizmosSelected()

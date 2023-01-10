@@ -5,7 +5,10 @@ using System;
 
 public class BattleRecordEditor : EditorWindow
 {
-	Vector2 scrollPos;
+	public Vector2 scrollPos;
+	public bool filterPlayerSide = false;
+	public bool filterEnemySide = false;
+	public bool filterDeath = false;
 
 
 	private GUIStyle labelStyle
@@ -59,11 +62,39 @@ public class BattleRecordEditor : EditorWindow
 			return;
 		}
 
+		GUILayout.BeginHorizontal();
+		filterPlayerSide = GUILayout.Toggle(filterPlayerSide, "플레이어 표시 제외");
+		filterEnemySide = GUILayout.Toggle(filterEnemySide, "적 표시 제외");
+		filterDeath = GUILayout.Toggle(filterDeath, "죽은애들 제외");
+		GUILayout.EndHorizontal();
 
 		scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 		foreach (var record in GameManager.it.battleRecord.records)
 		{
-			ShowCharInfo(record);
+			Character character = CharacterManager.it.GetCharacter(record.charID, true);
+			if (filterPlayerSide)
+			{
+				if(character != null && character.info.controlSide == ControlSide.PLAYER)
+				{
+					continue;
+				}
+			}
+			if(filterEnemySide)
+			{
+				if(character != null && character.info.controlSide == ControlSide.ENEMY)
+				{
+					continue;
+				}
+			}
+			if (filterDeath)
+			{
+				if (character != null && character.currentState == StateType.DEATH)
+				{
+					continue;
+				}
+			}
+
+			ShowCharInfo(character, record);
 			GUILayout.Space(10);
 		}
 		GUILayout.EndScrollView();
@@ -74,46 +105,65 @@ public class BattleRecordEditor : EditorWindow
 		Repaint();
 	}
 
-	private void ShowCharInfo(RecordData _record)
+	private void ShowCharInfo(Character _character, RecordData _record)
 	{
-		Character character = CharacterManager.it.GetCharacter(_record.charID, true);
 		string charName;
-		if (character != null)
+		string stateText;
+		string hpText = "";
+		string descText = "";
+		if (_character != null)
 		{
-			charName = $"[{character.info.charNameAndCharId} - State: {character.currentState}]";
+			charName = $"[{_character.info.charNameAndCharId}] ";
+			stateText = $"State: {_character.currentState}";
+			if (_character.info.data.rankType == RankType.BOSS || _character.info.data.rankType == RankType.MID_BOSS || _character.info.data.rankType == RankType.FINISH_GEM)
+			{
+				descText = $"- <color=magenta>{_character.info.data.rankType}</color>";
+			}
+			if (_character.info.data.hp.GetValue() <= 0)
+			{
+				hpText = $"(HP: {0} / {_character.rawData.hp.ToString()})";
+			}
+			else
+			{
+				hpText = $"(HP: {_character.info.data.hp.ToString()} / {_character.rawData.hp.ToString()})";
+			}
 		}
 		else
 		{
 			charName = $"[<color=red>Invalid</color>({_record.charID})]";
+			stateText = $"";
 		}
 
-		if (Selection.activeGameObject == character.gameObject)
+		if (_character != null && Selection.activeGameObject == _character.gameObject)
 		{
 			charName = $"<color=yellow>{charName}</color>";
+		}
+		if(_character != null && _character.currentState == StateType.DEATH)
+		{
+			stateText = $"<color=red>{stateText}</color>";
 		}
 
 		GUILayout.BeginHorizontal();
 		if (GUILayout.Button($"Select", GUILayout.MaxWidth(60), GUILayout.MinWidth(60)))
 		{
-			Selection.activeGameObject = character.gameObject;
+			Selection.activeGameObject = _character.gameObject;
 		}
-		GUILayout.Label(charName, charNameStyle, GUILayout.MinWidth(400), GUILayout.MaxWidth(400));
+		GUILayout.Label($"{charName} - {stateText} {hpText} {descText}", charNameStyle);
 
-		if (character.target != null)
+		if (_character != null && _character.target != null)
 		{
-			if (GUILayout.Button($"Target: {character.target.info.charNameAndCharId}({character.target.charID}", buttonStyle))
+			if (GUILayout.Button($"Target: {_character.target.info.charNameAndCharId}", buttonStyle, GUILayout.MinWidth(400), GUILayout.MaxWidth(400)))
 			{
-				Selection.activeGameObject = character.target.gameObject;
+				Selection.activeGameObject = _character.target.gameObject;
 			}
 		}
 		else
 		{
-			if (GUILayout.Button($"Target: Null", buttonStyle))
+			if (GUILayout.Button($"Target: Null", buttonStyle, GUILayout.MinWidth(400), GUILayout.MaxWidth(400)))
 			{
 			}
 		}
 		GUILayout.EndHorizontal();
-
 
 		GUILayout.Label(_record.ToStringEditor());
 	}

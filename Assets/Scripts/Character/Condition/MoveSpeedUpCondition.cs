@@ -1,14 +1,22 @@
-﻿public class MoveSpeedUpConditionData
+﻿
+[System.Serializable]
+public class MoveSpeedUpConditionData
 {
 	/// <summary>
 	/// 이동속도 증가비율
 	/// </summary>
-	public float ratio;
+	public float ratio = 1;
 
 	/// <summary>
 	/// 지속시간
 	/// </summary>
-	public float duration;
+	public float duration = 5;
+
+
+	public MoveSpeedUpConditionData()
+	{
+
+	}
 
 	public MoveSpeedUpConditionData(float _ratio, float _duration)
 	{
@@ -19,7 +27,7 @@
 
 public class MoveSpeedUpCondition : ConditionBase
 {
-	public override UnitCondition conditionType => UnitCondition.MoveSpeedUp;
+	public override CharacterCondition conditionType => CharacterCondition.MoveSpeedUp;
 
 	public override string iconPath => "";
 

@@ -23,62 +23,20 @@ public class CharacterEditor : Editor
 		}
 
 		EditorGUILayout.Space();
-		ShowRecordData();
-		//ShowConditionTest(); // 필요하면 주석해제
-		EditorGUILayout.Space();
-		ShowConditionList();
-	}
-
-	private void ShowRecordData()
-	{
-		EditorGUILayout.LabelField(new GUIContent($"Record {character.info.charNameAndCharId}"), "PreToolbar");
-		RecordData record = GameManager.it.battleRecord.GetCharacterRecord(character.charID);
-		if (record == null)
+		if(GUILayout.Button("Death"))
 		{
-			EditorGUILayout.LabelField("Record is Null");
+			character.Hit(character, character.rawData.hp * 10, "Editor", Color.white, 1);
 		}
-		else
+		if(GUILayout.Button("Extension"))
 		{
-			EditorGUILayout.LabelField(record.ToStringEditor());
+			CharacterEditorExtension.ShowEditor(character);
 		}
-	}
-
-
-	private void ShowConditionList()
-	{
-		EditorGUILayout.LabelField(new GUIContent("적용중인 컨디션 어빌리티"), "PreToolbar");
-
-		EditorGUILayout.LabelField($"[AttackPowerRatio] Up: {character.conditionModule.ability.attackPowerUpRatio} / Down: {character.conditionModule.ability.attackPowerDownRatio}");
-		EditorGUILayout.LabelField($"[AttackSpeedRatio] Up: {character.conditionModule.ability.attackSpeedUpRatio} / Down: {character.conditionModule.ability.attackSpeedDownRatio}");
-		EditorGUILayout.LabelField($"[CriticalChanceRatio] Up: {character.conditionModule.ability.criticalChanceUpRatio} / Down: {character.conditionModule.ability.criticalChanceDownRatio}");
-		EditorGUILayout.LabelField($"[DamageRatio] Up: {character.conditionModule.ability.damageUpRatio} / Down: {character.conditionModule.ability.damageDownRatio}");
-		EditorGUILayout.LabelField($"[MoveSpeedRatio] Up: {character.conditionModule.ability.moveSpeedUpRatio} / Down: {character.conditionModule.ability.moveSpeedDownRatio}");
 
 		EditorGUILayout.Space();
-		EditorGUILayout.LabelField(new GUIContent("적용중인 컨디션"), "PreToolbar");
-		foreach (var condition in character.conditionModule.conditions)
-		{
-			EditorGUILayout.LabelField($"{condition.conditionType}, Duration: {condition.duration}");
-		}
-	}
-
-	private void ShowConditionTest()
-	{
-		if (GUILayout.Button("Knockback"))
-		{
-			character.conditionModule.AddCondition(new KnockbackCondition(character, new KnockbackConditionData(0.5f, 5)));
-		}
-		if (GUILayout.Button("Stun"))
-		{
-			character.conditionModule.AddCondition(new StunCondition(character, new StunConditionData(5)));
-		}
-		if (GUILayout.Button("Damage Down"))
-		{
-			character.conditionModule.AddCondition(new DamageDownCondition(character, new DamageDownConditionData(0.5f, 5)));
-		}
-		if (GUILayout.Button("Poison"))
-		{
-			character.conditionModule.AddCondition(new PoisonCondition(character, new PoisonConditionData(0.5f, 5)));
-		}
+		CharacterEditorExtension.ShowCharInfo(character);
+		EditorGUILayout.Space();
+		CharacterEditorExtension.ShowRecordData(character);
+		EditorGUILayout.Space();
+		CharacterEditorExtension.ShowConditionList(character);
 	}
 }

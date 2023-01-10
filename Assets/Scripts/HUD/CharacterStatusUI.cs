@@ -30,7 +30,7 @@ public class CharacterStatusUI : MonoBehaviour
 		rectTransform.localScale = Vector3.one;
 
 		Vector2 uipos = GameUIManager.it.ToUIPosition(observingCharacter.transform.position);
-
+		rectTransform.sizeDelta = new Vector2(70, 60);
 		rectTransform.anchoredPosition = uipos;
 		gameObject.SetActive(true);
 

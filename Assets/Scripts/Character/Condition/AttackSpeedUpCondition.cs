@@ -1,14 +1,26 @@
-﻿public class AttackSpeedUpConditionData
+﻿using System;
+using UnityEngine;
+
+[Serializable]
+public class AttackSpeedUpConditionData
 {
 	/// <summary>
 	/// 공격속도 증가비율
 	/// </summary>
-	public float ratio;
+	[Tooltip("공격속도 증가비율")]
+	[SerializeField] public float ratio = 0.5f;
 
 	/// <summary>
 	/// 지속시간
 	/// </summary>
-	public float duration;
+	[Tooltip("지속시간")]
+	[SerializeField] public float duration = 5;
+
+
+	public AttackSpeedUpConditionData()
+	{
+
+	}
 
 	public AttackSpeedUpConditionData(float _ratio, float _duration)
 	{
@@ -19,7 +31,7 @@
 
 public class AttackSpeedUpCondition : ConditionBase
 {
-	public override UnitCondition conditionType => UnitCondition.AttackSpeedUp;
+	public override CharacterCondition conditionType => CharacterCondition.AttackSpeedUp;
 
 	public override string iconPath => "";
 

@@ -11,7 +11,7 @@ public class EnemyCharacter : Character
 
 		if (characterView == null)
 		{
-			var model = Instantiate(Resources.Load($"B/{data.resource}")) as GameObject;
+			var model = UnitModelPoolManager.it.GetModel($"B/{data.resource}");
 			model.transform.SetParent(transform);
 			model.transform.localPosition = Vector3.zero;
 			model.transform.localScale = Vector3.one * 0.003f;
@@ -20,6 +20,7 @@ public class EnemyCharacter : Character
 			characterView = model;
 			gameObject.AddComponent<SphereCollider>();
 			gameObject.tag = "Enemy";
+			gameObject.name = info.charNameAndCharId;
 		}
 		Init();
 	}
@@ -29,7 +30,7 @@ public class EnemyCharacter : Character
 		transform.Translate(Vector3.left * info.MoveSpeed() * delta);
 	}
 
-	public override void Hit(Character _attacker, IdleNumber _attackPower, Color _color, float _criticalChanceMul = 1)
+	public override void Hit(Character _attacker, IdleNumber _attackPower, string _attackName, Color _color, float _criticalChanceMul = 1)
 	{
 		IdleNumber totalAttackPower = _attackPower * _criticalChanceMul * _attacker.info.DamageMul();
 		bool isCriticalAttack = _criticalChanceMul > 1;
@@ -41,13 +42,13 @@ public class EnemyCharacter : Character
 		}
 		info.data.hp -= totalAttackPower;
 
-		GameManager.it.battleRecord.RecordAttackPower(_attacker.charID, totalAttackPower, isCriticalAttack);
+		GameManager.it.battleRecord.RecordAttackPower(_attacker.charID, charID, _attackName, totalAttackPower, isCriticalAttack);
 
 	}
 
-	public override void Heal(Character _attacker, IdleNumber _attackPower, Color _color)
+	public override void Heal(Character _attacker, IdleNumber _attackPower, string _healName, Color _color)
 	{
-		base.Heal(_attacker, _attackPower, _color);
+		//base.Heal(_attacker, _attackPower, _color);
 		if (currentState != StateType.DEATH)
 		{
 			IdleNumber newHP = info.data.hp + _attackPower;
@@ -59,7 +60,7 @@ public class EnemyCharacter : Character
 
 			IdleNumber addHP = newHP - info.data.hp;
 			info.data.hp += addHP;
-			GameManager.it.battleRecord.RecordHeal(_attacker.charID, addHP);
+			GameManager.it.battleRecord.RecordHeal(_attacker.charID, charID, _healName, addHP);
 			GameUIManager.it.ShowFloatingText(_attackPower.ToString(), _color, characterAnimation.CenterPivot.position, false);
 		}
 	}

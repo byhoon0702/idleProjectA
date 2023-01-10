@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Reflection;
+using UnityEngine;
 public interface FiniteStateMachine
 {
 	void OnEnter();
@@ -9,18 +10,21 @@ public interface FiniteStateMachine
 
 public enum GameState
 {
-	None,
-	LOADING,
-	BGLOADING,
-	PLAYERSPAWN,
-	BATTLESTART,
+	None = 0,
+	LOADING = 1,
+	BGLOADING = 2,
+	PLAYERSPAWN = 3,
+	ANIMATIONSTATE = 4,
+	FEVER = 5,
+	BATTLESTART = 100,
 	BATTLE,
 	REWARD,
 	BATTLEEND,
-	BOSSSPAWN,
+	BOSSSPAWN = 200,
 	BOSSSTART,
 	BOSSBATTLE,
-	BOSSEND
+	BOSSEND,
+
 }
 
 
@@ -46,19 +50,27 @@ public class GameManager : MonoBehaviour
 	public BattleStartState battleStartState;
 	public BattleState battleState;
 	public BattleEndState battleEndState;
+	public AnimationState animationState;
+	public FeverState feverState;
+
 
 	public FiniteStateMachine currentFSM;
 	public GameState currentState;
+	public SkillMeta skillDictionary;
+	public ConfigMeta config;
 	public BattleRecord battleRecord;
 
 	private void Awake()
 	{
 		instance = this;
+		LoadConfig();
+		LoadSkillDictionary();
 	}
 
 	// Start is called before the first frame update
 	void Start()
 	{
+		animationState = new AnimationState();
 		loadingState = new LoadingState();
 		bgloadState = new BGLoadState();
 		spawnState = new SpawnState();
@@ -66,6 +78,7 @@ public class GameManager : MonoBehaviour
 		battleState = new BattleState();
 		battleEndState = new BattleEndState();
 		battleRecord = new BattleRecord();
+		feverState = new FeverState();
 
 		Application.targetFrameRate = 60;
 
@@ -86,6 +99,12 @@ public class GameManager : MonoBehaviour
 			case GameState.PLAYERSPAWN:
 				currentFSM = spawnState;
 				break;
+			case GameState.ANIMATIONSTATE:
+				currentFSM = animationState;
+				break;
+			case GameState.FEVER:
+				currentFSM = feverState;
+				break;
 			case GameState.BATTLESTART:
 				currentFSM = battleStartState;
 				break;
@@ -104,5 +123,35 @@ public class GameManager : MonoBehaviour
 	void Update()
 	{
 		currentFSM?.OnUpdate(Time.deltaTime);
+	}
+
+	private void LoadConfig()
+	{
+		instance.config = ScriptableObject.CreateInstance<ConfigMeta>();
+		TextAsset textAsset = Resources.Load<TextAsset>($"Json/{ConfigMeta.fileName.Replace(".json", "")}");
+
+		if (textAsset == null)
+		{
+			VLog.LogError("Config 로드 실패");
+			return;
+		}
+
+		JsonUtility.FromJsonOverwrite(textAsset.text, instance.config);
+	}
+
+	private void LoadSkillDictionary()
+	{
+		skillDictionary = ScriptableObject.CreateInstance<SkillMeta>();
+		skillDictionary.CreateDictionary();
+
+		TextAsset textAsset = Resources.Load<TextAsset>($"Json/{SkillMeta.fileName.Replace(".json", "")}");
+
+		if (textAsset == null)
+		{
+			VLog.LogError("Skill 데이터 로드 실패");
+			return;
+		}
+
+		JsonUtility.FromJsonOverwrite(textAsset.text, skillDictionary);
 	}
 }

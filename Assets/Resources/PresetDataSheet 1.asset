@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 431298e3be78d3d4a8517d42bad114fc, type: 3}
   m_Name: PresetDataSheet 1
   m_EditorClassIdentifier: 
-  characterDataSheet: {fileID: 11400000, guid: 7bb6c4823af0f7d40b3fc2c590e85d05, type: 2}
+  characterDataSheet: {fileID: 11400000, guid: 034bc5364302d7640a937f445d920ef2, type: 2}
   playerPartyPresetData:
   - partySlots:
     - raceType: 0
@@ -28,71 +28,32 @@ MonoBehaviour:
       level: 0
       coord: {x: 0, y: 2}
     - raceType: 0
-      characterTid: 4
+      characterTid: 1
       level: 0
       coord: {x: 0, y: 3}
-    - raceType: 0
-      characterTid: 5
-      level: 0
-      coord: {x: 0, y: 4}
   enemypartyPresetDatas:
   - partySlots:
     - raceType: 0
-      characterTid: 32
+      characterTid: 3
       level: 0
       coord: {x: 1, y: 0}
     - raceType: 0
-      characterTid: 32
+      characterTid: 3
       level: 0
       coord: {x: 2, y: 0}
     - raceType: 0
-      characterTid: 32
+      characterTid: 3
       level: 0
       coord: {x: 3, y: 0}
     - raceType: 0
-      characterTid: 33
+      characterTid: 3
       level: 0
       coord: {x: 4, y: 1}
     - raceType: 0
-      characterTid: 33
+      characterTid: 3
       level: 0
       coord: {x: 0, y: 0}
     - raceType: 0
-      characterTid: 33
+      characterTid: 3
       level: 0
       coord: {x: 3, y: 1}
-  - partySlots:
-    - raceType: 0
-      characterTid: 32
-      level: 0
-      coord: {x: 1, y: 0}
-    - raceType: 0
-      characterTid: 32
-      level: 0
-      coord: {x: 2, y: 0}
-    - raceType: 0
-      characterTid: 32
-      level: 0
-      coord: {x: 3, y: 0}
-    - raceType: 0
-      characterTid: 33
-      level: 0
-      coord: {x: 4, y: 1}
-    - raceType: 0
-      characterTid: 33
-      level: 0
-      coord: {x: 0, y: 0}
-    - raceType: 0
-      characterTid: 33
-      level: 0
-      coord: {x: 3, y: 1}
-  - partySlots:
-    - raceType: 0
-      characterTid: 36
-      level: 0
-      coord: {x: 2, y: 2}
-  - partySlots:
-    - raceType: 0
-      characterTid: 35
-      level: 0
-      coord: {x: 2, y: 2}

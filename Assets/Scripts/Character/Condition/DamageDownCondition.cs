@@ -1,14 +1,21 @@
-﻿public class DamageDownConditionData
+﻿[System.Serializable]
+public class DamageDownConditionData
 {
 	/// <summary>
 	/// 피해감소량
 	/// </summary>
-	public float ratio;
+	public float ratio = 0.5f;
 
 	/// <summary>
 	/// 감소시간
 	/// </summary>
-	public float duration;
+	public float duration = 5;
+
+
+	public DamageDownConditionData()
+	{
+
+	}
 
 	public DamageDownConditionData(float _ratio, float _duration)
 	{
@@ -19,7 +26,7 @@
 
 public class DamageDownCondition : ConditionBase
 {
-	public override UnitCondition conditionType => UnitCondition.DamageDown;
+	public override CharacterCondition conditionType => CharacterCondition.DamageDown;
 
 	public override string iconPath => "";
 
