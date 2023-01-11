@@ -35,12 +35,12 @@ public abstract class SkillBase
 	/// <summary>
 	/// 스킬명(UI표시용)
 	/// </summary>
-	public string name { get; private set; }
+	public string name => skillData.skillName;
 
 	/// <summary>
 	/// 스킬 TID
 	/// </summary>
-	public Int64 tid { get; private set; }
+	public Int64 tid => skillData.tid;
 
 	/// <summary>
 	/// 스킬 아이콘
@@ -56,7 +56,7 @@ public abstract class SkillBase
 	/// <summary>
 	/// 기본 쿨타임
 	/// </summary>
-	public float cooltime { get; private set; }
+	public float cooltime => skillData.cooltime;
 	/// <summary>
 	/// 쿨타임 계산이 진행중이다.
 	/// </summary>
@@ -88,14 +88,13 @@ public abstract class SkillBase
 
 
 	public Color fontColor;
+	private SkillBaseData skillData;
 
 
 
 	public SkillBase(SkillBaseData _skillData)
 	{
-		tid = _skillData.tid;
-		name = _skillData.skillName;
-		cooltime = _skillData.cooltime;
+		skillData = _skillData;
 	}
 
 	/// <summary>

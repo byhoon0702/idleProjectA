@@ -2,8 +2,8 @@
 using UnityEngine;
 using System;
 [Serializable]
-public class JobDataSheetObject : ScriptableObject 
+public class ClassDataSheetObject : ScriptableObject 
 {
 [SerializeField]
-public JobDataSheet dataSheet;
+public ClassDataSheet dataSheet;
 }

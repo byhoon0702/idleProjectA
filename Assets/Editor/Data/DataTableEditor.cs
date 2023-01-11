@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-
+using System.Reflection;
+using System.Collections;
 
 
 public class DataTableEditor : EditorWindow
@@ -29,8 +32,14 @@ public class DataTableEditor : EditorWindow
 	private string label;
 	private string searchString;
 	private Type instanceType;
+
+	[SerializeField]
+	private Dictionary<string, object> jsonContainer;
+	[SerializeField]
+	private Dictionary<string, Type> linkedTypeList;
 	[SerializeField]
 	public SerializedProperty dataSheetProperty;
+
 	[MenuItem("Custom Menu/DataEditor/DataTableEditor", false, 5000)]
 	public static void Init()
 	{
@@ -38,8 +47,13 @@ public class DataTableEditor : EditorWindow
 		window.minSize = new Vector2(330f, 360f);
 
 		window.Show();
+		window.InitData();
 	}
 
+	public void InitData()
+	{
+		LoadAllJson();
+	}
 	private void OnDestroy()
 	{
 
@@ -59,16 +73,68 @@ public class DataTableEditor : EditorWindow
 	}
 
 
+	public string TypeString(string name, string assembly = "Assembly-CSharp")
+	{
+		return $"{name}, {assembly}";
+	}
+
 	public static T TryParse<T>(string value)
 	{
 		TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
 		return (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, value);
 	}
 
+	public void LoadAllJson()
+	{
+		jsonContainer = new Dictionary<string, object>();
+		string[] files = Directory.GetFiles(Application.dataPath + "/AssetFolder/Resources/Json");
+
+		foreach (string file in files)
+		{
+			if (file.Contains(".meta"))
+			{
+				continue;
+			}
+			if (file.Contains("DataSheet") == false)
+			{
+				continue;
+			}
+			using (FileStream fs = File.OpenRead(file))
+			{
+				using (BinaryReader br = new BinaryReader(fs))
+				{
+					string name = System.IO.Path.GetFileNameWithoutExtension(file);
+
+					System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
+
+					string json = br.ReadString();
+
+					var dd = JsonUtility.FromJson(json, t);
+					jsonContainer.Add(t.Name, dd);
+				}
+			}
+		}
+	}
+
+	object GetData(string name)
+	{
+		return jsonContainer[name];
+	}
+
 	void OnGUI()
 	{
+		EditorGUILayout.Space(10);
 		label = EditorGUILayout.TextField("데이터 테이블 이름", label);
+		if (label.IsNullOrEmpty())
+		{
+			EditorGUILayout.HelpBox("찾을 테이블 이름을 입력하세요", MessageType.Warning);
+			return;
+		}
 
+		if (jsonContainer == null)
+		{
+			LoadAllJson();
+		}
 		if (GetScriptableObject() == false)
 		{
 			if (TypeExist())
@@ -97,6 +163,11 @@ public class DataTableEditor : EditorWindow
 			{
 				FromJson();
 			}
+			if (GUILayout.Button("Load All Json"))
+			{
+				LoadAllJson();
+			}
+
 			EditorGUILayout.EndHorizontal();
 			if (TypeExist() == false)
 			{
@@ -130,18 +201,25 @@ public class DataTableEditor : EditorWindow
 		if (serializedObject == null)
 		{
 			serializedObject = new SerializedObject(scriptableObject);
-			CreateReorderableList();
 		}
 
 		serializedObject.Update();
 
+		EditorGUILayout.Space(10);
 
 
-		EditorGUILayout.PropertyField(dataSheetProperty);
+		if (reorderableList == null)
+		{
+			CreateReorderableList();
+		}
+		EditorGUILayout.BeginVertical();
+		scrollPos = GUILayout.BeginScrollView(scrollPos, true, false, GUILayout.Width(500));
+		GUILayout.Box("", GUILayout.Width(EditorGUIUtility.currentViewWidth));
+		reorderableList.DoLayoutList();
 
 
-		//reorderableList.DoLayoutList();
-
+		GUILayout.EndScrollView();
+		EditorGUILayout.EndVertical();
 
 		serializedObject.ApplyModifiedProperties();
 
@@ -155,56 +233,126 @@ public class DataTableEditor : EditorWindow
 			return;
 		}
 		dataSheetProperty = serializedObject.FindProperty("dataSheet");
-		return;
 		var property = dataSheetProperty.FindPropertyRelative("infos");
-		reorderableList = new ReorderableList(dataSheetProperty.serializedObject, property, true, true, true, true);
-		reorderableList.drawElementCallback = DrawReorderableList;
-		reorderableList.drawHeaderCallback = DrawHeader;
-
-
-	}
-	void DrawHeader(Rect rect)
-	{
-		reorderableList.headerHeight = EditorGUIUtility.singleLineHeight * 2;
-		EditorGUI.LabelField(rect, "Header");
-		rect.height += EditorGUIUtility.singleLineHeight;
-		EditorGUI.LabelField(rect, "Header");
+		CreateReorderableList(dataSheetProperty.serializedObject, property);
+		return;
 	}
 
-
-	void DrawReorderableList(Rect rect, int index, bool isActive, bool isFocused)
+	void CreateReorderableList(SerializedObject _serializedObjet, SerializedProperty _serializeProperty)
 	{
-		SerializedProperty info = reorderableList.serializedProperty.GetArrayElementAtIndex(index);
+		if (_serializedObjet == null || _serializeProperty == null)
+		{
+			return;
+		}
+		Type rawDataType = System.Type.GetType($"{_serializeProperty.arrayElementType}, Assembly-CSharp");
+		FieldInfo[] fields = rawDataType.GetFields();
+		Type[] nested = rawDataType.GetNestedTypes();
 
-		EditorGUI.BeginChangeCheck()
-			 ;
-		Type type = System.Type.GetType($"{info.type}, Assembly-CSharp");
+		linkedTypeList = new Dictionary<string, Type>();
 
-		var fields = type.GetFields();
+		float width = (EditorGUIUtility.currentViewWidth / fields.Length) - 10;
 		for (int i = 0; i < fields.Length; i++)
 		{
-			rect.width = (EditorGUIUtility.currentViewWidth / fields.Length) - 10;
-			rect.height = EditorGUIUtility.singleLineHeight;
-			var sf = info.FindPropertyRelative(fields[i].Name);
-
-			if (sf.isExpanded)
+			if (fields[i].Name.Contains("Tid", StringComparison.Ordinal))
 			{
-				rect.height += EditorGUIUtility.singleLineHeight;
+				string typeName = fields[i].Name.Replace("Tid", "DataSheet").FirstCharacterToUpper();
+
+				if (linkedTypeList.ContainsKey(typeName))
+				{
+					continue;
+				}
+				linkedTypeList.Add(fields[i].Name, System.Type.GetType(TypeString(typeName)));
+				Debug.Log(typeName);
 			}
-
-			EditorGUI.PropertyField(rect, sf, GUIContent.none);
-
-			rect.x += rect.width + 5;
 		}
 
-		if (EditorGUI.EndChangeCheck())
+		reorderableList = new ReorderableList(_serializedObjet, _serializeProperty);
+
+		reorderableList.elementHeight = EditorGUIUtility.singleLineHeight * 2;
+		reorderableList.drawHeaderCallback += rect =>
 		{
-			info.serializedObject.ApplyModifiedProperties();
-		}
+			Rect tempRect = new Rect(rect);
+			tempRect.x = 20;
+			for (int i = 0; i < fields.Length; i++)
+			{
 
+				tempRect.width = width;
+				tempRect.height = EditorGUIUtility.singleLineHeight;
+
+				EditorGUI.LabelField(tempRect, fields[i].Name, EditorStyles.boldLabel);
+				tempRect.x += tempRect.width + 5;
+
+			}
+		};
+
+		reorderableList.drawElementCallback += (rect, index, isActive, isFocused) =>
+		{
+			Rect tempRect = new Rect(rect);
+			SerializedProperty info = reorderableList.serializedProperty.GetArrayElementAtIndex(index);
+			Type type = rawDataType;
+
+			for (int i = 0; i < fields.Length; i++)
+			{
+				var field = fields[i];
+				tempRect.y = rect.y;
+				tempRect.width = width;
+				tempRect.height = EditorGUIUtility.singleLineHeight;
+				var sf = info.FindPropertyRelative(field.Name);
+
+				if (linkedTypeList.ContainsKey(field.Name))
+				{
+					Type linkType = linkedTypeList[field.Name];
+					if (linkType == null)
+					{
+						EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
+						tempRect.x += tempRect.width + 5;
+						continue;
+					}
+					if (jsonContainer.ContainsKey(linkType.Name))
+					{
+						var obj = jsonContainer[linkType.Name].GetType().GetField("infos");
+						var ff = obj.GetValue(jsonContainer[linkType.Name]);
+
+						List<GUIContent> nameList = new List<GUIContent>();
+						if (typeof(IList).IsAssignableFrom(ff))
+						{
+							foreach (var item in ff as IList)
+							{
+								Type itemType = item.GetType();
+								nameList.Add(new GUIContent($"{(long)itemType.GetField("tid").GetValue(item)} :{(string)itemType.GetField("description").GetValue(item)}"));
+							}
+						}
+
+						if (nameList.Count > 0)
+						{
+							EditorGUI.IntPopup(tempRect, sf, nameList.ToArray(), null, GUIContent.none);
+							tempRect.x += tempRect.width + 5;
+							continue;
+						}
+					}
+				}
+
+				if (sf.type == "IdleNumber")
+				{
+					Rect idlenumberRect = new Rect(tempRect);
+
+					idlenumberRect.width = tempRect.width / 2f - 2.5f;
+
+					EditorGUI.PropertyField(idlenumberRect, sf.FindPropertyRelative("Value"), GUIContent.none);
+					idlenumberRect.x += idlenumberRect.width + 5;
+					EditorGUI.PropertyField(idlenumberRect, sf.FindPropertyRelative("Exp"), GUIContent.none);
+				}
+				else
+				{
+					EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
+				}
+
+				tempRect.x += tempRect.width + 5;
+			}
+		};
+
+		//	reorderableList.onSelectCallback += index => { };
 	}
-
-
 
 	bool TypeExist()
 	{
@@ -237,6 +385,7 @@ public class DataTableEditor : EditorWindow
 		{
 			return false;
 		}
+
 		string[] folders = new string[]
 		{
 			"Assets/Resources",
@@ -253,7 +402,10 @@ public class DataTableEditor : EditorWindow
 				return true;
 			}
 		}
-
+		searchString = $"{label}Object";
+		reorderableList = null;
+		serializedObject = null;
+		scriptableObject = null;
 		return false;
 	}
 
@@ -261,10 +413,8 @@ public class DataTableEditor : EditorWindow
 	{
 		var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
 
-
 		System.Reflection.FieldInfo info = targetObje.GetType().GetField("dataSheet");
 		var sd = info.GetValue(targetObje);
-
 
 		string path = EditorUtility.SaveFilePanel("", Application.dataPath + "/AssetFolder/Resources/Json", label, "json");
 
@@ -282,6 +432,7 @@ public class DataTableEditor : EditorWindow
 				sw.Write(json);
 			}
 		}
+		AssetDatabase.Refresh();
 	}
 
 	void FromJson()
@@ -349,90 +500,5 @@ public class DataTableEditor : EditorWindow
 		}
 
 		AssetDatabase.Refresh();
-	}
-
-	//void GenerateCode()
-	//{
-	//	if (variableList.Count == 0)
-	//	{
-	//		return;
-	//	}
-
-	//	float i = 0;
-
-	//	string path = string.Concat(Application.dataPath, Path.DirectorySeparatorChar, $"DataClass/{className}.cs");
-	//	using (FileStream fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write))
-	//	{
-	//		using (StreamWriter writer = new StreamWriter(fs))
-	//		{
-	//			StringBuilder sb = new StringBuilder();
-
-	//			sb.AppendLine($"//========AUTO GENERATED CODE======//");
-	//			sb.AppendLine($"public class {className}");
-	//			sb.AppendLine("{");
-	//			// AppDomain.CurrentDomain.GetAssemblies();
-
-	//			foreach (var variable in variableList)
-	//			{
-	//				System.Type dataType = null;
-	//				if (typeList.ContainsKey(variable.dataType))
-	//				{
-	//					dataType = typeList[variable.dataType];
-	//				}
-	//				else
-	//				{
-	//					dataType = ConvertStringToType(variable.dataType);
-	//				}
-
-	//				if (dataType == null)
-	//				{
-	//					Debug.LogError("올바르지 않은 자료형");
-
-	//					return;
-	//				}
-	//				if (variable.variableName.IsNullOrEmpty())
-	//				{
-	//					Debug.LogError("변수 이름이 비어있음");
-
-	//					return;
-	//				}
-	//				if (variable.variableName[0] >= '0' && variable.variableName[0] <= '9')
-	//				{
-	//					Debug.LogError("변수 이름이 숫자로 시작 하면 안됨");
-
-	//					return;
-	//				}
-	//				sb.AppendLine($"\tpublic {variable.dataType} {variable.variableName};");
-
-	//				//EditorUtility.DisplayProgressBar("Please Wait...", "", i / variableList.Count);
-	//				//i++;
-	//			}
-
-	//			sb.AppendLine("}");
-
-	//			writer.Write(sb.ToString());
-
-
-	//		}
-	//	}
-	//}
-
-	private Type ConvertStringToType(string name)
-	{
-
-		var assemblise = System.AppDomain.CurrentDomain.GetAssemblies();
-
-		foreach (var assembly in assemblise)
-		{
-			foreach (var type in assembly.GetTypes())
-			{
-				if (type.Name == name)
-				{
-					return type;
-				}
-
-			}
-		}
-		return null;
 	}
 }

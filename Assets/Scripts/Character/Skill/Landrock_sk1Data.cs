@@ -13,22 +13,26 @@ public class Landrock_sk1Data : SkillBaseData
 	/// <summary>
 	/// 넉백 데이터
 	/// </summary>
-	public KnockbackConditionData knockbackData = new KnockbackConditionData();
+	[Tooltip("넉백 데이터")]
+	[SerializeField] public KnockbackConditionData knockbackData = new KnockbackConditionData();
 
 	/// <summary>
 	/// 방어감소 데이터
 	/// </summary>
-	public DamageDownConditionData damageDownConditionData = new DamageDownConditionData();
+	[Tooltip("방어감소 데이터")]
+	[SerializeField] public DamageDownConditionData damageDownConditionData = new DamageDownConditionData();
 
 	/// <summary>
 	/// 공격범위
 	/// </summary>
-	public float attackRange = 5;
+	[Tooltip("공격범위")]
+	[SerializeField] public float attackRange = 5;
 
 	/// <summary>
 	/// 대미지 배율
 	/// </summary>
-	public float attackPowerMul = 1;
+	[Tooltip("대미지 배율")]
+	[SerializeField] public float attackPowerMul = 1;
 }
 
 

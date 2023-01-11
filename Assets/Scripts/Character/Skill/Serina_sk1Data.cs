@@ -40,6 +40,7 @@ public class Serina_sk1 : SkillBase
 
 
 
+
 	public Serina_sk1(Serina_sk1Data _skillData) : base(_skillData)
 	{
 		skillData = _skillData;

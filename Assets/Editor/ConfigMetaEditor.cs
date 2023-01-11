@@ -11,14 +11,14 @@ using System.IO;
 public class ConfigMetaEditor : EditorWindow
 {
 	/// <summary>
-	/// 게임내 사용중인 config
+	/// 게임내 사용중인 데이터
 	/// </summary>
-	public SerializedObject instanceConfig;
+	public SerializedObject instanceSO;
 
 	/// <summary>
-	/// 메타에서 불러온 config
+	/// 메타에서 불러온 데이터
 	/// </summary>
-	public SerializedObject metaConfig;
+	public SerializedObject metaSO;
 
 
 	private Vector2 scrollPos;
@@ -61,11 +61,11 @@ public class ConfigMetaEditor : EditorWindow
 		}
 
 		// 초기화가 안된경우, 초기화 해줌
-		if (instanceConfig == null && GameManager.it.config != null)
+		if (instanceSO == null && GameManager.it.config != null)
 		{
-			instanceConfig = new SerializedObject(GameManager.it.config);
+			instanceSO = new SerializedObject(GameManager.it.config);
 		}
-		if (metaConfig == null)
+		if (metaSO == null)
 		{
 			ReloadMetaConfig();
 		}
@@ -75,11 +75,11 @@ public class ConfigMetaEditor : EditorWindow
 
 
 		scrollPos = GUILayout.BeginScrollView(scrollPos);
-		instanceConfig.Update();
-		metaConfig.Update();
+		instanceSO.Update();
+		metaSO.Update();
 		// 데이터 리스트 표시
 		ShowData(); 
-		instanceConfig.ApplyModifiedProperties();
+		instanceSO.ApplyModifiedProperties();
 
 
 		EditorGUILayout.Space(50);
@@ -101,7 +101,7 @@ public class ConfigMetaEditor : EditorWindow
 		GUILayout.BeginHorizontal();
 		if (GUILayout.Button("Save"))
 		{
-			var json = JsonUtility.ToJson(instanceConfig.targetObject, true);
+			var json = JsonUtility.ToJson(instanceSO.targetObject, true);
 			File.WriteAllText(ConfigMeta.filePath + ConfigMeta.fileName, json);
 			AssetDatabase.Refresh();
 
@@ -110,7 +110,7 @@ public class ConfigMetaEditor : EditorWindow
 		if (GUILayout.Button("Load"))
 		{
 			var json = File.ReadAllText(ConfigMeta.filePath + ConfigMeta.fileName);
-			JsonUtility.FromJsonOverwrite(json, instanceConfig.targetObject);
+			JsonUtility.FromJsonOverwrite(json, instanceSO.targetObject);
 
 			ReloadMetaConfig();
 		}
@@ -146,7 +146,7 @@ public class ConfigMetaEditor : EditorWindow
 
 					GUILayout.Label($"{tooltipText}", labelStyle);
 
-					SerializedProperty prop = instanceConfig.FindProperty(propertyText);
+					SerializedProperty prop = instanceSO.FindProperty(propertyText);
 
 					float originWidth = EditorGUIUtility.labelWidth;
 					EditorGUIUtility.labelWidth = 300;
@@ -154,8 +154,8 @@ public class ConfigMetaEditor : EditorWindow
 
 					GUILayout.BeginHorizontal();
 					EditorGUILayout.PropertyField(prop);
-					var instanceValue = field.GetValue(instanceConfig.targetObject);
-					var metaValue = field.GetValue(metaConfig.targetObject);
+					var instanceValue = field.GetValue(instanceSO.targetObject);
+					var metaValue = field.GetValue(metaSO.targetObject);
 
 					if (instanceValue.ToString() == metaValue.ToString())
 					{
@@ -179,15 +179,15 @@ public class ConfigMetaEditor : EditorWindow
 	{
 		EditorGUILayout.LabelField("Json Data", new GUIStyle("PreToolbar"));
 		EditorGUI.BeginDisabledGroup(true);
-		EditorGUILayout.TextArea(JsonUtility.ToJson(instanceConfig.targetObject, true));
+		EditorGUILayout.TextArea(JsonUtility.ToJson(instanceSO.targetObject, true));
 		EditorGUI.EndDisabledGroup();
 	}
 
 	private void ReloadMetaConfig()
 	{
-		metaConfig = new SerializedObject(CreateInstance<ConfigMeta>());
+		metaSO = new SerializedObject(CreateInstance<ConfigMeta>());
 
 		var json = File.ReadAllText(ConfigMeta.filePath + ConfigMeta.fileName);
-		JsonUtility.FromJsonOverwrite(json, metaConfig.targetObject);
+		JsonUtility.FromJsonOverwrite(json, metaSO.targetObject);
 	}
 }

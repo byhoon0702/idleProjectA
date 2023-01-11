@@ -45,10 +45,6 @@ public class SkillListEditor : EditorWindow
 		{
 			Application.OpenURL(SkillMeta.filePath);
 		}
-		if (GUILayout.Button($"파일 열기({SkillMeta.fileName})"))
-		{
-			Application.OpenURL(SkillMeta.filePath + SkillMeta.fileName);
-		}
 
 		if (Application.isPlaying == false)
 		{
@@ -56,13 +52,13 @@ public class SkillListEditor : EditorWindow
 			return;
 		}
 
-		raw = GUILayout.Toggle(raw, "Raw");
-		
 		// 초기화가 안된경우, 초기화 해줌
-		if (skillMetaScriptableObject == null && GameManager.it.skillDictionary != null)
+		if (skillMetaScriptableObject == null && GameManager.it.skillMeta != null)
 		{
-			skillMetaScriptableObject = new SerializedObject(GameManager.it.skillDictionary);
+			skillMetaScriptableObject = new SerializedObject(GameManager.it.skillMeta);
 		}
+
+		raw = GUILayout.Toggle(raw, "Raw");
 		filter = EditorGUILayout.TextField("Filter", filter);
 
 

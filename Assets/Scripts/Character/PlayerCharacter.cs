@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 
+using asd = System.Int32;
+
 public class PlayerCharacter : Character
 {
-
 	public int side;
 	Vector3 moveDirection;
 	RaycastHit raycastHit;

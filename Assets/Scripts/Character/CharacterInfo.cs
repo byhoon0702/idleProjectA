@@ -6,7 +6,7 @@ public class CharacterInfo
 	public Character owner;
 	public CharacterData data;
 	public ControlSide controlSide;
-	public JobData jobData;
+	public ClassData jobData;
 	public RaceData raceData;
 	/// <summary>
 	/// UI표시용
@@ -31,7 +31,7 @@ public class CharacterInfo
 
 	void InitDatas()
 	{
-		jobData = DataManager.it.Get<JobDataSheet>().Get(data.classTid);
+		jobData = DataManager.it.Get<ClassDataSheet>().Get(data.classTid);
 		raceData = DataManager.it.Get<RaceDataSheet>().Get(data.raceTid);
 	}
 

@@ -40,6 +40,7 @@ public class Gilius_sk1 : SkillBase
 	private Gilius_sk1Data skillData;
 
 
+
 	public Gilius_sk1(Gilius_sk1Data _skillData) : base(_skillData)
 	{
 		skillData = _skillData;

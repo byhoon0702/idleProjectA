@@ -3,21 +3,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class SkillMeta : ScriptableObject
 {
 	public static string filePath
 	{
 		get
 		{
-			return $"{Application.dataPath}/AssetFolder/Resources/Json/";
-		}
-	}
-
-	public static string fileName
-	{
-		get
-		{
-			return $"Skill.json";
+			return $"{Application.dataPath}/AssetFolder/Resources/Json/Skill/";
 		}
 	}
 
@@ -30,25 +23,23 @@ public class SkillMeta : ScriptableObject
 				return null;
 			}
 
-			return GameManager.it.skillDictionary;
+			return GameManager.it.skillMeta;
 		}
 	}
 
-	[SerializeField] public Serina_sk1Data serina_Sk1Data;
-	[SerializeField] public Landrock_sk1Data landrock_Sk1Data;
-	[SerializeField] public Mirfiana_sk1Data mirfiana_Sk1Data;
-	[SerializeField] public Haru_sk1Data haru_Sk1Data;
-	[SerializeField] public Gilius_sk1Data gilius_Sk1Data;
+	public Serina_sk1Data serina_Sk1Data;
+	public Landrock_sk1Data landrock_Sk1Data;
+	public Mirfiana_sk1Data mirfiana_Sk1Data;
+	public Haru_sk1Data haru_Sk1Data;
+	public Gilius_sk1Data gilius_Sk1Data;
 
-	public bool initialized;
+	[NonSerialized] public Dictionary<string, SkillBaseData> dic = new Dictionary<string, SkillBaseData>();
 
-
-	public Dictionary<string, SkillBaseData> dic = new Dictionary<string, SkillBaseData>();
-
-	public void CreateDictionary()
+	public void LoadData()
 	{
 		dic.Clear();
 
+		// 기본 데이터 초기화
 		serina_Sk1Data = ScriptableObject.CreateInstance<Serina_sk1Data>();
 		landrock_Sk1Data = ScriptableObject.CreateInstance<Landrock_sk1Data>();
 		mirfiana_Sk1Data = ScriptableObject.CreateInstance<Mirfiana_sk1Data>();
@@ -60,6 +51,34 @@ public class SkillMeta : ScriptableObject
 		dic.Add(typeof(Mirfiana_sk1).ToString(), mirfiana_Sk1Data);
 		dic.Add(typeof(Haru_sk1).ToString(), haru_Sk1Data);
 		dic.Add(typeof(Gilius_sk1).ToString(), gilius_Sk1Data);
+
+
+
+		// 저장되어 있는 데이터 불러오기
+		HashSet<string> matched = new HashSet<string>();
+		TextAsset[] skillAssets = Resources.LoadAll<TextAsset>("Json/Skill");
+
+		foreach(var asset in skillAssets)
+		{
+			foreach (var data in dic)
+			{
+				if (asset.name == $"{data.Key}Data")
+				{
+					JsonUtility.FromJsonOverwrite(asset.text, data.Value);
+					matched.Add(data.Key);
+				}
+			}
+		}
+
+
+		// 스킬정보에 관련된 json파일이 없는 경우 경고 띄워주기
+		foreach(var data in dic)
+		{
+			if(matched.Contains(data.Key) == false)
+			{
+				VLog.SkillLogWarning($"스킬정보가 담긴 json파일 찾지 못함. 기본값 사용됨. {data.Key}Data");
+			}
+		}
 	}
 }
 

@@ -390,7 +390,7 @@ MonoBehaviour:
     attackPower:
       Value: 0
       Exp: 0
-    skillID: 
+    skillTid: 0
     rankType: 0
   characterAnimation: {fileID: 0}
   currentState: 0
@@ -1028,7 +1028,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterDataSheet:
-    infos: []
+    infos:
+    - name: 
+      resource: 
+      tid: 0
+      classTid: 0
+      raceTid: 0
+      element: 0
+      grade: 0
+      starlevel: 0
+      hp:
+        Value: 0
+        Exp: 0
+      attackPower:
+        Value: 0
+        Exp: 0
+      skillTid: 0
+      rankType: 0
   presetDataSheet: {fileID: 11400000, guid: 2bd39f5d3547bcc429151d528e012e1b, type: 2}
   playerRoot: {fileID: 1776112150}
   enemyRoot: {fileID: 1270444693}
@@ -1075,6 +1091,7 @@ MonoBehaviour:
   gameSpeed: 1
   mapController: {fileID: 782454260}
   currentState: 0
+  skillMeta: {fileID: 0}
   config: {fileID: 0}
 --- !u!114 &1143395402
 MonoBehaviour:
@@ -1399,7 +1416,7 @@ MonoBehaviour:
     attackPower:
       Value: 0
       Exp: 0
-    skillID: 
+    skillTid: 0
     rankType: 0
   characterAnimation: {fileID: 0}
   currentState: 0

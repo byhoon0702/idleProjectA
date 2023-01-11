@@ -5,6 +5,8 @@ using System;
 public class RaceData
 {
 	public long tid;
+	//데이터 테이블에만 표시되는 설명 
+	public string description;
 	public RaceType raceType;
 }
 [Serializable]

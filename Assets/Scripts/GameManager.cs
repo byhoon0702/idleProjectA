@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
 
 	public FiniteStateMachine currentFSM;
 	public GameState currentState;
-	public SkillMeta skillDictionary;
+	public SkillMeta skillMeta;
 	public ConfigMeta config;
 	public BattleRecord battleRecord;
 
@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
 	{
 		instance = this;
 		LoadConfig();
-		LoadSkillDictionary();
+		LoadSkillMeta();
 	}
 
 	// Start is called before the first frame update
@@ -139,19 +139,9 @@ public class GameManager : MonoBehaviour
 		JsonUtility.FromJsonOverwrite(textAsset.text, instance.config);
 	}
 
-	private void LoadSkillDictionary()
+	private void LoadSkillMeta()
 	{
-		skillDictionary = ScriptableObject.CreateInstance<SkillMeta>();
-		skillDictionary.CreateDictionary();
-
-		TextAsset textAsset = Resources.Load<TextAsset>($"Json/{SkillMeta.fileName.Replace(".json", "")}");
-
-		if (textAsset == null)
-		{
-			VLog.LogError("Skill 데이터 로드 실패");
-			return;
-		}
-
-		JsonUtility.FromJsonOverwrite(textAsset.text, skillDictionary);
+		skillMeta = ScriptableObject.CreateInstance<SkillMeta>();
+		skillMeta.LoadData();
 	}
 }

@@ -20,9 +20,9 @@ public abstract class CharacterClass
 	public abstract void OnAttack();
 	public virtual void OnInitSkill(SkillModule _skillModule)
 	{
-		string id = owner.info.data.skillID;
-		if (string.IsNullOrEmpty(id) == false)
+		if (owner.info.data.skillTid != 0)
 		{
+			string id = SkillTidDictionary.GetSkillName(owner.info.data.skillTid);
 			var type = System.Type.GetType(id);
 
 			if (type == null)
@@ -37,7 +37,7 @@ public abstract class CharacterClass
 				return;
 			}
 
-			var paramerts = SkillMeta.it.dic[id];
+			var paramerts = new object[] { SkillMeta.it.dic[id] };
 			object classObject;
 			SkillBase skill;
 
@@ -46,9 +46,9 @@ public abstract class CharacterClass
 				classObject = System.Activator.CreateInstance(type, paramerts);
 				skill = classObject as SkillBase;
 			}
-			catch
+			catch(System.Exception e)
 			{
-				VLog.SkillLogError($"스킬 생성실패. SKill ID : {id}");
+				VLog.SkillLogError($"스킬 생성실패. SKill ID : {id}\n{e}");
 				return;
 			}
 

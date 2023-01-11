@@ -1,8 +1,10 @@
 ﻿
 [System.Serializable]
-public class JobData
+public class ClassData
 {
 	public long tid;
+	//데이터 테이블에만 표시되는 설명 
+	public string description;
 	public ClassType classType;
 	public AttackType attackType;
 	public float attackRange = 1;
@@ -17,9 +19,9 @@ public class JobData
 }
 
 [System.Serializable]
-public class JobDataSheet : DataBase<JobData>
+public class ClassDataSheet : DataBase<ClassData>
 {
-	public JobData Get(long tid)
+	public ClassData Get(long tid)
 	{
 		for (int i = 0; i < infos.Count; i++)
 		{

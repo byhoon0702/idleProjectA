@@ -30,6 +30,8 @@ public class Mirfiana_sk1 : SkillBase
 	private Mirfiana_sk1Data skillData;
 
 
+
+
 	public Mirfiana_sk1(Mirfiana_sk1Data _skillData) : base(_skillData)
 	{
 		skillData = _skillData;

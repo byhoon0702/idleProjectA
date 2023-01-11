@@ -41,6 +41,12 @@ public static class VLog
 			Debug.Log($"[Skill] {_message}", _context);
 		}
 	}
+
+	public static void SkillLogWarning(object _message, Object _context = null)
+	{
+		Debug.LogWarning($"[Skill] {_message}", _context);
+	}
+
 	public static void SkillLogError(object _message, Object _context = null)
 	{
 		Debug.LogError($"[Skill] {_message}", _context);
