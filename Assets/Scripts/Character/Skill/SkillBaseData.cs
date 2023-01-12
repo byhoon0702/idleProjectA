@@ -3,8 +3,15 @@ using UnityEngine;
 
 public class SkillBaseData : ScriptableObject
 {
-	public Int64 tid => SkillTidDictionary.GetSkillTid(GetType().ToString());
-	public string key => GetType().ToString();
+	/// <summary>
+	/// tid
+	/// </summary>
+	[SerializeField] public Int64 tid;
+
+	/// <summary>
+	/// 스킬 프리셋
+	/// </summary>
+	[SerializeField] public string skillPreset;
 
 	/// <summary>
 	/// 스킬이름(UI)
@@ -17,6 +24,12 @@ public class SkillBaseData : ScriptableObject
 	/// </summary>
 	[Tooltip("스킬설명(UI)")]
 	[SerializeField] public string description = "스킬 설명";
+
+	/// <summary>
+	/// 타게팅 종류
+	/// </summary>
+	[Tooltip("타게팅 종류")]
+	[SerializeField] public TargetingType targetingType = TargetingType.Default;
 
 	/// <summary>
 	/// 스킬 쿨타임
@@ -41,6 +54,11 @@ public abstract class SkillBase
 	/// 스킬 TID
 	/// </summary>
 	public Int64 tid => skillData.tid;
+
+	/// <summary>
+	/// 스킬 프리셋 이름
+	/// </summary>
+	public string preset => skillData.skillPreset;
 
 	/// <summary>
 	/// 스킬 아이콘
@@ -86,6 +104,11 @@ public abstract class SkillBase
 	/// </summary>
 	public float uiSkillGauge => Mathf.Clamp01(1 - (remainCooltime / cooltime));
 
+	/// <summary>
+	/// 로그용
+	/// </summary>
+	public string skillEditorLogTitle => $"[스킬 초기화][{owner.info.charNameAndCharId} / {skillData.skillName}({skillData.tid}) - Lv: {owner.info.skillLevel})";
+
 
 	public Color fontColor;
 	private SkillBaseData skillData;
@@ -104,9 +127,16 @@ public abstract class SkillBase
 	{
 		owner = _character;
 
+		CalculateSkillLevelData(owner.info.skillLevel);
+
 		SetCooltime();
 		coolDowning = true;
 	}
+
+	/// <summary>
+	/// 스킬 레벨이 셋팅될때 호출. 레벨별 대미지 수치등을 캐싱할때 사용
+	/// </summary>
+	public abstract void CalculateSkillLevelData(Int32 _skillLevel);
 
 	/// <summary>
 	/// 스킬 사용 준비가 되었다.

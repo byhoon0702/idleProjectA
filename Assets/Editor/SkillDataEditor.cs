@@ -20,10 +20,11 @@ public class SkillDataEditor : EditorWindow
 	/// </summary>
 	public SerializedObject metaSO;
 
-	public string skillKey;
+	public string preset;
 	public Int64 tid;
 
-	public string skillFileFullPath => SkillMeta.filePath + skillKey + ".json";
+	private Vector2 scrollPos;
+	public string skillFileFullPath => SkillMeta.jsonFilePath + tid + ".json";
 
 
 	private GUIStyle labelStyle
@@ -39,12 +40,11 @@ public class SkillDataEditor : EditorWindow
 
 	public static void ShowEditor(SkillBaseData _skillData)
 	{
-		SkillDataEditor window = ScriptableObject.CreateInstance<SkillDataEditor>();
-		window.position = new Rect(Screen.width / 2, Screen.height / 2, 600, 300);
+		SkillDataEditor window = CreateInstance<SkillDataEditor>();
 		window.titleContent = new GUIContent(window.ToString());
 		window.instanceSO = new SerializedObject(_skillData);
 
-		window.skillKey = _skillData.key;
+		window.preset = _skillData.skillPreset;
 		window.tid = _skillData.tid;
 
 		window.Show();
@@ -69,16 +69,18 @@ public class SkillDataEditor : EditorWindow
 			ReloadMetaData();
 		}
 
-		if (GUILayout.Button($"파일 열기({skillKey})"))
+		if (GUILayout.Button($"파일 열기({tid}({preset}))"))
 		{
 			Application.OpenURL(skillFileFullPath);
 		}
 
 
-		GUILayout.Label(new GUIContent($"{tid} - {skillKey}"), "PreToolbar");
+		GUILayout.Label(new GUIContent($"{tid} - {preset}"), "PreToolbar");
 		ShowButtonMenu();
 		GUILayout.Space(5);
 
+
+		scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
 		instanceSO.Update();
 		metaSO.Update();
@@ -107,7 +109,11 @@ public class SkillDataEditor : EditorWindow
 
 					var instanceValue = field.GetValue(instanceSO.targetObject);
 					var metaObject = field.GetValue(metaSO.targetObject);
-					if(metaObject.GetType() == typeof(string) ||
+					if(metaObject == null)
+					{
+						compareJson = false;
+					}
+					else if(metaObject.GetType() == typeof(string) ||
 						metaObject.GetType() == typeof(int) ||
 						metaObject.GetType() == typeof(float) ||
 						metaObject.GetType() == typeof(long) ||
@@ -122,7 +128,11 @@ public class SkillDataEditor : EditorWindow
 
 					string finalMetaText = "";
 
-					if(compareJson)
+					if(metaObject == null) // 새로 추가된 데이터고 json에 없으면 여기로 들어온다
+					{
+						finalMetaText = "Meta: NULL";
+					}
+					else if(compareJson)
 					{
 						string instanceToJson = JsonUtility.ToJson(instanceValue);
 						string metaToJson = JsonUtility.ToJson(metaObject);
@@ -154,6 +164,16 @@ public class SkillDataEditor : EditorWindow
 					EditorGUIUtility.labelWidth = originWidth;
 					GUILayout.Space(10);
 				}
+
+				if(attribute.AttributeType == typeof(FourArithmeticAttribute))
+				{
+					if(GUILayout.Button("사칙연산 테스트", GUILayout.MaxWidth(200)))
+					{
+						var instanceValue = field.GetValue(instanceSO.targetObject);
+						FourArithmeticTester.ShowEditor(instanceValue.ToString());
+					}
+					GUILayout.Space(20);
+				}
 			}
 		}
 		instanceSO.ApplyModifiedProperties();
@@ -162,6 +182,8 @@ public class SkillDataEditor : EditorWindow
 		EditorGUI.BeginDisabledGroup(true);
 		GUILayout.TextArea(JsonUtility.ToJson(instanceSO.targetObject, true));
 		EditorGUI.EndDisabledGroup();
+
+		EditorGUILayout.EndScrollView();
 	}
 
 	private void ShowButtonMenu()
@@ -189,7 +211,7 @@ public class SkillDataEditor : EditorWindow
 
 	private void ReloadMetaData()
 	{
-		metaSO = new SerializedObject(CreateInstance($"{skillKey}"));
+		metaSO = new SerializedObject(CreateInstance($"{preset}"));
 
 		if(File.Exists(skillFileFullPath))
 		{

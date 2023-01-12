@@ -27,7 +27,7 @@ public class UIBattleRecord : MonoBehaviour
 
 		foreach (var character in playerCharacterList)
 		{
-			var record = GameManager.it.battleRecord.GetCharacterRecord(character.charID);
+			var record = VGameManager.it.battleRecord.GetCharacterRecord(character.charID);
 			recordList.Add(record);
 
 			var item = Instantiate(itemBattleRecord, listItemParent);

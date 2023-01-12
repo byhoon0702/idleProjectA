@@ -1,5 +1,5 @@
 ﻿[System.Serializable]
-public class StunConditionData
+public class StunConditionData : ConditionDataBase
 {
 	/// <summary>
 	/// 스턴시간
@@ -15,13 +15,24 @@ public class StunConditionData
 	public StunConditionData(float _duration)
 	{
 		duration = _duration;
-	}	
+	}
+
+	public override object Clone()
+	{
+		return new StunConditionData(duration);
+	}
+
+	public override string ToString()
+	{
+		return $"[Stun] duration: {duration}";
+	}
 }
 
 public class StunCondition : ConditionBase
 {
 
 	public override CharacterCondition conditionType => CharacterCondition.Stun;
+	public override BuffType buffType => BuffType.Debuff;
 
 	public override string iconPath => "";
 

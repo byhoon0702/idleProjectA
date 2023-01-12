@@ -3,8 +3,8 @@
 	public override void OnEnter()
 	{
 		elapsedTime = 0;
-		GameManager.it.battleRecord = new BattleRecord();
-		GameManager.it.battleRecord.InitCharacter(CharacterManager.it.GetCharacters(true));
+		VGameManager.it.battleRecord = new BattleRecord();
+		VGameManager.it.battleRecord.InitCharacter(CharacterManager.it.GetCharacters(true));
 		UIController.it.ReadyBattleRecord();
 	}
 
@@ -18,7 +18,7 @@
 		elapsedTime += time;
 		if (elapsedTime > 1)
 		{
-			GameManager.it.ChangeState(GameState.BATTLE);
+			VGameManager.it.ChangeState(GameState.BATTLE);
 		}
 	}
 }

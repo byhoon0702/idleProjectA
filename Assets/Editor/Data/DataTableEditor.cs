@@ -11,6 +11,8 @@ using UnityEngine;
 using System.Reflection;
 using System.Collections;
 
+using UnityEngine.Purchasing.MiniJSON;
+using System.Linq;
 
 public class DataTableEditor : EditorWindow
 {
@@ -32,7 +34,8 @@ public class DataTableEditor : EditorWindow
 	private string label;
 	private string searchString;
 	private Type instanceType;
-
+	private string currentJsonFileName;
+	private string currentJsonFilePath;
 	[SerializeField]
 	private Dictionary<string, object> jsonContainer;
 	[SerializeField]
@@ -43,7 +46,7 @@ public class DataTableEditor : EditorWindow
 	[MenuItem("Custom Menu/DataEditor/DataTableEditor", false, 5000)]
 	public static void Init()
 	{
-		var window = EditorWindow.GetWindow<DataTableEditor>();
+		var window = EditorWindow.CreateWindow<DataTableEditor>(new Type[] { typeof(DataTableEditor), });
 		window.minSize = new Vector2(330f, 360f);
 
 		window.Show();
@@ -57,6 +60,18 @@ public class DataTableEditor : EditorWindow
 	private void OnDestroy()
 	{
 
+	}
+
+	private static readonly Type[] types =
+	{
+		typeof(DataTableEditor),
+	};
+
+
+	public override IEnumerable<Type> GetExtraPaneTypes()
+	{
+
+		return types;
 	}
 
 	private string _instanceName;
@@ -109,17 +124,21 @@ public class DataTableEditor : EditorWindow
 
 					string json = br.ReadString();
 
-					var dd = JsonUtility.FromJson(json, t);
-					jsonContainer.Add(t.Name, dd);
+					try
+					{
+						var jsonData = JsonUtility.FromJson(json, t);
+						jsonContainer.Add(t.Name, jsonData);
+					}
+					catch (Exception e)
+					{
+
+					}
+
 				}
 			}
 		}
 	}
 
-	object GetData(string name)
-	{
-		return jsonContainer[name];
-	}
 
 	void OnGUI()
 	{
@@ -127,15 +146,22 @@ public class DataTableEditor : EditorWindow
 		label = EditorGUILayout.TextField("데이터 테이블 이름", label);
 		if (label.IsNullOrEmpty())
 		{
-			EditorGUILayout.HelpBox("찾을 테이블 이름을 입력하세요", MessageType.Warning);
+			EditorGUILayout.Space(3);
+			if (GUILayout.Button("Load Json"))
+			{
+				FromJson();
+			}
+			EditorGUILayout.Space(3);
+			EditorGUILayout.HelpBox("테이블 이름을 입력하거나 Json 파일을 불러오세요", MessageType.Warning);
 			return;
 		}
+		EditorGUILayout.Space(3);
 
 		if (jsonContainer == null)
 		{
 			LoadAllJson();
 		}
-		if (GetScriptableObject() == false)
+		if (GetScriptableObject(label) == false)
 		{
 			if (TypeExist())
 			{
@@ -151,24 +177,28 @@ public class DataTableEditor : EditorWindow
 					CreateCSharpFile();
 				}
 			}
-		}
-		else
-		{
-			EditorGUILayout.BeginHorizontal();
-			if (GUILayout.Button("Save Json"))
-			{
-				ToJson();
-			}
 			if (GUILayout.Button("Load Json"))
 			{
 				FromJson();
 			}
-			if (GUILayout.Button("Load All Json"))
+		}
+		else
+		{
+			GUILayout.BeginHorizontal(EditorStyles.toolbar);
+			if (GUILayout.Button("Save Json", EditorStyles.toolbarButton))
+			{
+				ToJson();
+			}
+			if (GUILayout.Button("Load Json", EditorStyles.toolbarButton))
+			{
+				FromJson();
+			}
+			if (GUILayout.Button("Load All Json", EditorStyles.toolbarButton))
 			{
 				LoadAllJson();
 			}
 
-			EditorGUILayout.EndHorizontal();
+			GUILayout.EndHorizontal();
 			if (TypeExist() == false)
 			{
 				if (GUILayout.Button("Create CSharp File"))
@@ -207,16 +237,30 @@ public class DataTableEditor : EditorWindow
 
 		EditorGUILayout.Space(10);
 
-
 		if (reorderableList == null)
 		{
 			CreateReorderableList();
 		}
-		EditorGUILayout.BeginVertical();
-		scrollPos = GUILayout.BeginScrollView(scrollPos, true, false, GUILayout.Width(500));
-		GUILayout.Box("", GUILayout.Width(EditorGUIUtility.currentViewWidth));
-		reorderableList.DoLayoutList();
 
+		EditorGUILayout.BeginVertical();
+
+		GUIStyle boxStyle = new GUIStyle(GUI.skin.GetStyle("HelpBox"));
+		boxStyle.richText = true;
+		boxStyle.fontSize = 15;
+		EditorGUILayout.TextArea($"현재 Json 파일 : {currentJsonFileName}\n현재 파일 경로 : {currentJsonFilePath}", boxStyle);
+
+		scrollPos = GUILayout.BeginScrollView(scrollPos, true, false, GUILayout.Width(1000));
+		GUILayout.Box("", GUILayout.Width(EditorGUIUtility.currentViewWidth));
+
+		if (dataSheetProperty != null)
+		{
+			var targetObje = dataSheetProperty.serializedObject.targetObject;
+			Type tableType = targetObje.GetType().GetField("dataSheet").FieldType;
+			dataSheetProperty.FindPropertyRelative("typeName").stringValue = tableType.Name;
+			EditorGUILayout.LabelField(dataSheetProperty.FindPropertyRelative("typeName").stringValue);
+		}
+
+		reorderableList.DoLayoutList();
 
 		GUILayout.EndScrollView();
 		EditorGUILayout.EndVertical();
@@ -262,7 +306,6 @@ public class DataTableEditor : EditorWindow
 					continue;
 				}
 				linkedTypeList.Add(fields[i].Name, System.Type.GetType(TypeString(typeName)));
-				Debug.Log(typeName);
 			}
 		}
 
@@ -275,13 +318,11 @@ public class DataTableEditor : EditorWindow
 			tempRect.x = 20;
 			for (int i = 0; i < fields.Length; i++)
 			{
-
 				tempRect.width = width;
 				tempRect.height = EditorGUIUtility.singleLineHeight;
 
 				EditorGUI.LabelField(tempRect, fields[i].Name, EditorStyles.boldLabel);
 				tempRect.x += tempRect.width + 5;
-
 			}
 		};
 
@@ -299,6 +340,10 @@ public class DataTableEditor : EditorWindow
 				tempRect.height = EditorGUIUtility.singleLineHeight;
 				var sf = info.FindPropertyRelative(field.Name);
 
+				if (typeof(IList).IsAssignableFrom(sf))
+				{
+
+				}
 				if (linkedTypeList.ContainsKey(field.Name))
 				{
 					Type linkType = linkedTypeList[field.Name];
@@ -314,18 +359,22 @@ public class DataTableEditor : EditorWindow
 						var ff = obj.GetValue(jsonContainer[linkType.Name]);
 
 						List<GUIContent> nameList = new List<GUIContent>();
+						List<int> idList = new List<int>();
+
 						if (typeof(IList).IsAssignableFrom(ff))
 						{
 							foreach (var item in ff as IList)
 							{
 								Type itemType = item.GetType();
-								nameList.Add(new GUIContent($"{(long)itemType.GetField("tid").GetValue(item)} :{(string)itemType.GetField("description").GetValue(item)}"));
+								long id = (long)itemType.GetField("tid").GetValue(item);
+								idList.Add((int)id);
+								nameList.Add(new GUIContent($"{id} :{(string)itemType.GetField("description").GetValue(item)}"));
 							}
 						}
 
 						if (nameList.Count > 0)
 						{
-							EditorGUI.IntPopup(tempRect, sf, nameList.ToArray(), null, GUIContent.none);
+							EditorGUI.IntPopup(tempRect, sf, nameList.ToArray(), idList.ToArray(), GUIContent.none);
 							tempRect.x += tempRect.width + 5;
 							continue;
 						}
@@ -356,6 +405,7 @@ public class DataTableEditor : EditorWindow
 
 	bool TypeExist()
 	{
+
 		instanceName = searchString;
 		instanceType = System.Type.GetType(instanceName);
 		return instanceType != null;
@@ -379,9 +429,9 @@ public class DataTableEditor : EditorWindow
 		return newDataObject;
 	}
 
-	bool GetScriptableObject()
+	bool GetScriptableObject(string name)
 	{
-		if (label.IsNullOrEmpty())
+		if (name.IsNullOrEmpty())
 		{
 			return false;
 		}
@@ -395,14 +445,14 @@ public class DataTableEditor : EditorWindow
 		{
 			string path = AssetDatabase.GUIDToAssetPath(guid[i]);
 			string filename = Path.GetFileNameWithoutExtension(path);
-			if (filename.ToLower() == $"{label}Object".ToLower())
+			if (filename.ToLower() == $"{name}Object".ToLower())
 			{
 				scriptableObject = (ScriptableObject)AssetDatabase.LoadAssetAtPath(path, typeof(ScriptableObject));
 				searchString = filename;
 				return true;
 			}
 		}
-		searchString = $"{label}Object";
+		searchString = $"{name}Object";
 		reorderableList = null;
 		serializedObject = null;
 		scriptableObject = null;
@@ -415,8 +465,8 @@ public class DataTableEditor : EditorWindow
 
 		System.Reflection.FieldInfo info = targetObje.GetType().GetField("dataSheet");
 		var sd = info.GetValue(targetObje);
-
-		string path = EditorUtility.SaveFilePanel("", Application.dataPath + "/AssetFolder/Resources/Json", label, "json");
+		string rootPath = Path.GetDirectoryName(currentJsonFilePath);
+		string path = EditorUtility.SaveFilePanel("", rootPath, currentJsonFileName, "json");
 
 		if (path.IsNullOrEmpty())
 		{
@@ -432,31 +482,42 @@ public class DataTableEditor : EditorWindow
 				sw.Write(json);
 			}
 		}
+
+		currentJsonFileName = Path.GetFileName(path);
+		currentJsonFilePath = path;
 		AssetDatabase.Refresh();
 	}
 
 	void FromJson()
 	{
-		string path = EditorUtility.OpenFilePanel("", Application.dataPath + "/AssetFolder/Resources/Json", "json");
+
+		if (currentJsonFilePath.IsNullOrEmpty())
+		{
+			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json";
+		}
+		string rootPath = Path.GetDirectoryName(currentJsonFilePath);
+		string path = EditorUtility.OpenFilePanel("", rootPath, "json");
 
 		if (path.IsNullOrEmpty())
 		{
 			return;
 		}
+
 		using (FileStream fs = File.OpenRead(path))
 		{
 			string fileName = Path.GetFileNameWithoutExtension(path);
-			string[] fileNames = fileName.Split('_');
-
 			string typeName = fileName;
-
-			if (fileNames.Length > 1)
-			{
-				typeName = fileNames[0];
-			}
 
 			using (BinaryReader sr = new BinaryReader(fs))
 			{
+				string jsonstring = sr.ReadString();
+				Dictionary<string, object> jb = (Dictionary<string, object>)Json.Deserialize(jsonstring);
+
+				if (jb.ContainsKey("typeName"))
+				{
+					typeName = (string)jb["typeName"];
+				}
+
 				Type type = System.Type.GetType($"{typeName}, Assembly-CSharp");
 				if (type == null)
 				{
@@ -464,16 +525,27 @@ public class DataTableEditor : EditorWindow
 				}
 
 				label = typeName;
-				var json = JsonUtility.FromJson(sr.ReadString(), type);
-				instanceType.GetField("dataSheet").SetValue(scriptableObject, json);
 
-				serializedObject = null;
-				serializedObject = new SerializedObject(scriptableObject);
+				if (GetScriptableObject(typeName))
+				{
+					if (TypeExist())
+					{
+						var json = JsonUtility.FromJson(jsonstring, type);
+						instanceType.GetField("dataSheet").SetValue(scriptableObject, json);
+						serializedObject = new SerializedObject(scriptableObject);
+					}
+				}
+				else
+				{
+
+				}
+
 				CreateReorderableList();
 				EditorGUI.FocusTextInControl(null);
+				currentJsonFileName = Path.GetFileName(path);
+				currentJsonFilePath = path;
 			}
 		}
-
 	}
 
 	void CreateCSharpFile()

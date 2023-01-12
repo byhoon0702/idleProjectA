@@ -33,18 +33,24 @@ public class SkillListEditor : EditorWindow
 	[MenuItem("Custom Menu/Skill List")]
 	public static void ShowEditor()
 	{
-		SkillListEditor window = ScriptableObject.CreateInstance<SkillListEditor>();
-		window.position = new Rect(Screen.width / 2, Screen.height / 2, 600, 300);
+		SkillListEditor window = GetWindow<SkillListEditor>();
 		window.titleContent = new GUIContent(window.ToString());
 		window.Show();
 	}
 
 	private void OnGUI()
 	{
-		if (GUILayout.Button($"파일 위치({SkillMeta.filePath})"))
+		if (GUILayout.Button($"파일 위치({SkillMeta.jsonFilePath})"))
 		{
-			Application.OpenURL(SkillMeta.filePath);
+			Application.OpenURL(SkillMeta.jsonFilePath);
 		}
+
+		EditorGUI.BeginDisabledGroup(Application.isPlaying);
+		if (GUILayout.Button("Create Skill"))
+		{
+			SkillJsonCreator.ShowEditor();
+		}
+		EditorGUI.EndDisabledGroup();
 
 		if (Application.isPlaying == false)
 		{
@@ -53,9 +59,10 @@ public class SkillListEditor : EditorWindow
 		}
 
 		// 초기화가 안된경우, 초기화 해줌
-		if (skillMetaScriptableObject == null && GameManager.it.skillMeta != null)
+		if (VGameManager.it.skillMeta == null)
 		{
-			skillMetaScriptableObject = new SerializedObject(GameManager.it.skillMeta);
+			GUILayout.Label("메타 초기화가 안됨");
+			return;
 		}
 
 		raw = GUILayout.Toggle(raw, "Raw");
@@ -66,9 +73,9 @@ public class SkillListEditor : EditorWindow
 		GUILayout.Label("Skill List", "PreToolbar");
 
 		scrollPos = GUILayout.BeginScrollView(scrollPos);
-		foreach (var skill in SkillTidDictionary.dic)
+		foreach (var skill in SkillMeta.it.dic)
 		{
-			var skillData = SkillMeta.it.dic[skill.Value];
+			var skillData = skill.Value;
 			string titleText = $"[{skill.Key} - {skillData.skillName}({skill.Value})] : {skillData.description}";
 
 			if (string.IsNullOrEmpty(filter) == false)
@@ -80,14 +87,14 @@ public class SkillListEditor : EditorWindow
 			}
 
 			GUILayout.BeginHorizontal();
-			if(GUILayout.Button("Edit", GUILayout.MaxWidth(40), GUILayout.MinWidth(40)))
+			if (GUILayout.Button("Edit", GUILayout.MaxWidth(40), GUILayout.MinWidth(40)))
 			{
 				SkillDataEditor.ShowEditor(skillData);
 			}
 			GUILayout.Label(titleText);
 			GUILayout.EndHorizontal();
 
-			if(raw)
+			if (raw)
 			{
 				GUILayout.Label(JsonUtility.ToJson(skillData), labelStyle);
 			}

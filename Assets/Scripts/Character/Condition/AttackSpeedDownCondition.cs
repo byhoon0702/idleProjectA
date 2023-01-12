@@ -1,5 +1,5 @@
 ﻿[System.Serializable]
-public class AttackSpeedDownConditionData
+public class AttackSpeedDownConditionData : ConditionDataBase
 {
 	/// <summary>
 	/// 공격속도 증가비율
@@ -22,11 +22,21 @@ public class AttackSpeedDownConditionData
 		ratio = _ratio;
 		duration = _duration;
 	}
+
+	public override object Clone()
+	{
+		return new AttackSpeedDownConditionData(ratio, duration);
+	}
+	public override string ToString()
+	{
+		return $"[AttackSpeedDown] ratio: {ratio}, duration: {duration}";
+	}
 }
 
 public class AttackSpeedDownCondition : ConditionBase
 {
 	public override CharacterCondition conditionType => CharacterCondition.AttackSpeedDown;
+	public override BuffType buffType => BuffType.Debuff;
 
 	public override string iconPath => "";
 

@@ -42,7 +42,7 @@ public class EnemyCharacter : Character
 		}
 		info.data.hp -= totalAttackPower;
 
-		GameManager.it.battleRecord.RecordAttackPower(_attacker.charID, charID, _attackName, totalAttackPower, isCriticalAttack);
+		VGameManager.it.battleRecord.RecordAttackPower(_attacker.charID, charID, _attackName, totalAttackPower, isCriticalAttack);
 
 	}
 
@@ -60,7 +60,7 @@ public class EnemyCharacter : Character
 
 			IdleNumber addHP = newHP - info.data.hp;
 			info.data.hp += addHP;
-			GameManager.it.battleRecord.RecordHeal(_attacker.charID, charID, _healName, addHP);
+			VGameManager.it.battleRecord.RecordHeal(_attacker.charID, charID, _healName, addHP);
 			GameUIManager.it.ShowFloatingText(_attackPower.ToString(), _color, characterAnimation.CenterPivot.position, false);
 		}
 	}

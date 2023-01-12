@@ -24,9 +24,10 @@ public enum ElementType
 {
 	FIRE,
 	WATER,
+	THUNDER,
 	LEAF,
-	DARK,
 	LIGHT,
+	DARK,
 }
 
 public enum Grade

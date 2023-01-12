@@ -8,7 +8,8 @@ public class SpawnManager : MonoBehaviour
 	public static SpawnManager it => instance;
 
 	[Header("Prototype")]
-	public CharacterDataSheet characterDataSheet;
+	//사용안함
+	//public CharacterDataSheet characterDataSheet;
 	public PresetDataSheet presetDataSheet;
 	[Header("==========")]
 	public Transform playerRoot;
@@ -27,7 +28,7 @@ public class SpawnManager : MonoBehaviour
 	public EnemyCharacter bossCharacter = null;
 
 
-	public float lineDiff = 1;
+	public float lineDiff = 0.5f;
 
 	public bool IsAllEnemyDead
 	{
@@ -248,7 +249,7 @@ public class SpawnManager : MonoBehaviour
 		enemyCharacter.transform.position = pos;
 		enemyCharacter.Spawn(_characterData);
 
-		GameManager.it.battleRecord.InitCharacter(enemyCharacter);
+		VGameManager.it.battleRecord.InitCharacter(enemyCharacter);
 
 		return enemyCharacter;
 	}

@@ -35,4 +35,7 @@ public class DefaultAttack : SkillBase
 
 		attackEvent?.OnDefaultAttack_ActionEvent();
 	}
+	public override void CalculateSkillLevelData(int _skillLevel)
+	{
+	}
 }

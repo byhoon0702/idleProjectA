@@ -18,7 +18,7 @@ public class BattleEndState : RootState
 		if (elapsedTime > 3)
 		{
 			GameUIManager.it.FadeCurtain(true);
-			GameManager.it.ChangeState(GameState.LOADING);
+			VGameManager.it.ChangeState(GameState.LOADING);
 		}
 	}
 }

@@ -2,7 +2,7 @@
 {
 	public override void OnEnter()
 	{
-		GameManager.it.mapController.Reset();
+		VGameManager.it.mapController.Reset();
 
 		GameUIManager.it.ReleaseAllPool();
 		SpawnManager.it.ClearCharacters();
@@ -23,7 +23,7 @@
 		elapsedTime += time;
 		if (elapsedTime > 1)
 		{
-			GameManager.it.ChangeState(GameState.BGLOADING);
+			VGameManager.it.ChangeState(GameState.BGLOADING);
 
 		}
 	}

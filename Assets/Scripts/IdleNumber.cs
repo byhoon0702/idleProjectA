@@ -17,7 +17,8 @@ public class IdleNumber
 
 	public double Value;
 	public int Exp;
-	public const int tencubed = 1000;
+	public const int tencubed = 10000;
+	public const int ten = 10;
 	public const int position = 3;
 	public const int amountofletter = 26;
 	public IdleNumber()
@@ -33,6 +34,35 @@ public class IdleNumber
 	{
 		Value = value;
 		Exp = exp;
+	}
+
+	public string GetUnit_ABC()
+	{
+		string unit = "";
+		int magnitude = Exp / 1;
+
+		// 4승부터 A로 표기
+		if (Exp == 0)
+		{
+			return "";
+		}
+
+		var unitInt = magnitude;
+		var secondUnit = unitInt % (amountofletter);
+		var firstUnit = (unitInt - 1) / amountofletter;
+
+		int char_a = Convert.ToInt32('A');
+
+		if (firstUnit != 0)
+		{
+			unit = $"{Convert.ToChar(firstUnit + char_a - 1)}{Convert.ToChar(secondUnit + char_a - 1)}";
+		}
+		else
+		{
+			unit = $"{Convert.ToChar(secondUnit + char_a - 1)}";
+		}
+
+		return unit;
 	}
 
 	public string GetUnit()
@@ -66,10 +96,10 @@ public class IdleNumber
 	{
 		Value = Value * Mathf.Pow(10, Exp);
 		Exp = 0;
-		while (Math.Abs(Value) > tencubed)
+		while (Math.Abs(Value) >= tencubed)
 		{
-			Value /= tencubed;
-			Exp += 3;
+			Value /= ten;
+			Exp += 1;
 		}
 		return Value;
 	}
@@ -77,7 +107,7 @@ public class IdleNumber
 	public new string ToString()
 	{
 		IdleNumber a = new IdleNumber(this);
-		return string.Format("{0:0.##}", a.GetTruncateValue()) + a.GetUnit();
+		return string.Format("{0:0.##}", a.GetTruncateValue()) + a.GetUnit_ABC();
 	}
 
 	public IdleNumber Normalize(long value)
@@ -88,10 +118,10 @@ public class IdleNumber
 	{
 		IdleNumber normalize = new IdleNumber();
 
-		while (value > tencubed)
+		while (value >= tencubed)
 		{
-			value /= tencubed;
-			normalize.Exp += 3;
+			value /= ten;
+			normalize.Exp += 1;
 		}
 		normalize.Value = value;
 		return normalize;

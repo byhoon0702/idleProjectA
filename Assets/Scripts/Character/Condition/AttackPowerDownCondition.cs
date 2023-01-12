@@ -1,5 +1,5 @@
 ﻿[System.Serializable]
-public class AttackPowerDownConditionData
+public class AttackPowerDownConditionData : ConditionDataBase
 {
 	/// <summary>
 	/// 공격력 감소비율
@@ -22,11 +22,21 @@ public class AttackPowerDownConditionData
 		ratio = _ratio;
 		duration = _duration;
 	}
+
+	public override object Clone()
+	{
+		return new AttackPowerDownConditionData(ratio, duration);
+	}
+	public override string ToString()
+	{
+		return $"[AttackPowerDown] ratio: {ratio}, duration: {duration}";
+	}
 }
 
 public class AttackPowerDownCondition : ConditionBase
 {
 	public override CharacterCondition conditionType => CharacterCondition.AttackPowerDown;
+	public override BuffType buffType => BuffType.Debuff;
 	public override string iconPath => "";
 
 	public override string effectPath => "";

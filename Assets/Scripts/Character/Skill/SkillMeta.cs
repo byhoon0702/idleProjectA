@@ -3,14 +3,23 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 [Serializable]
-public class SkillMeta : ScriptableObject
+public class SkillMeta
 {
-	public static string filePath
+	public static string jsonFilePath
 	{
 		get
 		{
 			return $"{Application.dataPath}/AssetFolder/Resources/Json/Skill/";
+		}
+	}
+	public static string presetClassPath
+	{
+		get
+		{
+			return $"{Application.dataPath}/Scripts/Character/SKill/SkillData/";
 		}
 	}
 
@@ -23,63 +32,59 @@ public class SkillMeta : ScriptableObject
 				return null;
 			}
 
-			return GameManager.it.skillMeta;
+			return VGameManager.it.skillMeta;
 		}
 	}
 
-	public Serina_sk1Data serina_Sk1Data;
-	public Landrock_sk1Data landrock_Sk1Data;
-	public Mirfiana_sk1Data mirfiana_Sk1Data;
-	public Haru_sk1Data haru_Sk1Data;
-	public Gilius_sk1Data gilius_Sk1Data;
-
-	[NonSerialized] public Dictionary<string, SkillBaseData> dic = new Dictionary<string, SkillBaseData>();
+	public Dictionary<Int64/*Tid*/, SkillBaseData> dic = new Dictionary<Int64, SkillBaseData>();
 
 	public void LoadData()
 	{
 		dic.Clear();
 
-		// 기본 데이터 초기화
-		serina_Sk1Data = ScriptableObject.CreateInstance<Serina_sk1Data>();
-		landrock_Sk1Data = ScriptableObject.CreateInstance<Landrock_sk1Data>();
-		mirfiana_Sk1Data = ScriptableObject.CreateInstance<Mirfiana_sk1Data>();
-		haru_Sk1Data = ScriptableObject.CreateInstance<Haru_sk1Data>();
-		gilius_Sk1Data = ScriptableObject.CreateInstance<Gilius_sk1Data>();
-
-		dic.Add(typeof(Serina_sk1).ToString(), serina_Sk1Data);
-		dic.Add(typeof(Landrock_sk1).ToString(), landrock_Sk1Data);
-		dic.Add(typeof(Mirfiana_sk1).ToString(), mirfiana_Sk1Data);
-		dic.Add(typeof(Haru_sk1).ToString(), haru_Sk1Data);
-		dic.Add(typeof(Gilius_sk1).ToString(), gilius_Sk1Data);
-
-
-
 		// 저장되어 있는 데이터 불러오기
-		HashSet<string> matched = new HashSet<string>();
 		TextAsset[] skillAssets = Resources.LoadAll<TextAsset>("Json/Skill");
 
-		foreach(var asset in skillAssets)
+		foreach (var asset in skillAssets)
 		{
-			foreach (var data in dic)
-			{
-				if (asset.name == $"{data.Key}Data")
-				{
-					JsonUtility.FromJsonOverwrite(asset.text, data.Value);
-					matched.Add(data.Key);
-				}
-			}
-		}
+			// 프리셋명(클래스 추출)
+			SkillBaseData presetInfo = ScriptableObject.CreateInstance<SkillBaseData>();
+			SkillBaseData skillBase;
+			JsonUtility.FromJsonOverwrite(asset.text, presetInfo);
 
-
-		// 스킬정보에 관련된 json파일이 없는 경우 경고 띄워주기
-		foreach(var data in dic)
-		{
-			if(matched.Contains(data.Key) == false)
+			try
 			{
-				VLog.SkillLogWarning($"스킬정보가 담긴 json파일 찾지 못함. 기본값 사용됨. {data.Key}Data");
+				var type = System.Type.GetType(presetInfo.skillPreset);
+				var classObject = ScriptableObject.CreateInstance(type);
+				JsonUtility.FromJsonOverwrite(asset.text, classObject);
+
+				skillBase = classObject as SkillBaseData;
 			}
+			catch (Exception e)
+			{
+				VLog.SkillLogError($"스킬 초기화 실패. Json : {asset.name}\n{e}");
+				GameObject.Destroy(presetInfo);
+				continue; ;
+			}
+
+			dic.Add(presetInfo.tid, skillBase);
+
+			GameObject.Destroy(presetInfo);
 		}
 	}
+}
+
+public enum BuffType
+{
+	/// <summary>
+	/// 버프
+	/// </summary>
+	Buff,
+
+	/// <summary>
+	/// 디버프
+	/// </summary>
+	Debuff
 }
 
 public enum CharacterCondition
@@ -138,38 +143,40 @@ public enum CharacterCondition
 	/// </summary>
 	Stun,
 	/// <summary>
-	/// 독
+	/// 도트대미지
 	/// </summary>
-	Poison,
+	Dote,
 }
 
-
-public static class SkillTidDictionary // 추후 테이블로 교체할거 같으면 이걸로
+public enum TargetingType
 {
-	public static Dictionary<Int64, string> dic = new Dictionary<Int64, string>()
-	{
-		{ 1001, typeof(Serina_sk1).ToString() },
-		{ 1002, typeof(Landrock_sk1).ToString() },
-		{ 1003, typeof(Mirfiana_sk1).ToString() },
-		{ 1004, typeof(Haru_sk1).ToString() },
-		{ 1005, typeof(Gilius_sk1).ToString() },
-	};
+	/// <summary>
+	/// 현재 타게팅하고 있는 적
+	/// </summary>
+	Default,
 
-	public static string GetSkillName(Int64 _tid)
-	{
-		return dic[_tid];
-	}
+	/// <summary>
+	/// 아군 전체
+	/// </summary>
+	FriendlyAll,
 
-	public static Int64 GetSkillTid(string skillName)
-	{
-		foreach (var skill in dic)
-		{
-			if (skill.Value == skillName)
-			{
-				return skill.Key;
-			}
-		}
+	/// <summary>
+	/// 리스폰되어 있는 전체 적
+	/// </summary>
+	EnemyAll,
 
-		return 0;
-	}
+	/// <summary>
+	/// 전방의 적
+	/// </summary>
+	FrontEnemy,
+
+	/// <summary>
+	/// 다수의 적
+	/// </summary>
+	ManyEnemy,
+
+	/// <summary>
+	/// 체력이 가장 많은 적
+	/// </summary>
+	HighestHPEnemy,
 }

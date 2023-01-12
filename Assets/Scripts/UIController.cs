@@ -11,7 +11,7 @@ public class UIController : MonoBehaviour
 
 	[SerializeField] private TextMeshProUGUI textStageTitle;
 
-	[SerializeField] Button buttonPlayBoss;
+	[SerializeField] private Button buttonPlayBoss;
 
 	private void Start()
 	{

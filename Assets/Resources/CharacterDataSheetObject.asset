@@ -13,18 +13,20 @@ MonoBehaviour:
   m_Name: CharacterDataSheetObject
   m_EditorClassIdentifier: 
   dataSheet:
+    typeName: CharacterDataSheet
     infos:
-    - tid: 63
+    - tid: 1
       name: Land
+      description: 
       resource: vk01
       classTid: 1
       raceTid: 1
       element: 0
       grade: 0
-      starlevel: 0
+      starlevel: 1
       hp:
         Value: 10060
-        Exp: 0
+        Exp: 2
       attackPower:
         Value: 100
         Exp: 0
@@ -32,6 +34,7 @@ MonoBehaviour:
       rankType: 0
     - tid: 2
       name: sfasdfa
+      description: 
       resource: sw01
       classTid: 2
       raceTid: 1
@@ -48,8 +51,9 @@ MonoBehaviour:
       rankType: 0
     - tid: 3
       name: asdfasdf
+      description: 
       resource: vk01
-      classTid: 3
+      classTid: 2
       raceTid: 1
       element: 0
       grade: 0
@@ -62,10 +66,11 @@ MonoBehaviour:
         Exp: 0
       skillTid: 0
       rankType: 0
-    - tid: 3
+    - tid: 4
       name: enemy
+      description: 
       resource: skeleton
-      classTid: 3
+      classTid: 1
       raceTid: 1
       element: 0
       grade: 0
@@ -78,10 +83,11 @@ MonoBehaviour:
         Exp: 0
       skillTid: 0
       rankType: 0
-    - tid: 3
+    - tid: 5
       name: enemy
+      description: 
       resource: skeleton
-      classTid: 3
+      classTid: 1
       raceTid: 1
       element: 0
       grade: 0

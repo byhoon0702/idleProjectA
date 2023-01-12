@@ -15,7 +15,7 @@ public class ConfigMeta : ScriptableObject
 				return null;
 			}
 
-			return GameManager.it.config;
+			return VGameManager.it.config;
 		}
 	}
 
@@ -69,4 +69,28 @@ public class ConfigMeta : ScriptableObject
 	/// </summary>
 	[Tooltip("받는 피해 최대량")]
 	[SerializeField] public float MAX_DAMAGE_MUL = 5;
+
+	/// <summary>
+	/// 전방의 적 체크시 범위(m)
+	/// </summary>
+	[Tooltip("전방의 적 체크시 범위(m)")]
+	[SerializeField] public float TARGET_SEARCH_FRONT_ENEMY_RANGE = 2;
+
+	/// <summary>
+	/// 다수의 적 체크시 범위(m)
+	/// </summary>
+	[Tooltip("다수의 적 체크시 범위(m)")]
+	[SerializeField] public float TARGET_SEARCH_MANY_ENEMY_RANGE = 4;
+
+	/// <summary>
+	/// 넉백시간
+	/// </summary>
+	[Tooltip("넉백시간")]
+	[SerializeField] public float KNOCKBACK_DURATION = 0.5f;
+
+	/// <summary>
+	/// 넉백거리
+	/// </summary>
+	[Tooltip("넉백거리(m)")]
+	[SerializeField] public float KNOCKBACK_DISTANCE = 1;
 }

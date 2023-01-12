@@ -4,7 +4,7 @@
 	{
 		SpawnManager.it.SpawnCoroutine(() =>
 		{
-			GameManager.it.ChangeState(GameState.BATTLESTART);
+			VGameManager.it.ChangeState(GameState.BATTLESTART);
 		});
 	}
 

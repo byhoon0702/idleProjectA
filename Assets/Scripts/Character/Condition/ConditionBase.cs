@@ -1,6 +1,13 @@
 ﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+
+public abstract class ConditionDataBase : ICloneable
+{
+	public abstract object Clone();
+}
 
 
 /// <summary>
@@ -38,6 +45,8 @@ public abstract class ConditionBase
 	/// 이펙트가 재생되는 포지션. 계산은 월드 포지션으로 처리됨.
 	/// </summary>
 	public virtual Vector3 effectPosition => character.transform.position;
+
+	public abstract BuffType buffType { get; }
 	#endregion Define
 
 	/// <summary>

@@ -1,20 +1,51 @@
 ﻿using System.Collections;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
-public static class Calculator
+public static class FourArithmeticCalculator
 {
+	public const string DEFAULT_VALUE = "def";
+	public const string SKILL_LEVEL = "lv";
 
 	/// <summary>
-	/// 사칙연산
+	/// 예약어들을 사칙연산으로 사용할 수 있게 변환
+	/// </summary>
+	/// <returns></returns>
+	public static string ReplaceReservedWord(string _data, float _defaultValue, Int32 _skillLv)
+	{
+		string outResult = _data;
+				
+		outResult = outResult.Replace(DEFAULT_VALUE, _defaultValue.ToString());
+		outResult = outResult.Replace(SKILL_LEVEL, _skillLv.ToString());
+
+		return outResult;
+	}
+
+	/// <summary>
+	/// 사칙연산(사용전에 Replace로 변환 한번 해주셔야 합니다)
 	/// </summary>
 	public static double CalculateFourArithmetic(string _data)
 	{
 		double result = FourArithmeticOperations.Calculate(_data);
 		return result;
 	}
+	
 
+	public static double Calculate(string _data, float _defaultValue, Int32 _skillLv)
+	{
+		if(string.IsNullOrEmpty(_data))
+		{
+			return _defaultValue;
+		}
+
+
+		string replaceAttackPower = FourArithmeticCalculator.ReplaceReservedWord(_data, _defaultValue, _skillLv);
+		double result = FourArithmeticCalculator.CalculateFourArithmetic(replaceAttackPower);
+
+		return result;
+	}
 
 
 

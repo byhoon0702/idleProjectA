@@ -54,6 +54,10 @@ public class SceneCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if (VGameManager.it.fixedScroll)
+		{
+			return;
+		}
 		if (canCameraMove == false)
 		{
 			return;
@@ -83,7 +87,7 @@ public class SceneCamera : MonoBehaviour
 			{
 				transform.Translate(Vector3.right * player.info.MoveSpeed() * Time.deltaTime);
 
-				GameManager.it.mapController.Scroll(Vector3.right * player.info.MoveSpeed() * Time.deltaTime);
+				VGameManager.it.mapController.Scroll(Vector3.right * player.info.MoveSpeed() * Time.deltaTime);
 				break;
 			}
 		}

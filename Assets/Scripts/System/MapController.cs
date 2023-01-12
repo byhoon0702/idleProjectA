@@ -32,6 +32,11 @@ public class MapController : MonoBehaviour
 	}
 	public void Scroll(Vector2 scroll)
 	{
+		if (VGameManager.it.fixedScroll)
+		{
+			return;
+		}
+
 		spriteMap.size += scroll * 2;
 		spriteMap.transform.Translate(-scroll * 2, Space.Self);
 		spriteMiddleMap.size += scroll;

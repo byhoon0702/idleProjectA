@@ -48,7 +48,7 @@ public class BattleRecordEditor : EditorWindow
 	[MenuItem("Custom Menu/Battle Record")]
 	private static void InitEditor()
 	{
-		BattleRecordEditor window = ScriptableObject.CreateInstance<BattleRecordEditor>();
+		BattleRecordEditor window = GetWindow<BattleRecordEditor>();
 		window.position = new Rect(Screen.width / 2, Screen.height / 2, 600, 300);
 		window.titleContent = new GUIContent(window.ToString());
 		window.Show();
@@ -69,7 +69,7 @@ public class BattleRecordEditor : EditorWindow
 		GUILayout.EndHorizontal();
 
 		scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-		foreach (var record in GameManager.it.battleRecord.records)
+		foreach (var record in VGameManager.it.battleRecord.records)
 		{
 			Character character = CharacterManager.it.GetCharacter(record.charID, true);
 			if (filterPlayerSide)

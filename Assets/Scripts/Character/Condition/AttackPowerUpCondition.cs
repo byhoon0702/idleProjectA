@@ -1,5 +1,5 @@
 ﻿[System.Serializable]
-public class AttackPowerUpConditionData
+public class AttackPowerUpConditionData : ConditionDataBase
 {
 	/// <summary>
 	/// 공격력 증가비율
@@ -23,11 +23,21 @@ public class AttackPowerUpConditionData
 		ratio = _ratio;
 		duration = _duration;
 	}
+
+	public override object Clone()
+	{
+		return new AttackPowerDownConditionData(ratio, duration);
+	}
+	public override string ToString()
+	{
+		return $"[AttackPowerUp] ratio: {ratio}, duration: {duration}";
+	}
 }
 
 public class AttackPowerUpCondition : ConditionBase
 {
 	public override CharacterCondition conditionType => CharacterCondition.AttackPowerUp;
+	public override BuffType buffType => BuffType.Buff;
 	public override string iconPath => "";
 
 	public override string effectPath => "";

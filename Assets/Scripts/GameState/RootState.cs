@@ -23,7 +23,7 @@
 		elapsedTime += time;
 		if (elapsedTime > 1)
 		{
-			GameManager.it.ChangeState(GameState.BGLOADING);
+			VGameManager.it.ChangeState(GameState.BGLOADING);
 
 		}
 	}

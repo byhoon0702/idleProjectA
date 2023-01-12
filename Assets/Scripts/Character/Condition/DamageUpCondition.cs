@@ -1,6 +1,6 @@
 ﻿
 [System.Serializable]
-public class DamageUpConditionData
+public class DamageUpConditionData : ConditionDataBase
 {
 	/// <summary>
 	/// 피해증가량
@@ -23,11 +23,22 @@ public class DamageUpConditionData
 		ratio = _ratio;
 		duration = _duration;
 	}
+
+	public override object Clone()
+	{
+		return new DamageUpConditionData(ratio, duration);
+	}
+
+	public override string ToString()
+	{
+		return $"[DamageUp] ratio: {ratio}, duration: {duration}";
+	}
 }
 
 public class DamageUpCondition : ConditionBase
 {
 	public override CharacterCondition conditionType => CharacterCondition.DamageUp;
+	public override BuffType buffType => BuffType.Debuff;
 
 	public override string iconPath => "";
 

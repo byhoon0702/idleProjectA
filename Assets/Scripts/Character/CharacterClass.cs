@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 /// <summary>
 /// 캐릭터 클래스별 행동 패턴을 정의 하는 클래스
 /// 서브 클래스의 경우 상속 받아 처리 
@@ -20,9 +21,20 @@ public abstract class CharacterClass
 	public abstract void OnAttack();
 	public virtual void OnInitSkill(SkillModule _skillModule)
 	{
-		if (owner.info.data.skillTid != 0)
+		Int64 skillTid = owner.info.data.skillTid;
+
+		if (skillTid != 0)
 		{
-			string id = SkillTidDictionary.GetSkillName(owner.info.data.skillTid);
+			if(SkillMeta.it.dic.ContainsKey(skillTid) == false)
+			{
+				VLog.SkillLogError($"스킬 타입이 테이블에 없음. tid: {skillTid}");
+				return;
+			}
+
+			SkillBaseData skillBaseData = SkillMeta.it.dic[owner.info.data.skillTid];
+
+			string id = skillBaseData.skillPreset;
+			id = id.Substring(0, id.Length - 4); // 끝에 'Data' 텍스트를 지우기 위함
 			var type = System.Type.GetType(id);
 
 			if (type == null)
@@ -31,19 +43,12 @@ public abstract class CharacterClass
 				return;
 			}
 
-			if (SkillMeta.it.dic.ContainsKey(id) == false)
-			{
-				VLog.SkillLogError($"스킬 생성정보를 찾을 수 없음. Skill ID: {id}");
-				return;
-			}
-
-			var paramerts = new object[] { SkillMeta.it.dic[id] };
-			object classObject;
+			// 스킬 생성
 			SkillBase skill;
-
 			try
 			{
-				classObject = System.Activator.CreateInstance(type, paramerts);
+				object classObject = System.Activator.CreateInstance(type, new object[] { skillBaseData });
+
 				skill = classObject as SkillBase;
 			}
 			catch(System.Exception e)

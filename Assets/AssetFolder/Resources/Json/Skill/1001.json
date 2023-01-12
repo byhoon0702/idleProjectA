@@ -1,0 +1,18 @@
+{
+    "tid": 1001,
+    "skillPreset": "Serina_sk1Data",
+    "skillName": "세리나_sk01",
+    "description": "아군 전체를 공격력의 521%만큼 회복시키고 5초동안 아군 전체의 공격속도를 14%, 이동속도를 21% 증가시킨다.",
+    "targetingType": 1,
+    "cooltime": 10.0,
+    "attackSpeedUpData": {
+        "ratio": 0.5,
+        "duration": 5.0
+    },
+    "attackSpeedUpLevelupData": "def + ( lv * 5 ) / 2",
+    "moveSpeedUpData": {
+        "ratio": 1.0,
+        "duration": 5.0
+    },
+    "healMul": 1.0
+}

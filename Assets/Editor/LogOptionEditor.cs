@@ -16,8 +16,7 @@ public class LogOptionEditor : EditorWindow
 	[MenuItem("Custom Menu/Log Option")]
 	private static void InitEditor()
 	{
-		LogOptionEditor window = ScriptableObject.CreateInstance<LogOptionEditor>();
-		window.position = new Rect(Screen.width / 2, Screen.height / 2, 600, 300);
+		LogOptionEditor window = GetWindow<LogOptionEditor>();
 		window.titleContent = new GUIContent(window.ToString());
 		window.Show();
 	}

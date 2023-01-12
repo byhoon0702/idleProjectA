@@ -1,33 +1,27 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public class KnockbackConditionData
+public class KnockbackConditionData : ConditionDataBase
 {
-	/// <summary>
-	/// 넉백시간
-	/// </summary>
-	public float duration = 0.5f;
-
-	/// <summary>
-	/// 넉백거리
-	/// </summary>
-	public float distance = 5;
-
-
 	public KnockbackConditionData()
 	{
 
 	}
 
-	public KnockbackConditionData(float _duration, float _distance)
+	public override object Clone()
 	{
-		duration = _duration;
-		distance = _distance;
+		return new KnockbackConditionData();
+	}
+
+	public override string ToString()
+	{
+		return $"[Knockback]";
 	}
 }
 public class KnockbackCondition : ConditionBase
 {
 	public override CharacterCondition conditionType => CharacterCondition.Knockback;
+	public override BuffType buffType => BuffType.Debuff;
 	public override string iconPath => null;
 	public override string effectPath => null;
 
@@ -36,10 +30,10 @@ public class KnockbackCondition : ConditionBase
 
 
 	public KnockbackCondition(Character _attacker, KnockbackConditionData _conditionData)
-		: base(_attacker, _conditionData.duration)
+		: base(_attacker, ConfigMeta.it.KNOCKBACK_DURATION)
 	{
 		conditionData = _conditionData;
-		distance = conditionData.distance;
+		distance = ConfigMeta.it.KNOCKBACK_DISTANCE;
 	}
 
 	public override void Start()

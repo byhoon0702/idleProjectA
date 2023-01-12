@@ -11,10 +11,10 @@ public class CharacterEditorExtension : EditorWindow
 	private static bool conditionFoldout;
 
 	private static StunConditionData stunConditionData = new StunConditionData(5);
-	private static PoisonConditionData poisonConditionData = new PoisonConditionData(0.5f, 5);
+	private static DoteConditionData doteConditionData = new DoteConditionData(ElementType.FIRE, 1, 0.5f, 5);
 	private static MoveSpeedUpConditionData moveSpeedUpConditionData = new MoveSpeedUpConditionData(0.21f, 5);
 	private static MoveSpeedDownConditionData moveSpeedDownConditionData = new MoveSpeedDownConditionData(0.21f, 5);
-	private static KnockbackConditionData knockbackConditionData = new KnockbackConditionData(0.5f, 5);
+	private static KnockbackConditionData knockbackConditionData = new KnockbackConditionData();
 	private static DamageUpConditionData damageUpConditionData = new DamageUpConditionData(0.5f, 5);
 	private static DamageDownConditionData damageDownConditionData = new DamageDownConditionData(0.5f, 5);
 	private static CriticalChanceUpConditionData criticalChanceUpConditionData = new CriticalChanceUpConditionData(0.035f, 6);
@@ -41,7 +41,6 @@ public class CharacterEditorExtension : EditorWindow
 	public static void ShowEditor(Character _target)
 	{
 		CharacterEditorExtension window = ScriptableObject.CreateInstance<CharacterEditorExtension>();
-		window.position = new Rect(Screen.width / 2, Screen.height / 2, 600, 300);
 		window.titleContent = new GUIContent(window.ToString());
 		window.Show();
 
@@ -85,6 +84,14 @@ public class CharacterEditorExtension : EditorWindow
 	public static void ShowCharInfo(Character _character)
 	{
 		EditorGUILayout.LabelField(new GUIContent($"{_character.info.charNameAndCharId}"), "PreToolbar");
+		if (_character.skillModule.hasSkill)
+		{
+			EditorGUILayout.LabelField($"보유스킬: {_character.skillModule.skillAttack.name}({_character.skillModule.skillAttack.tid}) - {_character.skillModule.skillAttack.preset}");
+		}
+		else
+		{
+			EditorGUILayout.LabelField($"보유스킬: 없음");
+		}
 		EditorGUILayout.LabelField($"HP: {_character.info.data.hp.ToString()} / {_character.rawData.hp.ToString()}");
 		EditorGUILayout.LabelField($"AttackPower: {_character.info.AttackPower(false).ToString()}");
 		EditorGUILayout.LabelField($"DamageMul: {_character.info.DamageMul()}");
@@ -96,7 +103,7 @@ public class CharacterEditorExtension : EditorWindow
 	public static void ShowRecordData(Character _character)
 	{
 		EditorGUILayout.LabelField(new GUIContent($"Record"), "PreToolbar");
-		RecordData record = GameManager.it.battleRecord.GetCharacterRecord(_character.charID);
+		RecordData record = VGameManager.it.battleRecord.GetCharacterRecord(_character.charID);
 		if (record == null)
 		{
 			EditorGUILayout.LabelField("Record is Null");
@@ -137,9 +144,9 @@ public class CharacterEditorExtension : EditorWindow
 		{
 			_character.conditionModule.AddCondition(new StunCondition(_character, stunConditionData));
 		}
-		if (GUILayout.Button(typeof(PoisonCondition).ToString()))
+		if (GUILayout.Button(typeof(DoteCondition).ToString()))
 		{
-			_character.conditionModule.AddCondition(new PoisonCondition(_character, poisonConditionData));
+			_character.conditionModule.AddCondition(new DoteCondition(_character, doteConditionData));
 		}
 		if (GUILayout.Button(typeof(MoveSpeedUpCondition).ToString()))
 		{

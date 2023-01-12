@@ -38,8 +38,7 @@ public class ConfigMetaEditor : EditorWindow
 	[MenuItem("Custom Menu/Config Meta")]
 	public static void ShowEditor()
 	{
-		ConfigMetaEditor window = ScriptableObject.CreateInstance<ConfigMetaEditor>();
-		window.position = new Rect(Screen.width / 2, Screen.height / 2, 600, 300);
+		ConfigMetaEditor window = GetWindow<ConfigMetaEditor>();
 		window.titleContent = new GUIContent(window.ToString());
 		window.Show();
 	}
@@ -61,9 +60,9 @@ public class ConfigMetaEditor : EditorWindow
 		}
 
 		// 초기화가 안된경우, 초기화 해줌
-		if (instanceSO == null && GameManager.it.config != null)
+		if (instanceSO == null && VGameManager.it.config != null)
 		{
-			instanceSO = new SerializedObject(GameManager.it.config);
+			instanceSO = new SerializedObject(VGameManager.it.config);
 		}
 		if (metaSO == null)
 		{
@@ -78,7 +77,7 @@ public class ConfigMetaEditor : EditorWindow
 		instanceSO.Update();
 		metaSO.Update();
 		// 데이터 리스트 표시
-		ShowData(); 
+		ShowData();
 		instanceSO.ApplyModifiedProperties();
 
 
@@ -86,7 +85,7 @@ public class ConfigMetaEditor : EditorWindow
 		try
 		{
 			// Json으로 변환됬을때 표시
-			ShowJsonData(); 
+			ShowJsonData();
 		}
 		catch (Exception e)
 		{
@@ -134,7 +133,7 @@ public class ConfigMetaEditor : EditorWindow
 					string propertyText = field.Name;
 					if (string.IsNullOrEmpty(filter) == false)
 					{
-						if(tooltipText.ToLower().Contains(filter.ToLower()) || propertyText.ToLower().Contains(filter.ToLower()))
+						if (tooltipText.ToLower().Contains(filter.ToLower()) || propertyText.ToLower().Contains(filter.ToLower()))
 						{
 
 						}

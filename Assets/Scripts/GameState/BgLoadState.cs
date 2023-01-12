@@ -20,7 +20,7 @@
 		elapsedTime += time;
 		if (elapsedTime > 1)
 		{
-			GameManager.it.ChangeState(GameState.PLAYERSPAWN);
+			VGameManager.it.ChangeState(GameState.PLAYERSPAWN);
 
 		}
 	}

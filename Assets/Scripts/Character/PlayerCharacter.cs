@@ -97,7 +97,7 @@ public class PlayerCharacter : Character
 		}
 		info.data.hp -= totalAttackPower;
 
-		GameManager.it.battleRecord.RecordAttackPower(_attacker.charID, charID, _attackName, totalAttackPower, isCriticalAttack);
+		VGameManager.it.battleRecord.RecordAttackPower(_attacker.charID, charID, _attackName, totalAttackPower, isCriticalAttack);
 	}
 
 	public override void Heal(Character _attacker, IdleNumber _attackPower, string _healName, Color _color)
@@ -114,7 +114,7 @@ public class PlayerCharacter : Character
 
 			IdleNumber addHP = newHP - info.data.hp;
 			info.data.hp += addHP;
-			GameManager.it.battleRecord.RecordHeal(_attacker.charID, charID, _healName, addHP);
+			VGameManager.it.battleRecord.RecordHeal(_attacker.charID, charID, _healName, addHP);
 			GameUIManager.it.ShowFloatingText(_attackPower.ToString(), _color, characterAnimation.CenterPivot.position, false, isPlayer: true);
 		}
 	}

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Purchasing.MiniJSON;
 
 /// <summary>
 /// 데이터를 관리하는 객체
@@ -16,6 +16,7 @@ public class DataManager : MonoBehaviour
 
 	private Dictionary<Type, object> container;
 
+	public string path = "";
 	private void Awake()
 	{
 		instance = this;
@@ -26,8 +27,12 @@ public class DataManager : MonoBehaviour
 	}
 	public void LoadAllJson()
 	{
+		if (path.IsNullOrEmpty())
+		{
+			path = "Resources/Json";
+		}
 		container = new Dictionary<Type, object>();
-		string[] files = Directory.GetFiles(Application.dataPath + "/AssetFolder/Resources/Json");
+		string[] files = Directory.GetFiles($"{Application.dataPath}/AssetFolder/{path}");
 
 		foreach (string file in files)
 		{
@@ -44,11 +49,19 @@ public class DataManager : MonoBehaviour
 			{
 				using (BinaryReader br = new BinaryReader(fs))
 				{
-					string name = System.IO.Path.GetFileNameWithoutExtension(file);
-
+					string json = br.ReadString();
+					Dictionary<string, object> jsonDict = (Dictionary<string, object>)Json.Deserialize(json);
+					string name = Path.GetFileNameWithoutExtension(file);
+					if (jsonDict.ContainsKey("typeName"))
+					{
+						name = (string)jsonDict["typeName"];
+					}
 					System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
 
-					string json = br.ReadString();
+					if (t == null)
+					{
+						continue;
+					}
 
 					var dd = JsonUtility.FromJson(json, t);
 					container.Add(t, dd);
@@ -65,6 +78,11 @@ public class DataManager : MonoBehaviour
 			return default;
 		}
 		System.Type type = typeof(T);
+		if (container.ContainsKey(type) == false)
+		{
+			return default;
+		}
+
 		return (T)container[type];
 	}
 }

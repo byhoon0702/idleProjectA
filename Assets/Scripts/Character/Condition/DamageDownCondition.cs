@@ -1,5 +1,5 @@
 ﻿[System.Serializable]
-public class DamageDownConditionData
+public class DamageDownConditionData : ConditionDataBase
 {
 	/// <summary>
 	/// 피해감소량
@@ -21,12 +21,22 @@ public class DamageDownConditionData
 	{
 		ratio = _ratio;
 		duration = _duration;
-	}	
+	}
+
+	public override object Clone()
+	{
+		return new DamageDownConditionData(ratio, duration);
+	}
+	public override string ToString()
+	{
+		return $"[DamageDown] ratio: {ratio}, duration: {duration}";
+	}
 }
 
 public class DamageDownCondition : ConditionBase
 {
 	public override CharacterCondition conditionType => CharacterCondition.DamageDown;
+	public override BuffType buffType => BuffType.Buff;
 
 	public override string iconPath => "";
 

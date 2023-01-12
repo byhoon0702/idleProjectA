@@ -18,6 +18,8 @@ public class CharacterInfo
 	/// </summary>
 	public string charNameAndCharId => $"{data.name}({owner.charID})";
 
+	public int skillLevel = 5;
+
 
 	public CharacterInfo(Character _owner, CharacterData _data, ControlSide _controlSide)
 	{
@@ -31,8 +33,16 @@ public class CharacterInfo
 
 	void InitDatas()
 	{
-		jobData = DataManager.it.Get<ClassDataSheet>().Get(data.classTid);
-		raceData = DataManager.it.Get<RaceDataSheet>().Get(data.raceTid);
+		if (DataManager.it.Get<ClassDataSheet>() != null)
+		{
+			jobData = DataManager.it.Get<ClassDataSheet>().Get(data.classTid);
+		}
+
+		if (DataManager.it.Get<RaceDataSheet>() != null)
+		{
+			raceData = DataManager.it.Get<RaceDataSheet>().Get(data.raceTid);
+		}
+
 	}
 
 	public IdleNumber AttackPower(bool _random = true)

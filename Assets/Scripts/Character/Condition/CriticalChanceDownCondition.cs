@@ -1,5 +1,5 @@
 ﻿[System.Serializable]
-public class CriticalChanceDownConditionData
+public class CriticalChanceDownConditionData : ConditionDataBase
 {
 	/// <summary>
 	/// 크리티컬 확률 감소 비율
@@ -22,11 +22,21 @@ public class CriticalChanceDownConditionData
 		ratio = _ratio;
 		duration = _duration;
 	}
+
+	public override object Clone()
+	{
+		return new CriticalChanceDownConditionData(ratio, duration);
+	}
+	public override string ToString()
+	{
+		return $"[CriticalChanceDown] ratio: {ratio}, duration: {duration}";
+	}
 }
 
 public class CriticalChanceDownCondition : ConditionBase
 {
 	public override CharacterCondition conditionType => CharacterCondition.CriticalChanceDown;
+	public override BuffType buffType => BuffType.Debuff;
 
 	public override string iconPath => "";
 

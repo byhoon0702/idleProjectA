@@ -199,13 +199,13 @@ public class StageManager : MonoBehaviour
 	{
 		var stageInfo = GetNormalStageInfo(currentAct, currentStage);
 		currentStageInfo = stageInfo;
-		GameManager.it.ChangeState(GameState.BATTLEEND);
+		VGameManager.it.ChangeState(GameState.BATTLEEND);
 	}
 
 	public void PlayBossStage()
 	{
 		var stageInfo = GetBossStageInfo(currentAct, currentStage);
 		currentStageInfo = stageInfo;
-		GameManager.it.ChangeState(GameState.BATTLEEND);
+		VGameManager.it.ChangeState(GameState.BATTLEEND);
 	}
 }

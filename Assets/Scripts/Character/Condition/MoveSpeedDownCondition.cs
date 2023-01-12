@@ -1,6 +1,6 @@
 ﻿
 [System.Serializable]
-public class MoveSpeedDownConditionData
+public class MoveSpeedDownConditionData : ConditionDataBase
 {
 	/// <summary>
 	/// 이동속도 감소비율
@@ -22,11 +22,22 @@ public class MoveSpeedDownConditionData
 		ratio = _ratio;
 		duration = _duration;
 	}
+
+	public override object Clone()
+	{
+		return new MoveSpeedDownConditionData(ratio, duration);
+	}
+
+	public override string ToString()
+	{
+		return $"[MoveSpeedDown] ratio: {ratio}, duration: {duration}";
+	}
 }
 
 public class MoveSpeedDownCondition : ConditionBase
 {
 	public override CharacterCondition conditionType => CharacterCondition.MoveSpeedDown;
+	public override BuffType buffType => BuffType.Debuff;
 
 	public override string iconPath => "";
 

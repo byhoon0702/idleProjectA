@@ -248,7 +248,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 	// Update is called once per frame
 	void Update()
 	{
-		if (GameManager.it.currentState != GameState.BATTLE && GameManager.it.currentState != GameState.REWARD && GameManager.it.currentState != GameState.BOSSBATTLE)
+		if (VGameManager.it.currentState != GameState.BATTLE && VGameManager.it.currentState != GameState.REWARD && VGameManager.it.currentState != GameState.BOSSBATTLE)
 		{
 			return;
 		}
