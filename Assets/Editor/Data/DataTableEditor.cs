@@ -14,12 +14,16 @@ using System.Collections;
 using UnityEngine.Purchasing.MiniJSON;
 using System.Linq;
 
+
 public class DataTableEditor : EditorWindow
 {
+
+	public DataTableEditorSettings settings;
 	[SerializeField]
 	public string className;
 
 	private bool foldOut = false;
+
 
 	[SerializeField]
 	public SerializedObject serializedObject;
@@ -99,6 +103,26 @@ public class DataTableEditor : EditorWindow
 		return (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, value);
 	}
 
+	public void LoadSettings()
+	{
+		if (settings != null)
+		{
+			return;
+		}
+		string[] guid = AssetDatabase.FindAssets($"t:ScriptableObject");
+		for (int i = 0; i < guid.Length; i++)
+		{
+			string path = AssetDatabase.GUIDToAssetPath(guid[i]);
+			string filename = Path.GetFileNameWithoutExtension(path);
+
+			var obj = AssetDatabase.LoadAssetAtPath(path, typeof(DataTableEditorSettings));
+			if (obj is DataTableEditorSettings)
+			{
+				settings = obj as DataTableEditorSettings;
+				return;
+			}
+		}
+	}
 	public void LoadAllJson()
 	{
 		jsonContainer = new Dictionary<string, object>();
@@ -142,6 +166,7 @@ public class DataTableEditor : EditorWindow
 
 	void OnGUI()
 	{
+		LoadSettings();
 		EditorGUILayout.Space(10);
 		label = EditorGUILayout.TextField("데이터 테이블 이름", label);
 		if (label.IsNullOrEmpty())
@@ -249,7 +274,7 @@ public class DataTableEditor : EditorWindow
 		boxStyle.fontSize = 15;
 		EditorGUILayout.TextArea($"현재 Json 파일 : {currentJsonFileName}\n현재 파일 경로 : {currentJsonFilePath}", boxStyle);
 
-		scrollPos = GUILayout.BeginScrollView(scrollPos, true, false, GUILayout.Width(1000));
+		scrollPos = GUILayout.BeginScrollView(scrollPos, true, false, GUILayout.Width(settings.cellSize.x * 14));
 		GUILayout.Box("", GUILayout.Width(EditorGUIUtility.currentViewWidth));
 
 		if (dataSheetProperty != null)
@@ -294,7 +319,7 @@ public class DataTableEditor : EditorWindow
 
 		linkedTypeList = new Dictionary<string, Type>();
 
-		float width = (EditorGUIUtility.currentViewWidth / fields.Length) - 10;
+		//float width = settings.cellSize.x;//(EditorGUIUtility.currentViewWidth / fields.Length) - 10;
 		for (int i = 0; i < fields.Length; i++)
 		{
 			if (fields[i].Name.Contains("Tid", StringComparison.Ordinal))
@@ -311,14 +336,14 @@ public class DataTableEditor : EditorWindow
 
 		reorderableList = new ReorderableList(_serializedObjet, _serializeProperty);
 
-		reorderableList.elementHeight = EditorGUIUtility.singleLineHeight * 2;
+		reorderableList.elementHeight = settings.elementHeight;
 		reorderableList.drawHeaderCallback += rect =>
 		{
 			Rect tempRect = new Rect(rect);
 			tempRect.x = 20;
 			for (int i = 0; i < fields.Length; i++)
 			{
-				tempRect.width = width;
+				tempRect.width = settings.cellSize.x;
 				tempRect.height = EditorGUIUtility.singleLineHeight;
 
 				EditorGUI.LabelField(tempRect, fields[i].Name, EditorStyles.boldLabel);
@@ -335,8 +360,8 @@ public class DataTableEditor : EditorWindow
 			for (int i = 0; i < fields.Length; i++)
 			{
 				var field = fields[i];
-				tempRect.y = rect.y;
-				tempRect.width = width;
+				tempRect.y = rect.y + 2;
+				tempRect.width = settings.cellSize.x;
 				tempRect.height = EditorGUIUtility.singleLineHeight;
 				var sf = info.FindPropertyRelative(field.Name);
 
@@ -399,13 +424,11 @@ public class DataTableEditor : EditorWindow
 				tempRect.x += tempRect.width + 5;
 			}
 		};
-
 		//	reorderableList.onSelectCallback += index => { };
 	}
 
 	bool TypeExist()
 	{
-
 		instanceName = searchString;
 		instanceType = System.Type.GetType(instanceName);
 		return instanceType != null;
