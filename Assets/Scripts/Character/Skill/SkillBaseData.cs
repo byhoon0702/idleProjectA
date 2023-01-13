@@ -107,7 +107,7 @@ public abstract class SkillBase
 	/// <summary>
 	/// 로그용
 	/// </summary>
-	public string skillEditorLogTitle => $"[스킬 초기화][{owner.info.charNameAndCharId} / {skillData.skillName}({skillData.tid}) - Lv: {owner.info.skillLevel})";
+	public string skillEditorLogTitle => $"[{owner.info.charNameAndCharId} / {skillData.skillName}({skillData.tid}) - Lv: {owner.info.skillLevel})";
 
 
 	public Color fontColor;

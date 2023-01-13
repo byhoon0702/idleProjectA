@@ -74,6 +74,6 @@ public class Skil_dss_04_001 : SkillBase
 		totalDoteData = (DoteConditionData)skillData.doteData.Clone();
 		totalDoteData.tickAttackPowerMul = (float)FourArithmeticCalculator.Calculate(skillData.doteDataRatioLevelData, skillData.attackPowerMul, _skillLevel);
 
-		VLog.SkillLog($"{skillEditorLogTitle} totalAttackPowerMul: {totalAttackPowerMul}, {totalDoteData}");
+		VLog.SkillLog($"[스킬 초기화] {skillEditorLogTitle} totalAttackPowerMul: {totalAttackPowerMul}, {totalDoteData}");
 	}
 }

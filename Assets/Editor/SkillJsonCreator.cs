@@ -15,12 +15,17 @@ public class SkillJsonCreator : EditorWindow
 	public List<Int64> usingTids = new List<Int64>();
 	public List<string> presetNames = new List<string>();
 
+
+	/// <summary>
+	/// {n} 기본값 + 레벨별 수치변화
+	/// {g} 기본값 + 등급별 수치변화
+	/// </summary>
 	private Dictionary<string, string> presetDesc = new Dictionary<string, string>()
 	{
-		{ "Skil_dss_01_001Data", "다수의 적에게 공격력의 {n}%의 피해를 {n}회 입히고 {n}초 동안 대상의 받는 피해량을 {n}% 증가시킨다." },
-		{ "Skil_dss_02_001Data", "다수의 적에게 공격력의 {n}%의 피해를 {n}회 입히고 넉백 시킨다." },
-		{ "Skil_dss_03_001Data", "체력이 가장 높은 적에게 공격력의 {n}%의 피해를 {n}회 입히고 {n}% 확률로 {n}%의 추가 피해(속성)를 입힌다." },
-		{ "Skil_dss_04_001Data", "다수의 적에게 공격력의 {n}%의 피해를 입히고 {n}초 동안 {n}%만큼 지속 피해를 입힌다." },
+		{ "Skil_dss_01_001Data", "다수의 적에게 공격력의 {n}%의 피해를 입히고 {g}초 동안 대상의 받는 피해량을 {n}% 증가시킨다." },
+		{ "Skil_dss_02_001Data", "다수의 적에게 공격력의 {n}%의 피해를 입히고 넉백 시킨다." },
+		{ "Skil_dss_03_001Data", "체력이 가장 높은 적에게 공격력의 {n}%의 피해를 입히고 {n}% 확률로 {n}%의 추가 피해를 입힌다." },
+		{ "Skil_dss_04_001Data", "다수의 적에게 공격력의 {n}%의 피해를 입히고 {g}초 동안 {n}%만큼 지속 피해(속성)를 입힌다." },
 		{ "Gilius_sk1Data", "아군 전체를 공격력의 546%만큼 회복시키고 6초동안 공격력을 8.4%, 치명률을 3.5% 증가시킨다." },
 		{ "Haru_sk1Data", "적 전체에게 공격력의 339%만큼 피해를 입히고 50%확률로 5초동안 40%만큼 지속 피해를 입힌다." },
 		{ "Landrock_sk1Data", "전방의 적 다수를 넉백시키며 공격력의 112%만큼 피해를 입히고 4초 동안 대상의 받는 피해량을 5% 증가시킨다." },

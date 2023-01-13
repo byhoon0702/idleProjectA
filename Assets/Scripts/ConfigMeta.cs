@@ -93,4 +93,77 @@ public class ConfigMeta : ScriptableObject
 	/// </summary>
 	[Tooltip("넉백거리(m)")]
 	[SerializeField] public float KNOCKBACK_DISTANCE = 1;
+
+	/// <summary>
+	/// 스턴시간
+	/// </summary>
+	[Tooltip("스턴 시간(s)")]
+	[SerializeField] public float STUN_DURATION = 3;
+
+	/// <summary>
+	/// D ~ SS등급 버프시간
+	/// </summary>
+	[Tooltip(" D ~ SS등급 버프시간(s)")]
+	[SerializeField] public float DSS_BUFF_DURATION = 2;
+
+	/// <summary>
+	/// SSS등급 버프시간
+	/// </summary>
+	[Tooltip("SSS등급 버프시간(s)")]
+	[SerializeField] public float SSS_BUFF_DURATION = 6;
+
+	/// <summary>
+	/// D ~ SS등급 디버프시간
+	/// </summary>
+	[Tooltip("D ~ SS등급 디버프시간(s)")]
+	[SerializeField] public float DSS_DEBUFF_DURATION = 2;
+
+	/// <summary>
+	/// SSS등급 디버프시간
+	/// </summary>
+	[Tooltip("SSS등급 디버프시간(s)")]
+	[SerializeField] public float SSS_DEBUFF_DURATION = 5;
+
+	/// <summary>
+	/// D ~ SS등급 지속피해시간
+	/// </summary>
+	[Tooltip("D ~ SS등급 지속피해시간(s)")]
+	[SerializeField] public float DSS_DOTE_DURATION = 2;
+
+	/// <summary>
+	/// SSS등급 지속피해시간
+	/// </summary>
+	[Tooltip("SSS등급 지속피해시간(s)")]
+	[SerializeField] public float SSS_DOTE_DURATION = 5;
+
+	/// <summary>
+	/// 도트 들어가는 틱
+	/// </summary>
+	[Tooltip("도트 들어가는 틱(s)")]
+	[SerializeField] public float DOTE_TICK = 1;
+
+
+	/// <summary>
+	/// 리절트코드 타이틀 기본 텍스트
+	/// </summary>
+	[Tooltip("리절트코드 타이틀 기본 텍스트")]
+	[SerializeField] public string RESULT_CODE_DEFAULT_TITLE_TEXT = "Info";
+
+	/// <summary>
+	/// 리절트코드 타이틀 오류 기본 텍스트
+	/// </summary>
+	[Tooltip("리절트코드 타이틀 오류 기본 텍스트")]
+	[SerializeField] public string RESULT_CODE_ERROR_TITLE_TEXT = "Error";
+
+	/// <summary>
+	/// 리절트코드 OK버튼 기본 텍스트
+	/// </summary>
+	[Tooltip("리절트코드 OK버튼 기본 텍스트")]
+	[SerializeField] public string RESULT_CODE_DEFAULT_OK_TEXT = "Ok";
+
+	/// <summary>
+	/// 리절트코드 CANCEL버튼 기본 텍스트
+	/// </summary>
+	[Tooltip("리절트코드 CANCEL버튼 기본 텍스트")]
+	[SerializeField] public string RESULT_CODE_DEFAULT_CANCEL_TEXT = "Cancel";
 }

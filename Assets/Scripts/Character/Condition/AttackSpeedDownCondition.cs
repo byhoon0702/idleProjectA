@@ -6,30 +6,24 @@ public class AttackSpeedDownConditionData : ConditionDataBase
 	/// </summary>
 	public float ratio = 0.5f;
 
-	/// <summary>
-	/// 지속시간
-	/// </summary>
-	public float duration = 5;
-
 
 	public AttackSpeedDownConditionData()
 	{
 
 	}
 
-	public AttackSpeedDownConditionData(float _ratio, float _duration)
+	public AttackSpeedDownConditionData(float _ratio)
 	{
 		ratio = _ratio;
-		duration = _duration;
 	}
 
 	public override object Clone()
 	{
-		return new AttackSpeedDownConditionData(ratio, duration);
+		return new AttackSpeedDownConditionData(ratio);
 	}
 	public override string ToString()
 	{
-		return $"[AttackSpeedDown] ratio: {ratio}, duration: {duration}";
+		return $"[AttackSpeedDown] ratio: {ratio}";
 	}
 }
 
@@ -50,8 +44,13 @@ public class AttackSpeedDownCondition : ConditionBase
 	public float ratio => conditionData.ratio;
 
 
-	public AttackSpeedDownCondition(Character _attacker, AttackSpeedDownConditionData _conditionData) : base(_attacker, _conditionData.duration)
+	public AttackSpeedDownCondition(Character _attacker, AttackSpeedDownConditionData _conditionData) : base(_attacker, 0)
 	{
 		conditionData = _conditionData;
+	}
+	public override void Start()
+	{
+		duration = ConditionUtility.GetDefaultDebuffDuration(character.info.data.grade);
+		base.Start();
 	}
 }

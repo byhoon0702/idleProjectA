@@ -1,60 +1,16 @@
 ﻿using System;
 
-public enum RankType
-{
-	NONE = 0,
-	MINION = 1,
-	ELITE,
-	MID_BOSS,
-	BOSS,
-	FINISH_GEM,
-}
-
-public enum RaceType
-{
-	NONE,
-	HUMAN,
-	ORC,
-	ELF,
-	UNDEAD,
-	SUMMON,
-}
-
-public enum ElementType
-{
-	FIRE,
-	WATER,
-	THUNDER,
-	LEAF,
-	LIGHT,
-	DARK,
-}
-
-public enum Grade
-{
-	D,
-	C,
-	B,
-	A,
-	S,
-	SS,
-	SSS,
-}
-
 
 
 /// <summary>
 /// Raw 데이터
 /// </summary>
 [Serializable]
-public class CharacterData
+public class CharacterData : ItemData
 {
-	public long tid;
 	public string name;
 	//데이터 테이블에만 표시되는 설명 
-	public string description;
 	public string resource;
-
 
 	public long classTid;
 	public long raceTid;

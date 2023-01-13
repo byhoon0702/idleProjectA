@@ -76,7 +76,9 @@ public class CharacterStatusUI : MonoBehaviour
 		// 체력표시 관련 처리
 		if (hpSlider != null)
 		{
-			hpSlider.value = Mathf.Clamp01((float)(observingCharacter.info.data.hp.GetValue() / observingCharacter.rawData.hp.GetValue()));
+			IdleNumber gauge = (observingCharacter.info.data.hp / observingCharacter.rawData.hp);
+
+			hpSlider.value = Mathf.Clamp01((float)gauge.Value);
 		}
 
 		// 스킬게이지 관련 처리

@@ -6,30 +6,24 @@ public class DamageDownConditionData : ConditionDataBase
 	/// </summary>
 	public float ratio = 0.5f;
 
-	/// <summary>
-	/// 감소시간
-	/// </summary>
-	public float duration = 5;
-
 
 	public DamageDownConditionData()
 	{
 
 	}
 
-	public DamageDownConditionData(float _ratio, float _duration)
+	public DamageDownConditionData(float _ratio)
 	{
 		ratio = _ratio;
-		duration = _duration;
 	}
 
 	public override object Clone()
 	{
-		return new DamageDownConditionData(ratio, duration);
+		return new DamageDownConditionData(ratio);
 	}
 	public override string ToString()
 	{
-		return $"[DamageDown] ratio: {ratio}, duration: {duration}";
+		return $"[DamageDown] ratio: {ratio}";
 	}
 }
 
@@ -50,8 +44,13 @@ public class DamageDownCondition : ConditionBase
 	public float ratio => conditionData.ratio;
 
 
-	public DamageDownCondition(Character _attacker, DamageDownConditionData _conditionData) : base(_attacker, _conditionData.duration)
+	public DamageDownCondition(Character _attacker, DamageDownConditionData _conditionData) : base(_attacker, 0)
 	{
 		conditionData = _conditionData;
+	}
+	public override void Start()
+	{
+		duration = ConditionUtility.GetDefaultBuffDuration(character.info.data.grade);
+		base.Start();
 	}
 }

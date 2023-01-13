@@ -1,10 +1,7 @@
 ﻿
 [System.Serializable]
-public class ClassData
+public class ClassData : BaseData
 {
-	public long tid;
-	//데이터 테이블에만 표시되는 설명 
-	public string description;
 	public ClassType classType;
 	public AttackType attackType;
 	public float attackRange = 1;

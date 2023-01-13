@@ -107,7 +107,7 @@ public class PlayerCharacter : Character
 		{
 			IdleNumber newHP = info.data.hp + _attackPower;
 
-			if (rawData.hp.GetValue() < newHP.GetValue())
+			if (rawData.hp < newHP)
 			{
 				newHP = rawData.hp;
 			}

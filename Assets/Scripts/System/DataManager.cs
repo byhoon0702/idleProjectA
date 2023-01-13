@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.IO;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Purchasing.MiniJSON;
 
@@ -27,31 +30,90 @@ public class DataManager : MonoBehaviour
 	}
 	public void LoadAllJson()
 	{
-		if (path.IsNullOrEmpty())
-		{
-			path = "Resources/Json";
-		}
 		container = new Dictionary<Type, object>();
-		string[] files = Directory.GetFiles($"{Application.dataPath}/AssetFolder/{path}");
 
-		foreach (string file in files)
+		TextAsset[] textAssets = Resources.LoadAll<TextAsset>("Json");
+
+		foreach (TextAsset file in textAssets)
 		{
-			if (file.Contains(".meta"))
+			if (file.name.Contains("DataSheet") == false)
 			{
 				continue;
+			}
+			if (LoadFromBinary(file) == false)
+			{
+				if (LoadFromNonBinary(file) == false)
+				{
+					continue;
+				}
 			}
 
-			if (file.Contains("DataSheet") == false)
+		}
+	}
+
+	private bool LoadFromNonBinary(TextAsset file)
+	{
+
+		Dictionary<string, object> jsonDict = (Dictionary<string, object>)Json.Deserialize(file.text);
+		string name = file.name;
+		if (jsonDict.ContainsKey("typeName"))
+		{
+			name = (string)jsonDict["typeName"];
+		}
+		System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
+
+		if (t == null)
+		{
+			return false;
+		}
+
+		var dd = JsonUtility.FromJson(file.text, t);
+
+		AddToContainer(t, dd);
+		return true;
+	}
+
+	void AddToContainer(Type type, object data)
+	{
+		var fieldInfo = type.GetField("infos");
+
+		if (container.ContainsKey(type) == false)
+		{
+			container.Add(type, data);
+		}
+		else
+		{
+			var fieldValue = fieldInfo.GetValue(container[type]);
+
+			var addValue = fieldInfo.GetValue(data);
+
+			if (typeof(IList).IsAssignableFrom(fieldInfo.FieldType))
 			{
-				continue;
-			}
-			using (FileStream fs = File.OpenRead(file))
-			{
-				using (BinaryReader br = new BinaryReader(fs))
+				IList merge = (IList)Activator.CreateInstance(fieldInfo.FieldType);
+				foreach (var item in fieldValue as IList)
 				{
-					string json = br.ReadString();
+					merge.Add(item);
+				}
+				foreach (var item in addValue as IList)
+				{
+					merge.Add(item);
+				}
+
+				fieldInfo.SetValue(container[type], merge);
+			}
+		}
+	}
+	private bool LoadFromBinary(TextAsset file)
+	{
+		using (MemoryStream fs = new MemoryStream(file.bytes))
+		{
+			using (BinaryReader br = new BinaryReader(fs))
+			{
+				string json = br.ReadString();
+				try
+				{
 					Dictionary<string, object> jsonDict = (Dictionary<string, object>)Json.Deserialize(json);
-					string name = Path.GetFileNameWithoutExtension(file);
+					string name = file.name;
 					if (jsonDict.ContainsKey("typeName"))
 					{
 						name = (string)jsonDict["typeName"];
@@ -60,14 +122,20 @@ public class DataManager : MonoBehaviour
 
 					if (t == null)
 					{
-						continue;
+						return false;
 					}
 
 					var dd = JsonUtility.FromJson(json, t);
-					container.Add(t, dd);
+					AddToContainer(t, dd);
+				}
+				catch (Exception e)
+				{
+					Debug.LogError(file);
+					return false;
 				}
 			}
 		}
+		return true;
 	}
 
 	public T Get<T>()

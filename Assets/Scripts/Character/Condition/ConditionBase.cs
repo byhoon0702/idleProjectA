@@ -62,12 +62,12 @@ public abstract class ConditionBase
 	/// <summary>
 	/// 컨디션 남은 시간
 	/// </summary>
-	public float remainTime { get; private set; }
+	public float remainTime { get; protected set; }
 
 	/// <summary>
 	/// 컨디션 지속시간.
 	/// </summary>
-	public float duration { get; private set; }
+	public float duration { get; protected set; }
 
 
 
@@ -81,7 +81,6 @@ public abstract class ConditionBase
 	{
 		attacker = _attacker;
 		duration = _duration;
-		remainTime = duration;
 	}
 
 	/// <summary>
@@ -89,7 +88,7 @@ public abstract class ConditionBase
 	/// </summary>
 	public virtual void Start()
 	{
-
+		remainTime = duration;
 	}
 
 	/// <summary>
@@ -125,5 +124,45 @@ public abstract class ConditionBase
 	public virtual bool IsEnd()
 	{
 		return duration > 0 && remainTime <= 0;
+	}
+}
+
+
+public static class ConditionUtility
+{
+	public static float GetDefaultBuffDuration(Grade _grade)
+	{
+		if (_grade == Grade.SSS)
+		{
+			return ConfigMeta.it.SSS_BUFF_DURATION;
+		}
+		else
+		{
+			return ConfigMeta.it.DSS_BUFF_DURATION;
+		}
+	}
+
+	public static float GetDefaultDebuffDuration(Grade _grade)
+	{
+		if (_grade == Grade.SSS)
+		{
+			return ConfigMeta.it.SSS_DEBUFF_DURATION;
+		}
+		else
+		{
+			return ConfigMeta.it.DSS_DEBUFF_DURATION;
+		}
+	}
+
+	public static float GetDefaultDoteDuration(Grade _grade)
+	{
+		if (_grade == Grade.SSS)
+		{
+			return ConfigMeta.it.SSS_DOTE_DURATION;
+		}
+		else
+		{
+			return ConfigMeta.it.DSS_DOTE_DURATION;
+		}
 	}
 }

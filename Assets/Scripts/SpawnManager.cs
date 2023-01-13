@@ -128,10 +128,10 @@ public class SpawnManager : MonoBehaviour
 				continue;
 			}
 
-			CharacterData characterData = DataManager.it.Get<CharacterDataSheet>().GetData(slot.characterTid);
+			ItemData characterData = DataManager.it.Get<CharacterDataSheet>().GetData(slot.characterTid);
 
 			int index = slot.coord.y * 5 + slot.coord.x;
-			PlayerCharacter player = MakePlayer(characterData, i, grid[index]);
+			PlayerCharacter player = MakePlayer((CharacterData)characterData, i, grid[index]);
 			if (player == null)
 			{
 				// 오류는 생성함수에서 표시

@@ -23,19 +23,6 @@ public class Skil_dss_03_001Data : SkillBaseData
 	[SerializeField] public string attackPowerMulLevelData = "";
 
 	/// <summary>
-	/// 공격횟수
-	/// </summary>
-	[Tooltip("공격횟수")]
-	public Int32 attackCount = 1;
-
-	/// <summary>
-	/// 공격횟수 레벨 데이터
-	/// </summary>
-	[Tooltip("공격횟수 레벨 데이터")]
-	[FourArithmetic]
-	[SerializeField] public string attackCountLevelData = "";
-
-	/// <summary>
 	/// 추가 피해확률
 	/// </summary>
 	[Tooltip("추가 피해확률")]
@@ -66,7 +53,6 @@ public class Skil_dss_03_001 : SkillBase
 
 
 	private float totalAttackPowerMul;
-	private Int32 totalAttackCount;
 	private float totalExtraAttackPowerMul;
 
 
@@ -84,25 +70,23 @@ public class Skil_dss_03_001 : SkillBase
 
 		foreach (var target in targetList)
 		{
-			for (Int32 i = 0 ; i < totalAttackCount ; i++)
-			{
-				SkillUtility.SimpleAttack(owner, target, target.info.AttackPower() * totalAttackPowerMul, name, fontColor);
+			IdleNumber totalAttackPower = target.info.AttackPower() * totalAttackPowerMul;
 
-				bool addDamage = SkillUtility.Cumulative(skillData.extraAttackProbability);
-				if(addDamage)
-				{
-					SkillUtility.SimpleAttack(owner, target, target.info.AttackPower() * totalExtraAttackPowerMul, name, fontColor);
-				}
+			bool extraAttackPower = SkillUtility.Cumulative(skillData.extraAttackProbability);
+			if (extraAttackPower)
+			{
+				totalAttackPower += target.info.AttackPower() * totalExtraAttackPowerMul;
 			}
+
+			SkillUtility.SimpleAttack(owner, target, totalAttackPower, name, fontColor);
 		}
 	}
 
 	public override void CalculateSkillLevelData(int _skillLevel)
 	{
 		totalAttackPowerMul = (float)FourArithmeticCalculator.Calculate(skillData.attackPowerMulLevelData, skillData.attackPowerMul, _skillLevel);
-		totalAttackCount = (Int32)FourArithmeticCalculator.Calculate(skillData.attackCountLevelData, skillData.attackCount, _skillLevel);
 		totalExtraAttackPowerMul = (float)FourArithmeticCalculator.Calculate(skillData.extraAttackPowerMulLevelData, skillData.extraAttackPowerMul, _skillLevel);
 
-		VLog.SkillLog($"{skillEditorLogTitle} atkPowerMul: {totalAttackPowerMul}, atkCount: {totalAttackCount}, totalExtraAttackPowerMul: {totalExtraAttackPowerMul}");
+		VLog.SkillLog($"[스킬 초기화] {skillEditorLogTitle} atkPowerMul: {totalAttackPowerMul}, totalExtraAttackPowerMul: {totalExtraAttackPowerMul}");
 	}
 }

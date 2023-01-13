@@ -128,7 +128,7 @@ public static class SkillUtility
 
 						foreach (var checkTarget in targetList)
 						{
-							if (checkTarget.info.data.hp.GetValue() > target.info.data.hp.GetValue())
+							if (checkTarget.info.data.hp > target.info.data.hp)
 							{
 								target = checkTarget;
 							}
@@ -157,7 +157,7 @@ public static class SkillUtility
 		{
 			_allocCharacterFront.Clear();
 
-			for (Int32 i = 0 ; i < _searchList.Count ; i++)
+			for (Int32 i = 0; i < _searchList.Count; i++)
 			{
 				Vector2 targetPosition = _searchList[i].transform.position;
 

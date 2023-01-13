@@ -6,11 +6,6 @@ public class AttackPowerUpConditionData : ConditionDataBase
 	/// </summary>
 	public float ratio = 0.5f;
 
-	/// <summary>
-	/// 지속시간
-	/// </summary>
-	public float duration = 5;
-
 
 
 	public AttackPowerUpConditionData()
@@ -18,19 +13,18 @@ public class AttackPowerUpConditionData : ConditionDataBase
 
 	}
 
-	public AttackPowerUpConditionData(float _ratio, float _duration)
+	public AttackPowerUpConditionData(float _ratio)
 	{
 		ratio = _ratio;
-		duration = _duration;
 	}
 
 	public override object Clone()
 	{
-		return new AttackPowerDownConditionData(ratio, duration);
+		return new AttackPowerUpConditionData(ratio);
 	}
 	public override string ToString()
 	{
-		return $"[AttackPowerUp] ratio: {ratio}, duration: {duration}";
+		return $"[AttackPowerUp] ratio: {ratio}";
 	}
 }
 
@@ -50,8 +44,13 @@ public class AttackPowerUpCondition : ConditionBase
 	public float ratio => conditionData.ratio;
 
 
-	public AttackPowerUpCondition(Character _attacker, AttackPowerUpConditionData _conditionData) : base(_attacker, _conditionData.duration)
+	public AttackPowerUpCondition(Character _attacker, AttackPowerUpConditionData _conditionData) : base(_attacker, 0)
 	{
 		conditionData = _conditionData;
+	}
+	public override void Start()
+	{
+		duration = ConditionUtility.GetDefaultBuffDuration(character.info.data.grade);
+		base.Start();
 	}
 }

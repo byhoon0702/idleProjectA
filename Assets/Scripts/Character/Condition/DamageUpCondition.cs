@@ -7,31 +7,25 @@ public class DamageUpConditionData : ConditionDataBase
 	/// </summary>
 	public float ratio = 0.5f;
 
-	/// <summary>
-	/// 시간
-	/// </summary>
-	public float duration = 5;
-
 
 	public DamageUpConditionData()
 	{
 
 	}
 
-	public DamageUpConditionData(float _ratio, float _duration)
+	public DamageUpConditionData(float _ratio)
 	{
 		ratio = _ratio;
-		duration = _duration;
 	}
 
 	public override object Clone()
 	{
-		return new DamageUpConditionData(ratio, duration);
+		return new DamageUpConditionData(ratio);
 	}
 
 	public override string ToString()
 	{
-		return $"[DamageUp] ratio: {ratio}, duration: {duration}";
+		return $"[DamageUp] ratio: {ratio}";
 	}
 }
 
@@ -52,8 +46,14 @@ public class DamageUpCondition : ConditionBase
 	public float ratio => conditionData.ratio;
 
 
-	public DamageUpCondition(Character _attacker, DamageUpConditionData _conditionData) : base(_attacker, _conditionData.duration)
+	public DamageUpCondition(Character _attacker, DamageUpConditionData _conditionData) : base(_attacker, 0)
 	{
 		conditionData = _conditionData;
+	}
+
+	public override void Start()
+	{
+		duration = ConditionUtility.GetDefaultDebuffDuration(character.info.data.grade);
+		base.Start();
 	}
 }

@@ -6,30 +6,24 @@ public class CriticalChanceUpConditionData : ConditionDataBase
 	/// </summary>
 	public float ratio = 0.5f;
 
-	/// <summary>
-	/// 지속시간
-	/// </summary>
-	public float duration = 5;
-
 
 	public CriticalChanceUpConditionData()
 	{
 
 	}
 
-	public CriticalChanceUpConditionData(float _ratio, float _duration)
+	public CriticalChanceUpConditionData(float _ratio)
 	{
 		ratio = _ratio;
-		duration = _duration;
 	}
 
 	public override object Clone()
 	{
-		return new CriticalChanceUpConditionData(ratio, duration);
+		return new CriticalChanceUpConditionData(ratio);
 	}
 	public override string ToString()
 	{
-		return $"[CriticalChanceUp] ratio: {ratio}, duration: {duration}";
+		return $"[CriticalChanceUp] ratio: {ratio}";
 	}
 }
 
@@ -51,8 +45,13 @@ public class CriticalChanceUpCondition : ConditionBase
 	public float ratio => conditionData.ratio;
 
 
-	public CriticalChanceUpCondition(Character _attacker, CriticalChanceUpConditionData _conditionData) : base(_attacker, _conditionData.duration)
+	public CriticalChanceUpCondition(Character _attacker, CriticalChanceUpConditionData _conditionData) : base(_attacker, 0)
 	{
 		conditionData = _conditionData;
+	}
+	public override void Start()
+	{
+		duration = ConditionUtility.GetDefaultBuffDuration(character.info.data.grade);
+		base.Start();
 	}
 }

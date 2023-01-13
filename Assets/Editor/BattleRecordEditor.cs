@@ -74,14 +74,14 @@ public class BattleRecordEditor : EditorWindow
 			Character character = CharacterManager.it.GetCharacter(record.charID, true);
 			if (filterPlayerSide)
 			{
-				if(character != null && character.info.controlSide == ControlSide.PLAYER)
+				if (character != null && character.info.controlSide == ControlSide.PLAYER)
 				{
 					continue;
 				}
 			}
-			if(filterEnemySide)
+			if (filterEnemySide)
 			{
-				if(character != null && character.info.controlSide == ControlSide.ENEMY)
+				if (character != null && character.info.controlSide == ControlSide.ENEMY)
 				{
 					continue;
 				}
@@ -119,7 +119,7 @@ public class BattleRecordEditor : EditorWindow
 			{
 				descText = $"- <color=magenta>{_character.info.data.rankType}</color>";
 			}
-			if (_character.info.data.hp.GetValue() <= 0)
+			if (_character.info.data.hp <= 0)
 			{
 				hpText = $"(HP: {0} / {_character.rawData.hp.ToString()})";
 			}
@@ -138,7 +138,7 @@ public class BattleRecordEditor : EditorWindow
 		{
 			charName = $"<color=yellow>{charName}</color>";
 		}
-		if(_character != null && _character.currentState == StateType.DEATH)
+		if (_character != null && _character.currentState == StateType.DEATH)
 		{
 			stateText = $"<color=red>{stateText}</color>";
 		}

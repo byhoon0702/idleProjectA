@@ -10,31 +10,24 @@ public class AttackSpeedUpConditionData : ConditionDataBase
 	[Tooltip("공격속도 증가비율")]
 	[SerializeField] public float ratio = 0.5f;
 
-	/// <summary>
-	/// 지속시간
-	/// </summary>
-	[Tooltip("지속시간")]
-	[SerializeField] public float duration = 5;
-
 
 	public AttackSpeedUpConditionData()
 	{
 
 	}
 
-	public AttackSpeedUpConditionData(float _ratio, float _duration)
+	public AttackSpeedUpConditionData(float _ratio)
 	{
 		ratio = _ratio;
-		duration = _duration;
 	}
 
 	public override object Clone()
 	{
-		return new AttackSpeedUpConditionData(ratio, duration);
+		return new AttackSpeedUpConditionData(ratio);
 	}
 	public override string ToString()
 	{
-		return $"[AttackSpeedUp] ratio: {ratio}, duration: {duration}";
+		return $"[AttackSpeedUp] ratio: {ratio}";
 	}
 }
 
@@ -55,8 +48,14 @@ public class AttackSpeedUpCondition : ConditionBase
 	public float ratio => conditionData.ratio;
 
 
-	public AttackSpeedUpCondition(Character _attacker, AttackSpeedUpConditionData _conditionData) : base(_attacker, _conditionData.duration)
+	public AttackSpeedUpCondition(Character _attacker, AttackSpeedUpConditionData _conditionData) : base(_attacker, 0)
 	{
 		conditionData = _conditionData;
+	}
+
+	public override void Start()
+	{
+		duration = ConditionUtility.GetDefaultBuffDuration(character.info.data.grade);
+		base.Start();
 	}
 }

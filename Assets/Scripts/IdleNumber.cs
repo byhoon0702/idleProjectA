@@ -85,6 +85,10 @@ public class IdleNumber
 		return unit;
 	}
 
+	/// <summary>
+	/// 해당 함수로 10의 25승 이상의 값을 호출 할 시 앱이 멈출 수 있기 때문에 가급적 사용하지 않는다.
+	/// </summary>
+	/// <returns></returns>
 	public double GetValue()
 	{
 		var value = Value;
@@ -92,6 +96,7 @@ public class IdleNumber
 
 		return value;
 	}
+
 	private double GetTruncateValue()
 	{
 		Value = Value * Mathf.Pow(10, Exp);
@@ -127,7 +132,30 @@ public class IdleNumber
 		return normalize;
 	}
 
+	private static int CompareTo(IdleNumber left, IdleNumber right)
+	{
+		var comparison = left.Exp.CompareTo(right.Exp);
+		if (comparison == 0)
+		{
+			comparison = left.Value.CompareTo(right.Value);
 
+			return comparison;
+		}
+
+		if (comparison < 0)
+		{
+			var diff = right.Exp - left.Exp;
+			left.Value = left.Value / Mathf.Pow(10, diff);
+		}
+		else
+		{
+			var diff = left.Exp - right.Exp;
+			right.Value = right.Value / Mathf.Pow(10, diff);
+		}
+		comparison = left.Value.CompareTo(right.Value);
+
+		return comparison;
+	}
 	private static void AligningIdleNumber(IdleNumber left, IdleNumber right, out IdleNumber big_number)
 	{
 		var comparison = left.Exp.CompareTo(right.Exp);
@@ -169,10 +197,10 @@ public class IdleNumber
 		IdleNumber result = new IdleNumber();
 		IdleNumber left = new IdleNumber(a);
 		IdleNumber right = new IdleNumber(b);
-		IdleNumber big = new IdleNumber();
 
-		AligningIdleNumber(left, right, out big);
-		result.Exp = big.Exp;
+
+		AligningIdleNumber(left, right, out result);
+
 		switch (operator_symbol)
 		{
 			case '+':
@@ -190,30 +218,81 @@ public class IdleNumber
 		}
 		return result;
 	}
-	#region operator
+	#region operator double 
 	public static bool operator <=(IdleNumber a, double b)
 	{
-		return a.Value <= b;
+		int quotient = (int)(b / 10);
+		IdleNumber right = new IdleNumber(b / quotient, quotient);
+		return a <= right;
 	}
 	public static bool operator >=(IdleNumber a, double b)
 	{
-		return a.Value >= b;
+		int quotient = (int)(b / 10);
+		IdleNumber right = new IdleNumber(b / quotient, quotient);
+		return a >= right;
 	}
 	public static bool operator >(IdleNumber a, double b)
 	{
-		return a.Value > b;
+		int quotient = (int)(b / 10);
+		IdleNumber right = new IdleNumber(b / quotient, quotient);
+		return a > right;
 	}
 	public static bool operator <(IdleNumber a, double b)
 	{
-		return a.Value < b;
+		int quotient = (int)(b / 10);
+		IdleNumber right = new IdleNumber(b / quotient, quotient);
+		return a < right;
 	}
 	public static bool operator ==(IdleNumber a, double b)
 	{
-		return a.Value == b;
+		int quotient = (int)(b / 10);
+		IdleNumber right = new IdleNumber(b / quotient, quotient);
+		return a == right;
 	}
 	public static bool operator !=(IdleNumber a, double b)
 	{
-		return a.Value != b;
+		int quotient = (int)(b / 10);
+		IdleNumber right = new IdleNumber(b / quotient, quotient);
+		return a != right;
+	}
+	#endregion
+
+	#region  operator compare
+	public static bool operator <=(IdleNumber a, IdleNumber b)
+	{
+		int comparison = CompareTo(a, b);
+
+		return comparison == 0 || comparison == -1;
+	}
+	public static bool operator >=(IdleNumber a, IdleNumber b)
+	{
+		int comparison = CompareTo(a, b);
+
+		return comparison == 0 || comparison == 1;
+	}
+	public static bool operator >(IdleNumber a, IdleNumber b)
+	{
+		int comparison = CompareTo(a, b);
+
+		return comparison == 1;
+	}
+	public static bool operator <(IdleNumber a, IdleNumber b)
+	{
+		int comparison = CompareTo(a, b);
+
+		return comparison == -1;
+	}
+	public static bool operator ==(IdleNumber a, IdleNumber b)
+	{
+		int comparison = CompareTo(a, b);
+
+		return comparison == 0;
+	}
+	public static bool operator !=(IdleNumber a, IdleNumber b)
+	{
+		int comparison = CompareTo(a, b);
+
+		return comparison != 0;
 	}
 
 	public static IdleNumber operator +(IdleNumber a, IdleNumber b)
@@ -241,18 +320,20 @@ public class IdleNumber
 	public static IdleNumber operator +(IdleNumber a, double b)
 	{
 		IdleNumber result = new IdleNumber(a);
-		result.Value *= Mathf.Pow(10, result.Exp);
-		result.Value += b;
-		result.Value /= Mathf.Pow(10, result.Exp);
+		int quotient = (int)(b / 10);
+		IdleNumber right = new IdleNumber(b / quotient, quotient);
+
+		result += right;
+
 		return result;
 	}
 
 	public static IdleNumber operator -(IdleNumber a, double b)
 	{
 		IdleNumber result = new IdleNumber(a);
-		result.Value *= Mathf.Pow(10, result.Exp);
-		result.Value -= b;
-		result.Value /= Mathf.Pow(10, result.Exp);
+		int quotient = (int)(b / 10);
+		IdleNumber right = new IdleNumber(b / quotient, quotient);
+		result -= right;
 		return result;
 	}
 

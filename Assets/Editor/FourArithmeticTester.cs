@@ -33,6 +33,13 @@ public class FourArithmeticTester : EditorWindow
 
 
 	[MenuItem("Custom Menu/사칙연산 테스트")]
+	public static void ShowEditor()
+	{
+		FourArithmeticTester window = EditorWindow.GetWindow<FourArithmeticTester>();
+		window.titleContent = new GUIContent(window.ToString());
+		window.Show();
+	}
+
 	public static void ShowEditor(string _fourArithmeticValue)
 	{
 		FourArithmeticTester window = EditorWindow.GetWindow<FourArithmeticTester>();
@@ -44,7 +51,7 @@ public class FourArithmeticTester : EditorWindow
 	private void OnGUI()
 	{
 		GUILayout.Label("데이터", "PreToolbar");
-		GUILayout.Label("+, -, *, /, (, ) 사용가능(소소한건데 곱하기 연산이 나누기보다 빠릅니다)");
+		GUILayout.Label("+, -, *, /, (, ) 사용가능");
 		fourArithmeticValue = EditorGUILayout.TextField("사칙연산(띄어쓰기로 구분)", fourArithmeticValue);
 		defaultValue = EditorGUILayout.FloatField($"데이터 기본값({FourArithmeticCalculator.DEFAULT_VALUE})", defaultValue);
 		EditorGUILayout.LabelField($"스킬레벨({FourArithmeticCalculator.SKILL_LEVEL})");
@@ -71,10 +78,18 @@ public class FourArithmeticTester : EditorWindow
 		{
 			for (Int32 i = 1 ; i <= skillLvCount ; i++)
 			{
-				string reservedWord = FourArithmeticCalculator.ReplaceReservedWord(fourArithmeticValue, defaultValue, i);
-				double result = FourArithmeticCalculator.CalculateFourArithmetic(reservedWord);
+				if (string.IsNullOrEmpty(fourArithmeticValue) == false)
+				{
+					string reservedWord = FourArithmeticCalculator.ReplaceReservedWord(fourArithmeticValue, defaultValue, i);
+					double result = FourArithmeticCalculator.CalculateFourArithmetic(reservedWord);
 
-				calculateResult.Add($"[LV {i}] <color=yellow>{result}</color> / 수식: {reservedWord}");
+					calculateResult.Add($"[LV {i}] <color=yellow>{result}</color> / 수식: {reservedWord}");
+				}
+				else
+				{
+					double result = FourArithmeticCalculator.Calculate(fourArithmeticValue, defaultValue, i);
+					calculateResult.Add($"[LV {i}] <color=yellow>{result}</color>");
+				}
 			}
 		}
 		catch (Exception e)

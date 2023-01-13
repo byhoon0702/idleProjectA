@@ -10,19 +10,19 @@ public class CharacterEditorExtension : EditorWindow
 
 	private static bool conditionFoldout;
 
-	private static StunConditionData stunConditionData = new StunConditionData(5);
-	private static DoteConditionData doteConditionData = new DoteConditionData(ElementType.FIRE, 1, 0.5f, 5);
-	private static MoveSpeedUpConditionData moveSpeedUpConditionData = new MoveSpeedUpConditionData(0.21f, 5);
-	private static MoveSpeedDownConditionData moveSpeedDownConditionData = new MoveSpeedDownConditionData(0.21f, 5);
+	private static StunConditionData stunConditionData = new StunConditionData();
+	private static DoteConditionData doteConditionData = new DoteConditionData(ElementType.FIRE, 0.5f);
+	private static MoveSpeedUpConditionData moveSpeedUpConditionData = new MoveSpeedUpConditionData(0.21f);
+	private static MoveSpeedDownConditionData moveSpeedDownConditionData = new MoveSpeedDownConditionData(0.21f);
 	private static KnockbackConditionData knockbackConditionData = new KnockbackConditionData();
-	private static DamageUpConditionData damageUpConditionData = new DamageUpConditionData(0.5f, 5);
-	private static DamageDownConditionData damageDownConditionData = new DamageDownConditionData(0.5f, 5);
-	private static CriticalChanceUpConditionData criticalChanceUpConditionData = new CriticalChanceUpConditionData(0.035f, 6);
-	private static CriticalChanceDownConditionData criticalChanceDownConditionData = new CriticalChanceDownConditionData(0.035f, 6);
-	private static AttackSpeedUpConditionData attackSpeedUpConditionData = new AttackSpeedUpConditionData(0.14f, 5);
-	private static AttackSpeedDownConditionData attackSpeedDownConditionData = new AttackSpeedDownConditionData(0.14f, 5);
-	private static AttackPowerUpConditionData attackPowerUpConditionData = new AttackPowerUpConditionData(0.084f, 6);
-	private static AttackPowerDownConditionData attackPowerDownConditionData = new AttackPowerDownConditionData(0.084f, 6);
+	private static DamageUpConditionData damageUpConditionData = new DamageUpConditionData(0.5f);
+	private static DamageDownConditionData damageDownConditionData = new DamageDownConditionData(0.5f);
+	private static CriticalChanceUpConditionData criticalChanceUpConditionData = new CriticalChanceUpConditionData(0.035f);
+	private static CriticalChanceDownConditionData criticalChanceDownConditionData = new CriticalChanceDownConditionData(0.035f);
+	private static AttackSpeedUpConditionData attackSpeedUpConditionData = new AttackSpeedUpConditionData(0.14f);
+	private static AttackSpeedDownConditionData attackSpeedDownConditionData = new AttackSpeedDownConditionData(0.14f);
+	private static AttackPowerUpConditionData attackPowerUpConditionData = new AttackPowerUpConditionData(0.084f);
+	private static AttackPowerDownConditionData attackPowerDownConditionData = new AttackPowerDownConditionData(0.084f);
 
 
 
@@ -86,7 +86,7 @@ public class CharacterEditorExtension : EditorWindow
 		EditorGUILayout.LabelField(new GUIContent($"{_character.info.charNameAndCharId}"), "PreToolbar");
 		if (_character.skillModule.hasSkill)
 		{
-			EditorGUILayout.LabelField($"보유스킬: {_character.skillModule.skillAttack.name}({_character.skillModule.skillAttack.tid}) - {_character.skillModule.skillAttack.preset}");
+			EditorGUILayout.LabelField($"보유스킬: ({_character.skillModule.skillAttack.skillEditorLogTitle}) - {_character.skillModule.skillAttack.preset}");
 		}
 		else
 		{

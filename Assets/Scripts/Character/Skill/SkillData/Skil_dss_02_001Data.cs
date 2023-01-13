@@ -22,19 +22,6 @@ public class Skil_dss_02_001Data : SkillBaseData
 	[SerializeField] public string attackPowerMulLevelData = "";
 
 	/// <summary>
-	/// 공격횟수
-	/// </summary>
-	[Tooltip("공격횟수")]
-	[SerializeField] public Int32 attackCount = 1;
-
-	/// <summary>
-	/// 공격횟수 레벨 데이터
-	/// </summary>
-	[Tooltip("공격횟수 레벨 데이터")]
-	[FourArithmetic]
-	[SerializeField] public string attackCountLevelData = "";
-
-	/// <summary>
 	/// 넉백 데이터
 	/// </summary>
 	[Tooltip("넉백 데이터")]
@@ -51,7 +38,6 @@ public class Skil_dss_02_001 : SkillBase
 	private Skil_dss_02_001Data skillData;
 
 	private float totalAttackPowerMul;
-	private Int32 totalAttackCount;
 
 
 
@@ -69,19 +55,14 @@ public class Skil_dss_02_001 : SkillBase
 		foreach (var target in targetList)
 		{
 			target.conditionModule.AddCondition(new KnockbackCondition(owner, skillData.knockbackData));
-
-			for (Int32 i = 0 ; i < totalAttackCount ; i++)
-			{
-				SkillUtility.SimpleAttack(owner, target, owner.info.AttackPower() * totalAttackPowerMul, name, fontColor);
-			}
+			SkillUtility.SimpleAttack(owner, target, owner.info.AttackPower() * totalAttackPowerMul, name, fontColor);
 		}
 	}
 
 	public override void CalculateSkillLevelData(int _skillLevel)
 	{
 		totalAttackPowerMul = (float)FourArithmeticCalculator.Calculate(skillData.attackPowerMulLevelData, skillData.attackPowerMul, _skillLevel);
-		totalAttackCount = (Int32)FourArithmeticCalculator.Calculate(skillData.attackCountLevelData, skillData.attackCount, _skillLevel);
 
-		VLog.SkillLog($"{skillEditorLogTitle} atkPowerMul: {totalAttackPowerMul}, atkCount: {totalAttackCount}");
+		VLog.SkillLog($"[스킬 초기화] {skillEditorLogTitle} atkPowerMul: {totalAttackPowerMul}");
 	}
 }
