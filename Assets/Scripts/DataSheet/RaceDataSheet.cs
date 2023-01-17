@@ -7,7 +7,7 @@ public class RaceData : BaseData
 	public RaceType raceType;
 }
 [Serializable]
-public class RaceDataSheet : DataBase<RaceData>
+public class RaceDataSheet : DataSheetBase<RaceData>
 {
 	public RaceData Get(long tid)
 	{

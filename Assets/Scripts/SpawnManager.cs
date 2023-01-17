@@ -18,16 +18,12 @@ public class SpawnManager : MonoBehaviour
 	public PlayerCharacter playerCharacterPrefab;
 	public EnemyCharacter enemyCharacterPrefab;
 
-
-	public int enemyCount;
 	public Rect spawnArea;
 
 	public Dictionary<int/*slot index*/, PlayerCharacter> playerDictionary = new Dictionary<int, PlayerCharacter>();
 	public Dictionary<int /*slot index*/, EnemyCharacter> enemyDictionary = new Dictionary<int, EnemyCharacter>();
-	public EnemyCharacter rewardCharacter = null;
-	public EnemyCharacter bossCharacter = null;
 
-
+	public int gridSize = 4;
 	public float lineDiff = 0.5f;
 
 	public bool IsAllEnemyDead
@@ -80,19 +76,6 @@ public class SpawnManager : MonoBehaviour
 		}
 	}
 
-	public bool IsBossDead
-	{
-		get
-		{
-			if (bossCharacter == null)
-			{
-				return false;
-			}
-
-			return bossCharacter.IsAlive() == false;
-		}
-	}
-
 	private void Awake()
 	{
 		instance = this;
@@ -109,14 +92,14 @@ public class SpawnManager : MonoBehaviour
 		float spawnX = edge.x + spawnArea.x;
 
 		float spawnY = spawnArea.y;
-		float cellX = spawnArea.width / 5;
-		float cellY = spawnArea.height / 5;
-		Vector3[] grid = new Vector3[25];
-		for (int y = 0; y < 5; y++)
+		float cellX = spawnArea.width / gridSize;
+		float cellY = spawnArea.height / gridSize;
+		Vector3[] grid = new Vector3[gridSize * gridSize];
+		for (int y = 0; y < gridSize; y++)
 		{
-			for (int x = 0; x < 5; x++)
+			for (int x = 0; x < gridSize; x++)
 			{
-				grid[(y * 5) + x] = new Vector3(cellX * x + spawnX - (lineDiff * y), 0, cellY * y + spawnY);
+				grid[(y * gridSize) + x] = new Vector3(cellX * x + spawnX - (lineDiff * y), 0, cellY * y + spawnY);
 			}
 		}
 
@@ -128,10 +111,10 @@ public class SpawnManager : MonoBehaviour
 				continue;
 			}
 
-			ItemData characterData = DataManager.it.Get<CharacterDataSheet>().GetData(slot.characterTid);
+			ItemData characterData = DataManager.it.Get<UnitDataSheet>().GetData(slot.characterTid);
 
-			int index = slot.coord.y * 5 + slot.coord.x;
-			PlayerCharacter player = MakePlayer((CharacterData)characterData, i, grid[index]);
+			int index = slot.coord.y * gridSize + slot.coord.x;
+			PlayerCharacter player = MakePlayer((UnitData)characterData, i, grid[index]);
 			if (player == null)
 			{
 				// 오류는 생성함수에서 표시
@@ -147,7 +130,7 @@ public class SpawnManager : MonoBehaviour
 		onComplete?.Invoke();
 	}
 
-	private PlayerCharacter MakePlayer(CharacterData _characterData, int _slotIndex, Vector3 pos)
+	private PlayerCharacter MakePlayer(UnitData _characterData, int _slotIndex, Vector3 pos)
 	{
 		PlayerCharacter player;
 
@@ -170,6 +153,10 @@ public class SpawnManager : MonoBehaviour
 		player.transform.SetParent(playerRoot);
 		player.transform.position = pos;
 		player.Spawn(_characterData);
+		if (_characterData.classTid == 1000)
+		{
+			player.gameObject.tag = "Wall";
+		}
 
 		return player;
 	}
@@ -192,14 +179,14 @@ public class SpawnManager : MonoBehaviour
 		float spawnX = edge.x + spawnArea.x;
 		float spawnY = spawnArea.y;
 
-		float cellX = spawnArea.width / 5;
-		float cellY = spawnArea.height / 5;
-		Vector3[] grid = new Vector3[25];
-		for (int y = 0; y < 5; y++)
+		float cellX = spawnArea.width / gridSize;
+		float cellY = spawnArea.height / gridSize;
+		Vector3[] grid = new Vector3[gridSize * gridSize];
+		for (int y = 0; y < gridSize; y++)
 		{
-			for (int x = 0; x < 5; x++)
+			for (int x = 0; x < gridSize; x++)
 			{
-				grid[(y * 5) + x] = new Vector3(cellX * x + spawnX + (lineDiff * y), 0, cellY * y + spawnY);
+				grid[(y * gridSize) + x] = new Vector3(cellX * x + spawnX + (lineDiff * y), 0, cellY * y + spawnY);
 			}
 		}
 
@@ -213,8 +200,8 @@ public class SpawnManager : MonoBehaviour
 			{
 				continue;
 			}
-			CharacterData characterData = DataManager.it.Get<CharacterDataSheet>().GetData(slot.characterTid);
-			int index = slot.coord.y * 5 + slot.coord.x;
+			UnitData characterData = DataManager.it.Get<UnitDataSheet>().GetData(slot.characterTid);
+			int index = slot.coord.y * gridSize + slot.coord.x;
 
 			EnemyCharacter enemy = MakeEnemy(characterData, _waveCount, i, grid[index]);
 
@@ -223,7 +210,7 @@ public class SpawnManager : MonoBehaviour
 		return true;
 	}
 
-	private EnemyCharacter MakeEnemy(CharacterData _characterData, int _waveCount, int _slotIndex, Vector3 pos)
+	private EnemyCharacter MakeEnemy(UnitData _characterData, int _waveCount, int _slotIndex, Vector3 pos)
 	{
 		EnemyCharacter enemyCharacter;
 
@@ -302,10 +289,10 @@ public class SpawnManager : MonoBehaviour
 		Gizmos.color = Color.red;
 		float startX = edge.x + spawnArea.x;
 
-		var left_top = new Vector3(startX, spawnArea.y, 0);
-		var right_top = new Vector3(startX + spawnArea.width, spawnArea.y, 0);
-		var left_bottom = new Vector3(startX, spawnArea.height, 0);
-		var right_bottom = new Vector3(startX + spawnArea.width, spawnArea.height, 0);
+		var left_top = new Vector3(startX, 0, spawnArea.y);
+		var right_top = new Vector3(startX + spawnArea.width, 0, spawnArea.y);
+		var left_bottom = new Vector3(startX, 0, spawnArea.height);
+		var right_bottom = new Vector3(startX + spawnArea.width, 0, spawnArea.height);
 		Gizmos.DrawLine(left_top, right_top);
 		Gizmos.DrawLine(right_top, right_bottom);
 		Gizmos.DrawLine(right_bottom, left_bottom);

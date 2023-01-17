@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0f98456449ee3d4289b9a97683f83cf, type: 3}
+  m_Name: UserPropertyDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: UserPropertyDataSheet
+    infos:
+    - tid: 1
+      description: 
+      abilityType: 0
+      maxLevel: 100
+      incValue: 0.05
+      consumePoint: 0
+    - tid: 2
+      description: 
+      abilityType: 1
+      maxLevel: 100
+      incValue: 0.05
+      consumePoint: 0
+    - tid: 3
+      description: 
+      abilityType: 2
+      maxLevel: 100
+      incValue: 0.05
+      consumePoint: 0
+    - tid: 4
+      description: 
+      abilityType: 3
+      maxLevel: 100
+      incValue: 0.05
+      consumePoint: 0
+    - tid: 5
+      description: 
+      abilityType: 7
+      maxLevel: 100
+      incValue: 0.05
+      consumePoint: 0
+    - tid: 6
+      description: 
+      abilityType: 8
+      maxLevel: 100
+      incValue: 0.05
+      consumePoint: 0
+    - tid: 7
+      description: 
+      abilityType: 9
+      maxLevel: 100
+      incValue: 0.05
+      consumePoint: 0
+    - tid: 8
+      description: 
+      abilityType: 10
+      maxLevel: 100
+      incValue: 0.05
+      consumePoint: 0
+    - tid: 9
+      description: 
+      abilityType: 4
+      maxLevel: 100
+      incValue: 0.05
+      consumePoint: 0
+    - tid: 10
+      description: 
+      abilityType: 5
+      maxLevel: 100
+      incValue: 0.05
+      consumePoint: 0
+    - tid: 11
+      description: 
+      abilityType: 6
+      maxLevel: 100
+      incValue: 0.05
+      consumePoint: 0

@@ -29,14 +29,8 @@ public class MoveState : CharacterFSM
 
 		if (owner.IsTargetAlive() == false)
 		{
-			if (owner is PlayerCharacter)
-			{
-				owner.FindTarget(time, CharacterManager.it.GetEnemyCharacters());
-			}
-			else
-			{
-				owner.FindTarget(time, CharacterManager.it.GetPlayerCharacters());
-			}
+			owner.targetingBehavior.OnTarget(owner, owner.targeting);
+
 			owner.Move(time);
 		}
 		else

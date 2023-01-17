@@ -13,6 +13,9 @@ public class UIController : MonoBehaviour
 
 	[SerializeField] private Button buttonPlayBoss;
 
+	[Header("-------------------------")]
+	[SerializeField] private UILeftMenu uiLeftMenu;
+
 	private void Start()
 	{
 		buttonPlayBoss.onClick.RemoveAllListeners();
@@ -22,6 +25,11 @@ public class UIController : MonoBehaviour
 	private void Awake()
 	{
 		instance = this;
+	}
+
+	public void Init()
+	{
+		uiLeftMenu.Init();
 	}
 
 	private void OnClickPlayBoss()

@@ -13,10 +13,28 @@ public class ClassData : BaseData
 	public float skillCooltime = 1;
 	public float searchRange = 1;
 	public float searchTime = 1;
+
+	public ClassData Clone()
+	{
+		ClassData cloneData = new ClassData();
+		cloneData.classType = classType;
+		cloneData.attackType = attackType;
+		cloneData.attackRange = attackRange;
+		cloneData.attackSpeed = attackSpeed;
+		cloneData.moveSpeed = moveSpeed;
+		cloneData.criticalRate = criticalRate;
+		cloneData.criticalPowerRate = criticalPowerRate;
+		cloneData.evasionRate = evasionRate;
+		cloneData.skillCooltime = skillCooltime;
+		cloneData.searchRange = searchRange;
+		cloneData.searchTime = searchTime;
+
+		return cloneData;
+	}
 }
 
 [System.Serializable]
-public class ClassDataSheet : DataBase<ClassData>
+public class ClassDataSheet : DataSheetBase<ClassData>
 {
 	public ClassData Get(long tid)
 	{
@@ -24,7 +42,7 @@ public class ClassDataSheet : DataBase<ClassData>
 		{
 			if (infos[i].tid == tid)
 			{
-				return infos[i];
+				return infos[i].Clone();
 			}
 		}
 		return null;

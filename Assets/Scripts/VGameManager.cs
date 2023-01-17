@@ -1,7 +1,10 @@
 ﻿
 using System;
-	using System.Reflection;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
+
 public interface FiniteStateMachine
 {
 	void OnEnter();
@@ -13,11 +16,13 @@ public interface FiniteStateMachine
 public enum GameState
 {
 	None = 0,
-	LOADING = 1,
-	BGLOADING = 2,
-	PLAYERSPAWN = 3,
-	ANIMATIONSTATE = 4,
-	FEVER = 5,
+	INTRO = 1,
+	DATALOADING = 2,
+	LOADING = 10,
+	BGLOADING = 20,
+	PLAYERSPAWN = 30,
+	ANIMATIONSTATE = 40,
+	FEVER = 50,
 	BATTLESTART = 100,
 	BATTLE,
 	REWARD,
@@ -26,6 +31,8 @@ public enum GameState
 	BOSSSTART,
 	BOSSBATTLE,
 	BOSSEND,
+
+
 
 }
 
@@ -46,6 +53,8 @@ public class VGameManager : MonoBehaviour
 	public bool fixedScroll;
 	public MapController mapController;
 
+	public IntroState introState;
+	public DataLoadingState dataLoadingState;
 	public LoadingState loadingState;
 	public BGLoadState bgloadState;
 	public SpawnState spawnState;
@@ -54,7 +63,7 @@ public class VGameManager : MonoBehaviour
 	public BattleEndState battleEndState;
 	public AnimationState animationState;
 	public FeverState feverState;
-	
+
 	public FiniteStateMachine currentFSM;
 	public GameState currentState;
 	public SkillMeta skillMeta;
@@ -64,14 +73,13 @@ public class VGameManager : MonoBehaviour
 	private void Awake()
 	{
 		instance = this;
-		LoadConfig();
-		LoadSkillMeta();
-
 	}
 
 	// Start is called before the first frame update
 	void Start()
 	{
+		introState = new IntroState();
+		dataLoadingState = new DataLoadingState();
 		animationState = new AnimationState();
 		loadingState = new LoadingState();
 		bgloadState = new BGLoadState();
@@ -84,7 +92,7 @@ public class VGameManager : MonoBehaviour
 
 		Application.targetFrameRate = 60;
 
-		ChangeState(GameState.LOADING);
+		ChangeState(GameState.INTRO);
 	}
 	public void ChangeState(GameState state)
 	{
@@ -92,6 +100,12 @@ public class VGameManager : MonoBehaviour
 		currentFSM?.OnExit();
 		switch (state)
 		{
+			case GameState.INTRO:
+				currentFSM = introState;
+				break;
+			case GameState.DATALOADING:
+				currentFSM = dataLoadingState;
+				break;
 			case GameState.LOADING:
 				currentFSM = loadingState;
 				break;
@@ -126,24 +140,8 @@ public class VGameManager : MonoBehaviour
 	{
 		currentFSM?.OnUpdate(Time.deltaTime);
 	}
-
-	private void LoadConfig()
+	public void OnClickStartGame()
 	{
-		instance.config = ScriptableObject.CreateInstance<ConfigMeta>();
-		TextAsset textAsset = Resources.Load<TextAsset>($"Json/{ConfigMeta.fileName.Replace(".json", "")}");
-
-		if (textAsset == null)
-		{
-			VLog.LogError("Config 로드 실패");
-			return;
-		}
-
-		JsonUtility.FromJsonOverwrite(textAsset.text, instance.config);
-	}
-
-	private void LoadSkillMeta()
-	{
-		skillMeta = new SkillMeta();
-		skillMeta.LoadData();
+		ChangeState(GameState.DATALOADING);
 	}
 }

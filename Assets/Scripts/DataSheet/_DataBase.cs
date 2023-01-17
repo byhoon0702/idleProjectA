@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 [System.Serializable]
-public abstract class DataBase<T> where T : new()
+public abstract class DataSheetBase<T> where T : new()
 {
 	public string typeName;
 	public List<T> infos = new List<T>();

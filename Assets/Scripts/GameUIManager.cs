@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,8 @@ public class GameUIManager : MonoBehaviour
 	public Canvas mainCanvas;
 	public FloatingText resource;
 
+	public GameObject introObject;
+	public GameObject mainUIObject;
 	public Image fadeCurtain;
 
 	public RectTransform floatingUIGroup;
@@ -27,6 +30,16 @@ public class GameUIManager : MonoBehaviour
 		instance = this;
 		floatingTextPool = new ObjectPool<FloatingText>(CreateFloatingText, OnGetFloatingtext, OnReleaseFloatingText, OnDestroyFloatingText);
 		characterStatusPool = new ObjectPool<CharacterStatusUI>(CreateCharacterStatusUI, OnGetCharacterStatusUI, OnReleaseCharacterStatusUI, OnDestroyCharacterStatusUI);
+	}
+
+	private void OnEnable()
+	{
+		UserInfo.onLevelupChanged += ShowLevelupPopup;
+	}
+
+	private void OnDisable()
+	{
+		UserInfo.onLevelupChanged -= ShowLevelupPopup;
 	}
 
 	#region FloatingTextPool
@@ -131,4 +144,8 @@ public class GameUIManager : MonoBehaviour
 		floatingtext.Show(text, color, uipos, isCritical, isPlayer);
 	}
 
+	private void ShowLevelupPopup(Int32 _beforeLv, Int32 _afterLv)
+	{
+		ToastUI.it.Create($"Levelup! {_beforeLv} -> {_afterLv}");
+	}
 }

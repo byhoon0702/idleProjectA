@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
-
 public class CharacterInfo
 {
 	public Character owner;
-	public CharacterData data;
+	public UnitData data;
+	public UnitData rawData;
 	public ControlSide controlSide;
 	public ClassData jobData;
 	public RaceData raceData;
@@ -12,7 +12,11 @@ public class CharacterInfo
 	/// UI표시용
 	/// </summary>
 	public string charName => data.name;
+	public IdleNumber hp;
+	public IdleNumber attackPower;
 
+	public IdleNumber rawHp;
+	public IdleNumber rawAttackPower;
 	/// <summary>
 	/// 캐릭터 ID를 같이 표시하는용(디버깅용)
 	/// </summary>
@@ -20,13 +24,18 @@ public class CharacterInfo
 
 	public int skillLevel = 5;
 
-
-	public CharacterInfo(Character _owner, CharacterData _data, ControlSide _controlSide)
+	public CharacterInfo(Character _owner, UnitData _data, ControlSide _controlSide)
 	{
 		owner = _owner;
 
+		rawData = _data;
 		data = _data.Clone();
 
+		hp = (IdleNumber)data.hp;
+		attackPower = (IdleNumber)data.attackPower;
+
+		rawHp = (IdleNumber)rawData.hp;
+		rawAttackPower = (IdleNumber)rawData.attackPower;
 		InitDatas();
 		controlSide = _controlSide;
 	}
@@ -50,7 +59,7 @@ public class CharacterInfo
 		float conditionTotalRatio = owner.conditionModule.ability.attackPowerUpRatio - owner.conditionModule.ability.attackPowerDownRatio;
 		float multifly = 1 + conditionTotalRatio;
 
-		IdleNumber total = data.attackPower * multifly;
+		IdleNumber total = attackPower * multifly;
 
 		if (_random)
 		{

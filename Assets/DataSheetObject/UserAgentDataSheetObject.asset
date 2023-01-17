@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc03b3ca03ba2f34f82e6e3b2799e648, type: 3}
+  m_Name: UserAgentDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: UserAgentDataSheet
+    infos:
+    - tid: 1
+      description: "\uBCD1\uC601 1"
+      level: 1
+      needUserLevel: 10
+      consumeGold: 1000A
+      unitCount: 10
+      goldUpValue: 0
+      expUpValue: 0
+      itemUpValue: 0
+    - tid: 2
+      description: "\uBCD1\uC601 2"
+      level: 2
+      needUserLevel: 20
+      consumeGold: 1000B
+      unitCount: 15
+      goldUpValue: 0.01
+      expUpValue: 0
+      itemUpValue: 0
+    - tid: 3
+      description: "\uBCD1\uC601 3"
+      level: 3
+      needUserLevel: 30
+      consumeGold: 1000C
+      unitCount: 20
+      goldUpValue: 0.02
+      expUpValue: 0.01
+      itemUpValue: 0
+    - tid: 4
+      description: "\uBCD1\uC601 4"
+      level: 4
+      needUserLevel: 40
+      consumeGold: 1000D
+      unitCount: 25
+      goldUpValue: 0.03
+      expUpValue: 0.02
+      itemUpValue: 0.01

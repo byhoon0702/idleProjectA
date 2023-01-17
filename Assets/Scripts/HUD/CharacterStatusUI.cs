@@ -76,7 +76,7 @@ public class CharacterStatusUI : MonoBehaviour
 		// 체력표시 관련 처리
 		if (hpSlider != null)
 		{
-			IdleNumber gauge = (observingCharacter.info.data.hp / observingCharacter.rawData.hp);
+			IdleNumber gauge = (observingCharacter.info.hp / observingCharacter.info.rawHp);
 
 			hpSlider.value = Mathf.Clamp01((float)gauge.Value);
 		}

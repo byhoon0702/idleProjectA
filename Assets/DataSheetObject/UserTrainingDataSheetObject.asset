@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aa8fa88f959e5440bdef9de42659f5c, type: 3}
+  m_Name: UserTrainingDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: UserTrainingDataSheet
+    infos:
+    - tid: 1
+      description: "\uACF5\uACA9"
+      abilityType: 0
+      maxLevel: 100000
+      defaultValue: 1
+      incValue: 1
+    - tid: 2
+      description: HP
+      abilityType: 1
+      maxLevel: 100000
+      defaultValue: 10
+      incValue: 10
+    - tid: 3
+      description: "\uCE58\uD655"
+      abilityType: 2
+      maxLevel: 100
+      defaultValue: 0.1
+      incValue: 0.1
+    - tid: 4
+      description: "\uCE58\uD53C"
+      abilityType: 3
+      maxLevel: 100
+      defaultValue: 0.1
+      incValue: 0.1
+    - tid: 5
+      description: "\uACE8\uB4DC\uC5C5"
+      abilityType: 4
+      maxLevel: 100
+      defaultValue: 0.1
+      incValue: 0.1
+    - tid: 6
+      description: "\uACBD\uCE58\uC5C5"
+      abilityType: 5
+      maxLevel: 100
+      defaultValue: 0.05
+      incValue: 0.05
+    - tid: 7
+      description: "\uC544\uC774\uD15C\uC5C5"
+      abilityType: 6
+      maxLevel: 100
+      defaultValue: 0.01
+      incValue: 0.01

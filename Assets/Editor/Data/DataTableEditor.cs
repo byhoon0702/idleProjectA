@@ -11,7 +11,9 @@ using System.Reflection;
 using System.Collections;
 
 using UnityEngine.Purchasing.MiniJSON;
-
+using JetBrains.Annotations;
+using static UnityEngine.Rendering.DebugUI;
+using System.Security.Cryptography;
 
 public class DataTableEditor : EditorWindow
 {
@@ -41,11 +43,14 @@ public class DataTableEditor : EditorWindow
 	private string currentJsonFileName;
 	private string currentJsonFilePath;
 	[SerializeField]
-	private Dictionary<string, object> jsonContainer;
+	private Dictionary<Type, object> jsonContainer;
 	[SerializeField]
 	private Dictionary<string, Type> linkedTypeList;
 	[SerializeField]
 	public SerializedProperty dataSheetProperty;
+
+	private int addArraySize = 0;
+	private int pageSize = 10;
 
 	[MenuItem("Custom Menu/DataEditor/DataTableEditor", false, 5000)]
 	public static void Init()
@@ -125,7 +130,7 @@ public class DataTableEditor : EditorWindow
 	}
 	public void LoadAllJson()
 	{
-		jsonContainer = new Dictionary<string, object>();
+		jsonContainer = new Dictionary<Type, object>();
 		string[] files = Directory.GetFiles(Application.dataPath + "/AssetFolder/Resources/Json");
 
 		foreach (string file in files)
@@ -138,31 +143,61 @@ public class DataTableEditor : EditorWindow
 			{
 				continue;
 			}
-			using (FileStream fs = File.OpenRead(file))
+			if (LoadFromBinary(file) == false)
 			{
-				using (BinaryReader br = new BinaryReader(fs))
-				{
-					string name = System.IO.Path.GetFileNameWithoutExtension(file);
-
-					System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
-
-					string json = br.ReadString();
-
-					try
-					{
-						var jsonData = JsonUtility.FromJson(json, t);
-						jsonContainer.Add(t.Name, jsonData);
-					}
-					catch (Exception e)
-					{
-
-					}
-
-				}
+				LoadFromNonBinary(file);
 			}
+
 		}
 	}
 
+	private bool LoadFromBinary(string file)
+	{
+		using (FileStream fs = File.OpenRead(file))
+		{
+			using (BinaryReader br = new BinaryReader(fs))
+			{
+				string name = System.IO.Path.GetFileNameWithoutExtension(file);
+
+				System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
+
+				string json = br.ReadString();
+
+				try
+				{
+					var jsonData = JsonUtility.FromJson(json, t);
+					jsonContainer.Add(t, jsonData);
+				}
+				catch (Exception e)
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private bool LoadFromNonBinary(string file)
+	{
+
+		string json = File.ReadAllText(file);
+
+		string name = System.IO.Path.GetFileNameWithoutExtension(file);
+
+		System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
+
+
+		try
+		{
+			var jsonData = JsonUtility.FromJson(json, t);
+			jsonContainer.Add(t, jsonData);
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+		return true;
+	}
 
 	void OnGUI()
 	{
@@ -238,6 +273,15 @@ public class DataTableEditor : EditorWindow
 				FromJson(false);
 			}
 			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal(EditorStyles.toolbar);
+			if (GUILayout.Button("Verify Data Tables", EditorStyles.toolbarButton))
+			{
+				VerifyTidDuplicate();
+			}
+
+			GUILayout.EndHorizontal();
+
 			if (TypeExist() == false)
 			{
 				if (GUILayout.Button("Create CSharp File"))
@@ -293,6 +337,7 @@ public class DataTableEditor : EditorWindow
 
 		if (dataSheetProperty != null)
 		{
+
 			var targetObje = dataSheetProperty.serializedObject.targetObject;
 			Type tableType = targetObje.GetType().GetField("dataSheet").FieldType;
 
@@ -300,16 +345,19 @@ public class DataTableEditor : EditorWindow
 			FieldInfo[] fields = rawDataType.GetFields();
 
 			float width = fields.Length * (settings.cellSize.x + settings.rowSpace) + 34;
-			int arraySize = infosProperty.arraySize > 0 ? infosProperty.arraySize : 1;
 
-			float height = (arraySize) * (settings.cellSize.y) + 30;
-			scrollPos = GUILayout.BeginScrollView(scrollPos, true, false);
+			scrollPos = GUILayout.BeginScrollView(scrollPos);
 
 			dataSheetProperty.FindPropertyRelative("typeName").stringValue = tableType.Name;
 
-			EditorGUILayout.LabelField(tableType.Name, GUILayout.Width(width));
+			EditorGUILayout.LabelField($"데이터 타입: {tableType.Name}", GUILayout.Width(width));
 
-			maleeReorderableList.DoList(new Rect(0, EditorGUIUtility.singleLineHeight + 10, width, height + 20), GUIContent.none);
+			DrawHeader(width);
+
+			maleeReorderableList.paginate = true;
+			maleeReorderableList.pageSize = pageSize;
+
+			maleeReorderableList.DoLayoutList();//DoList(new Rect(0, EditorGUIUtility.singleLineHeight + 10, width, height + 40), GUIContent.none);
 
 			GUILayout.EndScrollView();
 		}
@@ -321,6 +369,29 @@ public class DataTableEditor : EditorWindow
 		EditorUtility.SetDirty(scriptableObject);
 	}
 
+	private void DrawHeader(float width)
+	{
+		EditorGUILayout.BeginHorizontal();
+		addArraySize = EditorGUILayout.IntField("리스트 개수 ", addArraySize, GUILayout.Width(width - 300));
+		if (GUILayout.Button("리스트 추가", GUILayout.Width(130)))
+		{
+			infosProperty.arraySize += addArraySize;
+		}
+		if (GUILayout.Button("리스트 삭제", GUILayout.Width(130)))
+		{
+			if (infosProperty.arraySize < addArraySize)
+			{
+				infosProperty.arraySize = 0;
+			}
+			else
+			{
+				infosProperty.arraySize -= addArraySize;
+			}
+		}
+		EditorGUILayout.EndHorizontal();
+		pageSize = EditorGUILayout.IntField("한 페이지에 표시할 데이터 개수 ", pageSize, GUILayout.Width(width - 300));
+
+	}
 	private void DrawToolTip()
 	{
 		GUIStyle boxStyle = new GUIStyle(GUI.skin.GetStyle("HelpBox"));
@@ -388,9 +459,10 @@ public class DataTableEditor : EditorWindow
 			}
 		};
 
+
 		maleeReorderableList.drawElementCallback += (rect, s_property, index, isActive, isFocused) =>
 		{
-			Debug.Log(maleeReorderableList.GetElementHeight(0));
+
 			Rect tempRect = new Rect(rect);
 			SerializedProperty info = s_property;
 			Type type = rawDataType;
@@ -417,10 +489,7 @@ public class DataTableEditor : EditorWindow
 				else
 				{
 					Rect relativeRect = new Rect(tempRect.x + ((tempRect.width + settings.rowSpace) * 2), tempRect.y, tempRect.width, tempRect.height);
-					if (typeof(IList).IsAssignableFrom(sf))
-					{
 
-					}
 					if (linkedTypeList.ContainsKey(field.Name))
 					{
 						Type linkType = linkedTypeList[field.Name];
@@ -430,55 +499,44 @@ public class DataTableEditor : EditorWindow
 							tempRect.x += tempRect.width + settings.rowSpace;
 							continue;
 						}
-						if (jsonContainer.ContainsKey(linkType.Name))
+						if (jsonContainer.ContainsKey(linkType))
 						{
-							var obj = jsonContainer[linkType.Name].GetType().GetField("infos");
-							var ff = obj.GetValue(jsonContainer[linkType.Name]);
+							FieldInfo obj = jsonContainer[linkType].GetType().GetField("infos");
+							object ff = obj.GetValue(jsonContainer[linkType]);
 
-							List<GUIContent> nameList = new List<GUIContent>();
-							List<int> idList = new List<int>();
 
 							if (typeof(IList).IsAssignableFrom(ff))
 							{
-								foreach (var item in ff as IList)
+								IList list = (IList)ff;
+								GUIContent[] nameList = new GUIContent[list.Count];
+								int[] idList = new int[list.Count];
+
+								for (int ii = 0; ii < list.Count; ii++)
 								{
+									object item = list[ii];
 									Type itemType = item.GetType();
 									long id = (long)itemType.GetField("tid").GetValue(item);
-									idList.Add((int)id);
-									nameList.Add(new GUIContent($"{id} :{(string)itemType.GetField("description").GetValue(item)}"));
+									idList[ii] = (int)id;
+									nameList[ii] = new GUIContent($"{id} :{(string)itemType.GetField("description").GetValue(item)}");
 								}
-							}
-
-							if (nameList.Count > 0)
-							{
-								EditorGUI.IntPopup(relativeRect, sf, nameList.ToArray(), idList.ToArray(), GUIContent.none);
-								tempRect.x += tempRect.width + settings.rowSpace;
-								continue;
+								if (nameList.Length > 0)
+								{
+									EditorGUI.IntPopup(relativeRect, sf, nameList, idList, GUIContent.none);
+									tempRect.x += tempRect.width + settings.rowSpace;
+									continue;
+								}
 							}
 						}
 					}
 
-					if (sf.type == "IdleNumber")
-					{
-						Rect idlenumberRect = new Rect(relativeRect);
-
-						idlenumberRect.width = tempRect.width / 2f - 2.5f;
-
-						EditorGUI.PropertyField(idlenumberRect, sf.FindPropertyRelative("Value"), GUIContent.none);
-						idlenumberRect.x += idlenumberRect.width + settings.rowSpace;
-						EditorGUI.PropertyField(idlenumberRect, sf.FindPropertyRelative("Exp"), GUIContent.none);
-					}
-					else
-					{
-						EditorGUI.PropertyField(relativeRect, sf, GUIContent.none);
-					}
+					EditorGUI.PropertyField(relativeRect, sf, GUIContent.none);
 
 					tempRect.x += tempRect.width + settings.rowSpace;
 				}
 			}
 		};
-		//	reorderableList.onSelectCallback += index => { };
 	}
+
 	private void CreateReorderableList()
 	{
 		if (serializedObject == null)
@@ -628,7 +686,7 @@ public class DataTableEditor : EditorWindow
 		System.Type type = System.Type.GetType($"{name}Object, Assembly-CSharp");
 		ScriptableObject newDataObject = (ScriptableObject)Activator.CreateInstance(type);
 
-		AssetDatabase.CreateAsset(newDataObject, $"Assets/Resources/{label}Object.asset");
+		AssetDatabase.CreateAsset(newDataObject, $"Assets/DataSheetObject/{label}Object.asset");
 		AssetDatabase.SaveAssets();
 		AssetDatabase.Refresh();
 		EditorUtility.FocusProjectWindow();
@@ -645,7 +703,8 @@ public class DataTableEditor : EditorWindow
 
 		string[] folders = new string[]
 		{
-			"Assets/Resources",
+			"Assets/DataSheetObject",
+			"Assets/Resources"
 		};
 		string[] guid = AssetDatabase.FindAssets($"t:ScriptableObject", folders);
 		for (int i = 0; i < guid.Length; i++)
@@ -673,6 +732,19 @@ public class DataTableEditor : EditorWindow
 
 		System.Reflection.FieldInfo info = targetObje.GetType().GetField("dataSheet");
 		var sd = info.GetValue(targetObje);
+
+		if (VerifyTidDuplicate(sd) == false)
+		{
+
+		}
+		if (currentJsonFilePath.IsNullOrEmpty())
+		{
+			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json";
+		}
+		if (currentJsonFileName.IsNullOrEmpty())
+		{
+			currentJsonFileName = "";
+		}
 		string rootPath = Path.GetDirectoryName(currentJsonFilePath);
 		string path = EditorUtility.SaveFilePanel("", rootPath, currentJsonFileName, "json");
 
@@ -697,8 +769,6 @@ public class DataTableEditor : EditorWindow
 		{
 			File.WriteAllText(path, json);
 		}
-
-
 
 		currentJsonFileName = Path.GetFileName(path);
 		currentJsonFilePath = path;
@@ -754,15 +824,8 @@ public class DataTableEditor : EditorWindow
 							serializedObject = new SerializedObject(scriptableObject);
 						}
 					}
-					else
-					{
-
-					}
-
-
 				}
 			}
-
 		}
 		else
 		{
@@ -790,16 +853,79 @@ public class DataTableEditor : EditorWindow
 					serializedObject = new SerializedObject(scriptableObject);
 				}
 			}
-			else
-			{
-
-			}
 		}
 
 		CreateReorderableList();
 		EditorGUI.FocusTextInControl(null);
 		currentJsonFileName = Path.GetFileName(path);
 		currentJsonFilePath = path;
+	}
+
+	private void CollectDataList(object currentData, Dictionary<long, List<string>> duplicatedDatas)
+	{
+		string typename = "";
+		long tid = 0;
+		foreach (var table in jsonContainer)
+		{
+
+			if (currentData != null && currentData.GetType() == table.Key)
+			{
+				continue;
+			}
+
+			//현재 편집 중인 데이터이면 따로 추가 한다.
+
+			IList list = (IList)table.Key.GetField("infos").GetValue(table.Value);
+
+			foreach (var item in list)
+			{
+				tid = (long)item.GetType().GetField("tid").GetValue(item);
+				typename = item.GetType().Name;
+
+				if (duplicatedDatas.ContainsKey(tid) == false)
+				{
+					duplicatedDatas.Add(tid, new List<string>());
+				}
+				duplicatedDatas[tid].Add(typename);
+			}
+		}
+	}
+
+	private bool VerifyTidDuplicate(object currentData = null)
+	{
+		bool verified = true;
+		Dictionary<long, List<string>> duplicatedDatas = new Dictionary<long, List<string>>();
+
+		CollectDataList(currentData, duplicatedDatas);
+
+		StringBuilder sb = new StringBuilder();
+
+		foreach (var item in duplicatedDatas)
+		{
+			if (item.Value.Count > 1)
+			{
+				sb.Append($"Tid : {item.Key}");
+				sb.Append($"\nTable : \n");
+				for (int i = 0; i < item.Value.Count; i++)
+				{
+					sb.Append($"{item.Value[i]}");
+					sb.Append("\n");
+				}
+				sb.Append("\n");
+				verified = false;
+			}
+		}
+
+		//EditorUtility.DisplayDialog("중복 데이터", sb.ToString(), "확인");
+		return verified;
+	}
+
+	void ConvertToCSV()
+	{
+		var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
+
+		System.Reflection.FieldInfo info = targetObje.GetType().GetField("dataSheet");
+		var sd = info.GetValue(targetObje);
 	}
 
 	void CreateCSharpFile()
@@ -817,8 +943,8 @@ public class DataTableEditor : EditorWindow
 				sb.AppendLine("[Serializable]");
 				sb.AppendLine($"public class {label}Object : ScriptableObject ");
 				sb.AppendLine("{");
-				sb.AppendLine("[SerializeField]");
-				sb.AppendLine($"public {label} dataSheet;");
+				sb.AppendLine("\t[SerializeField]");
+				sb.AppendLine($"\tpublic {label} dataSheet;");
 				sb.AppendLine("}");
 
 				writer.Write(sb.ToString());

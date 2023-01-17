@@ -15,7 +15,7 @@ using System;
 ///			-> Warlock
 /// </summary>
 
-public abstract class CharacterClass
+public abstract class UnitClass
 {
 	protected Character owner;
 	public abstract void OnAttack();
@@ -25,7 +25,7 @@ public abstract class CharacterClass
 
 		if (skillTid != 0)
 		{
-			if(SkillMeta.it.dic.ContainsKey(skillTid) == false)
+			if (SkillMeta.it.dic.ContainsKey(skillTid) == false)
 			{
 				VLog.SkillLogError($"스킬 타입이 테이블에 없음. tid: {skillTid}");
 				return;
@@ -51,7 +51,7 @@ public abstract class CharacterClass
 
 				skill = classObject as SkillBase;
 			}
-			catch(System.Exception e)
+			catch (System.Exception e)
 			{
 				VLog.SkillLogError($"스킬 생성실패. SKill ID : {id}\n{e}");
 				return;
@@ -62,7 +62,7 @@ public abstract class CharacterClass
 	}
 }
 
-public class Warrior : CharacterClass
+public class Warrior : UnitClass
 {
 	public Warrior(Character character)
 	{
@@ -81,7 +81,7 @@ public class Warrior : CharacterClass
 	}
 }
 
-public class Archer : CharacterClass
+public class Archer : UnitClass
 {
 	public Archer(Character character)
 	{
@@ -99,7 +99,7 @@ public class Archer : CharacterClass
 	}
 }
 
-public class Wizard : CharacterClass
+public class Wizard : UnitClass
 {
 	public Wizard(Character character)
 	{
@@ -118,7 +118,7 @@ public class Wizard : CharacterClass
 	}
 }
 
-public class RewardGem : CharacterClass
+public class RewardGem : UnitClass
 {
 	public RewardGem(Character character)
 	{
@@ -130,3 +130,16 @@ public class RewardGem : CharacterClass
 
 	}
 }
+public class Wall : UnitClass
+{
+	public Wall(Character character)
+	{
+		owner = character;
+	}
+
+	public override void OnAttack()
+	{
+
+	}
+}
+

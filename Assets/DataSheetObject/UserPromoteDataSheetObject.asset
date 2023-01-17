@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f80a7ff79651ba4c90b9afd6631502a, type: 3}
+  m_Name: UserPromoteDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: UserPromoteAbilityDataSheet
+    infos:
+    - tid: 1
+      description: "D\uB4F1\uAE09"
+      level: 0
+      consumeLightDust: 2000
+    - tid: 2
+      description: 
+      level: 1
+      consumeLightDust: 4000
+    - tid: 3
+      description: 
+      level: 2
+      consumeLightDust: 6000
+    - tid: 4
+      description: 
+      level: 3
+      consumeLightDust: 8000
+    - tid: 5
+      description: "C\uB4F1\uAE09"
+      level: 4
+      consumeLightDust: 1000A
+    - tid: 6
+      description: 
+      level: 5
+      consumeLightDust: 1200A
+    - tid: 7
+      description: 
+      level: 6
+      consumeLightDust: 1400A
+    - tid: 8
+      description: 
+      level: 7
+      consumeLightDust: 1600A
+    - tid: 9
+      description: 
+      level: 8
+      consumeLightDust: 1800A
+    - tid: 10
+      description: 
+      level: 9
+      consumeLightDust: 2000A

@@ -25,7 +25,7 @@ public class ResultCodeData : BaseData
 }
 
 [Serializable]
-public class ResultCodeDataSheet : DataBase<ResultCodeData>
+public class ResultCodeDataSheet : DataSheetBase<ResultCodeData>
 {
 	public ResultCodeData Get(long tid)
 	{

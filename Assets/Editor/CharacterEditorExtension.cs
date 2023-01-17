@@ -92,7 +92,7 @@ public class CharacterEditorExtension : EditorWindow
 		{
 			EditorGUILayout.LabelField($"보유스킬: 없음");
 		}
-		EditorGUILayout.LabelField($"HP: {_character.info.data.hp.ToString()} / {_character.rawData.hp.ToString()}");
+		EditorGUILayout.LabelField($"HP: {_character.info.hp.ToString()} / {_character.info.rawHp.ToString()}");
 		EditorGUILayout.LabelField($"AttackPower: {_character.info.AttackPower(false).ToString()}");
 		EditorGUILayout.LabelField($"DamageMul: {_character.info.DamageMul()}");
 		EditorGUILayout.LabelField($"CriticalChance: {_character.info.CriticalChanceRatio()}");

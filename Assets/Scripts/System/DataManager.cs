@@ -24,10 +24,7 @@ public class DataManager : MonoBehaviour
 	{
 		instance = this;
 	}
-	void Start()
-	{
-		LoadAllJson();
-	}
+
 	public void LoadAllJson()
 	{
 		container = new Dictionary<Type, object>();
@@ -53,8 +50,12 @@ public class DataManager : MonoBehaviour
 
 	private bool LoadFromNonBinary(TextAsset file)
 	{
-
 		Dictionary<string, object> jsonDict = (Dictionary<string, object>)Json.Deserialize(file.text);
+		if (jsonDict == null)
+		{
+			return false;
+		}
+
 		string name = file.name;
 		if (jsonDict.ContainsKey("typeName"))
 		{
@@ -67,12 +68,45 @@ public class DataManager : MonoBehaviour
 			return false;
 		}
 
-		var dd = JsonUtility.FromJson(file.text, t);
+		var json = JsonUtility.FromJson(file.text, t);
 
-		AddToContainer(t, dd);
+		AddToContainer(t, json);
 		return true;
 	}
+	private bool LoadFromBinary(TextAsset file)
+	{
+		using (MemoryStream fs = new MemoryStream(file.bytes))
+		{
+			using (BinaryReader br = new BinaryReader(fs))
+			{
+				string jsonString = br.ReadString();
+				try
+				{
+					Dictionary<string, object> jsonDict = (Dictionary<string, object>)Json.Deserialize(jsonString);
+					string name = file.name;
+					if (jsonDict.ContainsKey("typeName"))
+					{
+						name = (string)jsonDict["typeName"];
+					}
+					System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
 
+					if (t == null)
+					{
+						return false;
+					}
+
+					var json = JsonUtility.FromJson(jsonString, t);
+					AddToContainer(t, json);
+				}
+				catch (Exception e)
+				{
+					Debug.LogError(file);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 	void AddToContainer(Type type, object data)
 	{
 		var fieldInfo = type.GetField("infos");
@@ -103,40 +137,7 @@ public class DataManager : MonoBehaviour
 			}
 		}
 	}
-	private bool LoadFromBinary(TextAsset file)
-	{
-		using (MemoryStream fs = new MemoryStream(file.bytes))
-		{
-			using (BinaryReader br = new BinaryReader(fs))
-			{
-				string json = br.ReadString();
-				try
-				{
-					Dictionary<string, object> jsonDict = (Dictionary<string, object>)Json.Deserialize(json);
-					string name = file.name;
-					if (jsonDict.ContainsKey("typeName"))
-					{
-						name = (string)jsonDict["typeName"];
-					}
-					System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
 
-					if (t == null)
-					{
-						return false;
-					}
-
-					var dd = JsonUtility.FromJson(json, t);
-					AddToContainer(t, dd);
-				}
-				catch (Exception e)
-				{
-					Debug.LogError(file);
-					return false;
-				}
-			}
-		}
-		return true;
-	}
 
 	public T Get<T>()
 	{

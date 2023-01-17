@@ -119,13 +119,13 @@ public class BattleRecordEditor : EditorWindow
 			{
 				descText = $"- <color=magenta>{_character.info.data.rankType}</color>";
 			}
-			if (_character.info.data.hp <= 0)
+			if (_character.info.hp <= 0)
 			{
-				hpText = $"(HP: {0} / {_character.rawData.hp.ToString()})";
+				hpText = $"(HP: {0} / {_character.info.rawHp.ToString()})";
 			}
 			else
 			{
-				hpText = $"(HP: {_character.info.data.hp.ToString()} / {_character.rawData.hp.ToString()})";
+				hpText = $"(HP: {_character.info.hp.ToString()} / {_character.info.rawHp.ToString()})";
 			}
 		}
 		else

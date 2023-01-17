@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PresetDataSheet", menuName = "PresetDataSheet", order = 2)]
 public class PresetDataSheet : ScriptableObject
 {
-	public CharacterDataSheetObject characterDataSheet;
+	public UnitDataSheetObject characterDataSheet;
 
 	public List<PartyData> playerPartyPresetData = new List<PartyData>();
 

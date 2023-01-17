@@ -166,4 +166,34 @@ public class ConfigMeta : ScriptableObject
 	/// </summary>
 	[Tooltip("리절트코드 CANCEL버튼 기본 텍스트")]
 	[SerializeField] public string RESULT_CODE_DEFAULT_CANCEL_TEXT = "Cancel";
+
+	/// <summary>
+	/// [진급] 레벨당 공격력상승 비율
+	/// </summary>
+	[Tooltip("[진급] 레벨당 공격력상승 비율")]
+	[SerializeField] public float PROMOTE_ATTACK_POWER_PER_LEVEL_RATIO = 0.01f;
+
+	/// <summary>
+	/// [진급] 레벨당 체력상승 비율
+	/// </summary>
+	[Tooltip("[진급] 레벨당 체력상승 비율")]
+	[SerializeField] public float PROMOTE_HP_PER_LEVEL_RATIO = 0.02f;
+
+	/// <summary>
+	/// [진급] 레벨당 치명타피해 상승 비율
+	/// </summary>
+	[Tooltip("[진급] 레벨당 치명타피해 상승 비율")]
+	[SerializeField] public float PROMOTE_CRITICAL_ATTACK_POWER_PER_LEVEL_RATIO = 0.01f;
+
+	/// <summary>
+	/// [진급] 레벨당 스킬피해 상승 비율
+	/// </summary>
+	[Tooltip("[진급] 레벨당 스킬피해 비율")]
+	[SerializeField] public float PROMOTE_SKILL_ATTACK_POWER_PER_LEVEL_RATIO = 0.005f;
+
+	/// <summary>
+	/// [진급] 레벨당 보스피해 상승 비율
+	/// </summary>
+	[Tooltip("[진급] 레벨당 보스피해 상승 비율")]
+	[SerializeField] public float PROMOTE_BOSS_ATTACK_POWER_PER_LEVEL_RATIO = 0.005f;
 }

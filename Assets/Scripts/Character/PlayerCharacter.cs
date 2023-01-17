@@ -7,9 +7,8 @@ public class PlayerCharacter : Character
 	public int side;
 	Vector3 moveDirection;
 	RaycastHit raycastHit;
-	public override void Spawn(CharacterData _data)
+	public override void Spawn(UnitData _data)
 	{
-		rawData = _data;
 		info = new CharacterInfo(this, _data, ControlSide.PLAYER);
 		side = 1;
 		SetCharacterClass();
@@ -19,7 +18,7 @@ public class PlayerCharacter : Character
 			var model = UnitModelPoolManager.it.GetModel(("B/" + this.info.data.resource));
 			model.transform.SetParent(transform);
 			model.transform.localPosition = Vector3.zero;
-			model.transform.localScale = Vector3.one * 0.003f;
+			model.transform.localScale = Vector3.one * 0.005f;
 			var cam = SceneCamera.it.sceneCamera;
 			model.transform.LookAt(model.transform.position + cam.transform.rotation * Vector3.forward, cam.transform.rotation * Vector3.up);
 			characterView = model;
@@ -29,6 +28,7 @@ public class PlayerCharacter : Character
 			gameObject.name = info.charNameAndCharId;
 		}
 		Init();
+		targeting = Targeting.OPPONENT;
 	}
 	float elapsedTime = 0;
 	private Vector3 SimpleCrowdAI(float _deltatime)
@@ -90,12 +90,12 @@ public class PlayerCharacter : Character
 		IdleNumber totalAttackPower = _attackPower * _criticalChanceMul * _attacker.info.DamageMul();
 		bool isCriticalAttack = _criticalChanceMul > 1;
 
-		if (info.data.hp > 0)
+		if (info.hp > 0)
 		{
 			GameUIManager.it.ShowFloatingText(totalAttackPower.ToString(), _color, characterAnimation.CenterPivot.position, isCriticalAttack, isPlayer: true);
 
 		}
-		info.data.hp -= totalAttackPower;
+		info.hp -= totalAttackPower;
 
 		VGameManager.it.battleRecord.RecordAttackPower(_attacker.charID, charID, _attackName, totalAttackPower, isCriticalAttack);
 	}
@@ -105,15 +105,15 @@ public class PlayerCharacter : Character
 		//base.Heal(_attacker, _attackPower, _healName, _color);
 		if (currentState != StateType.DEATH)
 		{
-			IdleNumber newHP = info.data.hp + _attackPower;
-
-			if (rawData.hp < newHP)
+			IdleNumber newHP = info.hp + _attackPower;
+			IdleNumber rawHP = info.rawHp;
+			if (rawHP < newHP)
 			{
-				newHP = rawData.hp;
+				newHP = rawHP;
 			}
 
-			IdleNumber addHP = newHP - info.data.hp;
-			info.data.hp += addHP;
+			IdleNumber addHP = newHP - info.hp;
+			info.hp += addHP;
 			VGameManager.it.battleRecord.RecordHeal(_attacker.charID, charID, _healName, addHP);
 			GameUIManager.it.ShowFloatingText(_attackPower.ToString(), _color, characterAnimation.CenterPivot.position, false, isPlayer: true);
 		}

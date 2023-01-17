@@ -23,11 +23,11 @@ public class CharacterEditor : Editor
 		}
 
 		EditorGUILayout.Space();
-		if(GUILayout.Button("Death"))
+		if (GUILayout.Button("Death"))
 		{
-			character.Hit(character, character.rawData.hp * 10, "Editor", Color.white, 1);
+			character.Hit(character, character.info.rawHp * 10, "Editor", Color.white, 1);
 		}
-		if(GUILayout.Button("Extension"))
+		if (GUILayout.Button("Extension"))
 		{
 			CharacterEditorExtension.ShowEditor(character);
 		}

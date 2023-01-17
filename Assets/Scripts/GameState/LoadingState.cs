@@ -1,14 +1,14 @@
-﻿public class LoadingState : RootState
+﻿using UnityEngine;
+
+public class LoadingState : RootState
 {
 	public override void OnEnter()
 	{
 		VGameManager.it.mapController.Reset();
-
+		GameUIManager.it.mainUIObject.SetActive(true);
 		GameUIManager.it.ReleaseAllPool();
 		SpawnManager.it.ClearCharacters();
 		elapsedTime = 0;
-		//FadeIn
-		//Clear Object 
 
 		SceneCamera.it.ResetToStart();
 	}

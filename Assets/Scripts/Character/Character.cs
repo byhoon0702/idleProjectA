@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -10,6 +11,7 @@ public enum AttackType
 	RANGED,
 	MAGIC,
 	SKILL,
+	NOATTACK,
 }
 
 public enum ClassType
@@ -17,7 +19,8 @@ public enum ClassType
 	WARRIOR,
 	ARCHER,
 	WIZARD,
-	REWARDGEM
+	REWARDGEM,
+	WALL,
 }
 
 
@@ -40,12 +43,20 @@ public enum ControlSide
 {
 	PLAYER,
 	ENEMY,
+	NO_CONTROL,
 }
+
+public enum Targeting
+{
+	OPPONENT,
+	WALL,
+}
+
 
 public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEvent
 {
 	public Character target { get; private set; }
-	public CharacterData rawData;
+
 	//public CharacterData data;
 
 	public CharacterInfo info;
@@ -53,7 +64,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 	public SkillModule skillModule;
 	public ConditionModule conditionModule;
 
-	public CharacterClass characterClass;
+	public UnitClass characterClass;
 
 
 	public FiniteStateMachine currentfsm;
@@ -64,6 +75,8 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 	public DeadState deadStaet;
 
 	public StateType currentState;
+	public TargetingBehavior targetingBehavior;
+	public Targeting targeting;
 	public float attackInterval
 	{
 		get;
@@ -141,6 +154,9 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 			case ClassType.REWARDGEM:
 				characterClass = new RewardGem(this);
 				break;
+			case ClassType.WALL:
+				characterClass = new Wall(this);
+				break;
 		}
 	}
 
@@ -196,7 +212,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 		UnitModelPoolManager.it.ReturnModel(characterView);
 	}
 
-	public virtual void Spawn(CharacterData data)
+	public virtual void Spawn(UnitData data)
 	{
 
 	}
@@ -232,7 +248,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 
 	public virtual bool IsAlive()
 	{
-		return info.data.hp > 0;
+		return info.hp > 0;
 	}
 
 	public bool IsTargetAlive()
@@ -248,7 +264,9 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 	// Update is called once per frame
 	void Update()
 	{
-		if (VGameManager.it.currentState != GameState.BATTLE && VGameManager.it.currentState != GameState.REWARD && VGameManager.it.currentState != GameState.BOSSBATTLE)
+		if (VGameManager.it.currentState != GameState.BATTLE
+			&& VGameManager.it.currentState != GameState.REWARD
+			&& VGameManager.it.currentState != GameState.BOSSBATTLE)
 		{
 			return;
 		}
@@ -269,7 +287,7 @@ public abstract class Character : MonoBehaviour, DefaultAttack.IDefaultAttackEve
 
 	private void LateUpdate()
 	{
-		if (info.data.hp <= 0)
+		if (info.hp <= 0)
 		{
 			ChangeState(StateType.DEATH);
 		}
