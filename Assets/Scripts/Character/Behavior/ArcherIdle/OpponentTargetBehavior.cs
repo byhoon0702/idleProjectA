@@ -8,6 +8,7 @@ public class OpponentTargetBehavior : UnitBehavior
 {
 	public GameObject OnTarget(Character character)
 	{
+
 		if (character is PlayerCharacter)
 		{
 			character.FindTarget(Time.deltaTime, CharacterManager.it.GetEnemyCharacters());

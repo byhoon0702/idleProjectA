@@ -153,10 +153,6 @@ public class SpawnManager : MonoBehaviour
 		player.transform.SetParent(playerRoot);
 		player.transform.position = pos;
 		player.Spawn(_characterData);
-		if (_characterData.classTid == 1000)
-		{
-			player.gameObject.tag = "Wall";
-		}
 
 		return player;
 	}

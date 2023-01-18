@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Text.RegularExpressions;
+using Unity.VisualScripting;
 
 [Serializable]
 public class IdleNumber
@@ -314,9 +315,25 @@ public class IdleNumber
 		}
 		return result;
 	}
+
+	public static bool NullCheckAndThrow(IdleNumber _idleNumber)
+	{
+		if (_idleNumber is null)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 	#region operator double 
 	public static bool operator <=(IdleNumber a, double b)
 	{
+		if (NullCheckAndThrow(a))
+		{
+			return false;
+		}
+
 		if (b == 0)
 		{
 			return a.Value <= 0;
@@ -398,18 +415,30 @@ public class IdleNumber
 	}
 	public static bool operator <(IdleNumber a, IdleNumber b)
 	{
+
 		int comparison = CompareTo(a, b);
 
 		return comparison == -1;
 	}
+
 	public static bool operator ==(IdleNumber a, IdleNumber b)
 	{
+		if (a.IsNull())
+		{
+			return b.IsNull();
+		}
+
 		int comparison = CompareTo(a, b);
 
 		return comparison == 0;
 	}
 	public static bool operator !=(IdleNumber a, IdleNumber b)
 	{
+		if (a.IsNull())
+		{
+			return b.IsNull() == false;
+		}
+
 		int comparison = CompareTo(a, b);
 
 		return comparison != 0;

@@ -75,9 +75,20 @@ public class VGameManager : MonoBehaviour
 		instance = this;
 	}
 
+
+	public void IdleNUll(IdleNumber aa)
+	{
+
+		if (aa <= 0)
+		{
+			Debug.Log("IdlenNumber Null");
+		}
+
+	}
 	// Start is called before the first frame update
 	void Start()
 	{
+		IdleNUll(null);
 		introState = new IntroState();
 		dataLoadingState = new DataLoadingState();
 		animationState = new AnimationState();

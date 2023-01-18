@@ -7,6 +7,10 @@ public class WallTargetingBehavior : UnitBehavior
 	public GameObject OnTarget(Character character)
 	{
 		GameObject go = GameObject.FindGameObjectWithTag("Wall");
+		if (go == null)
+		{
+			return null;
+		}
 		Character target = go.GetComponent<Character>();
 
 		if (target.IsAlive() == false)

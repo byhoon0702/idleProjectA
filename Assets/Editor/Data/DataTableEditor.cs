@@ -215,6 +215,7 @@ public class DataTableEditor : EditorWindow
 			{
 				FromJson(false);
 			}
+
 			EditorGUILayout.Space(3);
 			EditorGUILayout.HelpBox("테이블 이름을 입력하거나 Json 파일을 불러오세요", MessageType.Warning);
 			return;
@@ -282,14 +283,20 @@ public class DataTableEditor : EditorWindow
 
 			GUILayout.EndHorizontal();
 
-			if (TypeExist() == false)
-			{
-				if (GUILayout.Button("Create CSharp File"))
-				{
-					CreateCSharpFile();
-				}
-			}
 
+			if (GUILayout.Button("Convert To CSV"))
+			{
+				ConvertToCSV();
+			}
+			if (GUILayout.Button("Convert From Json To CSV"))
+			{
+				ConvertJsonToCSV();
+
+			}
+			if (GUILayout.Button("Load From Csv"))
+			{
+				ConvertFromCsvToData();
+			}
 
 			DrawProperty();
 		}
@@ -792,68 +799,22 @@ public class DataTableEditor : EditorWindow
 		string fileName = Path.GetFileNameWithoutExtension(path);
 		string typeName = fileName;
 
-		if (isBinary)
+		object json = JsonConverter.ToData(isBinary, path);
+		if (json != null)
 		{
-			using (FileStream fs = File.OpenRead(path))
-			{
-
-				using (BinaryReader sr = new BinaryReader(fs))
-				{
-					string jsonstring = sr.ReadString();
-					Dictionary<string, object> jb = (Dictionary<string, object>)Json.Deserialize(jsonstring);
-
-					if (jb.ContainsKey("typeName"))
-					{
-						typeName = (string)jb["typeName"];
-					}
-
-					Type type = System.Type.GetType($"{typeName}, Assembly-CSharp");
-					if (type == null)
-					{
-						sr.Close();
-					}
-
-					label = typeName;
-
-					if (GetScriptableObject(typeName))
-					{
-						if (TypeExist())
-						{
-							var json = JsonUtility.FromJson(jsonstring, type);
-							instanceType.GetField("dataSheet").SetValue(scriptableObject, json);
-							serializedObject = new SerializedObject(scriptableObject);
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			string jsonstring = File.ReadAllText(path);
-			Dictionary<string, object> jb = (Dictionary<string, object>)Json.Deserialize(jsonstring);
-			if (jb.ContainsKey("typeName"))
-			{
-				typeName = (string)jb["typeName"];
-			}
-
-			Type type = System.Type.GetType($"{typeName}, Assembly-CSharp");
-			if (type == null)
-			{
-				return;
-			}
-
 			label = typeName;
 
 			if (GetScriptableObject(typeName))
 			{
 				if (TypeExist())
 				{
-					var json = JsonUtility.FromJson(jsonstring, type);
+
 					instanceType.GetField("dataSheet").SetValue(scriptableObject, json);
 					serializedObject = new SerializedObject(scriptableObject);
 				}
 			}
 		}
+
 
 		CreateReorderableList();
 		EditorGUI.FocusTextInControl(null);
@@ -924,8 +885,73 @@ public class DataTableEditor : EditorWindow
 	{
 		var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
 
-		System.Reflection.FieldInfo info = targetObje.GetType().GetField("dataSheet");
-		var sd = info.GetValue(targetObje);
+		string csv = CsvConverter.FromData(targetObje);
+
+		StreamWriter streamWriter = File.CreateText($"{Application.dataPath}/AssetFolder/test.csv");
+		streamWriter.Write(csv);
+		streamWriter.Close();
+		AssetDatabase.Refresh();
+	}
+
+	void ConvertJsonToCSV()
+	{
+
+		if (currentJsonFilePath.IsNullOrEmpty())
+		{
+			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json";
+		}
+		string rootPath = Path.GetDirectoryName(currentJsonFilePath);
+		string path = EditorUtility.OpenFilePanel("", rootPath, "json");
+
+		if (path.IsNullOrEmpty())
+		{
+			return;
+		}
+
+		object json = JsonConverter.ToData(false, path);
+		if (json != null)
+		{
+			string csv = CsvConverter.FromJson(json);
+			StreamWriter streamWriter = File.CreateText($"{Application.dataPath}/AssetFolder/test.csv");
+			streamWriter.Write(csv);
+			streamWriter.Close();
+		}
+		EditorGUI.FocusTextInControl(null);
+		AssetDatabase.Refresh();
+	}
+
+	void ConvertFromCsvToData()
+	{
+		string rootPath = Path.GetDirectoryName($"{Application.dataPath}/AssetFolder/");
+		string path = EditorUtility.OpenFilePanel("", rootPath, "csv");
+
+		if (path.IsNullOrEmpty())
+		{
+			return;
+		}
+		var data = CsvConverter.ToData(path);
+
+
+		if (data != null)
+		{
+			string typeName = data.GetType().GetField("typeName").GetValue(data).ToString();
+			label = typeName;
+
+			if (GetScriptableObject(typeName))
+			{
+				if (TypeExist())
+				{
+
+					instanceType.GetField("dataSheet").SetValue(scriptableObject, data);
+					serializedObject = new SerializedObject(scriptableObject);
+				}
+			}
+		}
+
+		CreateReorderableList();
+		EditorGUI.FocusTextInControl(null);
+		currentJsonFileName = Path.GetFileName(path);
+		currentJsonFilePath = path;
 	}
 
 	void CreateCSharpFile()

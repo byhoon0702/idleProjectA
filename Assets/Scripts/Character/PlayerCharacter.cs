@@ -24,7 +24,16 @@ public class PlayerCharacter : Character
 			characterView = model;
 
 			gameObject.AddComponent<SphereCollider>();
-			gameObject.tag = "Player";
+			if (_data.classTid == 4)
+			{
+				gameObject.tag = "Wall";
+			}
+			else
+			{
+				gameObject.tag = "Player";
+			}
+
+
 			gameObject.name = info.charNameAndCharId;
 		}
 		Init();

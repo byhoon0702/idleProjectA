@@ -24,7 +24,7 @@ public class EnemyCharacter : Character
 			gameObject.name = info.charNameAndCharId;
 		}
 		Init();
-		targeting = Targeting.WALL;
+		targeting = Targeting.OPPONENT;
 	}
 
 	public override void Move(float delta)
