@@ -25,17 +25,18 @@ public class AttackState : CharacterFSM
 			return;
 		}
 
-		
 		if (skillModule.skillAttack != null && skillModule.skillAttack.Usable())
 		{
 			// 스킬을 사용할 수 있으면 무조건 스킬우선사용
 			skillModule.skillAttack.Action();
 			VLog.SkillLog($"[{owner.info.charNameAndCharId}] 스킬 사용. SkillName: {skillModule.skillAttack.name}", owner);
+			owner.characterAnimation.PlayAnimation("attack");
 		}
 		else if (skillModule.defaultAttack != null && skillModule.defaultAttack.Usable())
 		{
 			// 기본공격
 			skillModule.defaultAttack.Action();
+			owner.characterAnimation.PlayAnimation("attack");
 		}
 	}
 }

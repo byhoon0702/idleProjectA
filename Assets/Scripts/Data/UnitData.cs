@@ -1,5 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 
+[Serializable]
+public class TestData
+{
+	public int abs;
+	public int absaa;
+}
 
 
 /// <summary>
@@ -23,7 +31,8 @@ public class UnitData : ItemData
 	//유저 캐릭터는 설정 하지 않는 값 
 	//추후 성(star)급은 StarRank 로 이름 지을 것 
 	public RankType rankType;
-
+	public List<int> abs;
+	public List<TestData> bbgs;
 	public UnitData Clone()
 	{
 		UnitData data = new UnitData();

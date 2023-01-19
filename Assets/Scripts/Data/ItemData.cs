@@ -42,8 +42,3 @@ public enum Grade
 	SS,
 	SSS,
 }
-
-public class ItemData : BaseData
-{
-
-}

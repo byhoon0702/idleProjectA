@@ -8,7 +8,7 @@ public static partial class UserInfo
 	public static List<UserAbilityType> trainingTypes => DataManager.it.Get<UserTrainingDataSheet>().GetAbilityTypes();
 
 
-	public class UserTrainingData : UserInfoLevelSaveBase
+	public class TrainingSave : UserInfoLevelSaveBase
 	{
 		public override int defaultLevel => 1;
 
@@ -26,7 +26,7 @@ public static partial class UserInfo
 		}
 	}
 
-	public class UserTrainingInfo
+	public class TrainingInfo
 	{
 		/// <summary>
 		/// 현재 훈련 레벨

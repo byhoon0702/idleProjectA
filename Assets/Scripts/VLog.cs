@@ -6,6 +6,7 @@ public static class VLog
 {
 	public static bool showConditionLog = false;
 	public static bool showSkillLog = false;
+	public static bool showItemLog = false;
 	public static bool showScheduleLog = false;
 	public static bool showAILog = false;
 	public static bool showBattleLog = false;
@@ -85,4 +86,17 @@ public static class VLog
 			Debug.Log($"[Record] {_message}", _context);
 		}
 	}
+	public static void ItemLog(object _message, Object _context = null)
+	{
+		if (showItemLog)
+		{
+			Debug.Log($"[Item] {_message}", _context);
+		}
+	}
+
+	public static void ItemLogError(object _message, Object _context = null)
+	{
+		Debug.LogError($"[Item] {_message}", _context);
+	}
+
 }

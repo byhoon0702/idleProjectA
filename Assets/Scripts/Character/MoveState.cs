@@ -11,7 +11,7 @@ public class MoveState : CharacterFSM
 	}
 	public void OnEnter()
 	{
-		owner.characterAnimation.PlayAnimation("walk");
+		owner.characterAnimation.PlayAnimation("move");
 	}
 
 	public void OnExit()

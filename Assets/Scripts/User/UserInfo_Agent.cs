@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static partial class UserInfo
 {
-	public class UserAgentData : UserInfoLevelSaveBase
+	public class AgentSave : UserInfoLevelSaveBase
 	{
 		public override int defaultLevel => 1;
 
@@ -18,7 +18,7 @@ public static partial class UserInfo
 		}
 	}
 
-	public class UserAgentInfo
+	public class AgentInfo
 	{
 		/// <summary>
 		/// 현재 배치가능한 병사 수

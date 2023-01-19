@@ -16,8 +16,8 @@ public class CharacterAnimation : MonoBehaviour
 		{
 			return;
 		}
-		animator.Play(aniName, -1, 0);
-		//animator.SetTrigger("");
+		//animator.Play(aniName, -1, 0);
+		animator.SetTrigger(aniName);
 	}
 
 }

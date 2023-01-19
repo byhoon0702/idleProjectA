@@ -46,11 +46,26 @@ public class DataTableEditor : EditorWindow
 	private Dictionary<Type, object> jsonContainer;
 	[SerializeField]
 	private Dictionary<string, Type> linkedTypeList;
+
+	[SerializeField]
+	private Dictionary<string, List<bool>> foldOutList;
+
 	[SerializeField]
 	public SerializedProperty dataSheetProperty;
 
+
+	[SerializeField]
+	public Dictionary<string, EditorWindow> subWindows = new Dictionary<string, EditorWindow>();
+
+
+
 	private int addArraySize = 0;
 	private int pageSize = 10;
+
+	public void CreateSubWindow()
+	{
+		subWindows.Add("", null);
+	}
 
 	[MenuItem("Custom Menu/DataEditor/DataTableEditor", false, 5000)]
 	public static void Init()
@@ -68,7 +83,7 @@ public class DataTableEditor : EditorWindow
 	}
 	private void OnDestroy()
 	{
-
+		maleeReorderableList = null;
 	}
 
 	private static readonly Type[] types =
@@ -97,10 +112,7 @@ public class DataTableEditor : EditorWindow
 	}
 
 
-	public string TypeString(string name, string assembly = "Assembly-CSharp")
-	{
-		return $"{name}, {assembly}";
-	}
+
 
 	public static T TryParse<T>(string value)
 	{
@@ -357,12 +369,25 @@ public class DataTableEditor : EditorWindow
 
 			dataSheetProperty.FindPropertyRelative("typeName").stringValue = tableType.Name;
 
-			EditorGUILayout.LabelField($"데이터 타입: {tableType.Name}", GUILayout.Width(width));
+			if (tableType.Name.Contains("ResultCode", StringComparison.Ordinal))
+			{
+				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField($"데이터 타입: {tableType.Name}", GUILayout.Width(width / 2));
+				if (GUILayout.Button("리절트 코드 생성", GUILayout.Width(width / 2)))
+				{
+					string methodName = targetObje.name.Replace("DataSheetObject", "");
+					var methodinfo = targetObje.GetType().GetMethod($"Call");
+					methodinfo.Invoke(targetObje, null);
+				}
+				EditorGUILayout.EndHorizontal();
+
+			}
+			else
+			{
+				EditorGUILayout.LabelField($"데이터 타입: {tableType.Name}", GUILayout.Width(width));
+			}
 
 			DrawHeader(width);
-
-			maleeReorderableList.paginate = true;
-			maleeReorderableList.pageSize = pageSize;
 
 			maleeReorderableList.DoLayoutList();//DoList(new Rect(0, EditorGUIUtility.singleLineHeight + 10, width, height + 40), GUIContent.none);
 
@@ -409,141 +434,6 @@ public class DataTableEditor : EditorWindow
 		EditorGUILayout.TextArea("", boxStyle);
 	}
 
-	private void CreateMaleeReorderableList(SerializedProperty _serializeProperty)
-	{
-		if (_serializeProperty == null)
-		{
-			return;
-		}
-
-		Type rawDataType = System.Type.GetType($"{_serializeProperty.arrayElementType}, Assembly-CSharp");
-		FieldInfo[] fields = rawDataType.GetFields();
-		Type[] nested = rawDataType.GetNestedTypes();
-
-		linkedTypeList = new Dictionary<string, Type>();
-
-		for (int i = 0; i < fields.Length; i++)
-		{
-			if (fields[i].Name.Contains("Tid", StringComparison.Ordinal))
-			{
-				string typeName = fields[i].Name.Replace("Tid", "DataSheet").FirstCharacterToUpper();
-
-				if (linkedTypeList.ContainsKey(typeName))
-				{
-					continue;
-				}
-				linkedTypeList.Add(fields[i].Name, System.Type.GetType(TypeString(typeName)));
-			}
-		}
-
-		maleeReorderableList = new Malee.List.ReorderableList(_serializeProperty);
-
-		maleeReorderableList.drawHeaderCallback += (rect, guicontent) =>
-		{
-			rect.x = 34;
-			Rect tempRect = new Rect(rect);
-
-			for (int i = 0; i < fields.Length; i++)
-			{
-				tempRect.width = settings.cellSize.x;
-				tempRect.height = EditorGUIUtility.singleLineHeight;
-
-				if (fields[i].Name == "tid")
-				{
-					tempRect.x = rect.x;
-					EditorGUI.LabelField(tempRect, fields[i].Name, EditorStyles.boldLabel);
-				}
-				else if (fields[i].Name == "description")
-				{
-					tempRect.x = rect.x + (tempRect.width + settings.rowSpace);
-					EditorGUI.LabelField(tempRect, fields[i].Name, EditorStyles.boldLabel);
-				}
-				else
-				{
-					EditorGUI.LabelField(new(tempRect.x + ((tempRect.width + settings.rowSpace) * 2), tempRect.y, tempRect.width, tempRect.height), fields[i].Name, EditorStyles.boldLabel);
-				}
-				tempRect.x += tempRect.width + settings.rowSpace;
-			}
-		};
-
-
-		maleeReorderableList.drawElementCallback += (rect, s_property, index, isActive, isFocused) =>
-		{
-
-			Rect tempRect = new Rect(rect);
-			SerializedProperty info = s_property;
-			Type type = rawDataType;
-
-			for (int i = 0; i < fields.Length; i++)
-			{
-				var field = fields[i];
-				tempRect.y = rect.y;
-				tempRect.width = settings.cellSize.x;
-				tempRect.height = EditorGUIUtility.singleLineHeight;
-				var sf = info.FindPropertyRelative(field.Name);
-
-
-				if (field.Name == "tid")
-				{
-					tempRect.x = rect.x;
-					EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
-				}
-				else if (field.Name == "description")
-				{
-					tempRect.x = rect.x + (tempRect.width + settings.rowSpace);
-					EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
-				}
-				else
-				{
-					Rect relativeRect = new Rect(tempRect.x + ((tempRect.width + settings.rowSpace) * 2), tempRect.y, tempRect.width, tempRect.height);
-
-					if (linkedTypeList.ContainsKey(field.Name))
-					{
-						Type linkType = linkedTypeList[field.Name];
-						if (linkType == null)
-						{
-							EditorGUI.PropertyField(relativeRect, sf, GUIContent.none);
-							tempRect.x += tempRect.width + settings.rowSpace;
-							continue;
-						}
-						if (jsonContainer.ContainsKey(linkType))
-						{
-							FieldInfo obj = jsonContainer[linkType].GetType().GetField("infos");
-							object ff = obj.GetValue(jsonContainer[linkType]);
-
-
-							if (typeof(IList).IsAssignableFrom(ff))
-							{
-								IList list = (IList)ff;
-								GUIContent[] nameList = new GUIContent[list.Count];
-								int[] idList = new int[list.Count];
-
-								for (int ii = 0; ii < list.Count; ii++)
-								{
-									object item = list[ii];
-									Type itemType = item.GetType();
-									long id = (long)itemType.GetField("tid").GetValue(item);
-									idList[ii] = (int)id;
-									nameList[ii] = new GUIContent($"{id} :{(string)itemType.GetField("description").GetValue(item)}");
-								}
-								if (nameList.Length > 0)
-								{
-									EditorGUI.IntPopup(relativeRect, sf, nameList, idList, GUIContent.none);
-									tempRect.x += tempRect.width + settings.rowSpace;
-									continue;
-								}
-							}
-						}
-					}
-
-					EditorGUI.PropertyField(relativeRect, sf, GUIContent.none);
-
-					tempRect.x += tempRect.width + settings.rowSpace;
-				}
-			}
-		};
-	}
-
 	private void CreateReorderableList()
 	{
 		if (serializedObject == null)
@@ -552,129 +442,10 @@ public class DataTableEditor : EditorWindow
 		}
 		dataSheetProperty = serializedObject.FindProperty("dataSheet");
 		infosProperty = dataSheetProperty.FindPropertyRelative("infos");
-		CreateMaleeReorderableList(infosProperty);
-		//CreateReorderableList(dataSheetProperty.serializedObject, property);
+
+
+		maleeReorderableList = ReorderableListGenerator.Init(settings, serializedObject, infosProperty).SetLoadedData(jsonContainer).Build(10, true);
 	}
-
-	//void CreateReorderableList(SerializedObject _serializedObjet, SerializedProperty _serializeProperty)
-	//{
-	//	if (_serializedObjet == null || _serializeProperty == null)
-	//	{
-	//		return;
-	//	}
-	//	Type rawDataType = System.Type.GetType($"{_serializeProperty.arrayElementType}, Assembly-CSharp");
-	//	FieldInfo[] fields = rawDataType.GetFields();
-	//	Type[] nested = rawDataType.GetNestedTypes();
-
-	//	linkedTypeList = new Dictionary<string, Type>();
-
-	//	//float width = settings.cellSize.x;//(EditorGUIUtility.currentViewWidth / fields.Length) - 10;
-	//	for (int i = 0; i < fields.Length; i++)
-	//	{
-	//		if (fields[i].Name.Contains("Tid", StringComparison.Ordinal))
-	//		{
-	//			string typeName = fields[i].Name.Replace("Tid", "DataSheet").FirstCharacterToUpper();
-
-	//			if (linkedTypeList.ContainsKey(typeName))
-	//			{
-	//				continue;
-	//			}
-	//			linkedTypeList.Add(fields[i].Name, System.Type.GetType(TypeString(typeName)));
-	//		}
-	//	}
-
-	//	reorderableList = new ReorderableList(_serializedObjet, _serializeProperty);
-
-	//	reorderableList.elementHeight = settings.elementHeight;
-	//	reorderableList.drawHeaderCallback += rect =>
-	//	{
-	//		Rect tempRect = new Rect(rect);
-	//		tempRect.x = 20;
-	//		for (int i = 0; i < fields.Length; i++)
-	//		{
-	//			tempRect.width = settings.cellSize.x;
-	//			tempRect.height = EditorGUIUtility.singleLineHeight;
-
-	//			EditorGUI.LabelField(tempRect, fields[i].Name, EditorStyles.boldLabel);
-	//			tempRect.x += tempRect.width + 5;
-	//		}
-	//	};
-
-	//	reorderableList.drawElementCallback += (rect, index, isActive, isFocused) =>
-	//	{
-	//		Rect tempRect = new Rect(rect);
-	//		SerializedProperty info = reorderableList.serializedProperty.GetArrayElementAtIndex(index);
-	//		Type type = rawDataType;
-
-	//		for (int i = 0; i < fields.Length; i++)
-	//		{
-	//			var field = fields[i];
-	//			tempRect.y = rect.y + 2;
-	//			tempRect.width = settings.cellSize.x;
-	//			tempRect.height = EditorGUIUtility.singleLineHeight;
-	//			var sf = info.FindPropertyRelative(field.Name);
-
-	//			if (typeof(IList).IsAssignableFrom(sf))
-	//			{
-
-	//			}
-	//			if (linkedTypeList.ContainsKey(field.Name))
-	//			{
-	//				Type linkType = linkedTypeList[field.Name];
-	//				if (linkType == null)
-	//				{
-	//					EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
-	//					tempRect.x += tempRect.width + 5;
-	//					continue;
-	//				}
-	//				if (jsonContainer.ContainsKey(linkType.Name))
-	//				{
-	//					var obj = jsonContainer[linkType.Name].GetType().GetField("infos");
-	//					var ff = obj.GetValue(jsonContainer[linkType.Name]);
-
-	//					List<GUIContent> nameList = new List<GUIContent>();
-	//					List<int> idList = new List<int>();
-
-	//					if (typeof(IList).IsAssignableFrom(ff))
-	//					{
-	//						foreach (var item in ff as IList)
-	//						{
-	//							Type itemType = item.GetType();
-	//							long id = (long)itemType.GetField("tid").GetValue(item);
-	//							idList.Add((int)id);
-	//							nameList.Add(new GUIContent($"{id} :{(string)itemType.GetField("description").GetValue(item)}"));
-	//						}
-	//					}
-
-	//					if (nameList.Count > 0)
-	//					{
-	//						EditorGUI.IntPopup(tempRect, sf, nameList.ToArray(), idList.ToArray(), GUIContent.none);
-	//						tempRect.x += tempRect.width + 5;
-	//						continue;
-	//					}
-	//				}
-	//			}
-
-	//			if (sf.type == "IdleNumber")
-	//			{
-	//				Rect idlenumberRect = new Rect(tempRect);
-
-	//				idlenumberRect.width = tempRect.width / 2f - 2.5f;
-
-	//				EditorGUI.PropertyField(idlenumberRect, sf.FindPropertyRelative("Value"), GUIContent.none);
-	//				idlenumberRect.x += idlenumberRect.width + 5;
-	//				EditorGUI.PropertyField(idlenumberRect, sf.FindPropertyRelative("Exp"), GUIContent.none);
-	//			}
-	//			else
-	//			{
-	//				EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
-	//			}
-
-	//			tempRect.x += tempRect.width + 5;
-	//		}
-	//	};
-	//	//	reorderableList.onSelectCallback += index => { };
-	//}
 
 	bool TypeExist()
 	{

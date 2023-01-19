@@ -8,7 +8,7 @@ public static partial class UserInfo
 	public const Int32 PROPERTY_PRESET_COUNT = 5;
 	public static List<UserAbilityType> propertyList => DataManager.it.Get<UserPropertyDataSheet>().GetAbilityTypes();
 
-	public class UserPropertyData : UserInfoLevelSaveBase
+	public class PropertySave : UserInfoLevelSaveBase
 	{
 		public override int defaultLevel => 1;
 
@@ -31,7 +31,7 @@ public static partial class UserInfo
 	}
 
 
-	public class UserPropertyInfo
+	public class PropertyInfo
 	{
 		/// <summary>
 		/// 특성 포인트 총합
@@ -161,7 +161,7 @@ public static partial class UserInfo
 		/// </summary>
 		public void ResetProperty(Int32 _presetIndex)
 		{
-			userData.props[_presetIndex] = new UserPropertyData();
+			userData.props[_presetIndex] = new PropertySave();
 		}
 	}
 }

@@ -15,6 +15,8 @@ public class UserGradeData : BaseData
 [Serializable]
 public class UserGradeDataSheet : DataSheetBase<UserGradeData>
 {
+	private List<Grade> grade;
+
 	public UserGradeData Get(long tid)
 	{
 		for (int i = 0 ; i < infos.Count ; i++)
@@ -39,5 +41,23 @@ public class UserGradeDataSheet : DataSheetBase<UserGradeData>
 		}
 
 		return null;
+	}
+
+	public List<Grade> GetGradeList()
+	{
+		if (grade == null || grade.Count == 0)
+		{
+			grade = new List<Grade>();
+
+			for (int i = 0 ; i < infos.Count ; i++)
+			{
+				if (grade.Contains(infos[i].grade) == false)
+				{
+					grade.Add(infos[i].grade);
+				}
+			}
+		}
+
+		return grade;
 	}
 }

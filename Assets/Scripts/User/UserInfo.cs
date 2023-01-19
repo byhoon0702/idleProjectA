@@ -10,27 +10,27 @@ public static partial class UserInfo
 	/// <summary>
 	/// 훈련
 	/// </summary>
-	public static UserTrainingInfo training = new UserTrainingInfo();
+	public static TrainingInfo training = new TrainingInfo();
 	/// <summary>
 	/// 특성
 	/// </summary>
-	public static UserPropertyInfo prop = new UserPropertyInfo();
+	public static PropertyInfo prop = new PropertyInfo();
 	/// <summary>
 	/// 유물
 	/// </summary>
-	public static UserRelicInfo relic = new UserRelicInfo();
+	public static RelicInfo relic = new RelicInfo();
 	/// <summary>
 	/// 보급소
 	/// </summary>
-	public static UserAgentInfo agent = new UserAgentInfo();
+	public static AgentInfo agent = new AgentInfo();
 	/// <summary>
 	/// 진급
 	/// </summary>
-	public static UserPromoteInfo promo = new UserPromoteInfo();
+	public static PromoteInfo promo = new PromoteInfo();
 	/// <summary>
 	/// 진급능력
 	/// </summary>
-	public static UserPromoteAbilityInfo proAbil = new UserPromoteAbilityInfo();
+	public static PromoteAbilityInfo proAbil = new PromoteAbilityInfo();
 
 
 	/// <summary>
@@ -73,8 +73,36 @@ public static partial class UserInfo
 	private static IdleNumber _totalCombatPower = new IdleNumber();
 	public static IdleNumber totalCombatPower => _totalCombatPower;
 
-
-
+	public static string GetAbiltyTitle(UserAbilityType _userAbilityType)
+	{
+		switch (_userAbilityType)
+		{
+			case UserAbilityType.AttackPower:
+				return "공격력";
+			case UserAbilityType.Hp:
+				return "HP";
+			case UserAbilityType.CriticalChance:
+				return "치명타 확률";
+			case UserAbilityType.CriticalAttackPower:
+				return "치명타 피해";
+			case UserAbilityType.GoldUp:
+				return "골드 획득량";
+			case UserAbilityType.ExpUp:
+				return "경험치 획득량";
+			case UserAbilityType.ItemUp:
+				return "아이템 획득량";
+			case UserAbilityType.MoveSpeed:
+				return "이동속도";
+			case UserAbilityType.AttackSpeed:
+				return "공격속도";
+			case UserAbilityType.SkillAttackPower:
+				return "스킬피해";
+			case UserAbilityType.BossAttackPower:
+				return "보스피해";
+			default:
+				return "";
+		}
+	}
 
 	public static void LoadUserData()
 	{
@@ -121,33 +149,33 @@ public static partial class UserInfo
 		public Int64 userExp = 65;
 
 		// 훈련
-		public UserTrainingData training = new UserTrainingData();
+		public TrainingSave training = new TrainingSave();
 
 		// 특성
 		public Int32 selectedPropIndex = 0;
-		public UserPropertyData[] props = new UserPropertyData[0];
-		public UserPropertyData currProp => props[selectedPropIndex];
+		public PropertySave[] props = new PropertySave[0];
+		public PropertySave currProp => props[selectedPropIndex];
 
 		// 유물
-		public UserRelicData relic = new UserRelicData();
+		public RelicSave relic = new RelicSave();
 
 		// 보급소
-		public UserAgentData agent = new UserAgentData();
+		public AgentSave agent = new AgentSave();
 
 		// 진급
-		public UserPromoteData promo = new UserPromoteData();
+		public PromoteSave promo = new PromoteSave();
 
 		// 진급능력
-		public UserPromoteAbilityData proAbil = new UserPromoteAbilityData();
+		public PromoteAbilitySave proAbil = new PromoteAbilitySave();
 
 
 
 		public UserData()
 		{
-			props = new UserPropertyData[PROPERTY_PRESET_COUNT];
-			for(Int32 i=0 ; i<props.Length ; i++)
+			props = new PropertySave[PROPERTY_PRESET_COUNT];
+			for (Int32 i = 0; i < props.Length; i++)
 			{
-				props[i] = new UserPropertyData();
+				props[i] = new PropertySave();
 			}
 		}
 	}
@@ -222,6 +250,8 @@ public enum UserAbilityType
 	Agent
 }
 
+
+[Serializable]
 public class UserAbility
 {
 	public UserAbilityType type;
@@ -251,7 +281,7 @@ public abstract class UserInfoLevelSaveBase
 
 	public abstract double TotalCombatPower();
 
-	public Int32 GetLevel(UserAbilityType _ability)
+	public virtual Int32 GetLevel(UserAbilityType _ability)
 	{
 		Int64 tid = DataManager.it.Get<UserAbilityInfoDataSheet>().GetTid(_ability);
 
@@ -261,7 +291,7 @@ public abstract class UserInfoLevelSaveBase
 			return defaultLevel;
 		}
 
-		for (Int32 i = 0 ; i < saveData.Count ; i++)
+		for (Int32 i = 0; i < saveData.Count; i++)
 		{
 			if (saveData[i].tid == tid)
 			{
@@ -272,7 +302,57 @@ public abstract class UserInfoLevelSaveBase
 		return defaultLevel;
 	}
 
-	public void SetLevel(UserAbilityType _ability, Int32 _value)
+	public virtual void SetLevel(UserAbilityType _ability, Int32 _value)
+	{
+		Int64 tid = DataManager.it.Get<UserAbilityInfoDataSheet>().GetTid(_ability);
+		if (tid == 0)
+		{
+			VLog.LogError($"UserAbilityInfoDataSheet에 정의되지 않은 어빌리티. abil: {_ability}, type: {GetType()}");
+			return;
+		}
+
+		for (Int32 i = 0; i < saveData.Count; i++)
+		{
+			if (saveData[i].tid == tid)
+			{
+				saveData[i].value = _value;
+				return;
+			}
+		}
+
+		saveData.Add(new UserInfoLevelSaveData(tid, _value));
+	}
+}
+
+
+public abstract class UserInfoValueSaveBase
+{
+	public List<UserInfoValueSaveData> saveData = new List<UserInfoValueSaveData>();
+
+	public abstract double TotalCombatPower();
+
+	public virtual double GetValue(UserAbilityType _ability)
+	{
+		Int64 tid = DataManager.it.Get<UserAbilityInfoDataSheet>().GetTid(_ability);
+
+		if (tid == 0)
+		{
+			VLog.LogError($"UserAbilityInfoDataSheet에 정의되지 않은 어빌리티. abil: {_ability}, type: {GetType()}");
+			return 0;
+		}
+
+		for (Int32 i = 0 ; i < saveData.Count ; i++)
+		{
+			if (saveData[i].tid == tid)
+			{
+				return saveData[i].value;
+			}
+		}
+
+		return 0;
+	}
+
+	public virtual void SetValue(UserAbilityType _ability, double _value)
 	{
 		Int64 tid = DataManager.it.Get<UserAbilityInfoDataSheet>().GetTid(_ability);
 		if (tid == 0)
@@ -286,10 +366,11 @@ public abstract class UserInfoLevelSaveBase
 			if (saveData[i].tid == tid)
 			{
 				saveData[i].value = _value;
+				return;
 			}
 		}
 
-		saveData.Add(new UserInfoLevelSaveData(tid, _value));
+		saveData.Add(new UserInfoValueSaveData(tid, _value));
 	}
 }
 
@@ -307,6 +388,25 @@ public class UserInfoLevelSaveData
 	}
 
 	public UserInfoLevelSaveData(Int64 _tid, Int32 _value)
+	{
+		tid = _tid;
+		value = _value;
+	}
+}
+
+[Serializable]
+public class UserInfoValueSaveData
+{
+	public Int64 tid;
+	public double value;
+
+
+	public UserInfoValueSaveData()
+	{
+
+	}
+
+	public UserInfoValueSaveData(Int64 _tid, double _value)
 	{
 		tid = _tid;
 		value = _value;

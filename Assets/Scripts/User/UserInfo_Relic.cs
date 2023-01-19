@@ -8,7 +8,7 @@ public static partial class UserInfo
 	public static List<UserAbilityType> relicTypes => DataManager.it.Get<UserRelicDataSheet>().GetAbilityTypes();
 
 
-	public class UserRelicData : UserInfoLevelSaveBase
+	public class RelicSave : UserInfoLevelSaveBase
 	{
 		public override int defaultLevel => 0;
 
@@ -33,7 +33,7 @@ public static partial class UserInfo
 		}
 	}
 
-	public class UserRelicInfo
+	public class RelicInfo
 	{
 		/// <summary>
 		/// 현재 유물 레벨

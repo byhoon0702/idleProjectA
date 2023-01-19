@@ -196,4 +196,10 @@ public class ConfigMeta : ScriptableObject
 	/// </summary>
 	[Tooltip("[진급] 레벨당 보스피해 상승 비율")]
 	[SerializeField] public float PROMOTE_BOSS_ATTACK_POWER_PER_LEVEL_RATIO = 0.005f;
+
+	/// <summary>
+	/// 진급 능력 갱신할때 메달 소비 기본값
+	/// </summary>
+	[Tooltip("진급 능력 갱신할때 메달 소비 기본값")]
+	[SerializeField] public long PROMOTE_ABILITY_DEFAULT_CONSUME_COUNT = 10;
 }

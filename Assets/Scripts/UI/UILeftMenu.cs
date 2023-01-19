@@ -18,6 +18,7 @@ public class UILeftMenu : MonoBehaviour
 	[SerializeField] private GameObject[] listTabs;
 
 	[SerializeField] private UITraining uiTraining;
+	[SerializeField] private UIProperty uiProperty;
 
 	private GameObject currentPage = null;
 
@@ -32,6 +33,7 @@ public class UILeftMenu : MonoBehaviour
 		SetToggles();
 
 		uiTraining.Init();
+		uiProperty.Init();
 	}
 
 	private void Open()

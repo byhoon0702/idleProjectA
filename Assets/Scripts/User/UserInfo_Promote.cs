@@ -5,17 +5,17 @@ using UnityEngine;
 
 public static partial class UserInfo
 {
-	public class UserPromoteData : UserInfoLevelSaveBase
+	public static List<UserAbilityType> promoteTypes = new List<UserAbilityType>()
 	{
-		public static List<UserAbilityType> relicTypes = new List<UserAbilityType>()
-		{
-			UserAbilityType.AttackPower,
-			UserAbilityType.Hp,
-			UserAbilityType.CriticalAttackPower,
-			UserAbilityType.SkillAttackPower,
-			UserAbilityType.BossAttackPower
-		};
+		UserAbilityType.AttackPower,
+		UserAbilityType.Hp,
+		UserAbilityType.CriticalAttackPower,
+		UserAbilityType.SkillAttackPower,
+		UserAbilityType.BossAttackPower
+	};
 
+	public class PromoteSave : UserInfoLevelSaveBase
+	{
 		public override int defaultLevel => 0;
 
 
@@ -33,7 +33,7 @@ public static partial class UserInfo
 		}
 	}
 
-	public class UserPromoteInfo
+	public class PromoteInfo
 	{
 		/// <summary>
 		/// 레벨업 가능한 최대레벨
@@ -43,7 +43,7 @@ public static partial class UserInfo
 
 
 		/// <summary>
-		/// 현재 진급능력 레벨
+		/// 현재 진급 레벨
 		/// </summary>
 		public Int32 GetPromoteLevel(UserAbilityType _abilityType)
 		{
@@ -51,7 +51,7 @@ public static partial class UserInfo
 		}
 
 		/// <summary>
-		/// 진급능력 최대레벨
+		/// 진급 최대레벨
 		/// </summary>
 		public Int32 GetPromoteMaxLevel(Grade _grade)
 		{
@@ -61,7 +61,7 @@ public static partial class UserInfo
 		}
 
 		/// <summary>
-		/// 진급능력 버프
+		/// 진급 버프
 		/// </summary>
 		public List<UserAbility> GetPromoteValue()
 		{
@@ -84,7 +84,24 @@ public static partial class UserInfo
 		}
 
 		/// <summary>
-		/// 진급능력 레벨업 비용
+		/// 진급 레벨업!
+		/// </summary>
+		public void LevelUpPromote(UserAbilityType _abilityType)
+		{
+			Int32 maxLevel = promoteMaxLevel;
+			Int32 currLevel = userData.promo.GetLevel(_abilityType);
+
+			if (currLevel < maxLevel)
+			{
+				userData.promo.SetLevel(_abilityType, currLevel + 1);
+			}
+
+			CalculateTotalCombatPower();
+		}
+
+
+		/// <summary>
+		/// 진급 레벨업 비용
 		/// '_level'로 올라가기 위한 필요 비용
 		/// </summary>
 		public IdleNumber GetPromoteLevelupConsumeCount(Int32 _level)

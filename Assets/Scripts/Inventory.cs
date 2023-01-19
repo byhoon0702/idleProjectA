@@ -18,11 +18,14 @@ public class Inventory : MonoBehaviour
 	private List<ItemBase> listItems = new List<ItemBase>();
 	private List<ItemBase> moneyItemList = new List<ItemBase>();
 
-	private ItemBase goldItemBase;
-
 	public ItemBase GoldItem => goldItemBase;
-	private ItemBase lightDust; // 진급 재화
+	private ItemBase goldItemBase;
 	public ItemBase LightDust => lightDust;
+	private ItemBase lightDust; // 진급 재화
+
+	private ItemBase medal;
+	public ItemBase Medal => medal;
+
 
 	public void Init()
 	{
@@ -34,6 +37,11 @@ public class Inventory : MonoBehaviour
 		light_dust.tid = 2;
 		light_dust.count = new IdleNumber(9000, 0);
 
+		ItemBase medal_item = new ItemBase();
+		medal_item.tid = 3;
+		medal_item.count = new IdleNumber(9000, 0);
+
+
 		var relicItems = MakeRelicItem();
 		foreach (var item in relicItems)
 		{
@@ -41,10 +49,12 @@ public class Inventory : MonoBehaviour
 		}
 		UpdateMoneyItem(gold_item);
 		UpdateMoneyItem(light_dust);
+		UpdateMoneyItem(medal_item);
 
 
 		goldItemBase = gold_item;
 		lightDust = light_dust;
+		medal = medal_item;
 	}
 
 	public void UpdateMoneyItem(ItemBase _ItemBase)
