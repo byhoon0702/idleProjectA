@@ -95,12 +95,6 @@ public class ConfigMeta : ScriptableObject
 	[SerializeField] public float KNOCKBACK_DISTANCE = 1;
 
 	/// <summary>
-	/// 스턴시간
-	/// </summary>
-	[Tooltip("스턴 시간(s)")]
-	[SerializeField] public float STUN_DURATION = 3;
-
-	/// <summary>
 	/// D ~ SS등급 버프시간
 	/// </summary>
 	[Tooltip(" D ~ SS등급 버프시간(s)")]
@@ -202,4 +196,59 @@ public class ConfigMeta : ScriptableObject
 	/// </summary>
 	[Tooltip("진급 능력 갱신할때 메달 소비 기본값")]
 	[SerializeField] public long PROMOTE_ABILITY_DEFAULT_CONSUME_COUNT = 10;
+
+
+	/// <summary>
+	/// 리필(리셋)형 아이템 업데이트 사이클(s)
+	/// </summary>
+	[Tooltip("리필(리셋)형 아이템 업데이트 사이클(s)")]
+	[SerializeField] public float REFILL_UPDATE_CYCLE = 10;
+
+	/// <summary>
+	/// 아군 근거리 공격범위
+	/// </summary>
+	[Tooltip("아군 근거리 공격범위")]
+	[SerializeField] public float PLAYER_TARGET_RANGE_CLOSE = 1.5f;
+
+	/// <summary>
+	/// 아군 원거리 공격범위
+	/// </summary>
+	[Tooltip("아군 원거리 공격범위")]
+	[SerializeField] public float PLAYER_TARGET_RANGE_FAR = 6;
+
+	/// <summary>
+	/// 적 근거리 공격범위
+	/// </summary>
+	[Tooltip("적 근거리 공격범위")]
+	[SerializeField] public float ENEMY_TARGET_RANGE_CLOSE = 1.5f;
+
+	/// <summary>
+	/// 적 원거리 공격범위
+	/// </summary>
+	[Tooltip("적 원거리 공격범위")]
+	[SerializeField] public float ENEMY_TARGET_RANGE_FAR = 6;
+
+	/// <summary>
+	/// 보스 근거리 공격범위
+	/// </summary>
+	[Tooltip("보스 근거리 공격범위")]
+	[SerializeField] public float BOSS_TARGET_RANGE_CLOSE = 3.0f;
+
+	/// <summary>
+	/// 보스 원거리 공격범위
+	/// </summary>
+	[Tooltip("보스 원거리 공격범위")]
+	[SerializeField] public float BOSS_TARGET_RANGE_FAR = 6;
+
+	/// <summary>
+	/// 일반 스테이지 젠 주기
+	/// </summary>
+	[Tooltip("일반 스테이지 젠 주기")]
+	[SerializeField] public float NORMAL_DUNGEON_SPAWN_CYCLE = 10.0f;
+
+	/// <summary>
+	/// 플레이어 캐릭터 초당 체력회복량
+	/// </summary>
+	[Tooltip("플레이어 캐릭터 체력회복량 속도(s)")]
+	[SerializeField] public float PLAYER_HP_RECOVERY_CYCLE = 1f;
 }

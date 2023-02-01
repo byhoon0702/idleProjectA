@@ -6,7 +6,7 @@ using System.Linq;
 [Serializable]
 public class UserTrainingConsumeData : BaseData
 {
-	public UserAbilityType abilityType;
+	public AbilityType abilityType;
 	public Int32 startLevel;
 	public Int32 endLevel;
 	public IdleNumber consume;
@@ -15,7 +15,7 @@ public class UserTrainingConsumeData : BaseData
 [Serializable]
 public class UserTrainingConsumeDataSheet : DataSheetBase<UserTrainingConsumeData>
 {
-	private Dictionary<UserAbilityType, List<UserTrainingConsumeData>> dic;
+	private Dictionary<AbilityType, List<UserTrainingConsumeData>> dic;
 
 	public UserTrainingConsumeData Get(long tid)
 	{
@@ -30,11 +30,11 @@ public class UserTrainingConsumeDataSheet : DataSheetBase<UserTrainingConsumeDat
 		return null;
 	}
 
-	public List<UserTrainingConsumeData> Get(UserAbilityType _abilityType)
+	public List<UserTrainingConsumeData> Get(AbilityType _abilityType)
 	{
 		if (dic == null)
 		{
-			dic = new Dictionary<UserAbilityType, List<UserTrainingConsumeData>>();
+			dic = new Dictionary<AbilityType, List<UserTrainingConsumeData>>();
 
 			for (Int32 i = 0 ; i < infos.Count ; i++)
 			{

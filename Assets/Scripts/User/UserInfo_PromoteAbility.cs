@@ -20,23 +20,24 @@ public static partial class UserInfo
 			return total;
 		}
 
-		public override double GetValue(UserAbilityType _ability)
+		public override IdleNumber GetValue(AbilityType _ability)
 		{
-			return 1;
+			return new IdleNumber(1);
 		}
 
-		public override void SetValue(UserAbilityType _ability, double _value)
+		[Obsolete("안씀")]
+		public new void SetValue(AbilityType _ability, IdleNumber _value)
 		{
 		}
 
-		public UserAbility GetGradeAbility(Grade _grade)
+		public AbilityInfo GetGradeAbility(Grade _grade)
 		{
 			Int32 index = (Int32)_grade;
 
 			// 슬롯 개수가 부족하면 새로생성
 			if(saveData.Count <= index)
 			{
-				var gradeSheet = DataManager.it.Get<UserGradeDataSheet>();
+				var gradeSheet = DataManager.it.Get<HyperModeDataSheet>();
 				var gradeList = gradeSheet.GetGradeList();
 
 				for (Int32 i= saveData.Count ; i<gradeList.Count ; i++)
@@ -53,7 +54,7 @@ public static partial class UserInfo
 			}
 
 
-			var sheet = DataManager.it.Get<UserAbilityInfoDataSheet>();
+			var sheet = DataManager.it.Get<AbilityInfoDataSheet>();
 			var data = sheet.Get(saveData[index].tid);
 			if(data == null)
 			{
@@ -61,7 +62,7 @@ public static partial class UserInfo
 				return null;
 			}
 
-			UserAbility ability = new UserAbility();
+			AbilityInfo ability = new AbilityInfo();
 
 			ability.type = data.ability;
 			ability.value = saveData[index].value;
@@ -69,14 +70,14 @@ public static partial class UserInfo
 			return ability;
 		}
 
-		public void SetGradeAbility(Grade _grade, UserAbility _userAbility)
+		public void SetGradeAbility(Grade _grade, AbilityInfo _userAbility)
 		{
 			Int32 index = (Int32)_grade;
 
 			// 슬롯 개수가 부족하면 새로생성
 			if (saveData.Count <= index)
 			{
-				var gradeSheet = DataManager.it.Get<UserGradeDataSheet>();
+				var gradeSheet = DataManager.it.Get<HyperModeDataSheet>();
 				var gradeList = gradeSheet.GetGradeList();
 
 				for (Int32 i = saveData.Count ; i < gradeList.Count ; i++)
@@ -85,7 +86,7 @@ public static partial class UserInfo
 				}
 			}
 
-			var sheet = DataManager.it.Get<UserAbilityInfoDataSheet>();
+			var sheet = DataManager.it.Get<AbilityInfoDataSheet>();
 			var data = sheet.GetTid(_userAbility.type);
 			saveData[index] = new UserInfoValueSaveData(data, _userAbility.value);
 		}
@@ -108,7 +109,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 현재 진급 레벨 버프
 		/// </summary>
-		public List<UserAbility> currentPromote => GetPromoteValue(proAbil.userGrade);
+		public List<AbilityInfo> currentPromote => GetPromoteValue(proAbil.userGrade);
 
 
 
@@ -117,7 +118,7 @@ public static partial class UserInfo
 		/// </summary>
 		public Int32 GetPromoteAbilitySlotCount(Grade _grade)
 		{
-			Int32 slot = DataManager.it.Get<UserGradeDataSheet>().Get(_grade).promoteAbilitySlot;
+			Int32 slot = DataManager.it.Get<HyperModeDataSheet>().Get(_grade).promoteAbilitySlot;
 
 			return slot;
 		}
@@ -125,15 +126,15 @@ public static partial class UserInfo
 		/// <summary>
 		/// 진급 레벨 버프
 		/// </summary>
-		public List<UserAbility> GetPromoteValue(Grade _grade)
+		public List<AbilityInfo> GetPromoteValue(Grade _grade)
 		{
-			var sheet = DataManager.it.Get<UserGradeDataSheet>();
+			var sheet = DataManager.it.Get<HyperModeDataSheet>();
 			var promoteData = sheet.Get(_grade);
 
-			List<UserAbility> result = new List<UserAbility>();
+			List<AbilityInfo> result = new List<AbilityInfo>();
 
-			result.Add(new UserAbility(UserAbilityType.AttackPower, promoteData.attackPowerRatio));
-			result.Add(new UserAbility(UserAbilityType.Hp, promoteData.hpUpRatio));
+			result.Add(new AbilityInfo(AbilityType.AttackPower, new IdleNumber(promoteData.attackPowerRatio)));
+			result.Add(new AbilityInfo(AbilityType.Hp, new IdleNumber(promoteData.hpUpRatio)));
 
 			return result;
 		}
@@ -144,7 +145,7 @@ public static partial class UserInfo
 		/// <returns></returns>
 		public Int32 GetGradeUpNeedLevel(Grade _grade)
 		{
-			var sheet = DataManager.it.Get<UserGradeDataSheet>().Get(_grade);
+			var sheet = DataManager.it.Get<HyperModeDataSheet>().Get(_grade);
 
 			return sheet.needLevel;
 		}
@@ -195,7 +196,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 슬롯의 어빌리티 능력치 가져옴
 		/// </summary>
-		public UserAbility GetAbility(Grade _slotGrade)
+		public AbilityInfo GetAbility(Grade _slotGrade)
 		{
 			return userData.proAbil.GetGradeAbility(_slotGrade);
 		}
@@ -206,22 +207,22 @@ public static partial class UserInfo
 		/// <param name="_slotGrade"></param>
 		public void SetRandomAbility(Grade _slotGrade)
 		{
-			UserAbility randomAbility = GenerateAbility();
+			AbilityInfo randomAbility = GenerateAbility();
 			userData.proAbil.SetGradeAbility(_slotGrade, randomAbility);
 		}
 
 		/// <summary>
 		/// 진급 능력 데이터 랜덤 생성
 		/// </summary>
-		public UserAbility GenerateAbility()
+		public AbilityInfo GenerateAbility()
 		{
 			Grade grade = RandomGrade();
-			UserAbilityType resultAbility = RandomAbility();
+			AbilityType resultAbility = RandomAbility();
 
 			GetAbilityValueRange(grade, resultAbility, out var minValue, out var maxValue);
-			float resultValue = RandomAbilityValue(minValue, maxValue);
+			IdleNumber resultValue = RandomAbilityValue(minValue, maxValue);
 
-			return new UserAbility(resultAbility, resultValue);
+			return new AbilityInfo(resultAbility, resultValue);
 		}
 
 		/// <summary>
@@ -249,12 +250,12 @@ public static partial class UserInfo
 		/// <summary>
 		/// 랜덤 어빌리티
 		/// </summary>
-		public UserAbilityType RandomAbility()
+		public AbilityType RandomAbility()
 		{
 			var abilitySheet = DataManager.it.Get<UserPromoteAbilityDataSheet>();
 			var abilityTypes = abilitySheet.GetAbilityTypes();
 
-			UserAbilityType result = abilityTypes[Random.Range(0, abilityTypes.Count)];
+			AbilityType result = abilityTypes[Random.Range(0, abilityTypes.Count)];
 
 			return result;
 		}
@@ -262,7 +263,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 어빌리티값 범위
 		/// </summary>
-		public void GetAbilityValueRange(Grade _grade, UserAbilityType _ability, out float _minValue, out float _maxValue)
+		public void GetAbilityValueRange(Grade _grade, AbilityType _ability, out IdleNumber _minValue, out IdleNumber _maxValue)
 		{
 			var abilityInfo = DataManager.it.Get<UserPromoteAbilityDataSheet>().GetByAbilityType(_ability);
 			var probabilitySheet = DataManager.it.Get<UserPromoteAbilityProbabilityDataSheet>();
@@ -279,16 +280,16 @@ public static partial class UserInfo
 				rangeMin = probabilitySheet.Get((Grade)((Int32)_grade - 1)).rangeMax;
 			}
 
-			_minValue = abilityInfo.min + (abilityInfo.max - abilityInfo.min) * rangeMin;
-			_maxValue = abilityInfo.min + (abilityInfo.max - abilityInfo.min) * rangeMax;
+			_minValue = new IdleNumber(abilityInfo.min + (abilityInfo.max - abilityInfo.min) * rangeMin);
+			_maxValue = new IdleNumber(abilityInfo.min + (abilityInfo.max - abilityInfo.min) * rangeMax);
 		}
 
 		/// <summary>
 		/// 범위 내의 랜덤한 어빌리티 값
 		/// </summary>
-		public float RandomAbilityValue(float _minValue, float _maxValue)
+		public IdleNumber RandomAbilityValue(IdleNumber _minValue, IdleNumber _maxValue)
 		{
-			float resultValue = Random.Range((Int32)(_minValue * 100), (Int32)(_maxValue * 100)) * 0.01f;
+			IdleNumber resultValue = new IdleNumber(Random.Range((Int32)(_minValue.GetValue() * 100), (Int32)(_maxValue.GetValue() * 100)) * 0.01f);
 
 			return resultValue;
 		}
@@ -296,9 +297,9 @@ public static partial class UserInfo
 		/// <summary>
 		/// 수치에 맞는 grade
 		/// </summary>
-		public Grade GetAbilityGrade(UserAbilityType _ability, float _value)
+		public Grade GetAbilityGrade(AbilityType _ability, IdleNumber _value)
 		{
-			var gradeList = DataManager.it.Get<UserGradeDataSheet>().GetGradeList();
+			var gradeList = DataManager.it.Get<HyperModeDataSheet>().GetGradeList();
 			foreach (var grade in gradeList)
 			{
 				GetAbilityValueRange(grade, _ability, out var min, out var max);

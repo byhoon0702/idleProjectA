@@ -10,6 +10,7 @@ public static class VLog
 	public static bool showScheduleLog = false;
 	public static bool showAILog = false;
 	public static bool showBattleLog = false;
+	public static bool showSoundLog = false;
 
 
 	public static void Log(object _message, Object _context = null)
@@ -99,4 +100,16 @@ public static class VLog
 		Debug.LogError($"[Item] {_message}", _context);
 	}
 
+	public static void SoundLog(object _message, Object _context = null)
+	{
+		if (showSoundLog)
+		{
+			Debug.Log($"[Sound] {_message}", _context);
+		}
+	}
+
+	public static void SoundLogError(object _message, Object _context = null)
+	{
+		Debug.LogError($"[Sound] {_message}", _context);
+	}
 }

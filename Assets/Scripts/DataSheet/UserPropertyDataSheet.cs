@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [Serializable]
 public class UserPropertyData : BaseData
 {
-	public UserAbilityType abilityType;
+	public AbilityType abilityType;
 	public Int32 maxLevel;
 	public float incValue;
 	public Int32 consumePoint;
@@ -13,7 +13,7 @@ public class UserPropertyData : BaseData
 [Serializable]
 public class UserPropertyDataSheet : DataSheetBase<UserPropertyData>
 {
-	private List<UserAbilityType> abilities;
+	private List<AbilityType> abilities;
 
 	public UserPropertyData Get(long tid)
 	{
@@ -28,7 +28,7 @@ public class UserPropertyDataSheet : DataSheetBase<UserPropertyData>
 	}
 
 
-	public UserPropertyData Get(UserAbilityType _abilityType)
+	public UserPropertyData Get(AbilityType _abilityType)
 	{
 		for (int i = 0 ; i < infos.Count ; i++)
 		{
@@ -41,11 +41,11 @@ public class UserPropertyDataSheet : DataSheetBase<UserPropertyData>
 		return null;
 	}
 
-	public List<UserAbilityType> GetAbilityTypes()
+	public List<AbilityType> GetAbilityTypes()
 	{
 		if(abilities == null || abilities.Count == 0)
 		{
-			abilities = new List<UserAbilityType>();
+			abilities = new List<AbilityType>();
 
 			for (int i = 0 ; i < infos.Count ; i++)
 			{

@@ -45,7 +45,7 @@ public class CriticalChanceDownCondition : ConditionBase
 	public float ratio => conditionData.ratio;
 
 
-	public CriticalChanceDownCondition(Character _attacker, CriticalChanceDownConditionData _conditionData) : base(_attacker, 0)
+	public CriticalChanceDownCondition(UnitBase _attacker, CriticalChanceDownConditionData _conditionData) : base(_attacker, 0)
 	{
 		conditionData = _conditionData;
 	}

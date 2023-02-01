@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9453e08e423ce5d40b9b5be4434ba925, type: 3}
+  m_Name: ItemRefillDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: ItemRefillDataSheet
+    infos:
+    - tid: 2308987
+      description: "5\uBD84\uB9AC\uD544"
+      defaultAmount: 60
+      systemMaximumAmount: 60
+      refill_isUse: 1
+      refill_intervalMinutes: 5
+      refill_amount: 1
+      reset_isUse: 0
+      reset_setHour: 0
+      reset_setMinute: 0
+      reset_amount: 0
+    - tid: 2308988
+      description: "\uB9AC\uC14B1"
+      defaultAmount: 0
+      systemMaximumAmount: 0
+      refill_isUse: 1
+      refill_intervalMinutes: 5
+      refill_amount: 1
+      reset_isUse: 1
+      reset_setHour: 20
+      reset_setMinute: 0
+      reset_amount: 1

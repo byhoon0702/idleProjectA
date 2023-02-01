@@ -17,7 +17,7 @@ using System;
 
 public abstract class UnitClass
 {
-	protected Character owner;
+	protected Unit owner;
 	public abstract void OnAttack();
 	public virtual void OnInitSkill(SkillModule _skillModule)
 	{
@@ -64,7 +64,7 @@ public abstract class UnitClass
 
 public class Warrior : UnitClass
 {
-	public Warrior(Character character)
+	public Warrior(Unit character)
 	{
 		owner = character;
 	}
@@ -75,7 +75,7 @@ public class Warrior : UnitClass
 		{
 			if (owner.target != null)
 			{
-				SkillUtility.SimpleAttack(owner, owner.target, owner.info.AttackPower(), owner.skillModule.defaultAttack.name, Color.white);
+				SkillUtility.SimpleAttack(owner, owner.target, owner.info.data.attackType, owner.info.AttackPower(), Color.white, _hitSound: owner.defaultAttackSoundPath);
 			}
 		}
 	}
@@ -83,7 +83,7 @@ public class Warrior : UnitClass
 
 public class Archer : UnitClass
 {
-	public Archer(Character character)
+	public Archer(Unit character)
 	{
 		owner = character;
 	}
@@ -93,7 +93,7 @@ public class Archer : UnitClass
 		{
 			if (owner.target != null)
 			{
-				ProjectileManager.it.Create(owner);
+				//	ProjectileManager.it.Create(owner);
 			}
 		}
 	}
@@ -101,7 +101,7 @@ public class Archer : UnitClass
 
 public class Wizard : UnitClass
 {
-	public Wizard(Character character)
+	public Wizard(Unit character)
 	{
 		owner = character;
 	}
@@ -112,7 +112,7 @@ public class Wizard : UnitClass
 		{
 			if (owner.target != null)
 			{
-				ProjectileManager.it.Create(owner);
+				//	ProjectileManager.it.Create(owner);
 			}
 		}
 	}
@@ -120,7 +120,7 @@ public class Wizard : UnitClass
 
 public class RewardGem : UnitClass
 {
-	public RewardGem(Character character)
+	public RewardGem(Unit character)
 	{
 		owner = character;
 	}
@@ -132,7 +132,7 @@ public class RewardGem : UnitClass
 }
 public class Wall : UnitClass
 {
-	public Wall(Character character)
+	public Wall(Unit character)
 	{
 		owner = character;
 	}

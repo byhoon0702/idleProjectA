@@ -1,13 +1,78 @@
 ﻿using UnityEngine;
 
-public class CharacterInfo
+public class UnitInfo
 {
-	public Character owner;
+	public virtual IdleNumber AttackPower(bool _random = true)
+	{
+		return new IdleNumber();
+	}
+
+	/// <summary>
+	/// 공격속도
+	/// </summary>
+	public virtual float AttackSpeedMul()
+	{
+		return 1;
+	}
+
+	public virtual IdleNumber HPRecovery()
+	{
+		return new IdleNumber();
+	}
+
+	/// <summary>
+	/// 크리티컬 발동여부
+	/// </summary>
+	public virtual CriticalType IsCritical()
+	{
+		return CriticalType.Normal;
+	}
+
+
+	public virtual float CriticalChanceRatio()
+	{
+		return 1;
+	}
+
+	public virtual float CriticalX2ChanceRatio()
+	{
+		return 1;
+	}
+
+	/// <summary>
+	/// 크리티컬 대미지 총 증가량(줄 대미지에 곱하면 됩니다)
+	/// </summary>
+	public virtual float CriticalDamageMultifly()
+	{
+		return 1;
+	}
+
+
+	/// <summary>
+	/// 크리티컬X2 대미지 총 증가량(줄 대미지에 곱하면 됩니다)
+	/// </summary>
+	public virtual float CriticalX2DamageMultifly()
+	{
+		return 1;
+	}
+
+	/// <summary>
+	/// 이동속도
+	/// </summary>
+	/// <returns></returns>
+	public virtual float MoveSpeed()
+	{
+		return 1;
+	}
+}
+
+public class CharacterInfo : UnitInfo
+{
+	public Unit owner;
 	public UnitData data;
 	public UnitData rawData;
 	public ControlSide controlSide;
-	public ClassData jobData;
-	public RaceData raceData;
+
 	/// <summary>
 	/// UI표시용
 	/// </summary>
@@ -23,8 +88,50 @@ public class CharacterInfo
 	public string charNameAndCharId => $"{data.name}({owner.charID})";
 
 	public int skillLevel = 5;
+	public float searchRange
+	{
+		get
+		{
+			if (data.attackType == AttackType.MELEE)
+			{
+				if (controlSide == ControlSide.PLAYER)
+				{
+					return ConfigMeta.it.PLAYER_TARGET_RANGE_CLOSE;
+				}
+				else
+				{
+					if (owner is BossCharacter)
+					{
+						return ConfigMeta.it.BOSS_TARGET_RANGE_CLOSE;
+					}
+					else
+					{
+						return ConfigMeta.it.ENEMY_TARGET_RANGE_CLOSE;
+					}
+				}
+			}
+			else
+			{
+				if (controlSide == ControlSide.PLAYER)
+				{
+					return ConfigMeta.it.PLAYER_TARGET_RANGE_FAR;
+				}
+				else
+				{
+					if (owner is BossCharacter)
+					{
+						return ConfigMeta.it.BOSS_TARGET_RANGE_FAR;
+					}
+					else
+					{
+						return ConfigMeta.it.ENEMY_TARGET_RANGE_FAR;
+					}
+				}
+			}
+		}
+	}
 
-	public CharacterInfo(Character _owner, UnitData _data, ControlSide _controlSide)
+	public CharacterInfo(Unit _owner, UnitData _data, ControlSide _controlSide)
 	{
 		owner = _owner;
 
@@ -42,22 +149,17 @@ public class CharacterInfo
 
 	void InitDatas()
 	{
-		if (DataManager.it.Get<ClassDataSheet>() != null)
-		{
-			jobData = DataManager.it.Get<ClassDataSheet>().Get(data.classTid);
-		}
-
-		if (DataManager.it.Get<RaceDataSheet>() != null)
-		{
-			raceData = DataManager.it.Get<RaceDataSheet>().Get(data.raceTid);
-		}
-
+		//if (DataManager.it.Get<ClassDataSheet>() != null)
+		//{
+		//	jobData = DataManager.it.Get<ClassDataSheet>().Get(data.classTid);
+		//}
 	}
 
-	public IdleNumber AttackPower(bool _random = true)
+	public override IdleNumber AttackPower(bool _random = true)
 	{
 		float conditionTotalRatio = owner.conditionModule.ability.attackPowerUpRatio - owner.conditionModule.ability.attackPowerDownRatio;
-		float multifly = 1 + conditionTotalRatio;
+		float hyperBonus = UnitGlobal.it.hyperModule.GetHyperAbility(owner, AbilityType.AttackPower);
+		float multifly = 1 + conditionTotalRatio + hyperBonus;
 
 		IdleNumber total = attackPower * multifly;
 
@@ -72,9 +174,11 @@ public class CharacterInfo
 	/// <summary>
 	/// 공격속도
 	/// </summary>
-	public float AttackSpeedMul()
+	public override float AttackSpeedMul()
 	{
-		float total = 1 + owner.conditionModule.ability.attackSpeedUpRatio - owner.conditionModule.ability.attackSpeedDownRatio;
+		float condition = owner.conditionModule.ability.attackSpeedUpRatio - owner.conditionModule.ability.attackSpeedDownRatio;
+		float hyperBonus = UnitGlobal.it.hyperModule.GetHyperAbility(owner, AbilityType.AttackSpeed);
+		float total = 1 + condition + hyperBonus;
 
 		total = Mathf.Clamp(total, ConfigMeta.it.ATTACK_SPEED_MIN, ConfigMeta.it.ATTACK_SPEED_MAX);
 
@@ -82,26 +186,26 @@ public class CharacterInfo
 	}
 
 	/// <summary>
-	/// 받는 피해량
-	/// </summary>
-	/// <returns></returns>
-	public float DamageMul()
-	{
-		float conditionTotalRatio = owner.conditionModule.ability.damageUpRatio - owner.conditionModule.ability.damageDownRatio;
-		float total = 1 + conditionTotalRatio;
-
-		total = Mathf.Clamp(total, ConfigMeta.it.MIN_DAMAGE_MUL, ConfigMeta.it.MAX_DAMAGE_MUL);
-
-		return total;
-	}
-
-	/// <summary>
 	/// 크리티컬 발동여부. true면 크리티컬로 처리하면 됨
 	/// </summary>
-	public bool IsCritical()
+	public override CriticalType IsCritical()
 	{
 		float total = CriticalChanceRatio();
-		return SkillUtility.Cumulative(total);
+		bool isCritical = SkillUtility.Cumulative(total);
+		bool isCriticalX2 = SkillUtility.Cumulative(total);
+
+		if (isCriticalX2 && isCritical)
+		{
+			return CriticalType.CriticalX2;
+		}
+		else if (isCritical)
+		{
+			return CriticalType.Critical;
+		}
+		else
+		{
+			return CriticalType.Normal;
+		}
 	}
 
 	public float attackTime
@@ -112,10 +216,11 @@ public class CharacterInfo
 		}
 	}
 
-	public float CriticalChanceRatio()
+	public override float CriticalChanceRatio()
 	{
 		float conditionTotalRatio = owner.conditionModule.ability.criticalChanceUpRatio - owner.conditionModule.ability.criticalChanceDownRatio;
-		float total = jobData.criticalRate + conditionTotalRatio;
+		float hyperBonus = UnitGlobal.it.hyperModule.GetHyperAbility(owner, AbilityType.CriticalChance);
+		float total = data.criticalRate + conditionTotalRatio + hyperBonus;
 
 
 		if (total > ConfigMeta.it.CRITICAL_CHANCE_MAX_RATIO)
@@ -129,9 +234,9 @@ public class CharacterInfo
 	/// <summary>
 	/// 크리티컬 대미지 총 증가량(줄 대미지에 곱하면 됩니다)
 	/// </summary>
-	public float CriticalDamageMultifly()
+	public override float CriticalDamageMultifly()
 	{
-		float total = 1 + jobData.criticalPowerRate;
+		float total = 1 + data.criticalPowerRate;
 
 		return total;
 	}
@@ -140,12 +245,13 @@ public class CharacterInfo
 	/// 이동속도
 	/// </summary>
 	/// <returns></returns>
-	public float MoveSpeed()
+	public override float MoveSpeed()
 	{
 		float conditionTotalRatio = owner.conditionModule.ability.moveSpeedUpRatio - owner.conditionModule.ability.moveSpeedDownRatio;
-		float mul = 1 + conditionTotalRatio;
+		float hyperBonus = UnitGlobal.it.hyperModule.GetHyperAbility(owner, AbilityType.MoveSpeed);
+		float mul = 1 + conditionTotalRatio + hyperBonus;
 
-		float total = jobData.moveSpeed * mul;
+		float total = data.moveSpeed * mul;
 
 		return total;
 	}
@@ -158,8 +264,7 @@ public class CharacterInfo
 		switch (_condition.conditionType)
 		{
 			case CharacterCondition.Knockback:
-			case CharacterCondition.Stun:
-				if (data.rankType == RankType.BOSS || data.rankType == RankType.FINISH_GEM)
+				if (data.rankType == RankType.BOSS)
 				{
 					return false;
 				}

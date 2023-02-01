@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO.Enumeration;
 using Mono.Cecil;
 using UnityEngine;
 
@@ -61,17 +62,32 @@ public static class ConvertUtility
 			case "String":
 				convertedString = "string";
 				break;
-			case "Enum":
-				convertedString = "enum";
-				break;
+
 			case "List`1":
 				convertedString = "list";
 				break;
-			case "Object":
-				convertedString = "object";
+			default:
+				{
+
+					System.Type type = System.Type.GetType(GetAssemblyName(typeName));
+					if (type.BaseType.Equals(typeof(System.Enum)))
+					{
+						convertedString = "enum";
+					}
+					else
+					{
+						convertedString = "object";
+					}
+
+				}
 				break;
 		}
 
 		return convertedString;
+	}
+
+	public static string GetAssemblyName(string type)
+	{
+		return $"{type}, Assembly-CSharp";
 	}
 }

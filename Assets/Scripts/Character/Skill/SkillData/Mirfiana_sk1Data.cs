@@ -10,12 +10,6 @@ using UnityEngine;
 public class Mirfiana_sk1Data : SkillBaseData
 {
 	/// <summary>
-	/// 스턴 정보
-	/// </summary>
-	[Tooltip("스턴 정보")]
-	public StunConditionData stunData = new StunConditionData();
-
-	/// <summary>
 	/// 대미지 증가배율
 	/// </summary>
 	[Tooltip("대미지 증가배율")]
@@ -44,14 +38,18 @@ public class Mirfiana_sk1 : SkillBase
 	{
 		base.Action();
 
-		List<Character> targetList = SkillUtility.GetTargetCharacterNonAlloc(owner, skillData.targetingType);
-
-		if (targetList.Count > 0)
+		if (owner.target != null)
 		{
-			SkillUtility.SimpleAttack(owner, targetList[0], owner.info.AttackPower() * skillData.attackPowerMul, name, fontColor);
-			targetList[0].conditionModule.AddCondition(new StunCondition(owner, skillData.stunData));
+			SkillUtility.SimpleAttack(owner, owner.target, AttackType.SKILL, owner.info.AttackPower() * skillData.attackPowerMul, fontColor);
+
+			string[] resList = new string[] { "FX_Lightning_Attacked", "FX_Magic_Fire_01_Attacked", "FX_Water_Attacked" };
+			var res = Resources.Load<GameObject>($"B/FX_Magic_Fire_01_Attacked");
+			var effect = GameObject.Instantiate(res, SpawnManager.it.enemyRoot.parent);
+
+			effect.transform.position = owner.target.transform.position;
 		}
 	}
+
 	public override void CalculateSkillLevelData(int _skillLevel)
 	{
 	}

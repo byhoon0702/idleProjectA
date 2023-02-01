@@ -45,7 +45,7 @@ public class MoveSpeedDownCondition : ConditionBase
 	public float ratio => conditionData.ratio;
 
 
-	public MoveSpeedDownCondition(Character _attacker, MoveSpeedDownConditionData _conditionData) : base(_attacker, 0)
+	public MoveSpeedDownCondition(UnitBase _attacker, MoveSpeedDownConditionData _conditionData) : base(_attacker, 0)
 	{
 		conditionData = _conditionData;
 	}

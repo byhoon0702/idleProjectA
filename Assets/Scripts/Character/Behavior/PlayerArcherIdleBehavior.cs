@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "ArcherIdle", menuName = "Behavior/Player/ArcherIdle", order = 2)]
+[CreateAssetMenu(fileName = "ArcherIdle", menuName = "Behaviors/Player/ArcherIdle", order = 2)]
 public class PlayerArcherIdleBehavior : PlayerBehavior
 {
 

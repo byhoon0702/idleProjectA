@@ -44,7 +44,7 @@ public class AttackPowerUpCondition : ConditionBase
 	public float ratio => conditionData.ratio;
 
 
-	public AttackPowerUpCondition(Character _attacker, AttackPowerUpConditionData _conditionData) : base(_attacker, 0)
+	public AttackPowerUpCondition(UnitBase _attacker, AttackPowerUpConditionData _conditionData) : base(_attacker, 0)
 	{
 		conditionData = _conditionData;
 	}

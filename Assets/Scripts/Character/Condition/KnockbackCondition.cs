@@ -29,7 +29,7 @@ public class KnockbackCondition : ConditionBase
 	private float distance;
 
 
-	public KnockbackCondition(Character _attacker, KnockbackConditionData _conditionData)
+	public KnockbackCondition(UnitBase _attacker, KnockbackConditionData _conditionData)
 		: base(_attacker, ConfigMeta.it.KNOCKBACK_DURATION)
 	{
 		conditionData = _conditionData;

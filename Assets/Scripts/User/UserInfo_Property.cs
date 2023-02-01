@@ -6,7 +6,7 @@ using UnityEngine;
 public static partial class UserInfo
 {
 	public const Int32 PROPERTY_PRESET_COUNT = 5;
-	public static List<UserAbilityType> propertyList => DataManager.it.Get<UserPropertyDataSheet>().GetAbilityTypes();
+	public static List<AbilityType> propertyList => DataManager.it.Get<UserPropertyDataSheet>().GetAbilityTypes();
 
 	public class PropertySave : UserInfoLevelSaveBase
 	{
@@ -17,14 +17,14 @@ public static partial class UserInfo
 		{
 			double total = 0;
 
-			total += GetLevel(UserAbilityType.AttackPower) * 1000;
-			total += GetLevel(UserAbilityType.Hp) * 1000;
-			total += GetLevel(UserAbilityType.CriticalChance) * 1000;
-			total += GetLevel(UserAbilityType.CriticalAttackPower) * 1000;
-			total += GetLevel(UserAbilityType.MoveSpeed) * 1000;
-			total += GetLevel(UserAbilityType.AttackSpeed) * 1000;
-			total += GetLevel(UserAbilityType.SkillAttackPower) * 1000;
-			total += GetLevel(UserAbilityType.BossAttackPower) * 1000;
+			total += GetLevel(AbilityType.AttackPower) * 1000;
+			total += GetLevel(AbilityType.Hp) * 1000;
+			total += GetLevel(AbilityType.CriticalChance) * 1000;
+			total += GetLevel(AbilityType.CriticalAttackPower) * 1000;
+			total += GetLevel(AbilityType.MoveSpeed) * 1000;
+			total += GetLevel(AbilityType.AttackSpeed) * 1000;
+			total += GetLevel(AbilityType.SkillAttackPower) * 1000;
+			total += GetLevel(AbilityType.BossAttackPower) * 1000;
 
 			return total;
 		}
@@ -36,7 +36,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 특성 포인트 총합
 		/// </summary>
-		public Int32 totalPoint => UserDataCalculator.GetPropertyPoint(userLv);
+		public Int32 totalPoint => UserDataCalculator.GetPropertyPoint(UserLv);
 		/// <summary>
 		/// 사용할 수 있는(남아있는) 포인트 
 		/// </summary>
@@ -61,7 +61,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 현재 특성 레벨
 		/// </summary>
-		public Int32 GetCurrentPropertyLevel(UserAbilityType _abilityType)
+		public Int32 GetCurrentPropertyLevel(AbilityType _abilityType)
 		{
 			return GetPropertyLevel(_abilityType, selectedPreset);
 		}
@@ -69,7 +69,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 특성 레벨
 		/// </summary>
-		public Int32 GetPropertyLevel(UserAbilityType _abilityType, Int32 _presetIndex)
+		public Int32 GetPropertyLevel(AbilityType _abilityType, Int32 _presetIndex)
 		{
 			return userData.props[_presetIndex].GetLevel(_abilityType);
 		}
@@ -77,7 +77,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 특성 최대레벨
 		/// </summary>
-		public Int32 GetPropertyMaxLevel(UserAbilityType _abilityType)
+		public Int32 GetPropertyMaxLevel(AbilityType _abilityType)
 		{
 			var abilityData = DataManager.it.Get<UserPropertyDataSheet>().Get(_abilityType);
 			if (abilityData == null)
@@ -92,7 +92,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 특성 값
 		/// </summary>
-		public float GetPropertyValue(UserAbilityType _abilityType, Int32 _level)
+		public float GetPropertyValue(AbilityType _abilityType, Int32 _level)
 		{
 			var propertyData = DataManager.it.Get<UserPropertyDataSheet>().Get(_abilityType);
 			if (propertyData == null)
@@ -108,7 +108,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 특성 값(현재 어빌리티)
 		/// </summary>
-		public float GetCurrentPropertyValue(UserAbilityType _abilityType)
+		public float GetCurrentPropertyValue(AbilityType _abilityType)
 		{
 			return GetPropertyValue(_abilityType, GetCurrentPropertyLevel(_abilityType));
 		}
@@ -116,7 +116,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 특성 레벨업!
 		/// </summary>
-		public void LevelUpProperty(UserAbilityType _abilityType)
+		public void LevelUpProperty(AbilityType _abilityType)
 		{
 			Int32 maxLevel = GetPropertyMaxLevel(_abilityType);
 			Int32 currLevel = userData.currProp.GetLevel(_abilityType);
@@ -133,7 +133,7 @@ public static partial class UserInfo
 		/// 특성 레벨업 비용
 		/// '_level'로 올라가기 위한 필요 비용
 		/// </summary>
-		public Int32 GetPropertyLevelupConsumeCount(UserAbilityType _abilityType)
+		public Int32 GetPropertyLevelupConsumeCount(AbilityType _abilityType)
 		{
 			var consumeInfo = DataManager.it.Get<UserPropertyDataSheet>().Get(_abilityType);
 

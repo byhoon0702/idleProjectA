@@ -52,12 +52,12 @@ public abstract class ConditionBase
 	/// <summary>
 	/// 컨디션이 적용되는 유닛. ConditionModule에 컨디션이 추가될때 초기화 된다.
 	/// </summary>
-	public Character character;
+	public Unit character;
 
 	/// <summary>
 	/// 나를 공격한 유닛
 	/// </summary>
-	protected Character attacker { get; private set; }
+	protected UnitBase attacker { get; private set; }
 
 	/// <summary>
 	/// 컨디션 남은 시간
@@ -77,7 +77,7 @@ public abstract class ConditionBase
 	/// Duration이 0이면 지속시간이 없음
 	/// 생성자에선 초기화만 할것.
 	/// </summary>
-	public ConditionBase(Character _attacker, float _duration)
+	public ConditionBase(UnitBase _attacker, float _duration)
 	{
 		attacker = _attacker;
 		duration = _duration;
@@ -151,18 +151,6 @@ public static class ConditionUtility
 		else
 		{
 			return ConfigMeta.it.DSS_DEBUFF_DURATION;
-		}
-	}
-
-	public static float GetDefaultDoteDuration(Grade _grade)
-	{
-		if (_grade == Grade.SSS)
-		{
-			return ConfigMeta.it.SSS_DOTE_DURATION;
-		}
-		else
-		{
-			return ConfigMeta.it.DSS_DOTE_DURATION;
 		}
 	}
 }

@@ -6,5 +6,5 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "StageDataSheet", menuName = "StageDataSheet", order = 3)]
 public class StageDataSheet : ScriptableObject
 {
-	public List<StageManager.StageInfo> stageInfos = new List<StageManager.StageInfo>();
+	public List<StageInfo> stageInfos = new List<StageInfo>();
 }

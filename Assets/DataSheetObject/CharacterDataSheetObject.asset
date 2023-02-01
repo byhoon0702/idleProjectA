@@ -13,10 +13,13 @@ MonoBehaviour:
   m_Name: CharacterDataSheetObject
   m_EditorClassIdentifier: 
   dataSheet:
-    typeName: CharacterDataSheet
+    typeName: UnitDataSheet
     infos:
     - tid: 0
       description: 
+      itemType: 0
+      itemName: 
+      hashTag: 
       name: 
       resource: 
       classTid: 0
@@ -24,16 +27,15 @@ MonoBehaviour:
       element: 0
       grade: 0
       starlevel: 0
-      hp:
-        Value: 0
-        Exp: 0
-      attackPower:
-        Value: 0
-        Exp: 0
+      hp: 0
+      attackPower: 0
       skillTid: 0
       rankType: 0
     - tid: 0
       description: 
+      itemType: 0
+      itemName: 
+      hashTag: 
       name: 
       resource: 
       classTid: 0
@@ -41,16 +43,15 @@ MonoBehaviour:
       element: 0
       grade: 0
       starlevel: 0
-      hp:
-        Value: 0
-        Exp: 0
-      attackPower:
-        Value: 0
-        Exp: 0
+      hp: 0
+      attackPower: 0
       skillTid: 0
       rankType: 0
     - tid: 0
       description: 
+      itemType: 0
+      itemName: 
+      hashTag: 
       name: 
       resource: 
       classTid: 0
@@ -58,11 +59,7 @@ MonoBehaviour:
       element: 0
       grade: 0
       starlevel: 0
-      hp:
-        Value: 0
-        Exp: 0
-      attackPower:
-        Value: 0
-        Exp: 0
+      hp: 0
+      attackPower: 0
       skillTid: 0
       rankType: 0

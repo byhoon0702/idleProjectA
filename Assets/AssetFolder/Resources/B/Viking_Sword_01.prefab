@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2755012964878516473}
+  - component: {fileID: 7035537388037903118}
   m_Layer: 0
   m_Name: Viking_Sword_01
   m_TagString: Untagged
@@ -32,6 +33,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!210 &7035537388037903118
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2755012964878516454}
+  m_Enabled: 1
+  m_SortingLayerID: -1151721427
+  m_SortingLayer: 3
+  m_SortingOrder: 0
 --- !u!1001 &1820201381445308609
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -44,12 +56,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 50cef344495e6c64fae2189d7a8814ef, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 128.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50cef344495e6c64fae2189d7a8814ef, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 146.9
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50cef344495e6c64fae2189d7a8814ef, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 121.9
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50cef344495e6c64fae2189d7a8814ef, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1069
+      value: -1390
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 50cef344495e6c64fae2189d7a8814ef, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -566
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 50cef344495e6c64fae2189d7a8814ef, type: 3}
       propertyPath: m_LocalPosition.z

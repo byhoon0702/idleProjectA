@@ -16,8 +16,8 @@ public class UIProfile : MonoBehaviour
 
 	private void Update()
 	{
-		textUserName.text = $"{UserInfo.userName}";
-		textUserLevel.text = $"LV.{UserInfo.userLv}";
+		textUserName.text = $"{UserInfo.UserName}";
+		textUserLevel.text = $"LV.{UserInfo.UserLv}";
 		combatPower.text = $"{UserInfo.totalCombatPower.ToString()}";
 	}
 }

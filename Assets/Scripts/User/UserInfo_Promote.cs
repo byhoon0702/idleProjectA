@@ -5,16 +5,16 @@ using UnityEngine;
 
 public static partial class UserInfo
 {
-	public static List<UserAbilityType> promoteTypes = new List<UserAbilityType>()
+	public static List<AbilityType> promoteTypes = new List<AbilityType>()
 	{
-		UserAbilityType.AttackPower,
-		UserAbilityType.Hp,
-		UserAbilityType.CriticalAttackPower,
-		UserAbilityType.SkillAttackPower,
-		UserAbilityType.BossAttackPower
+		AbilityType.AttackPower,
+		AbilityType.Hp,
+		AbilityType.CriticalAttackPower,
+		AbilityType.SkillAttackPower,
+		AbilityType.BossAttackPower
 	};
 
-	public class PromoteSave : UserInfoLevelSaveBase
+	public class HyperModeSave : UserInfoLevelSaveBase
 	{
 		public override int defaultLevel => 0;
 
@@ -23,17 +23,17 @@ public static partial class UserInfo
 		{
 			double total = 0;
 
-			total += GetLevel(UserAbilityType.AttackPower) * 1000;
-			total += GetLevel(UserAbilityType.Hp) * 1000;
-			total += GetLevel(UserAbilityType.CriticalAttackPower) * 1000;
-			total += GetLevel(UserAbilityType.SkillAttackPower) * 1000;
-			total += GetLevel(UserAbilityType.BossAttackPower) * 1000;
+			total += GetLevel(AbilityType.AttackPower) * 1000;
+			total += GetLevel(AbilityType.Hp) * 1000;
+			total += GetLevel(AbilityType.CriticalAttackPower) * 1000;
+			total += GetLevel(AbilityType.SkillAttackPower) * 1000;
+			total += GetLevel(AbilityType.BossAttackPower) * 1000;
 
 			return total;
 		}
 	}
 
-	public class PromoteInfo
+	public class HyperModeInfo
 	{
 		/// <summary>
 		/// 레벨업 가능한 최대레벨
@@ -45,7 +45,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 현재 진급 레벨
 		/// </summary>
-		public Int32 GetPromoteLevel(UserAbilityType _abilityType)
+		public Int32 GetPromoteLevel(AbilityType _abilityType)
 		{
 			return userData.promo.GetLevel(_abilityType);
 		}
@@ -55,7 +55,7 @@ public static partial class UserInfo
 		/// </summary>
 		public Int32 GetPromoteMaxLevel(Grade _grade)
 		{
-			Int32 level = DataManager.it.Get<UserGradeDataSheet>().Get(_grade).abilityLevel;
+			Int32 level = DataManager.it.Get<HyperModeDataSheet>().Get(_grade).abilityLevel;
 
 			return level;
 		}
@@ -63,22 +63,22 @@ public static partial class UserInfo
 		/// <summary>
 		/// 진급 버프
 		/// </summary>
-		public List<UserAbility> GetPromoteValue()
+		public List<AbilityInfo> GetPromoteValue()
 		{
-			float attackPowerRatio = userData.promo.GetLevel(UserAbilityType.AttackPower) * ConfigMeta.it.PROMOTE_ATTACK_POWER_PER_LEVEL_RATIO;
-			float hpUpRatio = userData.promo.GetLevel(UserAbilityType.Hp) * ConfigMeta.it.PROMOTE_HP_PER_LEVEL_RATIO;
-			float criticalAttackPowerRatio = userData.promo.GetLevel(UserAbilityType.CriticalAttackPower) * ConfigMeta.it.PROMOTE_CRITICAL_ATTACK_POWER_PER_LEVEL_RATIO;
-			float skillAttackPowerRatio = userData.promo.GetLevel(UserAbilityType.SkillAttackPower) * ConfigMeta.it.PROMOTE_SKILL_ATTACK_POWER_PER_LEVEL_RATIO;
-			float bossAttackPowerRatio = userData.promo.GetLevel(UserAbilityType.BossAttackPower) * ConfigMeta.it.PROMOTE_BOSS_ATTACK_POWER_PER_LEVEL_RATIO;
+			float attackPowerRatio = userData.promo.GetLevel(AbilityType.AttackPower) * ConfigMeta.it.PROMOTE_ATTACK_POWER_PER_LEVEL_RATIO;
+			float hpUpRatio = userData.promo.GetLevel(AbilityType.Hp) * ConfigMeta.it.PROMOTE_HP_PER_LEVEL_RATIO;
+			float criticalAttackPowerRatio = userData.promo.GetLevel(AbilityType.CriticalAttackPower) * ConfigMeta.it.PROMOTE_CRITICAL_ATTACK_POWER_PER_LEVEL_RATIO;
+			float skillAttackPowerRatio = userData.promo.GetLevel(AbilityType.SkillAttackPower) * ConfigMeta.it.PROMOTE_SKILL_ATTACK_POWER_PER_LEVEL_RATIO;
+			float bossAttackPowerRatio = userData.promo.GetLevel(AbilityType.BossAttackPower) * ConfigMeta.it.PROMOTE_BOSS_ATTACK_POWER_PER_LEVEL_RATIO;
 
 
-			List<UserAbility> result = new List<UserAbility>();
+			List<AbilityInfo> result = new List<AbilityInfo>();
 
-			result.Add(new UserAbility(UserAbilityType.AttackPower, attackPowerRatio));
-			result.Add(new UserAbility(UserAbilityType.Hp, hpUpRatio));
-			result.Add(new UserAbility(UserAbilityType.CriticalAttackPower, criticalAttackPowerRatio));
-			result.Add(new UserAbility(UserAbilityType.SkillAttackPower, skillAttackPowerRatio));
-			result.Add(new UserAbility(UserAbilityType.BossAttackPower, bossAttackPowerRatio));
+			result.Add(new AbilityInfo(AbilityType.AttackPower, new IdleNumber(attackPowerRatio)));
+			result.Add(new AbilityInfo(AbilityType.Hp, new IdleNumber(hpUpRatio)));
+			result.Add(new AbilityInfo(AbilityType.CriticalAttackPower, new IdleNumber(criticalAttackPowerRatio)));
+			result.Add(new AbilityInfo(AbilityType.SkillAttackPower, new IdleNumber(skillAttackPowerRatio)));
+			result.Add(new AbilityInfo(AbilityType.BossAttackPower, new IdleNumber(bossAttackPowerRatio)));
 
 			return result;
 		}
@@ -86,7 +86,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 진급 레벨업!
 		/// </summary>
-		public void LevelUpPromote(UserAbilityType _abilityType)
+		public void LevelUpPromote(AbilityType _abilityType)
 		{
 			Int32 maxLevel = promoteMaxLevel;
 			Int32 currLevel = userData.promo.GetLevel(_abilityType);
@@ -106,7 +106,7 @@ public static partial class UserInfo
 		/// </summary>
 		public IdleNumber GetPromoteLevelupConsumeCount(Int32 _level)
 		{
-			var consumeInfos = DataManager.it.Get<UserPromoteDataSheet>().GetByLevel(_level);
+			var consumeInfos = DataManager.it.Get<HyperModeAbilityDataSheet>().GetByLevel(_level);
 
 			return consumeInfos.consumeLightDustCount;
 		}

@@ -75,14 +75,18 @@ public class DataManager : MonoBehaviour
 	}
 	private bool LoadFromBinary(TextAsset file)
 	{
-		using (MemoryStream fs = new MemoryStream(file.bytes))
+		try
 		{
-			using (BinaryReader br = new BinaryReader(fs))
+			using (MemoryStream fs = new MemoryStream(file.bytes))
 			{
-				string jsonString = br.ReadString();
-				try
+				using (BinaryReader br = new BinaryReader(fs))
 				{
-					Dictionary<string, object> jsonDict = (Dictionary<string, object>)Json.Deserialize(jsonString);
+					string jsonString = "";
+					Dictionary<string, object> jsonDict = new Dictionary<string, object>();
+
+					jsonString = br.ReadString();
+					jsonDict = (Dictionary<string, object>)Json.Deserialize(jsonString);
+
 					string name = file.name;
 					if (jsonDict.ContainsKey("typeName"))
 					{
@@ -98,12 +102,13 @@ public class DataManager : MonoBehaviour
 					var json = JsonUtility.FromJson(jsonString, t);
 					AddToContainer(t, json);
 				}
-				catch (Exception e)
-				{
-					Debug.LogError(file);
-					return false;
-				}
+
 			}
+		}
+		catch (Exception e)
+		{
+			VLog.LogWarning(file);
+			return false;
 		}
 		return true;
 	}

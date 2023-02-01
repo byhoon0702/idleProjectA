@@ -5,7 +5,7 @@ using TMPro;
 
 public class UITrainingItem : MonoBehaviour
 {
-	[SerializeField] private UserAbilityType userAbilityType;
+	[SerializeField] private AbilityType userAbilityType;
 
 	[SerializeField] private TextMeshProUGUI textTitle;
 	[SerializeField] private TextMeshProUGUI textCurrentStat;
@@ -14,7 +14,7 @@ public class UITrainingItem : MonoBehaviour
 	[SerializeField] private RepeatButton upgradeButton;
 	[SerializeField] private TextMeshProUGUI textPrice;
 
-	public void SetData(UserAbilityType _userAbilityType)
+	public void SetData(AbilityType _userAbilityType)
 	{
 		userAbilityType = _userAbilityType;
 	}
@@ -39,7 +39,14 @@ public class UITrainingItem : MonoBehaviour
 
 	private void AbilityLevelUp()
 	{
-		if (Inventory.it.ConsumeItem(Inventory.it.GoldItem.tid, (IdleNumber)UserInfo.training.GetCurrentTrainingValue(userAbilityType)) == true)
+		var cost = (IdleNumber)UserInfo.training.GetCurrentTrainingValue(userAbilityType);
+
+		if(Inventory.it.CheckMoney("gold", cost).Fail())
+		{
+			return;
+		}
+
+		if (Inventory.it.ConsumeItem("gold", cost).Ok())
 		{
 			UserInfo.training.LevelUpTraining(userAbilityType);
 			SetUI();

@@ -106,6 +106,16 @@ public class IdleNumber
 		return value;
 	}
 
+	public int GetValueToInt()
+	{
+		return (int)GetValue();
+	}
+
+	public long GetValueToLong()
+	{
+		return (long)GetValue();
+	}
+
 	private double GetTruncateValue()
 	{
 		if (Value == 0)
@@ -137,6 +147,10 @@ public class IdleNumber
 				value /= ten;
 				Exp += 1;
 			}
+		}
+		else
+		{
+			Exp = 0;
 		}
 		Value = value;
 	}
@@ -222,11 +236,16 @@ public class IdleNumber
 
 	public static explicit operator IdleNumber(string value)
 	{
+		if(value.IsNullOrEmpty())
+		{
+			return new IdleNumber();
+		}
+
 		IdleNumber idleNumber = new IdleNumber();
 		double parseValue = 0;
 		if (double.TryParse(value, out parseValue))
 		{
-			idleNumber.Normalize(parseValue);
+			idleNumber = idleNumber.Normalize(parseValue);
 		}
 		else
 		{
@@ -469,8 +488,7 @@ public class IdleNumber
 	public static IdleNumber operator +(IdleNumber a, double b)
 	{
 		IdleNumber result = new IdleNumber(a);
-		int quotient = (int)(b / 10);
-		IdleNumber right = new IdleNumber(b / quotient, quotient);
+		IdleNumber right = new IdleNumber(b);
 
 		result += right;
 		return result;
@@ -479,8 +497,7 @@ public class IdleNumber
 	public static IdleNumber operator -(IdleNumber a, double b)
 	{
 		IdleNumber result = new IdleNumber(a);
-		int quotient = (int)(b / 10);
-		IdleNumber right = new IdleNumber(b / quotient, quotient);
+		IdleNumber right = new IdleNumber(b);
 		result -= right;
 		return result;
 	}

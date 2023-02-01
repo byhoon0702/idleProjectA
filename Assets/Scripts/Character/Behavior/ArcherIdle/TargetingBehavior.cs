@@ -8,13 +8,13 @@ public class TargetingBehavior : UnitBehavior
 	public WallTargetingBehavior wallTargetingBehavior;
 	public OpponentTargetBehavior opponentTargetBehavior;
 
-	public GameObject OnTarget(Character character, Targeting targeting)
+	public GameObject OnTarget(UnitBase character, Targeting targeting, bool ignoreSearchDelay = false)
 	{
 		if (targeting == Targeting.WALL)
 		{
 			return wallTargetingBehavior.OnTarget(character);
 		}
 
-		return opponentTargetBehavior.OnTarget(character);
+		return opponentTargetBehavior.OnTarget(character, ignoreSearchDelay);
 	}
 }

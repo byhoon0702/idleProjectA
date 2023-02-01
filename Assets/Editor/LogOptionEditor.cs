@@ -11,6 +11,7 @@ public class LogOptionEditor : EditorWindow
 	public bool showScheduleLog = false;
 	public bool showAILog = false;
 	public bool showBattleLog = false;
+	public bool showSoundLog = false;
 
 
 
@@ -30,6 +31,7 @@ public class LogOptionEditor : EditorWindow
 		showScheduleLog = GUILayout.Toggle(showScheduleLog, "스케쥴로그");
 		showAILog = GUILayout.Toggle(showAILog, "AI로그");
 		showBattleLog = GUILayout.Toggle(showBattleLog, "전투로그");
+		showSoundLog = GUILayout.Toggle(showSoundLog, "사운드로그");
 
 
 
@@ -44,5 +46,6 @@ public class LogOptionEditor : EditorWindow
 		VLog.showScheduleLog = showScheduleLog;
 		VLog.showAILog = showAILog;
 		VLog.showBattleLog = showBattleLog;
+		VLog.showSoundLog = showSoundLog;
 	}
 }

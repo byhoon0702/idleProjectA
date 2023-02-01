@@ -44,7 +44,7 @@ public class AttackSpeedDownCondition : ConditionBase
 	public float ratio => conditionData.ratio;
 
 
-	public AttackSpeedDownCondition(Character _attacker, AttackSpeedDownConditionData _conditionData) : base(_attacker, 0)
+	public AttackSpeedDownCondition(UnitBase _attacker, AttackSpeedDownConditionData _conditionData) : base(_attacker, 0)
 	{
 		conditionData = _conditionData;
 	}

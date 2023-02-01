@@ -7,14 +7,13 @@ public class UIController : MonoBehaviour
 	private static UIController instance;
 	public static UIController it => instance;
 
-	[SerializeField] private UIBattleRecord uiBattleRecord;
-
 	[SerializeField] private TextMeshProUGUI textStageTitle;
 
 	[SerializeField] private Button buttonPlayBoss;
 
 	[Header("-------------------------")]
 	[SerializeField] private UILeftMenu uiLeftMenu;
+	[SerializeField] private UITopMoney uiTopMoney;
 
 	private void Start()
 	{
@@ -30,11 +29,14 @@ public class UIController : MonoBehaviour
 	public void Init()
 	{
 		uiLeftMenu.Init();
+		uiTopMoney.Init();
 	}
 
 	private void OnClickPlayBoss()
 	{
-		StageManager.it.PlayBossStage();
+		SpawnManager.it.KillAllEnemy();
+		SpawnManager.it.SpawnBoss();
+		buttonPlayBoss.gameObject.SetActive(false);
 	}
 
 	// 현재 플레이중인 스테이지에 맞춰서 하단메뉴, 우측메뉴, dps 현황표 등 활성화 메뉴 결정.
@@ -46,11 +48,15 @@ public class UIController : MonoBehaviour
 
 		switch (StageManager.it.CurrentStageType)
 		{
-			case StageManager.StageType.NORMAL1:
-				break;
-			case StageManager.StageType.NORMAL2:
-				break;
-			case StageManager.StageType.BOSS:
+			case StageType.NORMAL:
+				{
+					bool isBossAlive = SpawnManager.it.IsBossDead == false;
+					bool isInfiniteSpawn = StageManager.it.isCurrentStageLimited == false;
+
+					bool canChallengeToBoss = isBossAlive == false && isInfiniteSpawn == true;
+
+					buttonPlayBoss.gameObject.SetActive(canChallengeToBoss);
+				}
 				break;
 		}
 	}
@@ -58,15 +64,5 @@ public class UIController : MonoBehaviour
 	public void ShowDefeatNavigator()
 	{
 		// 패배시 강화컨텐츠 네비게이션
-	}
-
-	public void ReadyBattleRecord()
-	{
-		uiBattleRecord.Ready();
-	}
-
-	public void UpdateBattleRecord()
-	{
-		uiBattleRecord.UpdateDamage();
 	}
 }

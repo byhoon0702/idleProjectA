@@ -32,18 +32,18 @@ public class MapController : MonoBehaviour
 	}
 	public void Scroll(Vector2 scroll)
 	{
-		if (VGameManager.it.fixedScroll)
-		{
-			return;
-		}
-
 		spriteMap.size += scroll * 2;
 		spriteMap.transform.Translate(-scroll * 2, Space.Self);
 		spriteMiddleMap.size += scroll;
 		spriteFarMap.size += scroll;
 		spriteFarMap.transform.Translate(scroll / 5, Space.Self);
-
 	}
 
+	public void SetBG(string _closeBg, string _middleBg, string _farBg)
+	{
+		spriteMap.sprite = Resources.Load<Sprite>($"BG/{_closeBg}");
+		spriteMiddleMap.sprite = Resources.Load<Sprite>($"BG/{_middleBg}");
+		spriteFarMap.sprite = Resources.Load<Sprite>($"BG/{_farBg}");
+	}
 
 }

@@ -81,6 +81,12 @@ MonoBehaviour:
   animator: {fileID: 93540888034977507}
   centerPivot: {fileID: 6037289871783202719}
   headPivot: {fileID: 2499146262602386883}
+  rightFootPivot: {fileID: 0}
+  leftFootPivot: {fileID: 0}
+  m_thisCharMaterial: {fileID: 2100000, guid: 48323c2ca97377a40a9a21994dd68ad4, type: 2}
+  m_attackedWhiteFlipTime: 1
+  _currentState: 0
+  swordSwingEffect: {fileID: 0}
 --- !u!1 &3198022856817440853
 GameObject:
   m_ObjectHideFlags: 0

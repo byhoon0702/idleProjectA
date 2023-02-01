@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76899c6577745934cb74a68909bb07df, type: 3}
+  m_Name: AbilityInfoDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: AbilityInfoDataSheet
+    infos:
+    - tid: 100001
+      description: "\uACF5\uACA9\uB825"
+      ability: 0
+    - tid: 100002
+      description: "\uCCB4\uB825"
+      ability: 1
+    - tid: 100003
+      description: "\uCCB4\uB825\uD68C\uBCF5\uB7C9"
+      ability: 2
+    - tid: 100004
+      description: "\uCE58\uBA85\uD0C0 \uD655\uB960"
+      ability: 3
+    - tid: 100005
+      description: "\uCE58\uBA85\uD0C0 \uD53C\uD574"
+      ability: 4
+    - tid: 100006
+      description: "\uD558\uC774\uD37C \uC5B4\uD0DD \uD655\uB960"
+      ability: 5
+    - tid: 100007
+      description: "\uD558\uC774\uD37C \uC5B4\uD0DD \uD53C\uD574\uB7C9"
+      ability: 6
+    - tid: 100008
+      description: "\uACF5\uACA9\uC18D\uB3C4"
+      ability: 7
+    - tid: 100009
+      description: "\uC774\uB3D9\uC18D\uB3C4"
+      ability: 8
+    - tid: 100010
+      description: "\uB354\uBE14\uC5B4\uD0DD"
+      ability: 9
+    - tid: 100011
+      description: "\uD2B8\uB9AC\uD50C \uC5B4\uD0DD"
+      ability: 10
+    - tid: 100012
+      description: "\uC2A4\uD0AC \uCFE8\uD0C0\uC784 \uAC10\uC18C"
+      ability: 11
+    - tid: 100013
+      description: "\uC2A4\uD0AC \uACF5\uACA9\uB825"
+      ability: 12
+    - tid: 100014
+      description: "\uBCF4\uC2A4 \uD53C\uD574"
+      ability: 12
+    - tid: 100015
+      description: "\uB3D9\uB8CC \uACF5\uACA9\uB825"
+      ability: 13
+    - tid: 100016
+      description: "\uB3D9\uB8CC \uACF5\uACA9\uC18D\uB3C4"
+      ability: 14
+    - tid: 100017
+      description: "\uD68C\uD53C\uC728"
+      ability: 16
+    - tid: 100018
+      description: "\uACE8\uB4DC \uD68D\uB4DD\uB7C9"
+      ability: 17

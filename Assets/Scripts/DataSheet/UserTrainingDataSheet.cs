@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [Serializable]
 public class UserTrainingData : BaseData
 {
-	public UserAbilityType abilityType;
+	public AbilityType abilityType;
 	public Int32 maxLevel;
 	public float defaultValue;
 	public float incValue;
@@ -13,7 +13,7 @@ public class UserTrainingData : BaseData
 [Serializable]
 public class UserTrainingDataSheet : DataSheetBase<UserTrainingData>
 {
-	private List<UserAbilityType> abilities;
+	private List<AbilityType> abilities;
 
 
 	public UserTrainingData Get(long tid)
@@ -29,7 +29,7 @@ public class UserTrainingDataSheet : DataSheetBase<UserTrainingData>
 	}
 
 
-	public UserTrainingData Get(UserAbilityType _abilityType)
+	public UserTrainingData Get(AbilityType _abilityType)
 	{
 		for (int i = 0 ; i < infos.Count ; i++)
 		{
@@ -41,11 +41,11 @@ public class UserTrainingDataSheet : DataSheetBase<UserTrainingData>
 		return null;
 	}
 
-	public List<UserAbilityType> GetAbilityTypes()
+	public List<AbilityType> GetAbilityTypes()
 	{
 		if (abilities == null || abilities.Count == 0)
 		{
-			abilities = new List<UserAbilityType>();
+			abilities = new List<AbilityType>();
 
 			for (int i = 0 ; i < infos.Count ; i++)
 			{

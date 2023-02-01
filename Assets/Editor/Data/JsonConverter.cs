@@ -32,11 +32,11 @@ public static class JsonConverter
 		return "";
 	}
 
-	public static object ToData(bool isBinary, string filePath)
+	public static object ToData(string filePath)
 	{
 		string fileName = System.IO.Path.GetFileNameWithoutExtension(filePath);
 		string typeName = fileName;
-		if (isBinary)
+		try
 		{
 			using (FileStream fs = File.OpenRead(filePath))
 			{
@@ -63,7 +63,7 @@ public static class JsonConverter
 				}
 			}
 		}
-		else
+		catch
 		{
 			string jsonstring = File.ReadAllText(filePath);
 			Dictionary<string, object> jb = (Dictionary<string, object>)Json.Deserialize(jsonstring);
@@ -81,6 +81,7 @@ public static class JsonConverter
 			var json = JsonUtility.FromJson(jsonstring, type);
 			return json;
 		}
+
 	}
 }
 

@@ -24,7 +24,7 @@ public class UITraining : MonoBehaviour
 
 	void Test()
 	{
-		foreach (UserAbilityType abilityType in UserInfo.trainingTypes)
+		foreach (AbilityType abilityType in UserInfo.trainingTypes)
 		{
 			// 어빌리티 레벨
 			int abilityLv = UserInfo.training.GetTrainingLevel(abilityType);

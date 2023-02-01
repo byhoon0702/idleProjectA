@@ -8,27 +8,36 @@ public class SceneCamera : MonoBehaviour
 	public static SceneCamera it => instance;
 	public float speed;
 
+
+	public Transform target;
+	public MapController mapController;
 	public Camera sceneCamera => m_camera;
 	[SerializeField] private Camera m_camera;
 	protected Transform m_camera_transform;
 
-	protected PlayerCharacter[] players;
 	protected Vector3 originPos;
 
-	private bool canCameraMove = false;
+	public bool canCameraMove = false;
+	protected Vector3 offset;
+	protected bool fixedCamera = false;
 	void Awake()
 	{
 		instance = this;
 
 		m_camera_transform = transform;
 		originPos = transform.position;
+
 	}
 	public void ResetToStart()
 	{
 		StopCameraMove();
 		transform.position = originPos;
 	}
-
+	//private void Start()
+	//{
+	//	offset = m_camera_transform.position;
+	//	offset.x = m_camera_transform.position.x - target.position.x;
+	//}
 	public void ActivateCameraMove()
 	{
 		canCameraMove = true;
@@ -44,7 +53,17 @@ public class SceneCamera : MonoBehaviour
 	}
 	public void FindPlayers()
 	{
-		players = GameObject.FindObjectsOfType<PlayerCharacter>();
+		PlayerCharacter player = GameObject.FindObjectOfType<PlayerCharacter>();
+
+		if (player == null)
+		{
+			//메인 캐릭터 못찾음
+			return;
+		}
+
+		target = player.transform;
+		offset = m_camera_transform.position;
+		offset.x = m_camera_transform.position.x - target.position.x;
 	}
 	public Vector2 GetCameraEdgePosition(Vector2 pivot)
 	{
@@ -54,7 +73,8 @@ public class SceneCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (VGameManager.it.fixedScroll)
+		Animator ani; 
+		if (fixedCamera)
 		{
 			return;
 		}
@@ -72,24 +92,33 @@ public class SceneCamera : MonoBehaviour
 
 	void CameraMove()
 	{
-		if (players == null || players.Length == 0)
+		if (target == null)
 		{
 			return;
 		}
-		Vector3 near = transform.position;
-		float distance = 1f;
-		for (int i = 0; i < players.Length; i++)
+
+		Vector3 targetPos = m_camera_transform.position;
+
+		targetPos.x = offset.x + target.position.x;
+
+		Vector3 camPos = m_camera_transform.position;
+
+		Vector3 lerp = Vector3.Lerp(camPos, targetPos, Time.deltaTime * speed);
+
+		Vector3 toward = Vector3.MoveTowards(camPos, lerp, 0.2f);
+		toward.y = m_camera_transform.position.y;
+		toward.z = m_camera_transform.position.z;
+
+
+		if (toward.x < 0)
 		{
-			var player = players[i];
-			var diff = transform.position.x - player.transform.position.x;
-
-			if (diff < distance)
-			{
-				transform.Translate(Vector3.right * player.info.MoveSpeed() * Time.deltaTime);
-
-				VGameManager.it.mapController.Scroll(Vector3.right * player.info.MoveSpeed() * Time.deltaTime);
-				break;
-			}
+			return;
 		}
+		if (mapController != null)
+		{
+			mapController.Scroll(new Vector2(toward.x - camPos.x, 0));
+		}
+
+		m_camera_transform.SetPositionAndRotation(toward, m_camera_transform.rotation);
 	}
 }

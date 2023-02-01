@@ -1,4 +1,5 @@
-﻿[System.Serializable]
+﻿using System.Collections.Generic;
+[System.Serializable]
 public class UnitDataSheet : DataSheetBase<UnitData>
 {
 	public UnitData GetData(long _tid)

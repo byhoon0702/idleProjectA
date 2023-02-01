@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 public class AttackState : CharacterFSM
 {
-	private Character owner;
+	private Unit owner;
 	private SkillModule skillModule => owner.skillModule;
 
-
-	public void Init(Character owner)
+	public void Init(Unit owner)
 	{
 		this.owner = owner;
 	}
@@ -21,22 +20,30 @@ public class AttackState : CharacterFSM
 	{
 		if (owner.IsTargetAlive() == false)
 		{
-			owner.ChangeState(StateType.MOVE);
+			owner.targetingBehavior.OnTarget(owner, owner.targeting, true);
+
+			if (owner.IsTargetAlive() == false)
+			{
+				owner.ChangeState(StateType.MOVE);
+				return;
+			}
+		}
+
+		bool isAttacking = owner.characterAnimation.IsAttacking();
+		if (isAttacking)
+		{
 			return;
 		}
 
 		if (skillModule.skillAttack != null && skillModule.skillAttack.Usable())
 		{
 			// 스킬을 사용할 수 있으면 무조건 스킬우선사용
-			skillModule.skillAttack.Action();
-			VLog.SkillLog($"[{owner.info.charNameAndCharId}] 스킬 사용. SkillName: {skillModule.skillAttack.name}", owner);
-			owner.characterAnimation.PlayAnimation("attack");
+			owner.AttackStart(skillModule.skillAttack);
 		}
 		else if (skillModule.defaultAttack != null && skillModule.defaultAttack.Usable())
 		{
 			// 기본공격
-			skillModule.defaultAttack.Action();
-			owner.characterAnimation.PlayAnimation("attack");
+			owner.AttackStart(skillModule.defaultAttack);
 		}
 	}
 }

@@ -32,14 +32,14 @@ MonoBehaviour:
       description: "\uAD81\uC218"
       classType: 1
       attackType: 1
-      attackRange: 4
+      attackRange: 6
       attackSpeed: 1
-      moveSpeed: 0
+      moveSpeed: 1
       criticalRate: 1
       criticalPowerRate: 1
       evasionRate: 1
       skillCooltime: 1
-      searchRange: 4
+      searchRange: 6
       searchTime: 1
     - tid: 3
       description: "\uB9C8\uBC95\uC0AC1"
@@ -52,12 +52,12 @@ MonoBehaviour:
       criticalPowerRate: 1
       evasionRate: 1
       skillCooltime: 1
-      searchRange: 4
+      searchRange: 6
       searchTime: 1
     - tid: 4
       description: "\uC131\uBCBD"
       classType: 4
-      attackType: 4
+      attackType: 0
       attackRange: 0
       attackSpeed: 0
       moveSpeed: 0
@@ -67,3 +67,16 @@ MonoBehaviour:
       skillCooltime: 0
       searchRange: 0
       searchTime: 0
+    - tid: 5
+      description: "\uBCF4\uC2A4-\uB9C8\uBC95\uC0AC"
+      classType: 2
+      attackType: 2
+      attackRange: 6
+      attackSpeed: 1
+      moveSpeed: 1
+      criticalRate: 1
+      criticalPowerRate: 1
+      evasionRate: 1
+      skillCooltime: 1
+      searchRange: 6
+      searchTime: 1

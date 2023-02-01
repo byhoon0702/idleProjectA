@@ -7,12 +7,14 @@ using UnityEditor;
 using Malee.List;
 using Unity.VisualScripting;
 using NUnit.Framework.Constraints;
+using Codice.CM.Common;
+using Mono.Cecil;
 
 public class ReorderableListGenerator
 {
 	private SerializedProperty property;
 	private Dictionary<string, Type> linkedTypeList;
-	private Dictionary<string, List<bool>> foldOutList;
+
 	private Dictionary<Type, object> jsonContainer;
 	private DataTableEditorSettings settings;
 	private ReorderableList reorderableList;
@@ -44,13 +46,11 @@ public class ReorderableListGenerator
 		reorderableList = new ReorderableList(property);
 		reorderableList.paginate = paginate;
 		reorderableList.pageSize = pageSize;
+
 		CreateMainList();
 		return reorderableList;
 	}
-	public string TypeString(string name, string assembly = "Assembly-CSharp")
-	{
-		return $"{name}, {assembly}";
-	}
+
 	private void CreateMainList()
 	{
 		Type rawDataType = System.Type.GetType($"{property.arrayElementType}, Assembly-CSharp");
@@ -67,15 +67,20 @@ public class ReorderableListGenerator
 			{
 				string typeName = fields[i].Name.Replace("Tid", "DataSheet").FirstCharacterToUpper();
 
+				string typeString = ConvertUtility.GetAssemblyName(typeName);
+				System.Type type = System.Type.GetType(typeString);
+				if (type == null)
+				{
+					continue;
+				}
 				if (linkedTypeList.ContainsKey(typeName))
 				{
 					continue;
 				}
-				linkedTypeList.Add(fields[i].Name, System.Type.GetType(TypeString(typeName)));
+				linkedTypeList.Add(fields[i].Name, type);
 			}
 		}
 
-		foldOutList = new Dictionary<string, List<bool>>();
 		reorderableList.drawHeaderCallback += (rect, guicontent) =>
 		{
 			rect.x = 34;
@@ -140,40 +145,9 @@ public class ReorderableListGenerator
 
 					if (linkedTypeList.ContainsKey(field.Name))
 					{
-						Type linkType = linkedTypeList[field.Name];
-						if (linkType == null)
+						if (DrawLinkedProperty(relativeRect, tempRect, sf, field.Name))
 						{
-							EditorGUI.PropertyField(relativeRect, sf, GUIContent.none);
-							tempRect.x += tempRect.width + settings.rowSpace;
 							continue;
-						}
-						if (jsonContainer.ContainsKey(linkType))
-						{
-							FieldInfo obj = jsonContainer[linkType].GetType().GetField("infos");
-							object ff = obj.GetValue(jsonContainer[linkType]);
-
-
-							if (typeof(IList).IsAssignableFrom(ff))
-							{
-								IList list = (IList)ff;
-								GUIContent[] nameList = new GUIContent[list.Count];
-								int[] idList = new int[list.Count];
-
-								for (int ii = 0; ii < list.Count; ii++)
-								{
-									object item = list[ii];
-									Type itemType = item.GetType();
-									long id = (long)itemType.GetField("tid").GetValue(item);
-									idList[ii] = (int)id;
-									nameList[ii] = new GUIContent($"{id} :{(string)itemType.GetField("description").GetValue(item)}");
-								}
-								if (nameList.Length > 0)
-								{
-									EditorGUI.IntPopup(relativeRect, sf, nameList, idList, GUIContent.none);
-									tempRect.x += tempRect.width + settings.rowSpace;
-									continue;
-								}
-							}
 						}
 					}
 
@@ -195,16 +169,55 @@ public class ReorderableListGenerator
 		};
 	}
 
+	private bool DrawLinkedProperty(Rect _relativeRect, Rect _rect, SerializedProperty _sf, string _fieldName)
+	{
+		Type linkType = linkedTypeList[_fieldName];
+		if (linkType == null)
+		{
+			EditorGUI.PropertyField(_relativeRect, _sf, GUIContent.none);
+			_rect.x += _rect.width + settings.rowSpace;
+			return false;
+		}
+		if (jsonContainer.ContainsKey(linkType))
+		{
+			FieldInfo obj = jsonContainer[linkType].GetType().GetField("infos");
+			object ff = obj.GetValue(jsonContainer[linkType]);
+
+			if (typeof(IList).IsAssignableFrom(ff))
+			{
+				IList list = (IList)ff;
+				GUIContent[] nameList = new GUIContent[list.Count];
+				int[] idList = new int[list.Count];
+
+				for (int ii = 0; ii < list.Count; ii++)
+				{
+					object item = list[ii];
+					Type itemType = item.GetType();
+					long id = (long)itemType.GetField("tid").GetValue(item);
+					idList[ii] = (int)id;
+					nameList[ii] = new GUIContent($"{id} :{(string)itemType.GetField("description").GetValue(item)}");
+				}
+				if (nameList.Length > 0)
+				{
+					EditorGUI.IntPopup(_relativeRect, _sf, nameList, idList, GUIContent.none);
+					_rect.x += _rect.width + settings.rowSpace;
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	private void CreateSubWindow(long tid, SerializedProperty property, DataTableEditorSettings settings)
 	{
 		string windowName = $"{property.type}:{property.name}:{tid}";
 		if (childListWindows.ContainsKey(windowName))
 		{
-			childListWindows[windowName].Build(serializedObject, property, settings, OnRemoveSubWindow);
+			childListWindows[windowName].Build(serializedObject, property, settings, jsonContainer, OnRemoveSubWindow);
 			return;
 		}
 
-		var window = SubEditorWindow.Create(windowName).Build(serializedObject, property, settings, OnRemoveSubWindow);
+		var window = SubEditorWindow.Create(windowName).Build(serializedObject, property, settings, jsonContainer, OnRemoveSubWindow);
 		childListWindows.Add(windowName, window);
 	}
 	public void OnRemoveSubWindow(string name)
@@ -239,6 +252,8 @@ public class SubEditorWindow : EditorWindow
 	[SerializeField] SerializedProperty property;
 	[SerializeField] DataTableEditorSettings settings;
 	[SerializeField] ReorderableList childReorderableList;
+
+	private Dictionary<Type, object> jsonContainer;
 	private Action<string> onDestroy;
 
 	public static SubEditorWindow Create(string windowName)
@@ -247,12 +262,13 @@ public class SubEditorWindow : EditorWindow
 		window.titleContent = new GUIContent(windowName);
 		return window;
 	}
-	public SubEditorWindow Build(SerializedObject _serializedObject, SerializedProperty _property, DataTableEditorSettings _settings, Action<string> _onDestroy)
+	public SubEditorWindow Build(SerializedObject _serializedObject, SerializedProperty _property, DataTableEditorSettings _settings, Dictionary<Type, object> _jsonContainer, Action<string> _onDestroy)
 	{
 		onDestroy = _onDestroy;
 		serializedObject = _serializedObject;
 		property = _property;
 		settings = _settings;
+		jsonContainer = _jsonContainer;
 		childReorderableList = null;
 		Show();
 
@@ -271,34 +287,63 @@ public class SubEditorWindow : EditorWindow
 		}
 		serializedObject.Update();
 
-		if (childReorderableList == null)
-		{
-			CreateSubList();
-		}
-
-		childReorderableList.DoLayoutList();
+		DrawWindow();
 		EditorUtility.SetDirty(this);
 		serializedObject.ApplyModifiedProperties();
 	}
 
-	private void CreateSubList()
+	private void DrawObjectProperty()
 	{
-		bool isObjectType = false;
-		string convertTypeName = ConvertUtility.ConvertStringToType(property.arrayElementType);
-		Type rawDataType = System.Type.GetType($"{convertTypeName}, Assembly-CSharp");
-		if (rawDataType == null)
+
+		EditorGUILayout.PropertyField(property);
+	}
+	private void DrawListProperty()
+	{
+
+		if (childReorderableList == null)
 		{
-			rawDataType = System.Type.GetType($"{convertTypeName}");
+			string typeName = property.arrayElementType;
+			if (typeName == "")
+			{
+				typeName = property.type;
+			}
+			string convertTypeName = ConvertUtility.ConvertStringToType(typeName);
+			Type rawDataType = System.Type.GetType($"{convertTypeName}, Assembly-CSharp");
+			if (rawDataType == null)
+			{
+				rawDataType = System.Type.GetType($"{convertTypeName}");
+			}
+			CreateSubList(rawDataType);
 		}
 
+		childReorderableList.DoLayoutList();
+	}
 
-		if (rawDataType.BaseType.Equals(typeof(object)))
+	private void DrawWindow()
+	{
+		bool isArrayType = property.isArray;
+
+
+		if (isArrayType)
+		{
+			DrawListProperty();
+		}
+		else
+		{
+			DrawObjectProperty();
+		}
+	}
+
+	private void CreateSubList(Type _type)
+	{
+
+		bool isObjectType = false;
+		if (_type.BaseType.Equals(typeof(object)))
 		{
 			isObjectType = true;
 		}
 
-
-		FieldInfo[] fields = rawDataType.GetFields();
+		FieldInfo[] fields = _type.GetFields();
 
 		childReorderableList = new ReorderableList(property);
 
@@ -329,23 +374,25 @@ public class SubEditorWindow : EditorWindow
 
 		childReorderableList.drawElementCallback += (rect, element, guiContent, isActive, isFocused) =>
 			{
-
 				Rect tempRect = new Rect(rect);
 				SerializedProperty info = element;
-				Type type = rawDataType;
+				Type type = _type;
 
 				if (isObjectType == false)
 				{
+					if (property.name.Contains("Tid", StringComparison.Ordinal))
+					{
+						string ss = property.name.Split("Tid")[0] + "DataSheet";
 
+
+					}
 					tempRect.y = rect.y;
 					tempRect.width = settings.cellSize.x;
 					tempRect.height = EditorGUIUtility.singleLineHeight;
 
-
 					EditorGUI.PropertyField(tempRect, info, GUIContent.none);
 
 					tempRect.x += tempRect.width + settings.rowSpace;
-
 				}
 				else
 				{
@@ -360,11 +407,8 @@ public class SubEditorWindow : EditorWindow
 						EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
 
 						tempRect.x += tempRect.width + settings.rowSpace;
-
 					}
 				}
-
-
 			};
 	}
 

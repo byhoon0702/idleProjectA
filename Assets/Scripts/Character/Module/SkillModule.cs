@@ -6,7 +6,7 @@ public sealed class SkillModule
 {
 	public List<SkillBase> skills { get; private set; } = new List<SkillBase>();
 
-	public Character character { get; private set; }
+	public Unit character { get; private set; }
 	public DefaultAttack defaultAttack { get; private set; }
 	public SkillBase skillAttack { get; private set; }
 
@@ -34,7 +34,7 @@ public sealed class SkillModule
 
 
 
-	public SkillModule(Character _character, DefaultAttack _defaultAttack)
+	public SkillModule(Unit _character, DefaultAttack _defaultAttack)
 	{
 		character = _character;
 
@@ -42,7 +42,7 @@ public sealed class SkillModule
 
 		if (defaultAttack != null)  // 유닛의 생성자에서 초기화할땐 null로 들어옴.
 		{
-			defaultAttack.SetCharacter(character);
+			defaultAttack.SetUnit(character);
 
 
 			if (character.info.controlSide == ControlSide.PLAYER)
@@ -77,7 +77,7 @@ public sealed class SkillModule
 	public void AddSkill(SkillBase _skill)
 	{
 		// 사용할 유닛을 등록시켜줘야 함.
-		_skill.SetCharacter(character);
+		_skill.SetUnit(character);
 
 		skills.Add(_skill);
 

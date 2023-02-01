@@ -8,10 +8,10 @@ public class ItemBattleRecordList : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI textCharacterName;
 	[SerializeField] private TextMeshProUGUI textCharacterDamage;
 
-	private Character character;
+	private Unit character;
 	private RecordData recordData;
 
-	public void SetData(Character _character, RecordData _recordData)
+	public void SetData(Unit _character, RecordData _recordData)
 	{
 		character = _character;
 		recordData = _recordData;

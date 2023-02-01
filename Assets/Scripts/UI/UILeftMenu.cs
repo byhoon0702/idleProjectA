@@ -53,8 +53,20 @@ public class UILeftMenu : MonoBehaviour
 		for (int i = 0; i < toggleTab.Length; i++)
 		{
 			var index = i;
-			toggleTab[index].onValueChanged.AddListener((_isOn) =>
+			var toggle = toggleTab[i];
+
+			toggle.onValueChanged.AddListener((_isOn) =>
 			{
+				var text = toggle.GetComponentInChildren<TextMeshProUGUI>();
+				if (_isOn == true)
+				{
+					text.color = Color.yellow;
+				}
+				else
+				{
+					text.color = Color.white;
+				}
+
 				if (currentPage != listTabs[index])
 				{
 					if (currentPage != null)
@@ -66,11 +78,13 @@ public class UILeftMenu : MonoBehaviour
 				}
 			});
 		}
+
+		toggleTab[0].isOn = true;
 	}
 
 	private void UpdateGoldCount()
 	{
-		var currentMoneyCount = Inventory.it.GoldItem.count;
+		var currentMoneyCount = Inventory.it.ItemCount("gold");
 
 		if (currentMoneyCount != moneyCount)
 		{

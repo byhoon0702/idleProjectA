@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2802cce289092fc4e96e403dd7b42bcf, type: 3}
+  m_Name: SoundEffectDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: SoundEffectDataSheet
+    infos:
+    - tid: 1
+      description: 
+      key: TestEffect
+      resource: Effect_Get
+    - tid: 2
+      description: 
+      key: archer_hit_01
+      resource: archer_hit_01
+    - tid: 3
+      description: 
+      key: swordman_hit_01
+      resource: swordman_hit_01

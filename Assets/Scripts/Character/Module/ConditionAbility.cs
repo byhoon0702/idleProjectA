@@ -30,15 +30,6 @@ public class ConditionAbility
 	public float criticalChanceDownRatio;
 
 	/// <summary>
-	/// 피해증가 비율
-	/// </summary>
-	public float damageUpRatio;
-	/// <summary>
-	/// 피해감소 비율
-	/// </summary>
-	public float damageDownRatio;
-
-	/// <summary>
 	/// 이동속도 증가 비율
 	/// </summary>
 	public float moveSpeedUpRatio;
@@ -63,9 +54,6 @@ public class ConditionAbility
 
 		criticalChanceUpRatio = CalculateCriticalChanceUpRatio(_module);
 		criticalChanceDownRatio = CalculateCriticalChanceDownRatio(_module);
-
-		damageUpRatio = CalculateDamageUpRatio(_module);
-		damageDownRatio = CalculateDamageDownRatio(_module);
 
 		moveSpeedUpRatio = CalculateMoveSpeedUpRatio(_module);
 		moveSpeedDownRatio = CalculateMoveSpeedDownRatio(_module);
@@ -118,33 +106,6 @@ public class ConditionAbility
 		foreach (var condition in conditions)
 		{
 			outTotal += (condition as AttackSpeedDownCondition).ratio;
-		}
-
-		return outTotal;
-	}
-
-	private float CalculateDamageUpRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(CharacterCondition.DamageUp);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as DamageUpCondition).ratio;
-		}
-
-		return outTotal;
-	}
-
-
-	private float CalculateDamageDownRatio(ConditionModule _module)
-	{
-		float outTotal = 0;
-		var conditions = _module.GetConditions(CharacterCondition.DamageDown);
-
-		foreach (var condition in conditions)
-		{
-			outTotal += (condition as DamageDownCondition).ratio;
 		}
 
 		return outTotal;

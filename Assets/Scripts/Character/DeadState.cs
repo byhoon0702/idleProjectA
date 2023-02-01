@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class DeadState : CharacterFSM
 {
-	private Character owner;
-	public void Init(Character owner)
+	private Unit owner;
+	private float elapsedTime;
+
+	public void Init(Unit owner)
 	{
 		this.owner = owner;
 	}
 	public void OnEnter()
 	{
-		owner.DisposeModel();
-		owner.gameObject.SetActive(false);
+		elapsedTime = 0f;
+
+		owner.PlayAnimation(StateType.DEATH);
 		owner.SetTarget(null); // 죽으면 타겟을 비워줌
 		owner.conditionModule.Collect();
 
@@ -29,6 +32,11 @@ public class DeadState : CharacterFSM
 
 	public void OnUpdate(float time)
 	{
-
+		elapsedTime += time;
+		if (elapsedTime > 3f)
+		{
+			owner.DisposeModel();
+			owner.gameObject.SetActive(false);
+		}
 	}
 }

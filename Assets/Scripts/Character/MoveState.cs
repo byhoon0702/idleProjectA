@@ -1,31 +1,32 @@
 ﻿using UnityEngine;
 public class MoveState : CharacterFSM
 {
-	private Character owner;
+	private Unit owner;
 	private SkillModule skillModule => owner.skillModule;
 
-
-	public void Init(Character owner)
+	public void Init(Unit owner)
 	{
 		this.owner = owner;
 	}
 	public void OnEnter()
 	{
-		owner.characterAnimation.PlayAnimation("move");
+		owner.PlayAnimation(StateType.MOVE);
+		owner.characterAnimation.PlayParticle();
 	}
 
 	public void OnExit()
 	{
-		owner.characterAnimation.PlayAnimation("idle");
+		owner.PlayAnimation(StateType.IDLE);
+		owner.characterAnimation.StopParticle();
 	}
 
 	public void OnUpdate(float time)
 	{
-		if (skillModule.skillAttack != null && skillModule.skillAttack.Usable())
-		{
-			skillModule.skillAttack.Action();
-			VLog.SkillLog($"[{owner.info.charNameAndCharId}] 스킬 사용. SkillName: {skillModule.skillAttack.name}", owner);
-		}
+		//if (skillModule.skillAttack != null && skillModule.skillAttack.Usable())
+		//{
+		//	skillModule.skillAttack.Action();
+		//	VLog.SkillLog($"[{owner.info.charNameAndCharId}] 스킬 사용. SkillName: {skillModule.skillAttack.name}", owner);
+		//}
 
 		if (owner.IsTargetAlive() == false)
 		{
@@ -35,23 +36,20 @@ public class MoveState : CharacterFSM
 		}
 		else
 		{
-			var direction = (owner.target.transform.position - owner.transform.position).normalized;
-			var distance = Vector3.Distance(owner.target.transform.position, owner.transform.position);
-			//if (distance < owner.info.data.pursuitDistance)
+			Vector3 direction = (owner.target.transform.position - owner.transform.position).normalized;
+			direction.z = 0;
+			direction.y = 0;
+			float distance = Mathf.Abs(owner.target.transform.position.x - owner.transform.position.x);
+
+			if (distance <= owner.info.searchRange)
 			{
-				if (distance > owner.info.jobData.attackRange)
-				{
-					owner.transform.Translate(direction * owner.info.MoveSpeed() * time);
-				}
-				else
-				{
-					owner.ChangeState(StateType.ATTACK);
-				}
+				owner.ChangeState(StateType.ATTACK);
 			}
-			//else
-			//{
-			//	owner.Move(time);
-			//}
+			else
+			{
+				owner.Move(time);
+			}
 		}
 	}
 }
+

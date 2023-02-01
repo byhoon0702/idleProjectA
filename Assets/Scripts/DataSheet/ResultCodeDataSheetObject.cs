@@ -18,8 +18,8 @@ public class ResultCodeDataSheetObject : ScriptableObject
 	}
 	public static void GenerateResultCode(List<ResultCodeData> _infos)
 	{
-
-		string path = string.Concat(Application.dataPath, Path.DirectorySeparatorChar, $"Scripts/System/ResultCode.cs");
+#if UNITY_EDITOR
+		string path = string.Concat(Application.dataPath, Path.DirectorySeparatorChar, $"Scripts/System/VResultCode.cs");
 		List<Int64> tidList = new List<Int64>();
 		List<string> keyList = new List<string>();
 
@@ -28,7 +28,7 @@ public class ResultCodeDataSheetObject : ScriptableObject
 			StringBuilder sb = new StringBuilder();
 
 			sb.AppendLine($"//========AUTO GENERATED CODE======//");
-			sb.AppendLine($"public enum ResultCode ");
+			sb.AppendLine($"public enum VResultCode ");
 			sb.AppendLine("{");
 			for (Int32 i = 0; i < _infos.Count; i++)
 			{
@@ -56,5 +56,6 @@ public class ResultCodeDataSheetObject : ScriptableObject
 		}
 
 		UnityEditor.AssetDatabase.Refresh();
+#endif
 	}
 }

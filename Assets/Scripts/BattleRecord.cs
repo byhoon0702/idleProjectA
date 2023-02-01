@@ -3,108 +3,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+[Serializable]
 public class BattleRecord
 {
-	public List<RecordData> records = new List<RecordData>();
-	private Dictionary<Int32, string> nameDictionary = new Dictionary<int, string>();
+	public DPSInfo playerDPS = new DPSInfo();
+	public DPSInfo companionDPS = new DPSInfo();
+	public DPSInfo enemyDPS = new DPSInfo();
+	public DPSInfo unknownDPS = new DPSInfo();
 
 
-	public void InitCharacter(List<Character> _characters)
+
+	public void RecordAttackPower(HitInfo _hitInfo)
 	{
-		foreach (var character in _characters)
-		{
-			if (GetCharacterRecord(character.charID) != null)
-			{
-				continue;
-			}
-			RecordData record = new RecordData(character.charID);
-			records.Add(record);
-		}
+		DPSInfo info = FinddDPSInfo(_hitInfo);
+
+		info.attackPower += _hitInfo.TotalAttackPower;
+		info.criticalCount += _hitInfo.criticalType == CriticalType.Critical ? 1 : 0;
+		info.hyperAttackCount += _hitInfo.criticalType == CriticalType.CriticalX2 ? 1 : 0;
 	}
 
-	public void InitCharacter(Character character)
+	/// <summary>
+	/// _healValue는 실제로 회복된 량을 넣어줘야 함. (최대체력보다 높게 충전되는경우)
+	/// </summary>
+	public void RecordHeal(HealInfo _heal, IdleNumber _healValue)
 	{
-		if (GetCharacterRecord(character.charID) != null)
-		{
-			return;
-		}
-		RecordData record = new RecordData(character.charID);
-		records.Add(record);
+		//DPSInfo info = FinddDPSInfo(_attacker);
+		//
+		//info.hpRecovery += _healValue;
 	}
 
-	private string GetName(Int32 _charID)
+	private DPSInfo FinddDPSInfo(HitInfo _hitInfo)
 	{
-		if (nameDictionary.ContainsKey(_charID) == false)
+		switch (_hitInfo.attackerType)
 		{
-			Character character = CharacterManager.it.GetCharacter(_charID);
-			if (character != null)
-			{
-				nameDictionary.Add(_charID, character.info.charNameAndCharId);
-			}
-			else
-			{
-				nameDictionary.Add(_charID, $"Unknown({_charID})");
-			}
+			case AttackerType.Player:
+				return playerDPS;
+			case AttackerType.Companion:
+				return companionDPS;
+			case AttackerType.Enemy:
+				return enemyDPS;
+			default:
+				return unknownDPS;
 		}
-
-		return nameDictionary[_charID];
-	}
-
-	public void RecordAttackPower(Int32 _charID, Int32 _targetCharID, string _attackName, IdleNumber _attackPower, bool _critical)
-	{
-		AttackPowerRecord attackPower = new AttackPowerRecord(_targetCharID, _attackName, _attackPower, _critical);
-
-		VLog.BattleRecordLog($"{_attackName} 공격. {GetName(_charID)} -> {GetName(_targetCharID)} atkPower{_attackPower.ToString()}, cri: {_critical}");
-
-
-		foreach (var record in records)
-		{
-			if (record.charID == _charID)
-			{
-				record.attackPowers.Add(attackPower);
-				UIController.it.UpdateBattleRecord();
-				return;
-			}
-		}
-
-		RecordData newRecord = new RecordData(_charID);
-		newRecord.attackPowers.Add(attackPower);
-
-		records.Add(newRecord);
-		UIController.it.UpdateBattleRecord();
-	}
-
-	public void RecordHeal(Int32 _charID, Int32 _targetCharID, string _healName, IdleNumber _heal)
-	{
-		HealRecord heal = new HealRecord(_targetCharID, _healName, _heal);
-		VLog.BattleRecordLog($"{_healName} 회복. {GetName(_charID)} -> {GetName(_targetCharID)} heal: {_heal.ToString()}");
-
-		foreach (var record in records)
-		{
-			if (record.charID == _charID)
-			{
-				record.heals.Add(heal);
-				return;
-			}
-		}
-
-		RecordData newRecord = new RecordData(_charID);
-		newRecord.heals.Add(heal);
-
-		records.Add(newRecord);
-	}
-
-	public RecordData GetCharacterRecord(Int32 _charID)
-	{
-		foreach (var record in records)
-		{
-			if (record.charID == _charID)
-			{
-				return record;
-			}
-		}
-
-		return null;
 	}
 }
 
@@ -182,4 +122,34 @@ public struct HealRecord
 		healName = _healName;
 		value = _value;
 	}
+}
+
+
+[Serializable]
+public class DPSInfo
+{
+	public IdleNumber attackPower = new IdleNumber();
+	public IdleNumber hpRecovery = new IdleNumber();
+	public int criticalCount = 0;
+	public int hyperAttackCount = 0;
+
+	public List<DPSSkillInfo> skillData = new List<DPSSkillInfo>();
+
+	public override string ToString()
+	{
+		string outString = $"AttackPower: {attackPower.ToString()}, Cri: {criticalCount}, hyp: {hyperAttackCount}\n HP Recovery: {hpRecovery.ToString()}\n";
+		foreach(var v in skillData)
+		{
+			outString += $"[{v.skillTid}] {v.skillValue}\n";
+		}
+
+		return outString;
+	}
+}
+
+[Serializable]
+public class DPSSkillInfo
+{
+	public long skillTid;
+	public IdleNumber skillValue;
 }

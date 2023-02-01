@@ -12,19 +12,26 @@ public class UITopMoney : MonoBehaviour
 
 	private IdleNumber moneyCount = new IdleNumber(0, 0);
 
-	private void Start()
+	private bool isInitialized = false;
+
+	public void Init()
 	{
 		SetData();
+		isInitialized = true;
 	}
 
 	private void Update()
 	{
+		if (isInitialized == false)
+		{
+			return;
+		}
 		SetData();
 	}
 
 	public void SetData()
 	{
-		var currentCount = Inventory.it.GoldItem.count;
+		var currentCount = Inventory.it.ItemCount("gold");
 		if (currentCount != moneyCount)
 		{
 			moneyCount = currentCount;

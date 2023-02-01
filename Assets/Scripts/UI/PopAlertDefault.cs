@@ -11,8 +11,11 @@ public class PopAlertDefault : MonoBehaviour
 {
 	[SerializeField] private TextMeshProUGUI titleText;
 	[SerializeField] private TextMeshProUGUI contentText;
+	[SerializeField] private TextMeshProUGUI resultCodeText;
 	[SerializeField] private TextMeshProUGUI okButtonText;
 	[SerializeField] private TextMeshProUGUI cancelButtonText;
+	[SerializeField] GameObject descRoot;
+	[SerializeField] private TextMeshProUGUI descText;
 
 
 	[SerializeField] private Button okButton;
@@ -21,19 +24,16 @@ public class PopAlertDefault : MonoBehaviour
 	[SerializeField] private Button panelButton;
 
 
-	public ResultCodeData resultCodeData;
+	public VResult result;
 	private Action onOkCallback;
 	private Action onCancelCallback;
 
 
 	// 내부에서 ResultCode값이 null이어도 방어가 필요함
-	public void Init(ResultCodeData _resultCodeData, Action _onOkCallback = null, Action _onCancelCallback = null)
+	public void Init(VResult _result, Action _onOkCallback = null, Action _onCancelCallback = null)
 	{
-		resultCodeData = _resultCodeData;
-		if(resultCodeData == null)
-		{
-			resultCodeData = MakeDefaultResultCodeData();
-		}
+		result = _result;
+		VLog.Log($"{result.data.key}({result.data.tid}) : {result.data.description}. \n{result.description}");
 
 		onOkCallback = _onOkCallback;
 		onCancelCallback = _onCancelCallback;
@@ -101,16 +101,17 @@ public class PopAlertDefault : MonoBehaviour
 
 
 		// 버튼 활성화 여부 처리
-		xButton.gameObject.SetActive(resultCodeData.alertType != PopAlertType.ERROR);
+		xButton.gameObject.SetActive(result.data.alertType != PopAlertType.ERROR);
 		okButton.gameObject.SetActive(true);
 		cancelButton.gameObject.SetActive(onCancelCallback != null);
 	}
 
 	private void UpdateUI()
 	{
-		if (string.IsNullOrEmpty(resultCodeData.title))
+		// 제목
+		if (string.IsNullOrEmpty(result.data.title))
 		{
-			if (resultCodeData.alertType == PopAlertType.ERROR)
+			if (result.data.alertType == PopAlertType.ERROR)
 			{
 				titleText.text = ConfigMeta.it.RESULT_CODE_ERROR_TITLE_TEXT;
 			}
@@ -121,39 +122,46 @@ public class PopAlertDefault : MonoBehaviour
 		}
 		else
 		{
-			titleText.text = resultCodeData.title;
+			titleText.text = result.data.title;
 		}
 
-		contentText.text = resultCodeData.content;
+		// 내용
+		contentText.text = result.ContentsText;
 
-		if (string.IsNullOrEmpty(resultCodeData.okText))
+
+		// 리절트 코드
+		if(UnityEnv.HouseMode)
+		{
+			resultCodeText.text = $"result.data.tid.ToString() : {result.data.key}";
+		}
+		else
+		{
+			resultCodeText.text = result.data.tid.ToString();
+		}
+
+
+		// 디스크립션
+		descRoot.SetActive(UnityEnv.HouseMode);
+		descText.text = result.description;
+
+
+		// 버튼
+		if (string.IsNullOrEmpty(result.data.okText))
 		{
 			okButtonText.text = ConfigMeta.it.RESULT_CODE_DEFAULT_OK_TEXT;
 		}
 		else
 		{
-			okButtonText.text = resultCodeData.title;
+			okButtonText.text = result.data.title;
 		}
 
-		if (string.IsNullOrEmpty(resultCodeData.cancelText))
+		if (string.IsNullOrEmpty(result.data.cancelText))
 		{
 			cancelButtonText.text = ConfigMeta.it.RESULT_CODE_DEFAULT_CANCEL_TEXT;
 		}
 		else
 		{
-			cancelButtonText.text = resultCodeData.title;
+			cancelButtonText.text = result.data.title;
 		}
-	}
-
-	private ResultCodeData MakeDefaultResultCodeData()
-	{
-		ResultCodeData resultCodeData = new ResultCodeData();
-
-		resultCodeData.title = ConfigMeta.it.RESULT_CODE_ERROR_TITLE_TEXT;
-		resultCodeData.content = $"정의되지 않은 오류입니다.";
-		resultCodeData.okText = ConfigMeta.it.RESULT_CODE_DEFAULT_OK_TEXT;
-		resultCodeData.alertType = PopAlertType.ERROR;
-
-		return resultCodeData;
 	}
 }

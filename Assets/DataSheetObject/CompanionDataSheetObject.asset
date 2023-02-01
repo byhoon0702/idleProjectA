@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c997e745ee0eab447ad5189f8ba89d71, type: 3}
+  m_Name: CompanionDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: CompanionDataSheet
+    infos:
+    - tid: 1
+      description: 
+      name: Archer
+      resource: human_02_SS
+      skillTid: 0
+      grade: 0
+      starlevel: 0
+      attackPower: 1000
+      attackSpeed: 1
+      attackSound: archer_hit_01
+      projectileResource: Arrow

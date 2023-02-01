@@ -4,16 +4,12 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using Unity.VisualScripting;
+
 using UnityEditor;
 using UnityEngine;
 using System.Reflection;
 using System.Collections;
 
-using UnityEngine.Purchasing.MiniJSON;
-using JetBrains.Annotations;
-using static UnityEngine.Rendering.DebugUI;
-using System.Security.Cryptography;
 
 public class DataTableEditor : EditorWindow
 {
@@ -173,10 +169,9 @@ public class DataTableEditor : EditorWindow
 
 				System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
 
-				string json = br.ReadString();
-
 				try
 				{
+					string json = br.ReadString();
 					var jsonData = JsonUtility.FromJson(json, t);
 					jsonContainer.Add(t, jsonData);
 				}
@@ -219,13 +214,13 @@ public class DataTableEditor : EditorWindow
 		if (label.IsNullOrEmpty())
 		{
 			EditorGUILayout.Space(3);
-			if (GUILayout.Button("Load Binary Json"))
+			if (GUILayout.Button("Load Json"))
 			{
-				FromJson(true);
+				FromJson();
 			}
-			if (GUILayout.Button("Load Non Binary Json"))
+			if (GUILayout.Button("Load CSV"))
 			{
-				FromJson(false);
+				FromCSV();
 			}
 
 			EditorGUILayout.Space(3);
@@ -256,7 +251,7 @@ public class DataTableEditor : EditorWindow
 			}
 			if (GUILayout.Button("Load Json"))
 			{
-				FromJson(true);
+				FromJson();
 			}
 		}
 		else
@@ -264,11 +259,11 @@ public class DataTableEditor : EditorWindow
 			GUILayout.BeginHorizontal(EditorStyles.toolbar);
 			if (GUILayout.Button("Save Json", EditorStyles.toolbarButton))
 			{
-				ToJson(true);
+				ToJson();
 			}
 			if (GUILayout.Button("Load Json", EditorStyles.toolbarButton))
 			{
-				FromJson(true);
+				FromJson();
 			}
 			if (GUILayout.Button("Load All Json", EditorStyles.toolbarButton))
 			{
@@ -277,15 +272,30 @@ public class DataTableEditor : EditorWindow
 
 			GUILayout.EndHorizontal();
 			GUILayout.BeginHorizontal(EditorStyles.toolbar);
-			if (GUILayout.Button("Save Non Binary Json", EditorStyles.toolbarButton))
+			if (GUILayout.Button("Save CSV", EditorStyles.toolbarButton))
 			{
-				ToJson(false);
+				ToCSV();
 			}
-			if (GUILayout.Button("Load Non Binary Json", EditorStyles.toolbarButton))
+			if (GUILayout.Button("Load CSV", EditorStyles.toolbarButton))
 			{
-				FromJson(false);
+				FromCSV();
 			}
+			if (GUILayout.Button("Convert Json CSV", EditorStyles.toolbarButton))
+			{
+				ConvertJsonToCSV();
+			}
+
 			GUILayout.EndHorizontal();
+			//GUILayout.BeginHorizontal(EditorStyles.toolbar);
+			//if (GUILayout.Button("Save Non Binary Json", EditorStyles.toolbarButton))
+			//{
+			//	ToJson(false);
+			//}
+			//if (GUILayout.Button("Load Non Binary Json", EditorStyles.toolbarButton))
+			//{
+			//	FromJson();
+			//}
+			//GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(EditorStyles.toolbar);
 			if (GUILayout.Button("Verify Data Tables", EditorStyles.toolbarButton))
@@ -294,21 +304,6 @@ public class DataTableEditor : EditorWindow
 			}
 
 			GUILayout.EndHorizontal();
-
-
-			if (GUILayout.Button("Convert To CSV"))
-			{
-				ConvertToCSV();
-			}
-			if (GUILayout.Button("Convert From Json To CSV"))
-			{
-				ConvertJsonToCSV();
-
-			}
-			if (GUILayout.Button("Load From Csv"))
-			{
-				ConvertFromCsvToData();
-			}
 
 			DrawProperty();
 		}
@@ -504,7 +499,7 @@ public class DataTableEditor : EditorWindow
 	}
 
 
-	void ToJson(bool isBinary)
+	void ToJsonBinary()
 	{
 		var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
 
@@ -517,14 +512,15 @@ public class DataTableEditor : EditorWindow
 		}
 		if (currentJsonFilePath.IsNullOrEmpty())
 		{
-			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json";
+			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json/{label}.bytes";
 		}
 		if (currentJsonFileName.IsNullOrEmpty())
 		{
 			currentJsonFileName = "";
 		}
 		string rootPath = Path.GetDirectoryName(currentJsonFilePath);
-		string path = EditorUtility.SaveFilePanel("", rootPath, currentJsonFileName, "json");
+
+		string path = EditorUtility.SaveFilePanel("", rootPath, currentJsonFileName, "bytes");
 
 		if (path.IsNullOrEmpty())
 		{
@@ -533,27 +529,60 @@ public class DataTableEditor : EditorWindow
 
 		string json = JsonUtility.ToJson(sd);
 
-		if (isBinary)
+		using (FileStream fs = File.Create(path))
 		{
-			using (FileStream fs = File.Create(path))
+			using (BinaryWriter sw = new BinaryWriter(fs))
 			{
-				using (BinaryWriter sw = new BinaryWriter(fs))
-				{
-					sw.Write(json);
-				}
+				sw.Write(json);
 			}
 		}
-		else
+
+		currentJsonFileName = Path.GetFileName(path);
+		currentJsonFilePath = path;
+		AssetDatabase.Refresh();
+
+	}
+
+	void ToJson()
+	{
+		var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
+
+		System.Reflection.FieldInfo info = targetObje.GetType().GetField("dataSheet");
+		var sd = info.GetValue(targetObje);
+
+		if (VerifyTidDuplicate(sd) == false)
 		{
-			File.WriteAllText(path, json);
+
 		}
+		if (currentJsonFilePath.IsNullOrEmpty())
+		{
+			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json/{label}.json";
+		}
+		if (currentJsonFileName.IsNullOrEmpty())
+		{
+			currentJsonFileName = "";
+		}
+		string rootPath = Path.GetDirectoryName(currentJsonFilePath);
+		string path = currentJsonFilePath;
+		//string path = EditorUtility.SaveFilePanel("", rootPath, currentJsonFileName, "json");
+
+		//if (path.IsNullOrEmpty())
+		//{
+		//	return;
+		//}
+
+		string json = JsonUtility.ToJson(sd);
+
+
+		File.WriteAllText(path, json);
+
 
 		currentJsonFileName = Path.GetFileName(path);
 		currentJsonFilePath = path;
 		AssetDatabase.Refresh();
 	}
 
-	void FromJson(bool isBinary)
+	void FromJson()
 	{
 		if (currentJsonFilePath.IsNullOrEmpty())
 		{
@@ -570,7 +599,7 @@ public class DataTableEditor : EditorWindow
 		string fileName = Path.GetFileNameWithoutExtension(path);
 		string typeName = fileName;
 
-		object json = JsonConverter.ToData(isBinary, path);
+		object json = JsonConverter.ToData(path);
 		if (json != null)
 		{
 			label = typeName;
@@ -652,13 +681,13 @@ public class DataTableEditor : EditorWindow
 		return verified;
 	}
 
-	void ConvertToCSV()
+	void ToCSV()
 	{
 		var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
 
 		string csv = CsvConverter.FromData(targetObje);
 
-		StreamWriter streamWriter = File.CreateText($"{Application.dataPath}/AssetFolder/test.csv");
+		StreamWriter streamWriter = File.CreateText($"{Application.dataPath}/AssetFolder/{label}.csv");
 		streamWriter.Write(csv);
 		streamWriter.Close();
 		AssetDatabase.Refresh();
@@ -666,7 +695,6 @@ public class DataTableEditor : EditorWindow
 
 	void ConvertJsonToCSV()
 	{
-
 		if (currentJsonFilePath.IsNullOrEmpty())
 		{
 			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json";
@@ -679,7 +707,7 @@ public class DataTableEditor : EditorWindow
 			return;
 		}
 
-		object json = JsonConverter.ToData(false, path);
+		object json = JsonConverter.ToData(path);
 		if (json != null)
 		{
 			string csv = CsvConverter.FromJson(json);
@@ -691,7 +719,7 @@ public class DataTableEditor : EditorWindow
 		AssetDatabase.Refresh();
 	}
 
-	void ConvertFromCsvToData()
+	void FromCSV()
 	{
 		string rootPath = Path.GetDirectoryName($"{Application.dataPath}/AssetFolder/");
 		string path = EditorUtility.OpenFilePanel("", rootPath, "csv");

@@ -11,7 +11,7 @@ public sealed class ConditionModule
 	/// </summary>
 	public List<ConditionBase> conditions = new List<ConditionBase>();
 
-	private Character character;
+	private Unit character;
 	private Dictionary<string, ParticleSystem> effects = new Dictionary<string, ParticleSystem>();
 
 	public ConditionAbility ability { get; private set; }
@@ -29,7 +29,7 @@ public sealed class ConditionModule
 
 
 
-	public ConditionModule(Character _character)
+	public ConditionModule(Unit _character)
 	{
 		character = _character;
 		ability = new ConditionAbility();
@@ -223,11 +223,6 @@ public sealed class ConditionModule
 				if (_condition.conditionType == CharacterCondition.Knockback)
 				{
 					// 넉백이 적용중일땐 더 들어오지 않음
-					return false;
-				}
-				if (_condition.conditionType == CharacterCondition.Stun)
-				{
-					// 스턴이 적용중일땐 더 들어오지 않음
 					return false;
 				}
 			}

@@ -1,13 +1,11 @@
 ﻿public class BattleState : RootState
 {
-	int waveCount = 0;
-	bool isWaveEnd = false;
+	private int waveCount;
 
 	public override void OnEnter()
 	{
-		waveCount = 0;
+		waveCount = 1;
 		elapsedTime = 0;
-		isWaveEnd = false;
 		SceneCamera.it.ActivateCameraMove();
 	}
 
@@ -18,61 +16,72 @@
 
 	public override void OnUpdate(float time)
 	{
-		elapsedTime += time;
-		// 패배
-		if (SpawnManager.it.IsAllPlayerDead == true)
-		{
-			UIController.it.ShowDefeatNavigator();
-			StageManager.it.PlayNormalStage();
-			return;
-		}
-
 		switch (StageManager.it.CurrentStageType)
 		{
-			case StageManager.StageType.BOSS:
-			case StageManager.StageType.NORMAL1:
+			case StageType.NORMAL:
 				{
-					if (SpawnManager.it.IsAllEnemyDead == true)
+					if (SpawnManager.it.IsAllPlayerDead == true)
 					{
-						// 웨이브가 끝남
-						if (SpawnManager.it.SpawnEnemies(waveCount++) == false)
-						{
-							StageManager.it.ClearStage();
-							StageManager.it.PlayNormalStage();
-						}
+						UIController.it.ShowDefeatNavigator();
+						StageManager.it.FailNormalStage();
+						return;
 					}
-				}
-				break;
-			case StageManager.StageType.NORMAL2:
-				{
-					if (isWaveEnd == true)
+
+					if (SpawnManager.it.IsBossClear == true)
 					{
-						if (SpawnManager.it.IsAllEnemyDead == true)
-						{
-							StageManager.it.ClearStage();
-							StageManager.it.PlayNormalStage();
-						}
+						StageManager.it.ClearNormalStage();
+						return;
 					}
-					if (elapsedTime >= 5f)
+					else if (SpawnManager.it.IsAllEnemyDead == true)
 					{
-						elapsedTime = 0;
-						if (SpawnManager.it.SpawnEnemies(waveCount++) == false)
+						elapsedTime += time;
+
+						bool isInfiniteSpawn = StageManager.it.isCurrentStageLimited == false;
+						bool isWaveFinish = waveCount > StageManager.it.CurrentStageInfo.waveCount;
+						bool isBossWave = waveCount == StageManager.it.CurrentStageInfo.waveCount;
+						bool isSpawnTime = elapsedTime >= ConfigMeta.it.NORMAL_DUNGEON_SPAWN_CYCLE / SpawnManager.it.playerCharacter.info.MoveSpeed();
+
+						if (isSpawnTime == false)
 						{
-							isWaveEnd = true;
+							return;
 						}
-					}
-				}
-				break;
-			case StageManager.StageType.INFINITE:
-				{
-					if (elapsedTime >= 5f)
-					{
-						elapsedTime = 0;
-						SpawnManager.it.ClearDeadEnemy();
-						SpawnManager.it.SpawnEnemies(waveCount++);
+
+						if (isInfiniteSpawn == true)
+						{
+							SpawnManager.it.ClearDeadEnemy();
+							SpawnEnemies();
+							return;
+						}
+						else
+						{
+							if (isBossWave == true)
+							{
+								SpawnBoss();
+								return;
+							}
+							else
+							{
+								SpawnEnemies();
+								return;
+							}
+						}
 					}
 				}
 				break;
 		}
+	}
+
+	private void SpawnEnemies()
+	{
+		SpawnManager.it.SpawnEnemies();
+		waveCount++;
+		elapsedTime = 0;
+	}
+
+	private void SpawnBoss()
+	{
+		SpawnManager.it.SpawnBoss();
+		waveCount++;
+		elapsedTime = 0;
 	}
 }

@@ -1,14 +1,10 @@
-{
+﻿{
     "tid": 1004,
-    "skillPreset": "Haru_sk1Data",
-    "skillName": "하루_sk01",
-    "description": "적 전체에게 공격력의 339%만큼 피해를 입히고 50%확률로 5초동안 40%만큼 지속 피해를 입힌다.",
-    "targetingType": 2,
-    "cooltime": 10.0,
-    "doteData": {
-        "tickAttackPowerMul": 0.10000000149011612,
-        "duration": 5.0
-    },
-    "attackPowerMul": 1.0,
-    "poisonProbability": 0.5
+    "skillPreset": "SkillThrowData",
+    "skillName": "돌 던지기!",
+    "description": "돌을 던지는 기술",
+    "targetingType": 0,
+    "cooltime": 5.0,
+    "attackTime": 0.0,
+    "attackPowerMul": 1.0
 }

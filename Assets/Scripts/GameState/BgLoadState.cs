@@ -8,6 +8,12 @@
 		GameUIManager.it.FadeCurtain(false);
 		UIController.it.RefreshUI();
 		elapsedTime = 0;
+
+		var stageInfo = StageManager.it.CurrentStageInfo;
+
+		var bgData = DataManager.it.Get<BgDataSheet>().Get(stageInfo.bgTid);
+
+		VGameManager.it.mapController.SetBG(bgData.bgCloseName, bgData.bgMiddleName, bgData.bgFarName);
 	}
 
 	public override void OnExit()

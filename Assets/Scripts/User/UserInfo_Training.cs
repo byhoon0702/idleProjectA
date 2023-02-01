@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static partial class UserInfo
 {
-	public static List<UserAbilityType> trainingTypes => DataManager.it.Get<UserTrainingDataSheet>().GetAbilityTypes();
+	public static List<AbilityType> trainingTypes => DataManager.it.Get<UserTrainingDataSheet>().GetAbilityTypes();
 
 
 	public class TrainingSave : UserInfoLevelSaveBase
@@ -17,10 +17,10 @@ public static partial class UserInfo
 		{
 			double total = 0;
 
-			total += GetLevel(UserAbilityType.AttackPower) * 1000;
-			total += GetLevel(UserAbilityType.Hp) * 1000;
-			total += GetLevel(UserAbilityType.CriticalChance) * 1000;
-			total += GetLevel(UserAbilityType.CriticalAttackPower) * 1000;
+			total += GetLevel(AbilityType.AttackPower) * 1000;
+			total += GetLevel(AbilityType.Hp) * 1000;
+			total += GetLevel(AbilityType.CriticalChance) * 1000;
+			total += GetLevel(AbilityType.CriticalAttackPower) * 1000;
 
 			return total;
 		}
@@ -31,7 +31,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 현재 훈련 레벨
 		/// </summary>
-		public Int32 GetTrainingLevel(UserAbilityType _abilityType)
+		public Int32 GetTrainingLevel(AbilityType _abilityType)
 		{
 			return userData.training.GetLevel(_abilityType);
 		}
@@ -39,7 +39,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 훈련 최대레벨
 		/// </summary>
-		public Int32 GetTrainingMaxLevel(UserAbilityType _abilityType)
+		public Int32 GetTrainingMaxLevel(AbilityType _abilityType)
 		{
 			var trainingData = DataManager.it.Get<UserTrainingDataSheet>().Get(_abilityType);
 			if (trainingData == null)
@@ -54,7 +54,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 훈련 값
 		/// </summary>
-		public float GetTrainingValue(UserAbilityType _abilityType, Int32 _level)
+		public float GetTrainingValue(AbilityType _abilityType, Int32 _level)
 		{
 			var trainingData = DataManager.it.Get<UserTrainingDataSheet>().Get(_abilityType);
 			if (trainingData == null)
@@ -70,7 +70,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 훈련 값(현재 어빌리티)
 		/// </summary>
-		public float GetCurrentTrainingValue(UserAbilityType _abilityType)
+		public float GetCurrentTrainingValue(AbilityType _abilityType)
 		{
 			return GetTrainingValue(_abilityType, GetTrainingLevel(_abilityType));
 		}
@@ -78,7 +78,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 훈련 레벨업!
 		/// </summary>
-		public void LevelUpTraining(UserAbilityType _abilityType)
+		public void LevelUpTraining(AbilityType _abilityType)
 		{
 			Int32 maxLevel = GetTrainingMaxLevel(_abilityType);
 			Int32 currLevel = userData.training.GetLevel(_abilityType);
@@ -95,7 +95,7 @@ public static partial class UserInfo
 		/// 훈련 레벨업 비용
 		/// '_level'로 올라가기 위한 필요 비용
 		/// </summary>
-		public IdleNumber GetTrainingLevelupConsumeCount(UserAbilityType _abilityType, Int32 _level)
+		public IdleNumber GetTrainingLevelupConsumeCount(AbilityType _abilityType, Int32 _level)
 		{
 			var consumeInfos = DataManager.it.Get<UserTrainingConsumeDataSheet>().Get(_abilityType);
 
@@ -115,7 +115,7 @@ public static partial class UserInfo
 		/// <summary>
 		/// 현재 레벨의 훈련 레벨업 비용
 		/// </summary>
-		public IdleNumber GetCurrentTrainingLevelupConsumeCount(UserAbilityType _abilityType)
+		public IdleNumber GetCurrentTrainingLevelupConsumeCount(AbilityType _abilityType)
 		{
 			return GetTrainingLevelupConsumeCount(_abilityType, GetTrainingLevel(_abilityType));
 		}

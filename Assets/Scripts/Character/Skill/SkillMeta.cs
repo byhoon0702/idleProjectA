@@ -117,15 +117,6 @@ public enum CharacterCondition
 	CriticalChanceDown,
 
 	/// <summary>
-	/// 피해량 증가
-	/// </summary>
-	DamageUp,
-	/// <summary>
-	/// 피해량 감소
-	/// </summary>
-	DamageDown,
-
-	/// <summary>
 	/// 이동속도 증가
 	/// </summary>
 	MoveSpeedUp,
@@ -138,14 +129,6 @@ public enum CharacterCondition
 	/// 넉백
 	/// </summary>
 	Knockback,
-	/// <summary>
-	/// 스턴
-	/// </summary>
-	Stun,
-	/// <summary>
-	/// 도트대미지
-	/// </summary>
-	Dote,
 }
 
 public enum TargetingType

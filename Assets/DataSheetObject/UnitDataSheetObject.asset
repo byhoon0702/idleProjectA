@@ -18,78 +18,144 @@ MonoBehaviour:
     - tid: 1
       description: 
       name: Land
-      resource: vk01
+      resource: elf_01_B
       classTid: 1
-      raceTid: 1
-      element: 0
       grade: 0
       starlevel: 1
       hp: 10000
       attackPower: 100
-      skillTid: 1002
+      attackSpeed: 1
+      attackSound: 
+      attackType: 1
+      criticalRate: 0
+      criticalPowerRate: 0
+      moveSpeed: 2
+      skillTid: 1003
       rankType: 0
+      projectileResource: SwordEnergy
     - tid: 2
       description: 
       name: Sword
-      resource: sw01
-      classTid: 2
-      raceTid: 1
-      element: 0
+      resource: elf_01_SS
+      classTid: 3
       grade: 0
       starlevel: 1
       hp: 10000
-      attackPower: 100
-      skillTid: 0
+      attackPower: 500
+      attackSpeed: 1
+      attackSound: swordman_hit_01
+      attackType: 2
+      criticalRate: 0
+      criticalPowerRate: 0
+      moveSpeed: 6
+      skillTid: 1003
       rankType: 0
+      projectileResource: SwordEnergy
     - tid: 3
       description: 
       name: ddda
-      resource: vk01
+      resource: elf_01_A
       classTid: 3
-      raceTid: 1
-      element: 0
       grade: 0
       starlevel: 1
       hp: 10000
       attackPower: 100
+      attackSpeed: 1
+      attackSound: 
+      attackType: 2
+      criticalRate: 0
+      criticalPowerRate: 0
+      moveSpeed: 2
       skillTid: 0
       rankType: 0
+      projectileResource: SwordEnergy
     - tid: 4
       description: 
       name: enemy
-      resource: skeleton
+      resource: human_01_B_rvs
       classTid: 1
-      raceTid: 1
-      element: 0
       grade: 0
       starlevel: 1
       hp: 10000
       attackPower: 100
+      attackSpeed: 1
+      attackSound: 
+      attackType: 2
+      criticalRate: 0
+      criticalPowerRate: 0
+      moveSpeed: 2
       skillTid: 0
       rankType: 0
+      projectileResource: SwordEnergy
     - tid: 5
       description: 
       name: enemy2
-      resource: skeleton
+      resource: human_01_D_rvs
       classTid: 1
-      raceTid: 1
-      element: 0
       grade: 0
       starlevel: 1
       hp: 10000
       attackPower: 100
+      attackSpeed: 1
+      attackSound: 
+      attackType: 1
+      criticalRate: 0
+      criticalPowerRate: 0
+      moveSpeed: 2
       skillTid: 0
       rankType: 0
+      projectileResource: SwordEnergy
     - tid: 1000
       description: 
       name: wall
-      resource: skeleton
+      resource: human_01_SS_rvs
       classTid: 4
-      raceTid: 1
-      element: 0
       grade: 0
       starlevel: 1
       hp: 5000
       attackPower: 100
+      attackSpeed: 1
+      attackSound: 
+      attackType: 1
+      criticalRate: 0
+      criticalPowerRate: 0
+      moveSpeed: 2
       skillTid: 0
       rankType: 0
+      projectileResource: SwordEnergy
+    - tid: 10
+      description: 
+      name: Archer
+      resource: human_02_SS
+      classTid: 2
+      grade: 0
+      starlevel: 1
+      hp: 5000
+      attackPower: 100
+      attackSpeed: 1
+      attackSound: 
+      attackType: 2
+      criticalRate: 0
+      criticalPowerRate: 0
+      moveSpeed: 2
+      skillTid: 0
+      rankType: 0
+      projectileResource: Arrow
+    - tid: 999
+      description: 
+      name: Boss
+      resource: human_01_SS_rvs
+      classTid: 5
+      grade: 0
+      starlevel: 1
+      hp: 300000
+      attackPower: 300
+      attackSpeed: 1
+      attackSound: 
+      attackType: 1
+      criticalRate: 0
+      criticalPowerRate: 0
+      moveSpeed: 2
+      skillTid: 0
+      rankType: 0
+      projectileResource: SwordEnergy

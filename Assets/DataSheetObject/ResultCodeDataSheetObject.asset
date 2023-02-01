@@ -15,9 +15,17 @@ MonoBehaviour:
   dataSheet:
     typeName: ResultCodeDataSheet
     infos:
+    - tid: 1001000
+      description: 
+      key: _NONE
+      alertType: 0
+      title: 
+      content: 
+      okText: 
+      cancelText: 
     - tid: 1001001
-      description: "\uCF54\uB4DC\uC5D0\uC11C \uC0AC\uC6A9"
-      key: ERROR_INFO
+      description: "\uC5D0\uB7EC \uAE30\uBCF8"
+      key: NO_META_DATA
       alertType: 1
       title: 
       content: 
@@ -25,21 +33,13 @@ MonoBehaviour:
       cancelText: 
     - tid: 1001002
       description: 
-      key: ERROR_INTRO
+      key: INVALID_DATA
       alertType: 1
       title: 
       content: GO TO INTRO
       okText: 
       cancelText: 
     - tid: 1001003
-      description: 
-      key: ERROR_APP_QUIT
-      alertType: 1
-      title: 
-      content: ERROR
-      okText: Exit
-      cancelText: 
-    - tid: 1001004
       description: "\uC571 \uC885\uB8CC"
       key: APPLICATION_QUIT
       alertType: 0
@@ -48,10 +48,20 @@ MonoBehaviour:
       okText: Exit
       cancelText: 
     - tid: 1001004
-      description: "\uCF54\uB4DC\uC5D0\uC11C \uC0AC\uC6A9"
-      key: INFO
+      description: "\uC544\uC774\uD15C\uC5D0 \uAE30\uBCF8 \uCE90\uB9AD\uD130 \uC815\uC758
+        \uC548\uB428"
+      key: NO_DEFINED_DEFAULT_CHAR
+      alertType: 1
+      title: 
+      content: "\uC544\uC774\uD15C\uC5D0 \uAE30\uBCF8 \uCE90\uB9AD\uD130 \uC815\uC758
+        \uC548\uB428"
+      okText: GoToIntro
+      cancelText: 
+    - tid: 1001005
+      description: "\uC544\uC774\uD15C \uBD80\uC871"
+      key: LACK_ITEM
       alertType: 0
       title: 
-      content: 
+      content: "{0} \uC544\uC774\uD15C\uC774 \uBD80\uC871\uD569\uB2C8\uB2E4"
       okText: 
       cancelText: 

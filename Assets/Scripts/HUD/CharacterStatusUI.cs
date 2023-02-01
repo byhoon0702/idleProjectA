@@ -9,7 +9,7 @@ public class CharacterStatusUI : MonoBehaviour
 
 
 	private RectTransform rectTransform;
-	private Character observingCharacter;
+	private Unit observingCharacter;
 
 
 	private IObjectPool<CharacterStatusUI> managedPool;
@@ -19,7 +19,7 @@ public class CharacterStatusUI : MonoBehaviour
 	{
 		managedPool = pool;
 	}
-	public void Init(Character _observingCharacter)
+	public void Init(Unit _observingCharacter)
 	{
 		rectTransform = transform as RectTransform;
 		observingCharacter = _observingCharacter;

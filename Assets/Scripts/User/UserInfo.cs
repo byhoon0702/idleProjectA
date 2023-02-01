@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 public static partial class UserInfo
 {
+	public const Int32 SKILL_SLOT_COUNT = 6;
+
 	public static UserData userData = new UserData(); // 저장데이터. 외부에서 직접 접근은 지양.
 
 	/// <summary>
@@ -16,17 +18,9 @@ public static partial class UserInfo
 	/// </summary>
 	public static PropertyInfo prop = new PropertyInfo();
 	/// <summary>
-	/// 유물
-	/// </summary>
-	public static RelicInfo relic = new RelicInfo();
-	/// <summary>
-	/// 보급소
-	/// </summary>
-	public static AgentInfo agent = new AgentInfo();
-	/// <summary>
 	/// 진급
 	/// </summary>
-	public static PromoteInfo promo = new PromoteInfo();
+	public static HyperModeInfo promo = new HyperModeInfo();
 	/// <summary>
 	/// 진급능력
 	/// </summary>
@@ -36,7 +30,7 @@ public static partial class UserInfo
 	/// <summary>
 	/// 유저 레벨 변경
 	/// </summary>
-	public static Action<Int32/* before level*/, Int32 /*after level*/> onLevelupChanged;
+	public static Action<int/* before level*/, int /*after level*/> onLevelupChanged;
 
 	/// <summary>
 	/// 전투력 변경
@@ -44,10 +38,17 @@ public static partial class UserInfo
 	public static Action<IdleNumber, IdleNumber> onTotalCombatChanged;
 
 
-	public static string userName => userData.userName;
-	public static Int32 userLv => UserDataCalculator.GetLevelInfo(userData.userExp).level;
-	public static Int64 expTotal => userData.userExp;
-	public static Int64 currExp
+	public static string UserName => userData.userName;
+	public static int UserLv => UserDataCalculator.GetLevelInfo(userData.userExp).level;
+	public static long SelectUnitTid => userData.SelectedUnitTid;
+	public static long EquipWeaponTid => userData.EquipWeaponTid;
+	public static long EquipArmorTid => userData.EquipArmerTid;
+	public static long EquipAccessoryTid => userData.EquipAccessoryTid;
+
+	public static long[] skillSlots => userData.skillSlots;
+
+	public static long expTotal => userData.userExp;
+	public static long currExp
 	{
 		get
 		{
@@ -55,7 +56,7 @@ public static partial class UserInfo
 			return expTotal - levelInfo.beginExp;
 		}
 	}
-	public static Int64 nextExp
+	public static long nextExp
 	{
 		get
 		{
@@ -73,32 +74,64 @@ public static partial class UserInfo
 	private static IdleNumber _totalCombatPower = new IdleNumber();
 	public static IdleNumber totalCombatPower => _totalCombatPower;
 
-	public static string GetAbiltyTitle(UserAbilityType _userAbilityType)
+	public static string GetAbiltyTitle(AbilityType _userAbilityType)
 	{
 		switch (_userAbilityType)
 		{
-			case UserAbilityType.AttackPower:
+			case AbilityType.AttackPower:
 				return "공격력";
-			case UserAbilityType.Hp:
-				return "HP";
-			case UserAbilityType.CriticalChance:
+
+			case AbilityType.Hp:
+				return "체력";
+
+			case AbilityType.HpRecovery:
+				return "체력회복량";
+
+			case AbilityType.CriticalChance:
 				return "치명타 확률";
-			case UserAbilityType.CriticalAttackPower:
+
+			case AbilityType.CriticalAttackPower:
 				return "치명타 피해";
-			case UserAbilityType.GoldUp:
-				return "골드 획득량";
-			case UserAbilityType.ExpUp:
-				return "경험치 획득량";
-			case UserAbilityType.ItemUp:
-				return "아이템 획득량";
-			case UserAbilityType.MoveSpeed:
-				return "이동속도";
-			case UserAbilityType.AttackSpeed:
+
+			case AbilityType.CriticalX2AttackChance:
+				return "하이퍼 어택 확률";
+
+			case AbilityType.CriticalX2AttackPower:
+				return "하이퍼 어택 피해량";
+
+			case AbilityType.AttackSpeed:
 				return "공격속도";
-			case UserAbilityType.SkillAttackPower:
-				return "스킬피해";
-			case UserAbilityType.BossAttackPower:
-				return "보스피해";
+
+			case AbilityType.MoveSpeed:
+				return "이동속도";
+
+			case AbilityType.DoubleAttack:
+				return "더블어택";
+
+			case AbilityType.TripleAttack:
+				return "트리플 어택";
+
+			case AbilityType.SkillColltimeDown:
+				return "스킬 쿨타임 감소";
+
+			case AbilityType.SkillAttackPower:
+				return "스킬 공격력";
+
+			case AbilityType.BossAttackPower:
+				return "보스 피해";
+
+			case AbilityType.FriendAttackPower:
+				return "동료 공격력";
+
+			case AbilityType.FriendAttackSpeed:
+				return "동료 공격속도";
+
+			case AbilityType.Avoid:
+				return "회피율";
+
+			case AbilityType.GoldUp:
+				return "골드 획득량";
+
 			default:
 				return "";
 		}
@@ -111,11 +144,11 @@ public static partial class UserInfo
 
 	public static void AddExp(Int64 _exp)
 	{
-		Int32 beforeLv = userLv;
+		Int32 beforeLv = UserLv;
 		Int32 afterLv;
 
 		userData.userExp += _exp;
-		afterLv = userLv;
+		afterLv = UserLv;
 
 		if (beforeLv != afterLv)
 		{
@@ -130,12 +163,10 @@ public static partial class UserInfo
 	public static void CalculateTotalCombatPower()
 	{
 		IdleNumber outNumber = new IdleNumber();
-		double total = userLv * 98765;
+		double total = UserLv * 98765;
 
 		total += userData.training.TotalCombatPower();
 		total += userData.currProp.TotalCombatPower();
-		total += userData.relic.TotalCombatPower();
-		total += userData.agent.TotalCombatPower();
 
 		IdleNumber beforeCombatPower = _totalCombatPower;
 		_totalCombatPower = outNumber.Normalize(total);
@@ -146,7 +177,37 @@ public static partial class UserInfo
 	public class UserData
 	{
 		public string userName = "VIVID";
+		public int uid = 12345678;
+
+		private long selectedUnitTid;
+		public long SelectedUnitTid
+		{
+			get
+			{
+				if(selectedUnitTid == 0)
+				{
+					var defaultUnit = DataManager.it.Get<ItemDataSheet>().GetByHashTag("defaultunit");
+					if(defaultUnit == null)
+					{
+						PopAlert.it.Create(new VResult().SetFail(VResultCode.NO_DEFINED_DEFAULT_CHAR), PopupCallback.GoToIntro);
+						return 0;
+					}
+
+					selectedUnitTid = defaultUnit.tid;
+				}
+
+				return selectedUnitTid;
+			}
+		}
+
+		public long EquipWeaponTid = 10;
+		public long EquipArmerTid;
+		public long EquipAccessoryTid;
+
+		public long[] skillSlots = new long[SKILL_SLOT_COUNT];
+
 		public Int64 userExp = 65;
+
 
 		// 훈련
 		public TrainingSave training = new TrainingSave();
@@ -156,14 +217,8 @@ public static partial class UserInfo
 		public PropertySave[] props = new PropertySave[0];
 		public PropertySave currProp => props[selectedPropIndex];
 
-		// 유물
-		public RelicSave relic = new RelicSave();
-
-		// 보급소
-		public AgentSave agent = new AgentSave();
-
 		// 진급
-		public PromoteSave promo = new PromoteSave();
+		public HyperModeSave promo = new HyperModeSave();
 
 		// 진급능력
 		public PromoteAbilitySave proAbil = new PromoteAbilitySave();
@@ -177,13 +232,18 @@ public static partial class UserInfo
 			{
 				props[i] = new PropertySave();
 			}
+
+
+			skillSlots[0] = 1004;
+			skillSlots[1] = 1005;
 		}
 	}
 }
 
 
-public enum UserAbilityType
+public enum AbilityType
 {
+	_NONE,
 	/// <summary>
 	/// 공격력
 	/// </summary>
@@ -193,6 +253,10 @@ public enum UserAbilityType
 	/// </summary>
 	Hp,
 	/// <summary>
+	/// 체력 회복량
+	/// </summary>
+	HpRecovery,
+	/// <summary>
 	/// 치명타 확률
 	/// </summary>
 	CriticalChance,
@@ -201,25 +265,33 @@ public enum UserAbilityType
 	/// </summary>
 	CriticalAttackPower,
 	/// <summary>
-	/// 골드 획득량
+	/// 하이퍼 어택 확률
 	/// </summary>
-	GoldUp,
+	CriticalX2AttackChance,
 	/// <summary>
-	/// 경험치 획득량
+	/// 하이퍼 어택 피해량
 	/// </summary>
-	ExpUp,
+	CriticalX2AttackPower,
 	/// <summary>
-	/// 아이템 획득량
+	/// 공격속도
 	/// </summary>
-	ItemUp,
+	AttackSpeed,
 	/// <summary>
 	/// 이동속도
 	/// </summary>
 	MoveSpeed,
 	/// <summary>
-	/// 공격속도
+	/// 더블어택
 	/// </summary>
-	AttackSpeed,
+	DoubleAttack,
+	/// <summary>
+	/// 트리플 어택
+	/// </summary>
+	TripleAttack,
+	/// <summary>
+	/// 스킬 쿨타임 감소
+	/// </summary>
+	SkillColltimeDown,
 	/// <summary>
 	/// 스킬피해
 	/// </summary>
@@ -229,40 +301,36 @@ public enum UserAbilityType
 	/// </summary>
 	BossAttackPower,
 	/// <summary>
-	/// 보병 체력증가
+	/// 동료 공격력
 	/// </summary>
-	WarriorHp,
+	FriendAttackPower,
 	/// <summary>
-	/// 아쳐 치명타확률 증가
+	/// 동료 공격속도
 	/// </summary>
-	ArcherCriticalChance,
+	FriendAttackSpeed,
 	/// <summary>
-	/// 마법사 공격력 증가
+	/// 회피율
 	/// </summary>
-	WizardAttackPower,
+	Avoid,
 	/// <summary>
-	/// 창병 치명타대미지 증가
+	/// 골드 획득량
 	/// </summary>
-	SpearManCriticalAttackPower,
-	/// <summary>
-	/// 보급소(병영)
-	/// </summary>
-	Agent
+	GoldUp,
 }
 
 
 [Serializable]
-public class UserAbility
+public class AbilityInfo
 {
-	public UserAbilityType type;
-	public double value;
+	public AbilityType type;
+	public IdleNumber value;
 
-	public UserAbility()
+	public AbilityInfo()
 	{
 
 	}
 
-	public UserAbility(UserAbilityType _type, double _value)
+	public AbilityInfo(AbilityType _type, IdleNumber _value)
 	{
 		type = _type;
 		value = _value;
@@ -281,9 +349,9 @@ public abstract class UserInfoLevelSaveBase
 
 	public abstract double TotalCombatPower();
 
-	public virtual Int32 GetLevel(UserAbilityType _ability)
+	public virtual Int32 GetLevel(AbilityType _ability)
 	{
-		Int64 tid = DataManager.it.Get<UserAbilityInfoDataSheet>().GetTid(_ability);
+		Int64 tid = DataManager.it.Get<AbilityInfoDataSheet>().GetTid(_ability);
 
 		if (tid == 0)
 		{
@@ -302,9 +370,9 @@ public abstract class UserInfoLevelSaveBase
 		return defaultLevel;
 	}
 
-	public virtual void SetLevel(UserAbilityType _ability, Int32 _value)
+	public virtual void SetLevel(AbilityType _ability, Int32 _value)
 	{
-		Int64 tid = DataManager.it.Get<UserAbilityInfoDataSheet>().GetTid(_ability);
+		Int64 tid = DataManager.it.Get<AbilityInfoDataSheet>().GetTid(_ability);
 		if (tid == 0)
 		{
 			VLog.LogError($"UserAbilityInfoDataSheet에 정의되지 않은 어빌리티. abil: {_ability}, type: {GetType()}");
@@ -331,14 +399,14 @@ public abstract class UserInfoValueSaveBase
 
 	public abstract double TotalCombatPower();
 
-	public virtual double GetValue(UserAbilityType _ability)
+	public virtual IdleNumber GetValue(AbilityType _ability)
 	{
-		Int64 tid = DataManager.it.Get<UserAbilityInfoDataSheet>().GetTid(_ability);
+		Int64 tid = DataManager.it.Get<AbilityInfoDataSheet>().GetTid(_ability);
 
 		if (tid == 0)
 		{
 			VLog.LogError($"UserAbilityInfoDataSheet에 정의되지 않은 어빌리티. abil: {_ability}, type: {GetType()}");
-			return 0;
+			return new IdleNumber();
 		}
 
 		for (Int32 i = 0 ; i < saveData.Count ; i++)
@@ -349,12 +417,12 @@ public abstract class UserInfoValueSaveBase
 			}
 		}
 
-		return 0;
+		return new IdleNumber();
 	}
 
-	public virtual void SetValue(UserAbilityType _ability, double _value)
+	public virtual void SetValue(AbilityType _ability, IdleNumber _value)
 	{
-		Int64 tid = DataManager.it.Get<UserAbilityInfoDataSheet>().GetTid(_ability);
+		Int64 tid = DataManager.it.Get<AbilityInfoDataSheet>().GetTid(_ability);
 		if (tid == 0)
 		{
 			VLog.LogError($"UserAbilityInfoDataSheet에 정의되지 않은 어빌리티. abil: {_ability}, type: {GetType()}");
@@ -398,7 +466,7 @@ public class UserInfoLevelSaveData
 public class UserInfoValueSaveData
 {
 	public Int64 tid;
-	public double value;
+	public IdleNumber value;
 
 
 	public UserInfoValueSaveData()
@@ -406,7 +474,7 @@ public class UserInfoValueSaveData
 
 	}
 
-	public UserInfoValueSaveData(Int64 _tid, double _value)
+	public UserInfoValueSaveData(Int64 _tid, IdleNumber _value)
 	{
 		tid = _tid;
 		value = _value;

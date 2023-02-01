@@ -8,6 +8,7 @@ public class LoadingState : RootState
 		GameUIManager.it.mainUIObject.SetActive(true);
 		GameUIManager.it.ReleaseAllPool();
 		SpawnManager.it.ClearCharacters();
+		ProjectileManager.it.ClearProjectiles();
 		elapsedTime = 0;
 
 		SceneCamera.it.ResetToStart();
@@ -15,7 +16,7 @@ public class LoadingState : RootState
 
 	public override void OnExit()
 	{
-
+		VSoundManager.it.PlayBgm("main_bgm");
 	}
 
 	public override void OnUpdate(float time)

@@ -50,6 +50,12 @@ MonoBehaviour:
   animator: {fileID: 1942780226916604346}
   centerPivot: {fileID: 820753759305009965}
   headPivot: {fileID: 872388213752531954}
+  rightFootPivot: {fileID: 0}
+  leftFootPivot: {fileID: 0}
+  m_thisCharMaterial: {fileID: 2100000, guid: 48323c2ca97377a40a9a21994dd68ad4, type: 2}
+  m_attackedWhiteFlipTime: 1
+  _currentState: 0
+  swordSwingEffect: {fileID: 0}
 --- !u!1 &3198022856817440853
 GameObject:
   m_ObjectHideFlags: 0
@@ -199,7 +205,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 2.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1001 &3606515317010421933

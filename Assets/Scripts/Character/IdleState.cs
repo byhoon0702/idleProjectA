@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 public class IdleState : CharacterFSM
 {
-	private Character owner;
-	public void Init(Character owner)
+	private Unit owner;
+	public void Init(Unit owner)
 	{
 		this.owner = owner;
 	}
 	public void OnEnter()
 	{
+		owner.PlayAnimation(StateType.IDLE);
 	}
 
 	public void OnExit()

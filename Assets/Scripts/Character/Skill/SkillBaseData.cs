@@ -36,6 +36,13 @@ public class SkillBaseData : ScriptableObject
 	/// </summary>
 	[Tooltip("스킬 쿨타임")]
 	[SerializeField] public float cooltime = 10;
+
+	/// <summary>
+	/// 공격 타이밍
+	/// </summary>
+	[Tooltip("공격 타이밍")]
+	[SerializeField] public float attackTime = 0f;
+
 }
 
 public abstract class SkillBase
@@ -43,7 +50,7 @@ public abstract class SkillBase
 	/// <summary>
 	/// 해당 스킬을 사용하는 캐릭터
 	/// </summary>
-	public Character owner;
+	public Unit owner;
 
 	/// <summary>
 	/// 스킬명(UI표시용)
@@ -94,6 +101,8 @@ public abstract class SkillBase
 	/// </summary>
 	public virtual float cooltimeTimeScale => 1;
 
+	public float skillAttackTime => skillData.attackTime;
+
 	/// <summary>
 	/// 타겟이 있어야만 스킬을 사용할 수 있다
 	/// </summary>
@@ -123,9 +132,9 @@ public abstract class SkillBase
 	/// <summary>
 	/// SkillModule에서만 초기화시 딱 한번 호출
 	/// </summary>
-	public void SetCharacter(Character _character)
+	public void SetUnit(Unit _unit)
 	{
-		owner = _character;
+		owner = _unit;
 
 		CalculateSkillLevelData(owner.info.skillLevel);
 
@@ -151,8 +160,8 @@ public abstract class SkillBase
 	/// </summary>
 	public virtual void Action()
 	{
-		SetCooltime();
-		coolDowning = true;
+		//SetCooltime();
+		//coolDowning = true;
 
 		//// 기본공격은 로그 표시안함
 		//if (!(this is DefaultAttack))
@@ -168,15 +177,12 @@ public abstract class SkillBase
 		// 쿨타임
 		bool check_cooltime = remainCooltime <= 0;
 
-		// 스턴 상태
-		bool check_no_stun = owner.conditionModule.HasCondition(CharacterCondition.Stun) == false;
-
 		// 공격중일때만 필요한경우 
 		bool check_target = needAttackState ? owner.currentState == StateType.ATTACK : true;
 
 
 
-		return check_cooltime && check_no_stun && check_target; // <- 헷갈릴 수 있으니 무조건 AND연산으로 처리할수 있게 해주세요
+		return check_cooltime && check_target; // <- 헷갈릴 수 있으니 무조건 AND연산으로 처리할수 있게 해주세요
 	}
 
 	/// <summary>

@@ -43,7 +43,7 @@ public class AttackPowerDownCondition : ConditionBase
 	public float ratio => conditionData.ratio;
 
 
-	public AttackPowerDownCondition(Character _attacker, AttackPowerDownConditionData _conditionData) : base(_attacker, 0)
+	public AttackPowerDownCondition(UnitBase _attacker, AttackPowerDownConditionData _conditionData) : base(_attacker, 0)
 	{
 		conditionData = _conditionData;
 	}

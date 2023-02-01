@@ -4,8 +4,7 @@
 	{
 		elapsedTime = 0;
 		VGameManager.it.battleRecord = new BattleRecord();
-		VGameManager.it.battleRecord.InitCharacter(CharacterManager.it.GetCharacters(true));
-		UIController.it.ReadyBattleRecord();
+		UnitGlobal.it.WaveStart();
 	}
 
 	public override void OnExit()
