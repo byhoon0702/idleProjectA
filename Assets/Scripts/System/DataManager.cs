@@ -12,24 +12,19 @@ using UnityEngine.Purchasing.MiniJSON;
 /// 현재는 DataSheet 클래스에서 infos 를 가지고오도록 되어있으나
 /// 추후 infos 만 따로 추출 하여 저장 하도록 변경 할 것 
 /// </summary>
-public class DataManager : MonoBehaviour
+public static class DataManager
 {
-	private static DataManager instance;
-	public static DataManager it => instance;
+	private static SkillMeta skillMeta;
+	private static Dictionary<Type, object> container;
 
-	private Dictionary<Type, object> container;
+	public static SkillMeta SkillMeta => skillMeta;
+	public static string path = "";
 
-	public string path = "";
-	private void Awake()
-	{
-		instance = this;
-	}
-
-	public void LoadAllJson()
+	public static void LoadAllJson()
 	{
 		container = new Dictionary<Type, object>();
 
-		TextAsset[] textAssets = Resources.LoadAll<TextAsset>("Json");
+		TextAsset[] textAssets = Resources.LoadAll<TextAsset>("Data/Json");
 
 		foreach (TextAsset file in textAssets)
 		{
@@ -44,11 +39,13 @@ public class DataManager : MonoBehaviour
 					continue;
 				}
 			}
-
 		}
+
+		skillMeta = new SkillMeta();
+		skillMeta.LoadData();
 	}
 
-	private bool LoadFromNonBinary(TextAsset file)
+	private static bool LoadFromNonBinary(TextAsset file)
 	{
 		Dictionary<string, object> jsonDict = (Dictionary<string, object>)Json.Deserialize(file.text);
 		if (jsonDict == null)
@@ -61,7 +58,7 @@ public class DataManager : MonoBehaviour
 		{
 			name = (string)jsonDict["typeName"];
 		}
-		System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
+		System.Type t = name.GetAssemblyType();
 
 		if (t == null)
 		{
@@ -73,7 +70,7 @@ public class DataManager : MonoBehaviour
 		AddToContainer(t, json);
 		return true;
 	}
-	private bool LoadFromBinary(TextAsset file)
+	private static bool LoadFromBinary(TextAsset file)
 	{
 		try
 		{
@@ -92,7 +89,7 @@ public class DataManager : MonoBehaviour
 					{
 						name = (string)jsonDict["typeName"];
 					}
-					System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
+					System.Type t = name.GetAssemblyType();
 
 					if (t == null)
 					{
@@ -112,7 +109,7 @@ public class DataManager : MonoBehaviour
 		}
 		return true;
 	}
-	void AddToContainer(Type type, object data)
+	static void AddToContainer(Type type, object data)
 	{
 		var fieldInfo = type.GetField("infos");
 
@@ -144,7 +141,7 @@ public class DataManager : MonoBehaviour
 	}
 
 
-	public T Get<T>()
+	public static T Get<T>()
 	{
 		if (container == null || container.Count == 0)
 		{

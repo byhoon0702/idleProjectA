@@ -13,6 +13,14 @@ public static class ProjectileHelper
 
 		return a + b + c + d;
 	}
+	public static float ThreePointBezierCurve(float _p1, float _p2, float _p3, float t)
+	{
+		float a = Mathf.Pow((1 - t), 2) * _p1;
+		float b = (2 * (1 - t)) * t * _p2;
+		float c = Mathf.Pow(t, 2) * _p3;
+
+		return a + b + c;
+	}
 }
 
 

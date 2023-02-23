@@ -7,12 +7,12 @@ using System.Text;
 using Unity.VisualScripting;
 
 [Serializable]
-public class ResultCodeDataSheetObject : ScriptableObject
+public class ResultCodeDataSheetObject : BaseDataSheetObject
 {
 	[SerializeField]
 	public ResultCodeDataSheet dataSheet;
 
-	public void Call()
+	public override void Call()
 	{
 		GenerateResultCode(dataSheet.infos);
 	}

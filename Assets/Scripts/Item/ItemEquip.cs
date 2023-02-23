@@ -11,7 +11,7 @@ public class ItemEquip : ItemBase
 	{
 		get
 		{
-			int itemCount = Inventory.it.ItemCount(Tid).GetValueToInt();
+			int itemCount = Inventory.it.ItemCount(Tid).GetValueToInt() - 1; // 1개는 보유하고 있어야 함
 			return itemCount;
 		}
 	}
@@ -30,13 +30,13 @@ public class ItemEquip : ItemBase
 	public override VResult Setup(InstantItem _instantItem)
 	{
 		VResult vResult = base.Setup(_instantItem);
-		if(vResult.Fail())
+		if (vResult.Fail())
 		{
 			return vResult;
 		}
 
 		vResult = SetupMetaData();
-		if(vResult.Fail())
+		if (vResult.Fail())
 		{
 			return vResult;
 		}
@@ -48,7 +48,7 @@ public class ItemEquip : ItemBase
 	{
 		VResult vResult = new VResult();
 
-		var sheet = DataManager.it.Get<EquipLevelDataSheet>();
+		var sheet = DataManager.Get<EquipLevelDataSheet>();
 		levelData = sheet.FindLevelInfo(Level);
 
 		if (levelData == null)
@@ -63,13 +63,17 @@ public class ItemEquip : ItemBase
 	{
 		return nextExp <= Exp;
 	}
+	public bool Equipable()
+	{
+		return true;
+	}
 
 	public override void AddLevel(int _level)
 	{
 		base.AddLevel(_level);
 
 		VResult vResult = SetupMetaData();
-		if(vResult.Fail())
+		if (vResult.Fail())
 		{
 			PopAlert.it.Create(vResult);
 		}

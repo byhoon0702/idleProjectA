@@ -12,10 +12,18 @@ public static class ItemCreator
 		instantItem.tid = _itemData.tid;
 		instantItem.type = _itemData.itemType;
 		instantItem.grade = _itemData.itemGrade;
-		if (_itemData.itemType == ItemType.Relic)
+		if (_itemData.itemType == ItemType.Property)
+		{
+			instantItem.level = ItemProperty.DEFAULT_LEVEL;
+		}
+		else if (_itemData.itemType == ItemType.Mastery)
 		{
 			instantItem.level = 0;
 		}
+		else if (_itemData.itemType == ItemType.GachaExp)
+		{
+			instantItem.level = 1;
+		}		
 		else
 		{
 			instantItem.level = 1;
@@ -51,12 +59,32 @@ public static class ItemCreator
 				itemBase = new ItemSkill();
 				break;
 
-			case ItemType.Friends:
-				itemBase = new ItemCompanion();
+			case ItemType.Pet:
+				itemBase = new ItemPet();
 				break;
 
 			case ItemType.Relic:
 				itemBase = new ItemRelic();
+				break;
+
+			case ItemType.Training:
+				itemBase = new ItemTraining();
+				break;
+
+			case ItemType.Property:
+				itemBase = new ItemProperty();
+				break;
+
+			case ItemType.Mastery:
+				itemBase = new ItemMastery();
+				break;
+
+			case ItemType.Core:
+				itemBase = new ItemCore();
+				break;
+
+			case ItemType.GachaExp:
+				itemBase = new ItemGachaExp();
 				break;
 
 			default:

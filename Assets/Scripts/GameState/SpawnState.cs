@@ -2,10 +2,20 @@
 {
 	public override void OnEnter()
 	{
-		SpawnManager.it.SpawnCoroutine(() =>
+		if (SpawnManagerV2.it != null)
 		{
-			VGameManager.it.ChangeState(GameState.BATTLESTART);
-		});
+			SpawnManagerV2.it.SpawnCoroutine(() =>
+			{
+				VGameManager.it.ChangeState(GameState.BATTLESTART);
+			});
+		}
+		else
+		{
+			SpawnManager.it.SpawnCoroutine(() =>
+			{
+				VGameManager.it.ChangeState(GameState.BATTLESTART);
+			});
+		}
 	}
 
 	public override void OnExit()

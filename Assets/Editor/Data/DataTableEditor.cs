@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
+
 using System.IO;
 using System.Text;
 
@@ -11,57 +10,97 @@ using System.Reflection;
 using System.Collections;
 
 
-public class DataTableEditor : EditorWindow
-{
 
+[Serializable]
+public class ContainedData
+{
+	[SerializeField]
+	public System.Type type;
+	[SerializeField]
+	public object data;
+}
+[Serializable]
+public class DataContainer
+{
+	public List<ContainedData> dataContainer;
+
+	public DataContainer()
+	{
+
+		dataContainer = new List<ContainedData>();
+	}
+
+	~DataContainer()
+	{
+		dataContainer.Clear();
+		dataContainer = null;
+	}
+
+	public void Add(ContainedData data)
+	{
+		dataContainer.Add(data);
+	}
+	public ContainedData Find(System.Type type)
+	{
+		for (int i = 0; i < dataContainer.Count; i++)
+		{
+			var data = dataContainer[i];
+			if (data.type == type)
+			{
+				return data;
+			}
+		}
+		return null;
+	}
+
+}
+
+
+public partial class DataTableEditor : EditorWindow
+{
 	public DataTableEditorSettings settings;
 	[SerializeField]
 	public string className;
 
-	private bool foldOut = false;
-
-
 	[SerializeField]
 	public SerializedObject serializedObject;
-	[SerializeField]
-	public SerializedObject serializedWindowObject;
+
 	[SerializeField]
 	public ScriptableObject scriptableObject;
 
-	public Vector2 scrollPos;
-
-	//private ReorderableList reorderableList;
-	private UnityEditorInternal.ReorderableList reorderableList;
-	private Malee.List.ReorderableList maleeReorderableList;
+	[SerializeField] private Malee.List.ReorderableList maleeReorderableList;
 	private string label;
 	private string searchString;
 	private Type instanceType;
 	private string currentJsonFileName;
 	private string currentJsonFilePath;
-	[SerializeField]
-	private Dictionary<Type, object> jsonContainer;
-	[SerializeField]
-	private Dictionary<string, Type> linkedTypeList;
 
-	[SerializeField]
-	private Dictionary<string, List<bool>> foldOutList;
+	private DataContainer dataContainer;
 
 	[SerializeField]
 	public SerializedProperty dataSheetProperty;
 
-
-	[SerializeField]
-	public Dictionary<string, EditorWindow> subWindows = new Dictionary<string, EditorWindow>();
-
-
-
 	private int addArraySize = 0;
 	private int pageSize = 10;
 
-	public void CreateSubWindow()
-	{
-		subWindows.Add("", null);
-	}
+
+	SerializedProperty infosProperty;
+
+	private int pageIndex = 0;
+	private string[] pageNames = new string[]
+{
+		"데이터 리스트",
+		"데이터 편집",
+		"TID 리스트"
+};
+
+
+	private SerializedProperty prefixIDProperty;
+
+	private const string prefixChangeDescription = "해당 프리픽스의 0인 자릿수 만큼을 교체. ex) prefix: 1001000 , tid :  1012003 , result : 1001003 , 단 일의 자리수가 0이 아닌경우 교체 안됨";
+	private const string prefixAddDescription = "해당 프리픽스 만큼 현재 TID 에서 더함";
+	private const string prefixMinusDescription = "해당 프리픽스 만큼 현재 TID 에서 뺌";
+	public const long minTidPrefix = 1000000;
 
 	[MenuItem("Custom Menu/DataEditor/DataTableEditor", false, 5000)]
 	public static void Init()
@@ -70,16 +109,38 @@ public class DataTableEditor : EditorWindow
 		window.minSize = new Vector2(330f, 360f);
 
 		window.Show();
-		window.InitData();
+
 	}
 
-	public void InitData()
-	{
-		LoadAllJson();
-	}
+
 	private void OnDestroy()
 	{
+		if (datalistforDataListPage != null)
+		{
+			datalistforDataListPage.Clear();
+			datalistforDataListPage = null;
+		}
+
+
+		if (filePaths != null)
+		{
+			filePaths.Clear();
+			filePaths = null;
+		}
+
+
+		if (dataContainer != null)
+		{
+			dataContainer = null;
+		}
+
 		maleeReorderableList = null;
+
+		Resources.UnloadAsset(scriptableObject);
+		Resources.UnloadAsset(settings);
+
+		Resources.UnloadUnusedAssets();
+		System.GC.Collect();
 	}
 
 	private static readonly Type[] types =
@@ -87,10 +148,8 @@ public class DataTableEditor : EditorWindow
 		typeof(DataTableEditor),
 	};
 
-
 	public override IEnumerable<Type> GetExtraPaneTypes()
 	{
-
 		return types;
 	}
 
@@ -105,15 +164,6 @@ public class DataTableEditor : EditorWindow
 		{
 			return $"{_instanceName}, Assembly-CSharp";
 		}
-	}
-
-
-
-
-	public static T TryParse<T>(string value)
-	{
-		TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
-		return (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, value);
 	}
 
 	public void LoadSettings()
@@ -136,10 +186,13 @@ public class DataTableEditor : EditorWindow
 			}
 		}
 	}
-	public void LoadAllJson()
+
+	public void LoadAllDataPath(string path)
 	{
-		jsonContainer = new Dictionary<Type, object>();
-		string[] files = Directory.GetFiles(Application.dataPath + "/AssetFolder/Resources/Json");
+
+		datalistforDataListPage = new Dictionary<string, DataListInfo>();
+		filePaths = new List<string>();
+		string[] files = Directory.GetFiles(Application.dataPath + $"/AssetFolder/Resources/Data/{path}");
 
 		foreach (string file in files)
 		{
@@ -151,53 +204,99 @@ public class DataTableEditor : EditorWindow
 			{
 				continue;
 			}
-			if (LoadFromBinary(file) == false)
+
+			filePaths.Add(file);
+			string fileName = Path.GetFileNameWithoutExtension(file);
+			if (path == "Json")
 			{
-				LoadFromNonBinary(file);
+				datalistforDataListPage.Add(fileName, new DataListInfo() { path = file, data = JsonConverter.ToData(file) });
+			}
+			else
+			{
+				datalistforDataListPage.Add(fileName, new DataListInfo() { path = file, data = CsvConverter.ToData(file) });
+			}
+		}
+
+	}
+
+
+	public void LoadAllData(string path)
+	{
+		dataContainer = new DataContainer();
+		for (int i = 0; i < filePaths.Count; i++)
+		{
+			string file = filePaths[i];
+			if (path == "Json")
+			{
+				LoadFromJson(file);
 			}
 
+			if (path == "Csv")
+			{
+				LoadFromCSV(file);
+			}
 		}
 	}
 
-	private bool LoadFromBinary(string file)
+	public void LoadAllJson()
 	{
-		using (FileStream fs = File.OpenRead(file))
+
+		dataContainer = new DataContainer();
+		string[] files = Directory.GetFiles(Application.dataPath + "/AssetFolder/Resources/Data/Json");
+
+		foreach (string file in files)
 		{
-			using (BinaryReader br = new BinaryReader(fs))
+			if (file.Contains(".meta"))
 			{
-				string name = System.IO.Path.GetFileNameWithoutExtension(file);
-
-				System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
-
-				try
-				{
-					string json = br.ReadString();
-					var jsonData = JsonUtility.FromJson(json, t);
-					jsonContainer.Add(t, jsonData);
-				}
-				catch (Exception e)
-				{
-					return false;
-				}
+				continue;
 			}
+			if (file.Contains("DataSheet") == false)
+			{
+				continue;
+			}
+			LoadFromJson(file);
+		}
+	}
+
+	private bool LoadFromJson(string file)
+	{
+
+		string name = System.IO.Path.GetFileNameWithoutExtension(file);
+
+		System.Type t = name.GetAssemblyType();
+
+		try
+		{
+			var jsonData = JsonConverter.ToData(file);
+			ContainedData containData = new ContainedData();
+			containData.type = t;
+			containData.data = jsonData;
+			dataContainer.Add(containData);
+
+		}
+		catch (Exception e)
+		{
+			return false;
 		}
 		return true;
 	}
 
-	private bool LoadFromNonBinary(string file)
+	private bool LoadFromCSV(string file)
 	{
 
-		string json = File.ReadAllText(file);
 
 		string name = System.IO.Path.GetFileNameWithoutExtension(file);
 
-		System.Type t = System.Type.GetType($"{name}, Assembly-CSharp");
-
+		System.Type t = name.GetAssemblyType();
 
 		try
 		{
-			var jsonData = JsonUtility.FromJson(json, t);
-			jsonContainer.Add(t, jsonData);
+			var jsonData = CsvConverter.ToData(file);
+			ContainedData containData = new ContainedData();
+			containData.type = t;
+			containData.data = jsonData;
+			dataContainer.Add(containData);
+
 		}
 		catch (Exception e)
 		{
@@ -209,238 +308,32 @@ public class DataTableEditor : EditorWindow
 	void OnGUI()
 	{
 		LoadSettings();
+
 		EditorGUILayout.Space(10);
-		label = EditorGUILayout.TextField("데이터 테이블 이름", label);
-		if (label.IsNullOrEmpty())
+		if(GUILayout.Button("TID 규칙"))
 		{
-			EditorGUILayout.Space(3);
-			if (GUILayout.Button("Load Json"))
-			{
-				FromJson();
-			}
-			if (GUILayout.Button("Load CSV"))
-			{
-				FromCSV();
-			}
-
-			EditorGUILayout.Space(3);
-			EditorGUILayout.HelpBox("테이블 이름을 입력하거나 Json 파일을 불러오세요", MessageType.Warning);
-			return;
+			Application.OpenURL("https://docs.google.com/spreadsheets/d/1GRH90StHBWwtqGP3OsufETLJONKXJ6TKFoEbtC-pABY/edit#gid=864885465");
 		}
+		pageIndex = GUILayout.Toolbar(pageIndex, pageNames);
+
 		EditorGUILayout.Space(3);
-
-		if (jsonContainer == null)
+		if (pageIndex == 0)
 		{
-			LoadAllJson();
+			DrawDataList();
 		}
-		if (GetScriptableObject(label) == false)
+		else if(pageIndex == 1)
 		{
-			if (TypeExist())
-			{
-				if (GUILayout.Button("Create Scriptable Object"))
-				{
-					CreateScriptableAsset(label);
-				}
-			}
-			else
-			{
-				if (GUILayout.Button("Create CSharp File"))
-				{
-					CreateCSharpFile();
-				}
-			}
-			if (GUILayout.Button("Load Json"))
-			{
-				FromJson();
-			}
+			DrawDataEdit();
 		}
-		else
+		else if(pageIndex == 2)
 		{
-			GUILayout.BeginHorizontal(EditorStyles.toolbar);
-			if (GUILayout.Button("Save Json", EditorStyles.toolbarButton))
-			{
-				ToJson();
-			}
-			if (GUILayout.Button("Load Json", EditorStyles.toolbarButton))
-			{
-				FromJson();
-			}
-			if (GUILayout.Button("Load All Json", EditorStyles.toolbarButton))
-			{
-				LoadAllJson();
-			}
-
-			GUILayout.EndHorizontal();
-			GUILayout.BeginHorizontal(EditorStyles.toolbar);
-			if (GUILayout.Button("Save CSV", EditorStyles.toolbarButton))
-			{
-				ToCSV();
-			}
-			if (GUILayout.Button("Load CSV", EditorStyles.toolbarButton))
-			{
-				FromCSV();
-			}
-			if (GUILayout.Button("Convert Json CSV", EditorStyles.toolbarButton))
-			{
-				ConvertJsonToCSV();
-			}
-
-			GUILayout.EndHorizontal();
-			//GUILayout.BeginHorizontal(EditorStyles.toolbar);
-			//if (GUILayout.Button("Save Non Binary Json", EditorStyles.toolbarButton))
-			//{
-			//	ToJson(false);
-			//}
-			//if (GUILayout.Button("Load Non Binary Json", EditorStyles.toolbarButton))
-			//{
-			//	FromJson();
-			//}
-			//GUILayout.EndHorizontal();
-
-			GUILayout.BeginHorizontal(EditorStyles.toolbar);
-			if (GUILayout.Button("Verify Data Tables", EditorStyles.toolbarButton))
-			{
-				VerifyTidDuplicate();
-			}
-
-			GUILayout.EndHorizontal();
-
-			DrawProperty();
+			DrawTidList();
 		}
-
 		EditorUtility.SetDirty(this);
 	}
-	string[] GetClassNames()
-	{
-		Directory.GetFiles(Application.dataPath + "/Scripts/");
 
 
-		return new string[] { };
-	}
-	SerializedProperty infosProperty;
-	void DrawProperty()
-	{
-		if (scriptableObject == null)
-		{
-			return;
-		}
 
-		if (serializedObject == null)
-		{
-			serializedObject = new SerializedObject(scriptableObject);
-		}
-
-		serializedObject.Update();
-
-		EditorGUILayout.Space(10);
-
-		if (maleeReorderableList == null)
-		{
-			CreateReorderableList();
-		}
-
-		EditorGUILayout.BeginVertical();
-
-		GUIStyle boxStyle = new GUIStyle(GUI.skin.GetStyle("HelpBox"));
-		boxStyle.richText = true;
-		boxStyle.fontSize = 15;
-
-		EditorGUILayout.TextArea($"현재 Json 파일 : {currentJsonFileName}\n현재 파일 경로 : {currentJsonFilePath}", boxStyle);
-
-		DrawToolTip();
-
-		if (dataSheetProperty != null)
-		{
-
-			var targetObje = dataSheetProperty.serializedObject.targetObject;
-			Type tableType = targetObje.GetType().GetField("dataSheet").FieldType;
-
-			Type rawDataType = System.Type.GetType($"{infosProperty.arrayElementType}, Assembly-CSharp");
-			FieldInfo[] fields = rawDataType.GetFields();
-
-			float width = fields.Length * (settings.cellSize.x + settings.rowSpace) + 34;
-
-			scrollPos = GUILayout.BeginScrollView(scrollPos);
-
-			dataSheetProperty.FindPropertyRelative("typeName").stringValue = tableType.Name;
-
-			if (tableType.Name.Contains("ResultCode", StringComparison.Ordinal))
-			{
-				EditorGUILayout.BeginHorizontal();
-				EditorGUILayout.LabelField($"데이터 타입: {tableType.Name}", GUILayout.Width(width / 2));
-				if (GUILayout.Button("리절트 코드 생성", GUILayout.Width(width / 2)))
-				{
-					string methodName = targetObje.name.Replace("DataSheetObject", "");
-					var methodinfo = targetObje.GetType().GetMethod($"Call");
-					methodinfo.Invoke(targetObje, null);
-				}
-				EditorGUILayout.EndHorizontal();
-
-			}
-			else
-			{
-				EditorGUILayout.LabelField($"데이터 타입: {tableType.Name}", GUILayout.Width(width));
-			}
-
-			DrawHeader(width);
-
-			maleeReorderableList.DoLayoutList();//DoList(new Rect(0, EditorGUIUtility.singleLineHeight + 10, width, height + 40), GUIContent.none);
-
-			GUILayout.EndScrollView();
-		}
-
-		EditorGUILayout.EndVertical();
-
-		serializedObject.ApplyModifiedProperties();
-
-		EditorUtility.SetDirty(scriptableObject);
-	}
-
-	private void DrawHeader(float width)
-	{
-		EditorGUILayout.BeginHorizontal();
-		addArraySize = EditorGUILayout.IntField("리스트 개수 ", addArraySize, GUILayout.Width(width - 300));
-		if (GUILayout.Button("리스트 추가", GUILayout.Width(130)))
-		{
-			infosProperty.arraySize += addArraySize;
-		}
-		if (GUILayout.Button("리스트 삭제", GUILayout.Width(130)))
-		{
-			if (infosProperty.arraySize < addArraySize)
-			{
-				infosProperty.arraySize = 0;
-			}
-			else
-			{
-				infosProperty.arraySize -= addArraySize;
-			}
-		}
-		EditorGUILayout.EndHorizontal();
-		pageSize = EditorGUILayout.IntField("한 페이지에 표시할 데이터 개수 ", pageSize, GUILayout.Width(width - 300));
-
-	}
-	private void DrawToolTip()
-	{
-		GUIStyle boxStyle = new GUIStyle(GUI.skin.GetStyle("HelpBox"));
-		boxStyle.richText = true;
-		boxStyle.fontSize = 12;
-		StringBuilder sb = new StringBuilder();
-		sb.Append("알림");
-		EditorGUILayout.TextArea("", boxStyle);
-	}
-
-	private void CreateReorderableList()
-	{
-		if (serializedObject == null)
-		{
-			return;
-		}
-		dataSheetProperty = serializedObject.FindProperty("dataSheet");
-		infosProperty = dataSheetProperty.FindPropertyRelative("infos");
-
-
-		maleeReorderableList = ReorderableListGenerator.Init(settings, serializedObject, infosProperty).SetLoadedData(jsonContainer).Build(10, true);
-	}
 
 	bool TypeExist()
 	{
@@ -456,10 +349,12 @@ public class DataTableEditor : EditorWindow
 	/// </summary>
 	ScriptableObject CreateScriptableAsset(string name)
 	{
-		System.Type type = System.Type.GetType($"{name}Object, Assembly-CSharp");
+		System.Type type = $"{name}Object".GetAssemblyType();
 		ScriptableObject newDataObject = (ScriptableObject)Activator.CreateInstance(type);
 
 		AssetDatabase.CreateAsset(newDataObject, $"Assets/DataSheetObject/{label}Object.asset");
+
+
 		AssetDatabase.SaveAssets();
 		AssetDatabase.Refresh();
 		EditorUtility.FocusProjectWindow();
@@ -499,50 +394,6 @@ public class DataTableEditor : EditorWindow
 	}
 
 
-	void ToJsonBinary()
-	{
-		var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
-
-		System.Reflection.FieldInfo info = targetObje.GetType().GetField("dataSheet");
-		var sd = info.GetValue(targetObje);
-
-		if (VerifyTidDuplicate(sd) == false)
-		{
-
-		}
-		if (currentJsonFilePath.IsNullOrEmpty())
-		{
-			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json/{label}.bytes";
-		}
-		if (currentJsonFileName.IsNullOrEmpty())
-		{
-			currentJsonFileName = "";
-		}
-		string rootPath = Path.GetDirectoryName(currentJsonFilePath);
-
-		string path = EditorUtility.SaveFilePanel("", rootPath, currentJsonFileName, "bytes");
-
-		if (path.IsNullOrEmpty())
-		{
-			return;
-		}
-
-		string json = JsonUtility.ToJson(sd);
-
-		using (FileStream fs = File.Create(path))
-		{
-			using (BinaryWriter sw = new BinaryWriter(fs))
-			{
-				sw.Write(json);
-			}
-		}
-
-		currentJsonFileName = Path.GetFileName(path);
-		currentJsonFilePath = path;
-		AssetDatabase.Refresh();
-
-	}
-
 	void ToJson()
 	{
 		var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
@@ -556,44 +407,48 @@ public class DataTableEditor : EditorWindow
 		}
 		if (currentJsonFilePath.IsNullOrEmpty())
 		{
-			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json/{label}.json";
+			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Data/Json/{label}.json";
 		}
 		if (currentJsonFileName.IsNullOrEmpty())
 		{
 			currentJsonFileName = "";
 		}
+
+		if (currentJsonFilePath.Contains(".csv"))
+		{
+			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Data/Json/{label}.json";
+		}
+		currentJsonFileName = currentJsonFileName.Replace(".csv", ".json");
+
 		string rootPath = Path.GetDirectoryName(currentJsonFilePath);
 		string path = currentJsonFilePath;
-		//string path = EditorUtility.SaveFilePanel("", rootPath, currentJsonFileName, "json");
 
-		//if (path.IsNullOrEmpty())
-		//{
-		//	return;
-		//}
+		JsonConverter.FromData(sd, path);
+		//string json = JsonUtility.ToJson(sd, true);
 
-		string json = JsonUtility.ToJson(sd);
-
-
-		File.WriteAllText(path, json);
-
+		//File.WriteAllText(path, json);
 
 		currentJsonFileName = Path.GetFileName(path);
 		currentJsonFilePath = path;
-		AssetDatabase.Refresh();
+
+		//AssetDatabase.Refresh();
 	}
 
-	void FromJson()
-	{
-		if (currentJsonFilePath.IsNullOrEmpty())
-		{
-			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json";
-		}
-		string rootPath = Path.GetDirectoryName(currentJsonFilePath);
-		string path = EditorUtility.OpenFilePanel("", rootPath, "json");
 
-		if (path.IsNullOrEmpty())
+	void FromJson(bool openFilePanel = true)
+	{
+
+		string rootPath = Path.GetDirectoryName($"{Application.dataPath}/AssetFolder/Resources/Data/Json/.json");
+		string path = currentJsonFilePath;
+		if (openFilePanel)
 		{
-			return;
+			path = EditorUtility.OpenFilePanel("", rootPath, "json");
+
+			if (path.IsNullOrEmpty())
+			{
+				return;
+			}
+
 		}
 
 		string fileName = Path.GetFileNameWithoutExtension(path);
@@ -602,18 +457,22 @@ public class DataTableEditor : EditorWindow
 		object json = JsonConverter.ToData(path);
 		if (json != null)
 		{
-			label = typeName;
+			System.Type type = json.GetType();
 
+			label = fileName;
+			typeName = (string)type.GetField("typeName").GetValue(json);
 			if (GetScriptableObject(typeName))
 			{
 				if (TypeExist())
 				{
-
+					instanceType.GetField("dataSheet").SetValue(scriptableObject, null);
 					instanceType.GetField("dataSheet").SetValue(scriptableObject, json);
 					serializedObject = new SerializedObject(scriptableObject);
 				}
 			}
 		}
+		LoadAllDataPath("Json");
+		LoadAllData("Json");
 
 
 		CreateReorderableList();
@@ -626,17 +485,17 @@ public class DataTableEditor : EditorWindow
 	{
 		string typename = "";
 		long tid = 0;
-		foreach (var table in jsonContainer)
+		foreach (var table in dataContainer.dataContainer)
 		{
 
-			if (currentData != null && currentData.GetType() == table.Key)
+			if (currentData != null && currentData.GetType() == table.type)
 			{
 				continue;
 			}
 
 			//현재 편집 중인 데이터이면 따로 추가 한다.
 
-			IList list = (IList)table.Key.GetField("infos").GetValue(table.Value);
+			IList list = (IList)table.type.GetField("infos").GetValue(table.data);
 
 			foreach (var item in list)
 			{
@@ -654,6 +513,7 @@ public class DataTableEditor : EditorWindow
 
 	private bool VerifyTidDuplicate(object currentData = null)
 	{
+		return true;
 		bool verified = true;
 		Dictionary<long, List<string>> duplicatedDatas = new Dictionary<long, List<string>>();
 
@@ -686,10 +546,13 @@ public class DataTableEditor : EditorWindow
 		var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
 
 		string csv = CsvConverter.FromData(targetObje);
+		string path = $"{Application.dataPath}/AssetFolder/Resources/Data/Csv/{label}.csv";
+		using (StreamWriter streamWriter = new StreamWriter(path, false, System.Text.Encoding.UTF8))
+		{
+			streamWriter.Write(csv);
+			streamWriter.Close();
+		}
 
-		StreamWriter streamWriter = File.CreateText($"{Application.dataPath}/AssetFolder/{label}.csv");
-		streamWriter.Write(csv);
-		streamWriter.Close();
 		AssetDatabase.Refresh();
 	}
 
@@ -697,7 +560,7 @@ public class DataTableEditor : EditorWindow
 	{
 		if (currentJsonFilePath.IsNullOrEmpty())
 		{
-			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json";
+			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Data/Json";
 		}
 		string rootPath = Path.GetDirectoryName(currentJsonFilePath);
 		string path = EditorUtility.OpenFilePanel("", rootPath, "json");
@@ -719,14 +582,19 @@ public class DataTableEditor : EditorWindow
 		AssetDatabase.Refresh();
 	}
 
-	void FromCSV()
+	void FromCSV(bool openFilePanel = true)
 	{
-		string rootPath = Path.GetDirectoryName($"{Application.dataPath}/AssetFolder/");
-		string path = EditorUtility.OpenFilePanel("", rootPath, "csv");
+		string rootPath = Path.GetDirectoryName($"{Application.dataPath}/AssetFolder/Resources/Data/Csv/.csv");
+		string path = currentJsonFilePath;
 
-		if (path.IsNullOrEmpty())
+		if (openFilePanel)
 		{
-			return;
+			path = EditorUtility.OpenFilePanel("", rootPath, "csv");
+
+			if (path.IsNullOrEmpty())
+			{
+				return;
+			}
 		}
 		var data = CsvConverter.ToData(path);
 
@@ -740,13 +608,14 @@ public class DataTableEditor : EditorWindow
 			{
 				if (TypeExist())
 				{
-
+					instanceType.GetField("dataSheet").SetValue(scriptableObject, null);
 					instanceType.GetField("dataSheet").SetValue(scriptableObject, data);
 					serializedObject = new SerializedObject(scriptableObject);
 				}
 			}
 		}
-
+		LoadAllDataPath("Csv");
+		LoadAllData("Csv");
 		CreateReorderableList();
 		EditorGUI.FocusTextInControl(null);
 		currentJsonFileName = Path.GetFileName(path);
@@ -766,7 +635,7 @@ public class DataTableEditor : EditorWindow
 				sb.AppendLine("using UnityEngine;");
 				sb.AppendLine("using System;");
 				sb.AppendLine("[Serializable]");
-				sb.AppendLine($"public class {label}Object : ScriptableObject ");
+				sb.AppendLine($"public class {label}Object : BaseDataSheetObject ");
 				sb.AppendLine("{");
 				sb.AppendLine("\t[SerializeField]");
 				sb.AppendLine($"\tpublic {label} dataSheet;");
@@ -778,4 +647,48 @@ public class DataTableEditor : EditorWindow
 
 		AssetDatabase.Refresh();
 	}
+
+	//void ToJsonBinary()
+	//{
+	//	var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
+
+	//	System.Reflection.FieldInfo info = targetObje.GetType().GetField("dataSheet");
+	//	var sd = info.GetValue(targetObje);
+
+	//	if (VerifyTidDuplicate(sd) == false)
+	//	{
+
+	//	}
+	//	if (currentJsonFilePath.IsNullOrEmpty())
+	//	{
+	//		currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Json/{label}.bytes";
+	//	}
+	//	if (currentJsonFileName.IsNullOrEmpty())
+	//	{
+	//		currentJsonFileName = "";
+	//	}
+	//	string rootPath = Path.GetDirectoryName(currentJsonFilePath);
+
+	//	string path = EditorUtility.SaveFilePanel("", rootPath, currentJsonFileName, "bytes");
+
+	//	if (path.IsNullOrEmpty())
+	//	{
+	//		return;
+	//	}
+
+	//	string json = JsonUtility.ToJson(sd);
+
+	//	using (FileStream fs = File.Create(path))
+	//	{
+	//		using (BinaryWriter sw = new BinaryWriter(fs))
+	//		{
+	//			sw.Write(json);
+	//		}
+	//	}
+
+	//	currentJsonFileName = Path.GetFileName(path);
+	//	currentJsonFilePath = path;
+	//	AssetDatabase.Refresh();
+
+	//}
 }

@@ -1,8 +1,8 @@
-//========AUTO GENERATED CODE======//
+﻿//========AUTO GENERATED CODE======//
 using UnityEngine;
 using System;
 [Serializable]
-public class WaveDataSheetObject : ScriptableObject 
+public class WaveDataSheetObject : BaseDataSheetObject
 {
 	[SerializeField]
 	public WaveDataSheet dataSheet;

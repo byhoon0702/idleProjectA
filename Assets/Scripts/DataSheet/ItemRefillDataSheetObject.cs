@@ -1,8 +1,8 @@
-//========AUTO GENERATED CODE======//
+﻿//========AUTO GENERATED CODE======//
 using UnityEngine;
 using System;
 [Serializable]
-public class ItemRefillDataSheetObject : ScriptableObject 
+public class ItemRefillDataSheetObject : BaseDataSheetObject
 {
 	[SerializeField]
 	public ItemRefillDataSheet dataSheet;

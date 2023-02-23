@@ -11,11 +11,6 @@ public class AnimationEventReceiver : MonoBehaviour
 		unit = _unit;
 	}
 
-	public void OnDefaultAttack_ActionEvent()
-	{
-		unit.OnDefaultAttack_ActionEvent();
-	}
-
 	public void RightStepDown()
 	{
 		// GameUIManager.it.ShowStepFog(unit, true);

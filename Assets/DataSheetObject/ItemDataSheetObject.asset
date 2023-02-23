@@ -12,210 +12,249 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81de0b0cc91fc0c4aa0fc5bc64dc853e, type: 3}
   m_Name: ItemDataSheetObject
   m_EditorClassIdentifier: 
+  tooltip: 
+  fieldSettings:
+  - fieldName: tid
+    width: 100
+  - fieldName: description
+    width: 100
+  - fieldName: name
+    width: 100
+  - fieldName: itemDesc
+    width: 100
+  - fieldName: itemType
+    width: 100
+  - fieldName: itemGrade
+    width: 100
+  - fieldName: hashTag
+    width: 100
+  - fieldName: equipAbility
+    width: 100
+  - fieldName: equipAbilityValue
+    width: 100
+  - fieldName: equipAbilityInc
+    width: 100
+  - fieldName: 
+    width: 0
+  - fieldName: toOwnAbility
+    width: 100
+  - fieldName: toOwnValue
+    width: 100
+  - fieldName: toOwnInc
+    width: 100
+  - fieldName: 
+    width: 0
+  - fieldName: unitTid
+    width: 100
+  - fieldName: petTid
+    width: 100
+  - fieldName: itemRefillTid
+    width: 100
+  - fieldName: skillTid
+    width: 100
+  - fieldName: userTrainingTid
+    width: 100
   dataSheet:
     typeName: ItemDataSheet
+    prefixID: 1701807000
     infos:
-    - tid: 1
-      description: "\uACE8\uB4DC\uC73C\uC73C"
-      name: "\uACE8\uB4DC"
-      itemType: 1
-      itemGrade: 0
-      hashTag: gold
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 0
-      equipAbilityValue: 
-      toOwnAbility: 0
-      toOwnValue: 
-    - tid: 2
-      description: "\uB2E4\uC774\uC544\uC544\uC544"
-      name: "\uB2E4\uC774\uC544"
-      itemType: 1
-      itemGrade: 0
-      hashTag: dia
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 0
-      equipAbilityValue: 
-      toOwnAbility: 0
-      toOwnValue: 
-    - tid: 3
-      description: "\uC9C4\uAE09\uB2A5\uB825\uC7AC\uD68C"
-      name: "\uBA54\uB2EC"
-      itemType: 1
-      itemGrade: 0
-      hashTag: medal
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 0
-      equipAbilityValue: 
-      toOwnAbility: 0
-      toOwnValue: 
-    - tid: 4
-      description: "\uC2AC\uB77C\uC784"
-      name: "\uC2AC\uB77C\uC784"
-      itemType: 2
-      itemGrade: 0
-      hashTag: defaultunit
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 0
-      equipAbilityValue: 
-      toOwnAbility: 0
-      toOwnValue: 
-    - tid: 5
-      description: "\uD558\uD2B8"
-      name: "\uD558\uD2B8"
-      itemType: 1
-      itemGrade: 0
-      hashTag: 
-      refillLinkTid: 2308987
-      relicLinkTid: 0
-      equipAbility: 0
-      equipAbilityValue: 
-      toOwnAbility: 0
-      toOwnValue: 
-    - tid: 6
-      description: "\uBCF4\uC2A4\uB7EC\uC2DC"
-      name: "\uBCF4\uC2A4\uB7EC\uC2DC"
-      itemType: 1
-      itemGrade: 0
-      hashTag: 
-      refillLinkTid: 2308988
-      relicLinkTid: 0
-      equipAbility: 0
-      equipAbilityValue: 
-      toOwnAbility: 0
-      toOwnValue: 
-    - tid: 7
-      description: "\uACE8\uB4DC\uC2AC\uB77C\uC784"
-      name: "\uACE8\uB4DC\uC2AC\uB77C\uC784"
-      itemType: 2
-      itemGrade: 3
-      hashTag: 
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 0
-      equipAbilityValue: 
-      toOwnAbility: 0
-      toOwnValue: 
-    - tid: 8
-      description: "\uC2AC\uB77C\uC784\uAC15\uD654\uBCF4\uC11D"
-      name: "\uC2AC\uB77C\uC784\uAC15\uD654\uBCF4\uC11D"
-      itemType: 1
-      itemGrade: 0
-      hashTag: unitlevelup
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 0
-      equipAbilityValue: 
-      toOwnAbility: 0
-      toOwnValue: 
-    - tid: 9
-      description: "\uAE30\uBCF8\uBB34\uAE30"
-      name: "\uAE30\uBCF8\uBB34\uAE30"
-      itemType: 3
-      itemGrade: 0
-      hashTag: 
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 1
-      equipAbilityValue: 1000A
-      toOwnAbility: 1
-      toOwnValue: 1000
-    - tid: 10
-      description: "\uB808\uC5B4\uBB34\uAE30"
-      name: "\uB808\uC5B4\uBB34\uAE30"
-      itemType: 3
-      itemGrade: 3
-      hashTag: 
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 1
-      equipAbilityValue: 1000A
-      toOwnAbility: 1
-      toOwnValue: 1000
-    - tid: 11
-      description: "\uAE30\uBCF8\uBC29\uC5B4\uAD6C"
-      name: "\uAE30\uBCF8\uBC29\uC5B4\uAD6C"
-      itemType: 4
-      itemGrade: 0
-      hashTag: 
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 1
-      equipAbilityValue: 1000A
-      toOwnAbility: 1
-      toOwnValue: 1000
-    - tid: 12
-      description: "\uB808\uC5B4\uBC29\uC5B4\uAD6C"
-      name: "\uB808\uC5B4\uBC29\uC5B4\uAD6C"
-      itemType: 4
-      itemGrade: 3
-      hashTag: 
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 1
-      equipAbilityValue: 1000A
-      toOwnAbility: 1
-      toOwnValue: 1000
-    - tid: 13
-      description: "\uAE30\uBCF8\uC7A5\uC2E0\uAD6C"
-      name: "\uAE30\uBCF8\uC7A5\uC2E0\uAD6C"
-      itemType: 5
-      itemGrade: 0
-      hashTag: 
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 1
-      equipAbilityValue: 1000A
-      toOwnAbility: 1
-      toOwnValue: 1000
-    - tid: 14
-      description: "\uB808\uC5B4\uC7A5\uC2E0\uAD6C"
-      name: "\uB808\uC5B4\uC7A5\uC2E0\uAD6C"
-      itemType: 5
-      itemGrade: 3
-      hashTag: 
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 1
-      equipAbilityValue: 1000A
-      toOwnAbility: 1
-      toOwnValue: 1000
-    - tid: 15
-      description: "\uB3CC\uB358\uC9C0\uAE30"
-      name: "\uB3CC\uB358\uC9C0\uAE30"
-      itemType: 6
-      itemGrade: 2
-      hashTag: 
-      refillLinkTid: 0
-      relicLinkTid: 0
-      equipAbility: 2
-      equipAbilityValue: 1000A
-      toOwnAbility: 2
-      toOwnValue: 1000
-    - tid: 16
-      description: "\uACF5\uACA9\uC720\uBB3C"
-      name: "\uACF5\uACA9\uC720\uBB3C"
+    - tid: 1701807001
+      description: "\uACF5\uACA9\uB825"
+      name: "\uAE30\uAC04\uD2F1 \uC18C\uB4DC"
+      itemDesc: 
       itemType: 8
-      itemGrade: 2
+      itemGrade: 0
       hashTag: 
-      refillLinkTid: 0
-      relicLinkTid: 100000
       equipAbility: 0
-      equipAbilityValue: 0
+      equipAbilityValue: 
+      equipAbilityInc: 
       toOwnAbility: 1
-      toOwnValue: 1000
-    - tid: 17
-      description: "\uCCB4\uB825\uC720\uBB3C"
-      name: "\uCCB4\uB825\uC720\uBB3C"
+      toOwnValue: 0.05
+      toOwnInc: 0.01
+      unitTid: 0
+      petTid: 0
+      itemRefillTid: 0
+      skillTid: 0
+      userTrainingTid: 0
+      userPropertyTid: 0
+      userMasteryTid: 0
+    - tid: 1701807002
+      description: "\uCCB4\uB825"
+      name: "\uD30C\uC6CC\uB4DC \uC544\uBA38"
+      itemDesc: 
       itemType: 8
-      itemGrade: 2
+      itemGrade: 0
       hashTag: 
-      refillLinkTid: 0
-      relicLinkTid: 100000
       equipAbility: 0
-      equipAbilityValue: 0
+      equipAbilityValue: 
+      equipAbilityInc: 
       toOwnAbility: 2
-      toOwnValue: 1000
+      toOwnValue: 0.05
+      toOwnInc: 0.01
+      unitTid: 0
+      petTid: 0
+      itemRefillTid: 0
+      skillTid: 0
+      userTrainingTid: 0
+      userPropertyTid: 0
+      userMasteryTid: 0
+    - tid: 1701807003
+      description: "\uCE58\uBA85\uD0C0 \uD53C\uD574"
+      name: "\uC6A9\uAE30\uC758 \uBA54\uB2EC"
+      itemDesc: 
+      itemType: 8
+      itemGrade: 0
+      hashTag: 
+      equipAbility: 0
+      equipAbilityValue: 
+      equipAbilityInc: 
+      toOwnAbility: 5
+      toOwnValue: 0.05
+      toOwnInc: 0.01
+      unitTid: 0
+      petTid: 0
+      itemRefillTid: 0
+      skillTid: 0
+      userTrainingTid: 0
+      userPropertyTid: 0
+      userMasteryTid: 0
+    - tid: 1701807004
+      description: "\uD558\uC774\uD37C \uC5B4\uD0DD \uD53C\uD574\uB7C9"
+      name: "\uBD80\uC11C\uC9C4 \uB4DC\uB77C\uC774\uBC84"
+      itemDesc: 
+      itemType: 8
+      itemGrade: 0
+      hashTag: 
+      equipAbility: 0
+      equipAbilityValue: 
+      equipAbilityInc: 
+      toOwnAbility: 7
+      toOwnValue: 0.05
+      toOwnInc: 0.01
+      unitTid: 0
+      petTid: 0
+      itemRefillTid: 0
+      skillTid: 0
+      userTrainingTid: 0
+      userPropertyTid: 0
+      userMasteryTid: 0
+    - tid: 1701807005
+      description: "\uBCF4\uC2A4 \uD53C\uD574"
+      name: "\uC6A9\uC0AC\uC758 \uD63C"
+      itemDesc: 
+      itemType: 8
+      itemGrade: 0
+      hashTag: 
+      equipAbility: 0
+      equipAbilityValue: 
+      equipAbilityInc: 
+      toOwnAbility: 14
+      toOwnValue: 0.05
+      toOwnInc: 0.01
+      unitTid: 0
+      petTid: 0
+      itemRefillTid: 0
+      skillTid: 0
+      userTrainingTid: 0
+      userPropertyTid: 0
+      userMasteryTid: 0
+    - tid: 1701807006
+      description: "\uC2A4\uD0AC \uD53C\uD574"
+      name: "\uC9C0\uD61C\uC758 \uBCF4\uC11D"
+      itemDesc: 
+      itemType: 8
+      itemGrade: 0
+      hashTag: 
+      equipAbility: 0
+      equipAbilityValue: 
+      equipAbilityInc: 
+      toOwnAbility: 13
+      toOwnValue: 0.05
+      toOwnInc: 0.01
+      unitTid: 0
+      petTid: 0
+      itemRefillTid: 0
+      skillTid: 0
+      userTrainingTid: 0
+      userPropertyTid: 0
+      userMasteryTid: 0
+    - tid: 1701807007
+      description: "\uD68C\uD53C"
+      name: "\uACF5\uACA9 \uAC10\uC9C0 \uC2DC\uC2A4\uD15C"
+      itemDesc: 
+      itemType: 8
+      itemGrade: 0
+      hashTag: 
+      equipAbility: 0
+      equipAbilityValue: 
+      equipAbilityInc: 
+      toOwnAbility: 17
+      toOwnValue: 0.01
+      toOwnInc: 0.005
+      unitTid: 0
+      petTid: 0
+      itemRefillTid: 0
+      skillTid: 0
+      userTrainingTid: 0
+      userPropertyTid: 0
+      userMasteryTid: 0
+    - tid: 1701807008
+      description: "\uACF5\uACA9\uC18D\uB3C4"
+      name: "\uC2DC\uAC04\uC758 \uC218\uC815"
+      itemDesc: 
+      itemType: 8
+      itemGrade: 0
+      hashTag: 
+      equipAbility: 0
+      equipAbilityValue: 
+      equipAbilityInc: 
+      toOwnAbility: 8
+      toOwnValue: 0.1
+      toOwnInc: 0.001
+      unitTid: 0
+      petTid: 0
+      itemRefillTid: 0
+      skillTid: 0
+      userTrainingTid: 0
+      userPropertyTid: 0
+      userMasteryTid: 0
+    - tid: 1701807009
+      description: "\uACE8\uB4DC \uD68D\uB4DD\uB7C9"
+      name: "\uD589\uC6B4\uC758 \uC8FC\uD654"
+      itemDesc: 
+      itemType: 8
+      itemGrade: 0
+      hashTag: 
+      equipAbility: 0
+      equipAbilityValue: 
+      equipAbilityInc: 
+      toOwnAbility: 18
+      toOwnValue: 0.1
+      toOwnInc: 0.02
+      unitTid: 0
+      petTid: 0
+      itemRefillTid: 0
+      skillTid: 0
+      userTrainingTid: 0
+      userPropertyTid: 0
+      userMasteryTid: 0
+    - tid: 1701807010
+      description: "\uB3D9\uB8CC \uD53C\uD574\uB7C9"
+      name: "\uD669\uAE08\uC758 \uC11C"
+      itemDesc: 
+      itemType: 8
+      itemGrade: 0
+      hashTag: 
+      equipAbility: 0
+      equipAbilityValue: 
+      equipAbilityInc: 
+      toOwnAbility: 15
+      toOwnValue: 0.05
+      toOwnInc: 0.01
+      unitTid: 0
+      petTid: 0
+      itemRefillTid: 0
+      skillTid: 0
+      userTrainingTid: 0
+      userPropertyTid: 0
+      userMasteryTid: 0

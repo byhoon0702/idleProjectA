@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23135dd1aa055a74087c7d35cf9b9e70, type: 3}
+  m_Name: UserGradeDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: UserGradeDataSheet
+    prefixID: 2900000000
+    infos:
+    - tid: 2900000001
+      description: "\uCEE4\uBA3C"
+      grade: 0
+      attackPowerRatio: 1
+      hpUpRatio: 1
+      hyperAttackPower: 0
+      hyperAttackSpeed: 0.3
+      hyperMoveSpeed: 0.3
+      hyperCriticalAttackPower: 0.2
+      hyperDuration: 10
+      hyperGaugeRecovery: 0.05
+      coreAbilitySlot: 1
+      coreAbilityMaxLevel: 10
+    - tid: 2900000002
+      description: "\uC5B8\uCEE4\uBA3C"
+      grade: 1
+      attackPowerRatio: 5
+      hpUpRatio: 5
+      hyperAttackPower: 0.5
+      hyperAttackSpeed: 0.5
+      hyperMoveSpeed: 0.5
+      hyperCriticalAttackPower: 0.5
+      hyperDuration: 10
+      hyperGaugeRecovery: 0.06
+      coreAbilitySlot: 2
+      coreAbilityMaxLevel: 30
+    - tid: 2900000003
+      description: "\uB808\uC5B4"
+      grade: 2
+      attackPowerRatio: 9
+      hpUpRatio: 9
+      hyperAttackPower: 1
+      hyperAttackSpeed: 0.7
+      hyperMoveSpeed: 0.7
+      hyperCriticalAttackPower: 1
+      hyperDuration: 10
+      hyperGaugeRecovery: 0.07
+      coreAbilitySlot: 3
+      coreAbilityMaxLevel: 50
+    - tid: 2900000004
+      description: "\uC5D0\uD53D"
+      grade: 3
+      attackPowerRatio: 30
+      hpUpRatio: 10
+      hyperAttackPower: 1.5
+      hyperAttackSpeed: 0.9
+      hyperMoveSpeed: 0.9
+      hyperCriticalAttackPower: 2
+      hyperDuration: 10
+      hyperGaugeRecovery: 0.08
+      coreAbilitySlot: 4
+      coreAbilityMaxLevel: 100
+    - tid: 2900000005
+      description: "\uC804\uC124"
+      grade: 4
+      attackPowerRatio: 90
+      hpUpRatio: 90
+      hyperAttackPower: 2
+      hyperAttackSpeed: 1.2
+      hyperMoveSpeed: 1.2
+      hyperCriticalAttackPower: 3
+      hyperDuration: 10
+      hyperGaugeRecovery: 0.09
+      coreAbilitySlot: 5
+      coreAbilityMaxLevel: 150
+    - tid: 2900000006
+      description: "\uC2E0\uD654"
+      grade: 5
+      attackPowerRatio: 150
+      hpUpRatio: 150
+      hyperAttackPower: 2.5
+      hyperAttackSpeed: 1.5
+      hyperMoveSpeed: 1.5
+      hyperCriticalAttackPower: 4
+      hyperDuration: 10
+      hyperGaugeRecovery: 0.1
+      coreAbilitySlot: 6
+      coreAbilityMaxLevel: 200
+    - tid: 2900000007
+      description: "\uBD88\uBA78"
+      grade: 6
+      attackPowerRatio: 300
+      hpUpRatio: 300
+      hyperAttackPower: 3
+      hyperAttackSpeed: 2
+      hyperMoveSpeed: 2
+      hyperCriticalAttackPower: 5
+      hyperDuration: 10
+      hyperGaugeRecovery: 0.1
+      coreAbilitySlot: 7
+      coreAbilityMaxLevel: 300

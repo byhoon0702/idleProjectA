@@ -27,6 +27,11 @@ public enum ItemType
 	Armor,
 	Accessory,
 	Skill,
-	Friends,
+	Pet,
 	Relic,
+	Training,
+	Property,
+	Mastery,
+	Core,
+	GachaExp
 }

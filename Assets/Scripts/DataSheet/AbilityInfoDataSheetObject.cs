@@ -2,7 +2,7 @@
 using UnityEngine;
 using System;
 [Serializable]
-public class AbilityInfoDataSheetObject : ScriptableObject 
+public class AbilityInfoDataSheetObject : BaseDataSheetObject
 {
 	[SerializeField]
 	public AbilityInfoDataSheet dataSheet;

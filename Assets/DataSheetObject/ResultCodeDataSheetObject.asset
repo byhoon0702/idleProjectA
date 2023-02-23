@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dataSheet:
     typeName: ResultCodeDataSheet
+    prefixID: 0
     infos:
     - tid: 1001000
       description: 
@@ -28,7 +29,7 @@ MonoBehaviour:
       key: NO_META_DATA
       alertType: 1
       title: 
-      content: 
+      content: "\uBA54\uD0C0\uB370\uC774\uD130 \uC5C6\uC74C"
       okText: 
       cancelText: 
     - tid: 1001002
@@ -63,5 +64,13 @@ MonoBehaviour:
       alertType: 0
       title: 
       content: "{0} \uC544\uC774\uD15C\uC774 \uBD80\uC871\uD569\uB2C8\uB2E4"
+      okText: 
+      cancelText: 
+    - tid: 1001006
+      description: "0 \uC18C\uBE44 \uC624\uB958"
+      key: INVALID_ITEM_CHANDE_0
+      alertType: 0
+      title: 
+      content: "0\uAC12\uC744 \uC0AC\uC6A9\uC2DC\uB3C4"
       okText: 
       cancelText: 

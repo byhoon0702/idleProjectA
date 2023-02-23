@@ -14,46 +14,95 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dataSheet:
     typeName: UserTrainingDataSheet
+    prefixID: 3300000000
     infos:
-    - tid: 1
-      description: "\uACF5\uACA9"
-      abilityType: 0
+    - tid: 3300000001
+      description: "\uACF5\uACA9\uB825"
+      name: "\uACF5\uACA9\uB825"
       maxLevel: 100000
-      defaultValue: 1
-      incValue: 1
-    - tid: 2
-      description: HP
-      abilityType: 1
+      consumeDefaultGold: 500
+      consumeGoldIncrease: 50
+      consumeWeight: 100
+      precedingAbilityTid: 0
+      precedingLevel: 0
+    - tid: 3300000002
+      description: "\uCCB4\uB825"
+      name: "\uCCB4\uB825"
       maxLevel: 100000
-      defaultValue: 10
-      incValue: 10
-    - tid: 3
-      description: "\uCE58\uD655"
-      abilityType: 2
-      maxLevel: 100
-      defaultValue: 0.1
-      incValue: 0.1
-    - tid: 4
-      description: "\uCE58\uD53C"
-      abilityType: 3
-      maxLevel: 100
-      defaultValue: 0.1
-      incValue: 0.1
-    - tid: 5
-      description: "\uACE8\uB4DC\uC5C5"
-      abilityType: 4
-      maxLevel: 100
-      defaultValue: 0.1
-      incValue: 0.1
-    - tid: 6
-      description: "\uACBD\uCE58\uC5C5"
-      abilityType: 5
-      maxLevel: 100
-      defaultValue: 0.05
-      incValue: 0.05
-    - tid: 7
-      description: "\uC544\uC774\uD15C\uC5C5"
-      abilityType: 6
-      maxLevel: 100
-      defaultValue: 0.01
-      incValue: 0.01
+      consumeDefaultGold: 600
+      consumeGoldIncrease: 50
+      consumeWeight: 100
+      precedingAbilityTid: 0
+      precedingLevel: 0
+    - tid: 3300000003
+      description: "\uCCB4\uB825\uD68C\uBCF5\uB7C9"
+      name: "\uCCB4\uB825\uD68C\uBCF5\uB7C9"
+      maxLevel: 100000
+      consumeDefaultGold: 700
+      consumeGoldIncrease: 50
+      consumeWeight: 100
+      precedingAbilityTid: 0
+      precedingLevel: 0
+    - tid: 3300000004
+      description: "\uCE58\uBA85\uD0C0\uD655\uB960"
+      name: "\uCE58\uBA85\uD0C0\uD655\uB960"
+      maxLevel: 500
+      consumeDefaultGold: 500
+      consumeGoldIncrease: 50
+      consumeWeight: 100
+      precedingAbilityTid: 0
+      precedingLevel: 0
+    - tid: 3300000005
+      description: "\uCE58\uBA85\uD0C0\uD53C\uD574\uB7C9"
+      name: "\uCE58\uBA85\uD0C0\uD53C\uD574\uB7C9"
+      maxLevel: 100000
+      consumeDefaultGold: 500
+      consumeGoldIncrease: 50
+      consumeWeight: 100
+      precedingAbilityTid: 0
+      precedingLevel: 0
+    - tid: 3300000006
+      description: "\uD558\uC774\uD37C\uC5B4\uD0DD\uD655\uB960"
+      name: "\uD558\uC774\uD37C\uC5B4\uD0DD\uD655\uB960"
+      maxLevel: 500
+      consumeDefaultGold: 500
+      consumeGoldIncrease: 50
+      consumeWeight: 100
+      precedingAbilityTid: 3300000004
+      precedingLevel: 500
+    - tid: 3300000007
+      description: "\uD558\uC774\uD37C\uC5B4\uD0DD\uD53C\uD574\uB7C9"
+      name: "\uD558\uC774\uD37C\uC5B4\uD0DD\uD53C\uD574\uB7C9"
+      maxLevel: 100000
+      consumeDefaultGold: 500
+      consumeGoldIncrease: 50
+      consumeWeight: 100
+      precedingAbilityTid: 3300000005
+      precedingLevel: 500
+    - tid: 3300000008
+      description: "\uACF5\uACA9\uC18D\uB3C4"
+      name: "\uACF5\uACA9\uC18D\uB3C4"
+      maxLevel: 200
+      consumeDefaultGold: 500
+      consumeGoldIncrease: 50
+      consumeWeight: 100
+      precedingAbilityTid: 0
+      precedingLevel: 0
+    - tid: 3300000009
+      description: "\uB354\uBE14\uC5B4\uD0DD"
+      name: "\uB354\uBE14\uC5B4\uD0DD"
+      maxLevel: 500
+      consumeDefaultGold: 500
+      consumeGoldIncrease: 50
+      consumeWeight: 100
+      precedingAbilityTid: 3300000008
+      precedingLevel: 500
+    - tid: 3300000010
+      description: "\uD2B8\uB9AC\uD50C\uC5B4\uD0DD"
+      name: "\uD2B8\uB9AC\uD50C\uC5B4\uD0DD"
+      maxLevel: 500
+      consumeDefaultGold: 500
+      consumeGoldIncrease: 50
+      consumeWeight: 100
+      precedingAbilityTid: 3300000009
+      precedingLevel: 500

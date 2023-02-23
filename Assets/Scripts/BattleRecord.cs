@@ -7,7 +7,7 @@ using System;
 public class BattleRecord
 {
 	public DPSInfo playerDPS = new DPSInfo();
-	public DPSInfo companionDPS = new DPSInfo();
+	public DPSInfo petDPS = new DPSInfo();
 	public DPSInfo enemyDPS = new DPSInfo();
 	public DPSInfo unknownDPS = new DPSInfo();
 
@@ -15,7 +15,7 @@ public class BattleRecord
 
 	public void RecordAttackPower(HitInfo _hitInfo)
 	{
-		DPSInfo info = FinddDPSInfo(_hitInfo);
+		DPSInfo info = FinddDPSInfo(_hitInfo.attackerType);
 
 		info.attackPower += _hitInfo.TotalAttackPower;
 		info.criticalCount += _hitInfo.criticalType == CriticalType.Critical ? 1 : 0;
@@ -27,19 +27,19 @@ public class BattleRecord
 	/// </summary>
 	public void RecordHeal(HealInfo _heal, IdleNumber _healValue)
 	{
-		//DPSInfo info = FinddDPSInfo(_attacker);
-		//
-		//info.hpRecovery += _healValue;
+		DPSInfo info = FinddDPSInfo(_heal.healer);
+		
+		info.hpRecovery += _healValue;
 	}
 
-	private DPSInfo FinddDPSInfo(HitInfo _hitInfo)
+	private DPSInfo FinddDPSInfo(AttackerType attackerType)
 	{
-		switch (_hitInfo.attackerType)
+		switch (attackerType)
 		{
 			case AttackerType.Player:
 				return playerDPS;
-			case AttackerType.Companion:
-				return companionDPS;
+			case AttackerType.Pet:
+				return petDPS;
 			case AttackerType.Enemy:
 				return enemyDPS;
 			default:

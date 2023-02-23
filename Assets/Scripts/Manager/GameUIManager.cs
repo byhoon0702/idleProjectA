@@ -15,34 +15,30 @@ public class GameUIManager : MonoBehaviour
 	public Canvas mainCanvas;
 	public FloatingText resource;
 
-	public GameObject introObject;
 	public GameObject mainUIObject;
 	public Image fadeCurtain;
 
 	public Transform floatingUIGroup;
 	public RectTransform statusUIGroup;
-	public Transform StepForGroup;
-
-	public StepFog stepFogResource;
 
 	public IObjectPool<FloatingText> floatingTextPool;
-	public IObjectPool<CharacterStatusUI> characterStatusPool;
+	public IObjectPool<UnitStatusUI> unitStatusPool;
 
 	private void Awake()
 	{
 		instance = this;
 		floatingTextPool = new ObjectPool<FloatingText>(CreateFloatingText, OnGetFloatingtext, OnReleaseFloatingText, OnDestroyFloatingText);
-		characterStatusPool = new ObjectPool<CharacterStatusUI>(CreateCharacterStatusUI, OnGetCharacterStatusUI, OnReleaseCharacterStatusUI, OnDestroyCharacterStatusUI);
+		unitStatusPool = new ObjectPool<UnitStatusUI>(CreateUnitStatusUI, OnGetUnitStatusUI, OnReleaseUnitStatusUI, OnDestroyUnitStatusUI);
 	}
 
 	private void OnEnable()
 	{
-		UserInfo.onLevelupChanged += ShowLevelupPopup;
+		EventCallbacks.onLevelupChanged += ShowLevelupPopup;
 	}
 
 	private void OnDisable()
 	{
-		UserInfo.onLevelupChanged -= ShowLevelupPopup;
+		EventCallbacks.onLevelupChanged -= ShowLevelupPopup;
 	}
 
 	#region FloatingTextPool
@@ -72,30 +68,30 @@ public class GameUIManager : MonoBehaviour
 	}
 	#endregion
 
-	#region CharacterStatusPool
+	#region UnitStatusPool
 
-	private CharacterStatusUI CreateCharacterStatusUI()
+	private UnitStatusUI CreateUnitStatusUI()
 	{
-		CharacterStatusUI tmp = Instantiate(Resources.Load<CharacterStatusUI>("CharacterStatusBar"));
+		UnitStatusUI tmp = Instantiate(Resources.Load<UnitStatusUI>("UnitStatusBar"));
 		tmp.gameObject.SetActive(false);
 		tmp.transform.SetParent(statusUIGroup.transform);
-		tmp.SetManagedPool(characterStatusPool);
+		tmp.SetManagedPool(unitStatusPool);
 
 		return tmp;
 	}
 
-	private void OnGetCharacterStatusUI(CharacterStatusUI characterstatusui)
+	private void OnGetUnitStatusUI(UnitStatusUI _unitStatusUI)
 	{
-		characterstatusui.gameObject.SetActive(false);
+		_unitStatusUI.gameObject.SetActive(false);
 	}
 
-	private void OnReleaseCharacterStatusUI(CharacterStatusUI characterstatusui)
+	private void OnReleaseUnitStatusUI(UnitStatusUI _unitStatusUI)
 	{
-		characterstatusui.gameObject.SetActive(false);
+		_unitStatusUI.gameObject.SetActive(false);
 	}
-	private void OnDestroyCharacterStatusUI(CharacterStatusUI characterstatusui)
+	private void OnDestroyUnitStatusUI(UnitStatusUI _unitStatusUI)
 	{
-		Destroy(characterstatusui.gameObject);
+		Destroy(_unitStatusUI.gameObject);
 	}
 	#endregion
 	public void ReleaseAllPool()
@@ -103,7 +99,7 @@ public class GameUIManager : MonoBehaviour
 
 		// floatingTextPool.Clear();
 
-		characterStatusPool.Clear();
+		unitStatusPool.Clear();
 
 	}
 
@@ -124,19 +120,27 @@ public class GameUIManager : MonoBehaviour
 	{
 		Vector2 uipos;
 
-		Vector2 screenPosition = SceneCamera.it.WorldToScreenPoint(worldPosition);
+		Vector2 screenPosition;
+		if (SceneCameraV2.it != null)
+		{
+			screenPosition = SceneCameraV2.it.WorldToScreenPoint(worldPosition);
+		}
+		else
+		{
+			screenPosition = SceneCamera.it.WorldToScreenPoint(worldPosition);
+		}
 		RectTransformUtility.ScreenPointToLocalPointInRectangle(mainCanvas.transform as RectTransform, screenPosition, null, out uipos);
 
 
 		return uipos;
 	}
-	public void ShowCharacterGauge(Unit character)
+	public void ShowUnitGauge(Unit _unit)
 	{
 		// UI초기화
-		CharacterStatusUI statusUI = characterStatusPool.Get();
+		UnitStatusUI statusUI = unitStatusPool.Get();
 		statusUI.gameObject.SetActive(false);
 		statusUI.transform.SetParent(statusUIGroup.transform, false);
-		statusUI.Init(character);
+		statusUI.Init(_unit);
 
 	}
 	public void ShowFloatingText(string text, Color color, Vector3 position, CriticalType _criticalType, bool isPlayer = false)
@@ -150,18 +154,5 @@ public class GameUIManager : MonoBehaviour
 	private void ShowLevelupPopup(Int32 _beforeLv, Int32 _afterLv)
 	{
 		ToastUI.it.Create($"Levelup! {_beforeLv} -> {_afterLv}");
-	}
-
-	public void ShowStepFog(UnitBase _unit, bool _isRight)
-	{
-		StepFog newStepFog = Instantiate(stepFogResource, StepForGroup);
-		if (_isRight)
-		{
-			newStepFog.Show(_unit.characterAnimation.RightFootPivot.gameObject);
-		}
-		else
-		{
-			newStepFog.Show(_unit.characterAnimation.LeftFootPivot.gameObject);
-		}
 	}
 }

@@ -6,7 +6,8 @@ public static class VLog
 {
 	public static bool showConditionLog = false;
 	public static bool showSkillLog = false;
-	public static bool showItemLog = false;
+	public static bool showPetLog = false;
+	public static bool showItemLog = true;
 	public static bool showScheduleLog = false;
 	public static bool showAILog = false;
 	public static bool showBattleLog = false;
@@ -112,4 +113,23 @@ public static class VLog
 	{
 		Debug.LogError($"[Sound] {_message}", _context);
 	}
+
+	public static void PetLog(object _message, Object _context = null)
+	{
+		if (showPetLog)
+		{
+			Debug.Log($"[Pet] {_message}", _context);
+		}
+	}
+
+	public static void PetLogWarning(object _message, Object _context = null)
+	{
+		Debug.LogWarning($"[Pet] {_message}", _context);
+	}
+
+	public static void PetLogError(object _message, Object _context = null)
+	{
+		Debug.LogError($"[Pet] {_message}", _context);
+	}
+
 }

@@ -15,21 +15,21 @@ public class SpawnManager : MonoBehaviour
 	public Transform playerRoot;
 	public Transform enemyRoot;
 
-	public PlayerCharacter playerCharacterPrefab;
-	public Companion companionPrefab;
-	public EnemyCharacter enemyCharacterPrefab;
-	public BossCharacter bossCharacterPrefab;
+	public PlayerUnit playerUnitPrefab;
+	public Pet petPrefab;
+	public EnemyUnit enemyUnitPrefab;
+	public ChasingDungeonBossUnit chasingDungeonBossUnitPrefab;
 
 	public Rect spawnArea;
 
-	public PlayerCharacter playerCharacter = null;
+	public PlayerUnit playerUnit = null;
 	public List<Unit> enemyList = new List<Unit>();
-	public List<Companion> companionList = new List<Companion>();
-	public BossCharacter bossCharacter = null;
+	public List<Pet> petList = new List<Pet>();
+	public Unit bossUnit = null;
 
 	public int gridSize = 4;
 	public float lineDiff = 0.5f;
-
+	float offset = 1.5f;
 	public bool IsAllEnemyDead
 	{
 		get
@@ -41,7 +41,7 @@ public class SpawnManager : MonoBehaviour
 
 			bool isEnemyDead = true;
 
-			for (int i = 0; i < enemyList.Count; i++)
+			for (int i = 0 ; i < enemyList.Count ; i++)
 			{
 				var enemy = enemyList[i];
 
@@ -59,11 +59,11 @@ public class SpawnManager : MonoBehaviour
 	{
 		get
 		{
-			if (playerCharacter == null)
+			if (playerUnit == null)
 			{
 				return true;
 			}
-			return playerCharacter.IsAlive() == false;
+			return playerUnit.IsAlive() == false;
 		}
 	}
 
@@ -72,11 +72,11 @@ public class SpawnManager : MonoBehaviour
 		get
 		{
 			// 아얘 생성된 상태가 아니면 클리어할 수 없음
-			if (bossCharacter == null)
+			if (bossUnit == null)
 			{
 				return false;
 			}
-			return bossCharacter.IsAlive() == false;
+			return bossUnit.IsAlive() == false;
 		}
 	}
 
@@ -84,11 +84,11 @@ public class SpawnManager : MonoBehaviour
 	{
 		get
 		{
-			if (bossCharacter == null)
+			if (bossUnit == null)
 			{
 				return true;
 			}
-			return bossCharacter.IsAlive() == false;
+			return bossUnit.IsAlive() == false;
 		}
 	}
 
@@ -112,46 +112,50 @@ public class SpawnManager : MonoBehaviour
 		float cellX = spawnArea.width / gridSize;
 		float cellY = spawnArea.height / gridSize;
 
-		List<CompanionData> userPartyDataList = new List<CompanionData>();
-		var friendList = DataManager.it.Get<CompanionDataSheet>().GetInfos();
 
-		UnitData mainUnit = DataManager.it.Get<UnitDataSheet>().GetData(2);
 
-		//임시로 랜덤 
-		for (int i = 0; i < (friendList.Count > 5 ? 5 : friendList.Count);)
+		var unitItemData = DataManager.Get<ItemDataSheet>().Get(UserInfo.EquipUnitItemTid);
+		UnitData mainUnit = DataManager.Get<UnitDataSheet>().GetData(unitItemData.unitTid);
+
+		List<PetData> userPartyDataList = new List<PetData>();
+		foreach (var petTid in UserInfo.pets)
 		{
-			userPartyDataList.Add(friendList[0]);
-			friendList.RemoveAt(0);
-		}
-
-		float offset = 1.5f;
-		Vector3 posCenter = new Vector3(edge.x + (spawnArea.width / 2), 0, spawnY + (spawnHeight / 2));
-		Vector3[] pos = new Vector3[6]
-		{
-			posCenter ,
-			new Vector3(posCenter.x, posCenter.y, posCenter.z + offset ), // 캐릭터 위
-			new Vector3(posCenter.x, posCenter.y, posCenter.z - offset ), // 캐릭터 아래 
-			new Vector3(posCenter.x - offset , posCenter.y, posCenter.z + offset ), // 캐릭터 뒤쪽 위
-			new Vector3(posCenter.x - offset , posCenter.y, posCenter.z), // 캐릭터 뒤쪽 
-			new Vector3(posCenter.x - offset  , posCenter.y, posCenter.z - offset ), // 캐릭터 뒤쪽 아래
-		};
-
-		for (int i = 0; i < (userPartyDataList.Count > 5 ? 5 : userPartyDataList.Count); i++)
-		{
-			Companion companion = MakeCompanion(userPartyDataList[i], pos[i + 1]);
-			if (companion == null)
+			if (petTid == 0)
 			{
-				// 오류는 생성함수에서 표시
-				yield break;
+				continue;
 			}
 
-			companion.gameObject.SetActive(true);
+			var petItemData = DataManager.Get<ItemDataSheet>().Get(petTid);
 
-			yield return new WaitForSeconds(0.1f);
+			if (petItemData == null)
+			{
+				VLog.ScheduleLogError($"PetItemData is null. ItemDataSheet. itemTid: {petTid}");
+				continue;
+			}
+
+			var petData = DataManager.Get<PetDataSheet>().GetData(petItemData.petTid);
+			if (petData == null)
+			{
+				VLog.ScheduleLogError($"PetData is null. PetDataSheet. petTid: {petItemData.petTid}");
+				continue;
+			}
+
+			userPartyDataList.Add(petData);
 		}
 
+		Vector3 posCenter = new Vector3(edge.x + (spawnArea.width / 2), 0, spawnY + (spawnHeight / 2));
 
-		PlayerCharacter player = MakePlayer(mainUnit, pos[0]);
+		//Vector3[] pos = new Vector3[6]
+		//{
+		//	posCenter ,
+		//	new Vector3(posCenter.x, posCenter.y, posCenter.z + offset ), // 캐릭터 위
+		//	new Vector3(posCenter.x, posCenter.y, posCenter.z - offset ), // 캐릭터 아래 
+		//	new Vector3(posCenter.x - offset , posCenter.y, posCenter.z + offset ), // 캐릭터 뒤쪽 위
+		//	new Vector3(posCenter.x - offset , posCenter.y, posCenter.z), // 캐릭터 뒤쪽 
+		//	new Vector3(posCenter.x - offset  , posCenter.y, posCenter.z - offset ), // 캐릭터 뒤쪽 아래
+		//};
+
+		PlayerUnit player = MakePlayer(mainUnit, UnitManager.it.GetPartyPos(0, posCenter));
 		if (player == null)
 		{
 			// 오류는 생성함수에서 표시
@@ -159,50 +163,63 @@ public class SpawnManager : MonoBehaviour
 		}
 
 		player.gameObject.SetActive(true);
-
 		yield return new WaitForSeconds(0.1f);
+
+		for (int i = 0 ; i < (userPartyDataList.Count > 5 ? 5 : userPartyDataList.Count) ; i++)
+		{
+			Pet pet = MakePet(userPartyDataList[i], UnitManager.it.GetPartyPos(i + 1, posCenter), i + 1);
+			if (pet == null)
+			{
+				// 오류는 생성함수에서 표시
+				yield break;
+			}
+
+			pet.gameObject.SetActive(true);
+
+			yield return new WaitForSeconds(0.1f);
+		}
 
 		SceneCamera.it.FindPlayers();
 		onComplete?.Invoke();
 
 	}
 
-	private PlayerCharacter MakePlayer(UnitData _characterData, Vector3 _pos)
+	private PlayerUnit MakePlayer(UnitData _unitData, Vector3 _pos)
 	{
-		PlayerCharacter player;
+		PlayerUnit player;
 
-		player = Instantiate(playerCharacterPrefab);
-		playerCharacter = player;
+		player = Instantiate(playerUnitPrefab);
+		playerUnit = player;
 
 		if (player == null)
 		{
-			VLog.LogError($"PlayerCharacter Spawn Fail. Can not find Resource");
+			VLog.LogError($"PlayerUnit Spawn Fail. Can not find Resource");
 			return null;
 		}
 		player.transform.SetParent(playerRoot);
 		player.transform.position = _pos;
-		player.Spawn(_characterData);
+		player.Spawn(_unitData);
 
 		return player;
 	}
-	private Companion MakeCompanion(CompanionData _companionData, Vector3 _pos)
+	private Pet MakePet(PetData _petData, Vector3 _pos, int index)
 	{
-		Companion companion;
+		Pet pet;
 
-		companion = Instantiate(companionPrefab);
+		pet = Instantiate(petPrefab);
 
-		if (companion == null)
+		if (pet == null)
 		{
-			VLog.LogError($"PlayerCharacter Spawn Fail. Can not find Resource");
+			VLog.LogError($"PlayerUnit Spawn Fail. Can not find Resource");
 			return null;
 		}
-		companion.transform.SetParent(playerRoot);
-		companion.transform.position = _pos;
-		companion.Spawn(_companionData);
+		pet.transform.SetParent(playerRoot);
+		pet.transform.position = _pos;
+		pet.Spawn(_petData, index);
 
-		companionList.Add(companion);
+		petList.Add(pet);
 
-		return companion;
+		return pet;
 	}
 
 	public bool SpawnEnemies()
@@ -211,25 +228,23 @@ public class SpawnManager : MonoBehaviour
 		float spawnX = edge.x + spawnArea.x;
 		float spawnY = spawnArea.y;
 
-		int waveUnitCount = StageManager.it.CurrentStageInfo.waveUnitCount;
-		var unitTidList = StageManager.it.CurrentStageInfo.enemyTidList;
+		int waveUnitCount = StageManager.it.CurrentNormalStageInfo.waveUnitCount;
+		var enemyInfoList = StageManager.it.CurrentNormalStageInfo.enemyInfos;
 
-		List<int> randomTidList = new List<int>();
-		for (int i = 0; i < waveUnitCount; i++)
+		if (enemyInfoList.Count == 0)
 		{
-			int index = Random.Range(0, unitTidList.Count);
-			randomTidList.Add(unitTidList[index]);
+			VLog.LogError("Stage Enemy Info is Empty");
+			return false;
 		}
 
-		List<UnitData> unitDataList = new List<UnitData>();
-		for (int i = 0; i < randomTidList.Count; i++)
+		List<EnemyInfo> randomInfoList = new List<EnemyInfo>();
+		for (int i = 0 ; i < waveUnitCount ; i++)
 		{
-			int tid = randomTidList[i];
-			UnitData unitdata = DataManager.it.Get<UnitDataSheet>().GetData(tid);
-			unitDataList.Add(unitdata);
+			int index = Random.Range(0, enemyInfoList.Count);
+			randomInfoList.Add(enemyInfoList[index]);
 		}
 
-		MakeEnemy(unitDataList, new Rect(spawnX, spawnY, spawnArea.width, spawnArea.height));
+		MakeEnemy(randomInfoList, new Rect(spawnX, spawnY, spawnArea.width, spawnArea.height));
 
 		return true;
 	}
@@ -240,72 +255,88 @@ public class SpawnManager : MonoBehaviour
 		float spawnX = edge.x + spawnArea.x;
 		float spawnY = spawnArea.y;
 
-		UnitData bossData = DataManager.it.Get<UnitDataSheet>().GetData(StageManager.it.CurrentStageInfo.bossTid);
+		EnemyInfo bossInfo = new EnemyInfo();
+		bossInfo.tid = StageManager.it.CurrentStageInfo.bossTid;
+		bossInfo.level = StageManager.it.CurrentStageInfo.bossLevel;
 
-		MakeBoss(bossData, new Rect(spawnX, spawnY, spawnArea.width, spawnArea.height));
+		MakeBoss(bossInfo, new Rect(spawnX, spawnY, spawnArea.width, spawnArea.height));
 
 		return true;
 	}
 
-	private void MakeEnemy(List<UnitData> _unitDataList, Rect _rect)
+	private void MakeEnemy(List<EnemyInfo> _infoList, Rect _rect)
 	{
-		for (int i = 0; i < _unitDataList.Count; i++)
+		for (int i = 0 ; i < _infoList.Count ; i++)
 		{
-			UnitData unitdata = _unitDataList[i];
+			EnemyInfo _info = _infoList[i];
 
-			EnemyCharacter enemyCharacter;
+			UnitData data = DataManager.Get<UnitDataSheet>().GetData(_info.tid);
+
+			EnemyUnit enemyUnit;
 
 			Vector3 pos = new Vector3(Random.Range(_rect.x, _rect.x + _rect.width), 0, Random.Range(_rect.y, _rect.y + _rect.height));
 
-			enemyCharacter = Instantiate(enemyCharacterPrefab);
-			enemyList.Add(enemyCharacter);
+			enemyUnit = Instantiate(enemyUnitPrefab);
+			enemyList.Add(enemyUnit);
 
-			if (enemyCharacter == null)
+			if (enemyUnit == null)
 			{
-				VLog.LogError($"EnemyCharacter Spawn Fail. Can not find Resource");
+				VLog.LogError($"EnemyUnit Spawn Fail. Can not find Resource");
 				continue;
 			}
-			enemyCharacter.name = unitdata.name;
-			enemyCharacter.transform.SetParent(enemyRoot);
-			enemyCharacter.transform.position = pos;
-			enemyCharacter.Spawn(unitdata);
+			enemyUnit.name = data.name;
+			enemyUnit.transform.SetParent(enemyRoot);
+			enemyUnit.transform.position = pos;
+			enemyUnit.Spawn(data, _info.level);
 
-			enemyCharacter.gameObject.SetActive(true);
+			enemyUnit.gameObject.SetActive(true);
 		}
 	}
 
-	private void MakeBoss(UnitData _bossData, Rect _rect)
+	private void MakeBoss(EnemyInfo _bossInfo, Rect _rect)
 	{
-		BossCharacter BossCharacter;
+		Unit bossUnit = null;
+		UnitData bossData = DataManager.Get<UnitDataSheet>().GetData(_bossInfo.tid);
 
 		Vector3 pos = new Vector3(Random.Range(_rect.x, _rect.x + _rect.width), 0, Random.Range(_rect.y, _rect.y + _rect.height));
 
-		BossCharacter = Instantiate(bossCharacterPrefab);
-		bossCharacter = BossCharacter;
-
-		if (BossCharacter == null)
+		switch (StageManager.it.CurrentStageType)
 		{
-			VLog.LogError($"EnemyCharacter Spawn Fail. Can not find Resource");
+			case StageType.NORMAL:
+				bossUnit = Instantiate(enemyUnitPrefab);
+				break;
+			case StageType.CHASING:
+				bossUnit = Instantiate(chasingDungeonBossUnitPrefab);
+				break;
+		}
+		this.bossUnit = bossUnit;
+
+		if (bossUnit == null)
+		{
+			VLog.LogError($"EnemyUnit Spawn Fail. Can not find Resource");
 			return;
 		}
-		BossCharacter.name = _bossData.name;
-		BossCharacter.transform.SetParent(enemyRoot);
-		BossCharacter.transform.position = pos;
-		BossCharacter.Spawn(_bossData);
+		bossUnit.name = bossData.name;
+		bossUnit.transform.SetParent(enemyRoot);
+		bossUnit.transform.position = pos;
+		bossUnit.Spawn(bossData, _bossInfo.level);
+		bossUnit.isBoss = true;
 
-		BossCharacter.gameObject.SetActive(true);
+		bossUnit.gameObject.SetActive(true);
 	}
 
-	public void ClearCharacters()
+	public void ClearUnits()
 	{
-		if (playerCharacter != null)
+		if (playerUnit != null)
 		{
-			Destroy(playerCharacter.gameObject);
+			Destroy(playerUnit.gameObject);
+			playerUnit = null;
 		}
 
-		if (bossCharacter != null)
+		if (bossUnit != null)
 		{
-			Destroy(bossCharacter.gameObject);
+			Destroy(bossUnit.gameObject);
+			bossUnit = null;
 		}
 
 		foreach (var unit in enemyList)
@@ -317,7 +348,7 @@ public class SpawnManager : MonoBehaviour
 			Destroy(unit.gameObject);
 		}
 
-		foreach (var unit in companionList)
+		foreach (var unit in petList)
 		{
 			if (unit == null)
 			{
@@ -327,7 +358,7 @@ public class SpawnManager : MonoBehaviour
 		}
 
 		enemyList.Clear();
-		companionList.Clear();
+		petList.Clear();
 	}
 
 	public void ClearDeadEnemy()
@@ -353,11 +384,22 @@ public class SpawnManager : MonoBehaviour
 	// 보스전 진행용 메소드. 보상지급은 제외
 	public void KillAllEnemy()
 	{
-		for (int i = 0; i < enemyList.Count; i++)
+		for (int i = 0 ; i < enemyList.Count ; i++)
 		{
 			var enemy = enemyList[i];
 			enemy.Kill();
 		}
+	}
+
+	public void KillPlayer()
+	{
+		playerUnit.Kill();
+	}
+
+	public void ResetPlayer()
+	{
+		ProjectileManager.it.ClearPool();
+		playerUnit.ResetUnit();
 	}
 
 	private void OnDrawGizmosSelected()

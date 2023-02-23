@@ -8,17 +8,20 @@ public class IntroState : RootState
 	public override void OnEnter()
 	{
 		elapsedTime = 0;
-		GameUIManager.it.mainUIObject.SetActive(false);
-		GameUIManager.it.introObject.SetActive(true);
+		Intro.it.SetActiveProgressBar(false);
 	}
 
 	public override void OnExit()
 	{
-		GameUIManager.it.introObject.SetActive(false);
 	}
 
 	public override void OnUpdate(float time)
 	{
 		elapsedTime += time;
+
+		if (elapsedTime > 0.1f)
+		{
+			Intro.it.ChangeState(IntroState_e.DATALOADING);
+		}
 	}
 }

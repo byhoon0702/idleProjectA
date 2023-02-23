@@ -4,14 +4,35 @@ public class LoadingState : RootState
 {
 	public override void OnEnter()
 	{
+		UnitGlobal.it.skillModule.InitSkill(UserInfo.skills);
+		UIController.it.SkillGlobal.OnUpdate();
+
+		Inventory.it.Initialize(UserInfo.InstantItems);
+		UIController.it.Init();
+
 		VGameManager.it.mapController.Reset();
 		GameUIManager.it.mainUIObject.SetActive(true);
 		GameUIManager.it.ReleaseAllPool();
-		SpawnManager.it.ClearCharacters();
-		ProjectileManager.it.ClearProjectiles();
+		if (SpawnManagerV2.it != null)
+		{
+			SpawnManagerV2.it.ClearUnits();
+		}
+		else
+		{
+			SpawnManager.it.ClearUnits();
+		}
+		ProjectileManager.it.ClearPool();
 		elapsedTime = 0;
 
-		SceneCamera.it.ResetToStart();
+
+		if (SceneCameraV2.it != null)
+		{
+			SceneCameraV2.it.ResetToStart();
+		}
+		else
+		{
+			SceneCamera.it.ResetToStart();
+		}
 	}
 
 	public override void OnExit()

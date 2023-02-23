@@ -8,9 +8,10 @@ public class UITopMoney : MonoBehaviour
 {
 	[Header("gold")]
 	[SerializeField] private TextMeshProUGUI textGoldCount;
-	[SerializeField] private Button buttonGoldPlus;
+	[SerializeField] private TextMeshProUGUI textDiaCount;
 
-	private IdleNumber moneyCount = new IdleNumber(0, 0);
+	private IdleNumber prevGoldCount = new IdleNumber(0, 0);
+	private IdleNumber prevDiaCount = new IdleNumber(0, 0);
 
 	private bool isInitialized = false;
 
@@ -31,32 +32,18 @@ public class UITopMoney : MonoBehaviour
 
 	public void SetData()
 	{
-		var currentCount = Inventory.it.ItemCount("gold");
-		if (currentCount != moneyCount)
+		var currentGoldCount = Inventory.it.ItemCount(Inventory.it.GoldTid);
+		if (currentGoldCount != prevGoldCount)
 		{
-			moneyCount = currentCount;
-			textGoldCount.text = moneyCount.ToString();
+			prevGoldCount = currentGoldCount;
+			textGoldCount.text = prevGoldCount.ToString();
 		}
-	}
 
-	private void SetButtons()
-	{
-		buttonGoldPlus.onClick.RemoveAllListeners();
-		buttonGoldPlus.onClick.AddListener(OnClickGoldPlusButton);
-	}
-
-	private void OnClickGoldPlusButton()
-	{
-
-	}
-
-	private void OnClickLevelUpStonePlusButton()
-	{
-
-	}
-
-	private void OnClickDiaPlusButton()
-	{
-
+		var currentDiaCount = Inventory.it.ItemCount(Inventory.it.DiaTid);
+		if(currentDiaCount != prevDiaCount)
+		{
+			prevDiaCount = currentDiaCount;
+			textDiaCount.text = prevDiaCount.ToString();
+		}
 	}
 }

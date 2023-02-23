@@ -53,7 +53,7 @@ public class SceneCamera : MonoBehaviour
 	}
 	public void FindPlayers()
 	{
-		PlayerCharacter player = GameObject.FindObjectOfType<PlayerCharacter>();
+		PlayerUnit player = GameObject.FindObjectOfType<PlayerUnit>();
 
 		if (player == null)
 		{
@@ -73,7 +73,7 @@ public class SceneCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		Animator ani; 
+		Animator ani;
 		if (fixedCamera)
 		{
 			return;

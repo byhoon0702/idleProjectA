@@ -12,15 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5405a92799c52a0478c53c560170badd, type: 3}
   m_Name: BgDataSheetObject
   m_EditorClassIdentifier: 
+  fieldSettings:
+  - fieldName: tid
+    width: 100
+  - fieldName: description
+    width: 100
+  - fieldName: bgCloseName
+    width: 100
+  - fieldName: bgMiddleName
+    width: 100
+  - fieldName: bgFarName
+    width: 100
   dataSheet:
     typeName: BgDataSheet
+    prefixID: 1100000000
     infos:
-    - tid: 1
+    - tid: 1100000001
       description: "\uD480\uC232"
       bgCloseName: "\uD480\uC232-\uADFC\uACBD"
       bgMiddleName: "\uD480\uC232-\uC911\uACBD"
       bgFarName: "\uD480\uC232-\uC6D0\uACBD"
-    - tid: 2
+    - tid: 1100000002
       description: "\uBB34\uB364"
       bgCloseName: "\uBB34\uB364-\uADFC\uACBD"
       bgMiddleName: "\uBB34\uB364-\uC911\uACBD"

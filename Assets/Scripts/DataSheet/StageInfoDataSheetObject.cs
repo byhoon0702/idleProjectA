@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StageInfoDataSheetObject : ScriptableObject
+public class StageInfoDataSheetObject : BaseDataSheetObject
 {
 	[SerializeField]
 	public StageInfoDataSheet dataSheet;

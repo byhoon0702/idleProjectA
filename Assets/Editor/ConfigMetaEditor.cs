@@ -60,9 +60,9 @@ public class ConfigMetaEditor : EditorWindow
 		}
 
 		// 초기화가 안된경우, 초기화 해줌
-		if (instanceSO == null && VGameManager.it.config != null)
+		if (instanceSO == null)
 		{
-			instanceSO = new SerializedObject(VGameManager.it.config);
+			instanceSO = new SerializedObject(ConfigMeta.it);
 		}
 		if (metaSO == null)
 		{

@@ -8,10 +8,13 @@ public class StageManager : MonoBehaviour
 	public static StageManager it => instance;
 
 	private StageInfo currentStageInfo = null;
+	private StageInfo currentNormalStageInfo = null;
 
 	public bool isCurrentStageLimited = false;
 
-	public StageInfo CurrentStageInfo
+	public StageInfo CurrentStageInfo => currentStageInfo;
+
+	public StageInfo CurrentNormalStageInfo
 	{
 		get
 		{
@@ -46,7 +49,7 @@ public class StageManager : MonoBehaviour
 
 	public StageInfo GetNormalStageInfo(int _act, int _stage)
 	{
-		return DataManager.it.Get<StageInfoDataSheet>().GetNormalStage(_act, _stage);
+		return DataManager.Get<StageInfoDataSheet>().GetNormalStage(_act, _stage);
 	}
 
 	public StageInfo GetNextNormalStageInfo(StageInfo _currentStageInfo)
@@ -69,31 +72,81 @@ public class StageManager : MonoBehaviour
 		return nextStageInfo;
 	}
 
-	public void PlayNormalStage()
+	public void PlayStage(StageInfo _stageInfo)
 	{
-		var stageInfo = GetNormalStageInfo(CurrentStageInfo.act, CurrentStageInfo.stage);
-		currentStageInfo = stageInfo;
+		currentStageInfo = _stageInfo;
+		if (_stageInfo.stageType == StageType.NORMAL)
+		{
+			currentNormalStageInfo = _stageInfo;
+		}
 		VGameManager.it.ChangeState(GameState.BATTLEEND);
 	}
 
-	public void ClearBossStage()
+	public void ClearChasingStage()
 	{
-		var nextStageInfo = GetNextNormalStageInfo(CurrentStageInfo);
-		currentStageInfo = nextStageInfo;
-		VGameManager.it.ChangeState(GameState.BATTLEEND);
+		PlayStage(currentNormalStageInfo);
 	}
 
 	public void ClearNormalStage()
 	{
-		var nextStageInfo = GetNextNormalStageInfo(CurrentStageInfo);
-		currentStageInfo = nextStageInfo;
+		var nextStageInfo = GetNextNormalStageInfo(CurrentNormalStageInfo);
 		isCurrentStageLimited = true;
-		VGameManager.it.ChangeState(GameState.BATTLEEND);
+		PlayStage(nextStageInfo);
 	}
 
 	public void FailNormalStage()
 	{
 		isCurrentStageLimited = false;
+		PlayStage(currentStageInfo);
+	}
+
+	public void ResetStage()
+	{
 		VGameManager.it.ChangeState(GameState.BATTLEEND);
+	}
+
+	public void GetReward(Transform _transform = null)
+	{
+		for (int i = 0; i < currentStageInfo.stageRewardInfoList.Count; i++)
+		{
+			var info = currentStageInfo.stageRewardInfoList[i];
+			if (GetResult(info.dropRate) == true)
+			{
+				if (info.tid == Inventory.it.GoldTid && _transform != null)
+				{
+					UIController.it.ShowCoinEffect(_transform);
+				}
+				Inventory.it.AddItem(info.tid, new IdleNumber(info.count));
+				UIController.it.ShowItemLog((int)info.tid, new IdleNumber(info.count));
+			}
+		}
+	}
+
+	public void GetBossKillReward(Transform _transform = null)
+	{
+		for (int i = 0; i < currentStageInfo.bossRewardInfoList.Count; i++)
+		{
+			var info = currentStageInfo.bossRewardInfoList[i];
+			{
+				if (info.tid == Inventory.it.GoldTid && _transform != null)
+				{
+					UIController.it.ShowCoinEffect(_transform);
+				}
+				Inventory.it.AddItem(info.tid, new IdleNumber(info.count));
+			}
+		}
+	}
+
+	private bool GetResult(float _percentage)
+	{
+		float randomValue = UnityEngine.Random.Range(0, 100);
+		if (randomValue < _percentage)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 }

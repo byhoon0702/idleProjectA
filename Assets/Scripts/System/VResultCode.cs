@@ -4,31 +4,41 @@ public enum VResultCode
 	/// <summary>
 	/// 
 	/// </summary>
-	_NONE = 1001000,
+	_NONE = 2000000001,
 
 	/// <summary>
-	/// 코드에서 사용
+	/// 에러 기본
 	/// </summary>
-	NO_META_DATA = 1001001,
+	NO_META_DATA = 2000000002,
 
 	/// <summary>
 	/// 
 	/// </summary>
-	INVALID_DATA = 1001002,
+	INVALID_DATA = 2000000003,
 
 	/// <summary>
 	/// 앱 종료
 	/// </summary>
-	APPLICATION_QUIT = 1001003,
+	APPLICATION_QUIT = 2000000004,
 
 	/// <summary>
 	/// 아이템에 기본 캐릭터 정의 안됨
 	/// </summary>
-	NO_DEFINED_DEFAULT_CHAR = 1001004,
+	NO_DEFINED_DEFAULT_CHAR = 2000000005,
 
 	/// <summary>
 	/// 아이템 부족
 	/// </summary>
-	LACK_ITEM = 1001005,
+	LACK_ITEM = 2000000006,
+
+	/// <summary>
+	/// 0 소비 오류
+	/// </summary>
+	INVALID_ITEM_CHANDE_0 = 2000000007,
+
+	/// <summary>
+	/// TID 0
+	/// </summary>
+	TID_IS_0 = 2000000008,
 
 }

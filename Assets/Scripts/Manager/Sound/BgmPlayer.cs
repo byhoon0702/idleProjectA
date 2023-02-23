@@ -24,7 +24,7 @@ public class BgmPlayer : MonoBehaviour
 
 	public void Play(string _soundKey)
 	{
-		var bgmData = DataManager.it.Get<SoundBgmDataSheet>().Get(_soundKey);
+		var bgmData = DataManager.Get<SoundBgmDataSheet>().Get(_soundKey);
 		if (bgmData == null)
 		{
 			VLog.SoundLogError($"BGM 못찾음. key: {_soundKey}");

@@ -16,14 +16,12 @@ public class SkillJsonCreator : EditorWindow
 	public List<string> presetNames = new List<string>();
 
 
-	/// <summary>
-	/// {n} 기본값 + 레벨별 수치변화
-	/// {g} 기본값 + 등급별 수치변화
-	/// </summary>
 	private Dictionary<string, string> presetDesc = new Dictionary<string, string>()
-	{ 
-		{ "Mirfiana_sk1Data", "체력이 가장 많은 적에게 공격력 1142%만큼 피해를 입히고 치명타 적중시 2초 동안 기절 상태로 만든다." },
-		{ "SkillThrowData", "돌던지기" },
+	{
+		{ "SKILL_preset01_roundData", "지정범위형" },
+		{ "SKILL_preset02_fireData", "발사형" },
+		{ "SKILL_preset03_summonData", "소환형" },
+		{ "SKILL_preset04_buffData", "버프형" },
 	};
 
 
@@ -132,24 +130,24 @@ public class SkillJsonCreator : EditorWindow
 		// TID 유효성 검사
 		if(selectedTid == 0)
 		{
-			Debug.LogError("TID가 유효하지 않음(0임)");
+			EditorUtility.DisplayDialog("Info", "TID가 유효하지 않음(0임)", "확인");
 			return;
 		}
 		if(usingTids.Contains(selectedTid))
 		{
-			Debug.LogError("TID가 유효하지 않음(파일이 이미 있음)");
+			EditorUtility.DisplayDialog("Info", "TID가 유효하지 않음(파일이 이미 있음)", "확인");
 			return;
 		}
 
 		// 프리셋 유효성 검사
 		if(string.IsNullOrEmpty(selectedPresetName))
 		{
-			Debug.LogError("스킬 프리셋이 비어있음");
+			EditorUtility.DisplayDialog("Info", "스킬 프리셋이 비어있음", "확인");
 			return;
 		}
 		if (presetNames.Contains(selectedPresetName) == false)
 		{
-			Debug.LogError("스킬 프리셋 이름이 잘못됨");
+			EditorUtility.DisplayDialog("Info", "스킬 프리셋 이름이 잘못", "확인");
 			return;
 		}
 
@@ -159,17 +157,12 @@ public class SkillJsonCreator : EditorWindow
 			var classObject = ScriptableObject.CreateInstance<SkillBaseData>();
 			classObject.tid = selectedTid;
 			classObject.skillPreset = selectedPresetName;
-			classObject.skillName = selectedPresetName;
-			if (presetDesc.ContainsKey(selectedPresetName))
-			{
-				classObject.description = presetDesc[selectedPresetName];
-			}
 
 			json = JsonUtility.ToJson(classObject);
 		}
 		catch (Exception e)
 		{
-			Debug.LogError($"Json 파일 생성실패\n{e}");
+			EditorUtility.DisplayDialog("Info", $"Json 파일 생성실패\n{e}", "확인");
 			return;
 		}
 
@@ -177,5 +170,8 @@ public class SkillJsonCreator : EditorWindow
 		System.IO.File.WriteAllText(SkillMeta.jsonFilePath + selectedTid + ".json", json);
 		AssetDatabase.Refresh();
 		RefreshAssetInfo();
+
+
+		EditorUtility.DisplayDialog("Info", "성공", "확인");
 	}
 }

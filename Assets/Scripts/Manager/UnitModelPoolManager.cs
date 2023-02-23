@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
-public class UnitModelPoolManager : MonoBehaviour
+public class UnitModelPoolManager : VObjectPool<UnitAnimation>
 {
 	private static UnitModelPoolManager instance;
 	public static UnitModelPoolManager Instance => instance;
@@ -10,73 +11,42 @@ public class UnitModelPoolManager : MonoBehaviour
 
 	[SerializeField] private Transform modelParentTransform;
 
-	private Dictionary<string, List<GameObject>> dictionaryModel = new Dictionary<string, List<GameObject>>();
-
 	private void Awake()
 	{
 		instance = this;
 	}
 
-	public GameObject GetModel(string _modelName)
+	protected override void SetObject(UnitAnimation _object, IObjectPool<UnitAnimation> _pool)
 	{
-		if (dictionaryModel.TryGetValue(_modelName, out var listModel) == true)
-		{
-			for (int i = 0; i < listModel.Count; i++)
-			{
-				var model = listModel[i];
-				if (model == null)
-				{
-					continue;
-				}
-				if (model.GetComponent<UnitAnimation>().IsResetComplete() == false)
-				{
-					continue;
-				}
-				if (model.transform.parent == modelParentTransform)
-				{
-					model.gameObject.SetActive(true);
-					return model;
-				}
-			}
-			var newModel = Instantiate(Resources.Load(_modelName)) as GameObject;
-			listModel.Add(newModel);
-			newModel.gameObject.SetActive(true);
-			return newModel;
-		}
-		else
-		{
-			var list = new List<GameObject>();
-			var model = Instantiate(Resources.Load(_modelName), modelParentTransform) as GameObject;
-			list.Add(model);
-			dictionaryModel.Add(_modelName, list);
-
-			model.gameObject.SetActive(true);
-			return model;
-		}
+		_object.Set(_pool);
 	}
 
-	public void ReturnModel(GameObject _model)
+	protected override string GetPath(string _name)
 	{
-		if (_model == null)
-		{
-			return;
-		}
-		_model.transform.SetParent(modelParentTransform, false);
-		_model.GetComponent<UnitAnimation>().ResetAnimation();
+		string result = $"B/{_name}";
+		return result;
 	}
 
-	public void ClearPool()
+	protected override UnitAnimation OnCreateObject(string _name)
 	{
-		foreach (var model_list in dictionaryModel.Values)
-		{
-			for (int i = 0; i < model_list.Count; i++)
-			{
-				var model = model_list[i];
-				Destroy(model.gameObject);
-			}
-			model_list.Clear();
-		}
-		dictionaryModel.Clear();
-		dictionaryModel = new Dictionary<string, List<GameObject>>();
+		UnitAnimation model = Instantiate(GetResource(_name));
+		model.name = _name;
+		return model;
+	}
+
+	protected override void OnGetObject(UnitAnimation _object)
+	{
+		_object.gameObject.SetActive(true);
+	}
+
+	protected override void OnReleaseObject(UnitAnimation _object)
+	{
+		_object.transform.SetParent(modelParentTransform, false);
+		_object.GetComponent<UnitAnimation>().ResetAnimation();
+	}
+
+	protected override void OnDestroyObject(UnitAnimation _object)
+	{
+		Destroy(_object.gameObject);
 	}
 }

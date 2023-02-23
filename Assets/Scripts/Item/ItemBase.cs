@@ -23,6 +23,7 @@ public class ItemBase
 			instantItem.count = value;
 		}
 	}
+	public virtual string Icon => data.tid.ToString();
 	public string ItemName => data.name;
 	public int Level => instantItem.level;
 	public virtual int MaxLevel => int.MaxValue;
@@ -40,8 +41,8 @@ public class ItemBase
 		VResult result = new VResult();
 		instantItem = _instantItem;
 
-		data = DataManager.it.Get<ItemDataSheet>().Get(_instantItem.tid);
-		if(data == null)
+		data = DataManager.Get<ItemDataSheet>().Get(_instantItem.tid);
+		if (data == null)
 		{
 			return result.SetFail(VResultCode.NO_META_DATA);
 		}

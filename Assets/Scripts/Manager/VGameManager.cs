@@ -16,13 +16,9 @@ public interface FiniteStateMachine
 public enum GameState
 {
 	None = 0,
-	INTRO = 1,
-	DATALOADING = 2,
 	LOADING = 10,
 	BGLOADING = 20,
 	PLAYERSPAWN = 30,
-	ANIMATIONSTATE = 40,
-	FEVER = 50,
 	BATTLESTART = 100,
 	BATTLE,
 	REWARD,
@@ -53,43 +49,24 @@ public class VGameManager : MonoBehaviour
 	public bool fixedScroll;
 	public MapController mapController;
 
-	public IntroState introState;
-	public DataLoadingState dataLoadingState;
 	public LoadingState loadingState;
 	public BGLoadState bgloadState;
 	public SpawnState spawnState;
 	public BattleStartState battleStartState;
 	public BattleState battleState;
 	public BattleEndState battleEndState;
-	public AnimationState animationState;
-	public FeverState feverState;
 
 	public FiniteStateMachine currentFSM;
 	public GameState currentState;
-	public SkillMeta skillMeta;
-	public ConfigMeta config;
 
 
 	public BattleRecord battleRecord;
 
-
-
-
-
 	private void Awake()
 	{
 		instance = this;
-		LoadConfig();
 	}
 
-
-	public void IdleNUll(IdleNumber aa)
-	{
-		if (aa <= 0)
-		{
-			Debug.Log("IdlenNumber Null");
-		}
-	}
 
 	// Start is called before the first frame update
 	void Start()
@@ -99,10 +76,6 @@ public class VGameManager : MonoBehaviour
 		VSoundManager soundManager = new GameObject("Sound Manager").AddComponent<VSoundManager>();
 		soundManager.transform.SetParent(transform);
 
-		IdleNUll(null);
-		introState = new IntroState();
-		dataLoadingState = new DataLoadingState();
-		animationState = new AnimationState();
 		loadingState = new LoadingState();
 		bgloadState = new BGLoadState();
 		spawnState = new SpawnState();
@@ -110,24 +83,16 @@ public class VGameManager : MonoBehaviour
 		battleState = new BattleState();
 		battleEndState = new BattleEndState();
 		battleRecord = new BattleRecord();
-		feverState = new FeverState();
 
 		Application.targetFrameRate = 60;
 
-		ChangeState(GameState.INTRO);
+		ChangeState(GameState.LOADING);
 	}
 	public void ChangeState(GameState state)
 	{
-
 		currentFSM?.OnExit();
 		switch (state)
 		{
-			case GameState.INTRO:
-				currentFSM = introState;
-				break;
-			case GameState.DATALOADING:
-				currentFSM = dataLoadingState;
-				break;
 			case GameState.LOADING:
 				currentFSM = loadingState;
 				break;
@@ -136,12 +101,6 @@ public class VGameManager : MonoBehaviour
 				break;
 			case GameState.PLAYERSPAWN:
 				currentFSM = spawnState;
-				break;
-			case GameState.ANIMATIONSTATE:
-				currentFSM = animationState;
-				break;
-			case GameState.FEVER:
-				currentFSM = feverState;
 				break;
 			case GameState.BATTLESTART:
 				currentFSM = battleStartState;
@@ -161,14 +120,5 @@ public class VGameManager : MonoBehaviour
 	void Update()
 	{
 		currentFSM?.OnUpdate(Time.deltaTime);
-	}
-	public void OnClickStartGame()
-	{
-		ChangeState(GameState.DATALOADING);
-	}
-
-	private void LoadConfig()
-	{
-		VGameManager.it.config = ScriptableObject.CreateInstance<ConfigMeta>();
 	}
 }

@@ -13,7 +13,7 @@ public class EquipLevelDataSheet : DataSheetBase<EquipLevelData>
 {
 	public EquipLevelData Get(long tid)
 	{
-		for (int i = 0 ; i < infos.Count ; i++)
+		for (int i = 0; i < infos.Count; i++)
 		{
 			if (infos[i].tid == tid)
 			{
@@ -31,7 +31,7 @@ public class EquipLevelDataSheet : DataSheetBase<EquipLevelData>
 	{
 		EquipLevelData outLevelData = null;
 
-		for (int i = 0 ; i < infos.Count ; i++)
+		for (int i = 0; i < infos.Count; i++)
 		{
 			if (infos[i].level <= _level)
 			{
@@ -44,5 +44,16 @@ public class EquipLevelDataSheet : DataSheetBase<EquipLevelData>
 		}
 
 		return outLevelData;
+	}
+
+	/// <summary>
+	/// 레벨 1 -> 2레벨 필요 비용
+	/// </summary>
+	public int Level1NeedCount()
+	{
+		var sheet = DataManager.Get<EquipLevelDataSheet>();
+		var levelData = sheet.FindLevelInfo(1);
+
+		return levelData.needCount;
 	}
 }

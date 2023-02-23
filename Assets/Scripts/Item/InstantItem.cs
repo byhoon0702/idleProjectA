@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-
-
 [Serializable]
 public class InstantItem
 {
@@ -24,6 +22,7 @@ public class InstantItem
 		item.tid = tid;
 		item.type = type;
 		item.grade = grade;
+		item.level = level;
 		item.exp = exp;
 		item.count = count;
 		item.nextRefillTime = nextRefillTime;

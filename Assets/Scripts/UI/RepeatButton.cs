@@ -16,6 +16,19 @@ public class RepeatButton : Selectable
 	private bool callRepeat;
 	private float pressStartTime;
 
+	public void SetInteractable(bool _value)
+	{
+		interactable = _value;
+		if (interactable)
+		{
+			DoStateTransition(SelectionState.Normal, false);
+		}
+		else
+		{
+			DoStateTransition(SelectionState.Disabled, false);
+		}
+	}
+
 
 
 	public override void OnPointerDown(PointerEventData eventData)

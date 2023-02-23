@@ -25,6 +25,10 @@ public class TimeEditor : EditorWindow
 		}
 
 		TimeScale();
+		if(TimeManager.it == null)
+		{
+			return;
+		}
 
 		GUILayout.Label("Sync", "PreToolbar");
 		second = EditorGUILayout.IntField("Minute", second);
@@ -33,6 +37,13 @@ public class TimeEditor : EditorWindow
 		GUILayout.Label(TimeManager.it.server_utc.ToString());
 		GUILayout.Label("Now", "PreToolbar");
 		GUILayout.Label(TimeManager.it.m_now.ToString());
+		GUILayout.Label("Play Time", "PreToolbar");
+		GUILayout.Label(UserInfo.PlayTicksToString);
+	}
+
+	private void Update()
+	{
+		Repaint();
 	}
 
 

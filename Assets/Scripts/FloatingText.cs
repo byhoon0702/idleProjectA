@@ -84,7 +84,7 @@ public class FloatingText : MonoBehaviour
 		Vector2 endPos = new Vector2(position.x + Random.Range(0.1f, 0.5f), position.y + Random.Range(0.1f, 0.5f));
 		if (isPlayer)
 		{
-			endPos.x = position.x - Random.Range(1, 5);
+			endPos.x = position.x - Random.Range(0.1f, 0.5f);
 		}
 		transform.DOMoveX(endPos.x, 0.4f);
 		transform.DOMoveY(endPos.y + 1, 0.6f).OnComplete(FadeFont);
@@ -92,11 +92,13 @@ public class FloatingText : MonoBehaviour
 
 	void OnReturnPool()
 	{
+		DOTween.Kill(transform);
 		managedPool.Release(this);
 	}
-
-	void OnDisable()
+	private void OnDestroy()
 	{
-		DOTween.Kill(this);
+
+		DOTween.Kill(transform);
 	}
+
 }

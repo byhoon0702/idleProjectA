@@ -16,7 +16,7 @@ public static class FourArithmeticCalculator
 	public static string ReplaceReservedWord(string _data, float _defaultValue, Int32 _skillLv)
 	{
 		string outResult = _data;
-				
+
 		outResult = outResult.Replace(DEFAULT_VALUE, _defaultValue.ToString());
 		outResult = outResult.Replace(SKILL_LEVEL, _skillLv.ToString());
 
@@ -31,11 +31,11 @@ public static class FourArithmeticCalculator
 		double result = FourArithmeticOperations.Calculate(_data);
 		return result;
 	}
-	
+
 
 	public static double Calculate(string _data, float _defaultValue, Int32 _skillLv)
 	{
-		if(string.IsNullOrEmpty(_data))
+		if (string.IsNullOrEmpty(_data))
 		{
 			return _defaultValue;
 		}

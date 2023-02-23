@@ -10,6 +10,7 @@ public static class UnitEditorUtility
 	private static MoveSpeedUpConditionData moveSpeedUpConditionData = new MoveSpeedUpConditionData(0.21f);
 	private static MoveSpeedDownConditionData moveSpeedDownConditionData = new MoveSpeedDownConditionData(0.21f);
 	private static KnockbackConditionData knockbackConditionData = new KnockbackConditionData();
+	private static StunConditionData stunConditionData = new StunConditionData();
 	private static CriticalChanceUpConditionData criticalChanceUpConditionData = new CriticalChanceUpConditionData(0.035f);
 	private static CriticalChanceDownConditionData criticalChanceDownConditionData = new CriticalChanceDownConditionData(0.035f);
 	private static AttackSpeedUpConditionData attackSpeedUpConditionData = new AttackSpeedUpConditionData(0.14f);
@@ -18,10 +19,10 @@ public static class UnitEditorUtility
 	private static AttackPowerDownConditionData attackPowerDownConditionData = new AttackPowerDownConditionData(0.084f);
 
 
-	public static void ShowCharacterInfo(UnitInfo _info, IdleNumber _hp, IdleNumber _maxHp)
+	public static void ShowUnitInfo(UnitInfo _info, IdleNumber _hp, IdleNumber _maxHp)
 	{
 		EditorGUILayout.LabelField($"HP: {_hp.ToString()} / {_maxHp.ToString()}");
-		EditorGUILayout.LabelField($"AttackPower: {_info.AttackPower(false).ToString()}");
+		EditorGUILayout.LabelField($"AttackPower: {_info.AttackPower().ToString()}");
 		EditorGUILayout.LabelField($"CriticalChance: {_info.CriticalChanceRatio()}");
 		EditorGUILayout.LabelField($"CriticalDamageMul: {_info.CriticalDamageMultifly()}");
 		EditorGUILayout.LabelField($"MoveSpeed: {_info.MoveSpeed()}");
@@ -48,12 +49,10 @@ public static class UnitEditorUtility
 	{
 		EditorGUILayout.LabelField(new GUIContent("적용중인 하이퍼 모드"), "PreToolbar");
 
-		EditorGUILayout.LabelField($"AttackPower: {_module.GetHyperAbility(_unit, AbilityType.AttackPower)}");
-		EditorGUILayout.LabelField($"MoveSpeed: {_module.GetHyperAbility(_unit, AbilityType.MoveSpeed)}");
-		EditorGUILayout.LabelField($"AttackSpeed: {_module.GetHyperAbility(_unit, AbilityType.AttackSpeed)}");
-		EditorGUILayout.LabelField($"CriticalAttackPower: {_module.GetHyperAbility(_unit, AbilityType.CriticalAttackPower)}");
-		EditorGUILayout.LabelField($"SkillAttackPower: {_module.GetHyperAbility(_unit, AbilityType.SkillAttackPower)}");
-		EditorGUILayout.LabelField($"BossAttackPower: {_module.GetHyperAbility(_unit, AbilityType.BossAttackPower)}");
+		EditorGUILayout.LabelField($"AttackPower: {_module.GetHyperAbilityRatio(_unit, Stats.Attackpower)}");
+		EditorGUILayout.LabelField($"MoveSpeed: {_module.GetHyperAbilityRatio(_unit, Stats.Movespeed)}");
+		EditorGUILayout.LabelField($"AttackSpeed: {_module.GetHyperAbilityRatio(_unit, Stats.AttackSpeed)}");
+		EditorGUILayout.LabelField($"CriticalAttackPower: {_module.GetHyperAbilityRatio(_unit, Stats.CriticalDamage)}");
 	}
 
 	public static void ShowConditionTest(UnitBase _attacker, ConditionModule _module)
@@ -75,6 +74,10 @@ public static class UnitEditorUtility
 		if (GUILayout.Button(typeof(KnockbackCondition).ToString()))
 		{
 			_module.AddCondition(new KnockbackCondition(_attacker, knockbackConditionData));
+		}
+		if (GUILayout.Button(typeof(StunCondition).ToString()))
+		{
+			_module.AddCondition(new StunCondition(_attacker, stunConditionData));
 		}
 		if (GUILayout.Button(typeof(CriticalChanceUpCondition).ToString()))
 		{

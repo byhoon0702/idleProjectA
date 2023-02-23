@@ -8,7 +8,7 @@ public class InventoryEditor : EditorWindow
 {
 	public ItemType itemType;
 	public long tid;
-	public long count;
+	public string count;
 	public bool abilityFoldOut;
 	public Vector2 scrollPos;
 
@@ -28,7 +28,7 @@ public class InventoryEditor : EditorWindow
 			return;
 		}
 
-		if(VGameManager.it.currentState <= GameState.DATALOADING)
+		if(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Intro")
 		{
 			return;
 		}
@@ -39,10 +39,10 @@ public class InventoryEditor : EditorWindow
 
 		EditorGUILayout.BeginHorizontal();
 		tid = EditorGUILayout.LongField("TID", tid);
-		count = EditorGUILayout.LongField("Count", count);
+		count = EditorGUILayout.TextField("Count", count);
 		if(GUILayout.Button("Add", GUILayout.MaxWidth(40)))
 		{
-			Inventory.it.AddItem(tid, count);
+			Inventory.it.AddItem(tid, (IdleNumber)count);
 		}
 		EditorGUILayout.EndHorizontal();
 
@@ -60,7 +60,7 @@ public class InventoryEditor : EditorWindow
 		
 
 		GUILayout.Space(20);
-		var infos = DataManager.it.Get<ItemDataSheet>().infos;
+		var infos = DataManager.Get<ItemDataSheet>().infos;
 		if(itemType == ItemType.Money)
 		{
 			GUILayout.Label($"Refill Check: {ConfigMeta.it.REFILL_UPDATE_CYCLE - Inventory.it.refillCheckDeltaTime}");
@@ -79,6 +79,11 @@ public class InventoryEditor : EditorWindow
 				continue;
 			}
 
+			GUILayout.BeginHorizontal();
+			if(GUILayout.Button("Select", GUILayout.MaxWidth(50)))
+			{
+				tid = itembase.Tid;
+			}
 			GUILayout.Label(itembase.ToString());
 			if (itembase is ItemMoney)
 			{
@@ -93,6 +98,7 @@ public class InventoryEditor : EditorWindow
 				}
 
 			}
+			GUILayout.EndHorizontal();
 
 			EditorGUILayout.Space(10);
 		}

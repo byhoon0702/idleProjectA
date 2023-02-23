@@ -25,11 +25,22 @@ public class TimeManager : MonoBehaviour
 		}
 	}
 
+	public long prevPlayTicks;
+
 
 	private void Awake()
 	{
 		instance = this;
 		syncRelative = 0;
+
+		prevPlayTicks = m_now.Ticks;
+	}
+
+	private void Update()
+	{
+		long currTicks = m_now.Ticks;
+		UserInfo.PlayTicks += (currTicks - prevPlayTicks);
+		prevPlayTicks = currTicks;
 	}
 
 	public void SetServerUtc(DateTime in_server_utc)

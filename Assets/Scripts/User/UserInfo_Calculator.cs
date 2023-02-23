@@ -98,7 +98,7 @@ public static class UserDataCalculator
 
 	private static void CreateLevelExpInfo()
 	{
-		UserLevelDataSheet dataSheet = DataManager.it.Get<UserLevelDataSheet>();
+		UserLevelDataSheet dataSheet = DataManager.Get<UserLevelDataSheet>();
 
 		_levelExpInfo = new LevelExpInfo[dataSheet.infos.Count + 1]; // <-- 레벨은 1부터 시작하기에 + 1해줌
 

@@ -5,16 +5,19 @@ using UnityEngine;
 public class ItemSkill : ItemBase
 {
 	public EquipLevelData levelData;
+	public SkillData skillData;
 
 
 	public override int Exp
 	{
 		get
 		{
-			int itemCount = Inventory.it.ItemCount(Tid).GetValueToInt();
+			int itemCount = Inventory.it.ItemCount(Tid).GetValueToInt() - 1;// 1개는 보유해야함
 			return itemCount;
 		}
 	}
+
+	public override string Icon => skillData.Icon;
 
 	public int NextExp => levelData.needCount;
 
@@ -48,12 +51,19 @@ public class ItemSkill : ItemBase
 	{
 		VResult vResult = new VResult();
 
-		var sheet = DataManager.it.Get<EquipLevelDataSheet>();
-		levelData = sheet.FindLevelInfo(Level);
+		var equipLevelSheet = DataManager.Get<EquipLevelDataSheet>();
+		levelData = equipLevelSheet.FindLevelInfo(Level);
 
 		if (levelData == null)
 		{
 			return vResult.SetFail(VResultCode.NO_META_DATA, $"EquipLevelDataSheet. tid: {data.tid}, lv: {Level}");
+		}
+
+		var skillSheet = DataManager.Get<SkillDataSheet>();
+		skillData = skillSheet.Get(data.skillTid);
+		if(skillData == null)
+		{
+			return vResult.SetFail(VResultCode.NO_META_DATA, $"SkillDataSheet. itemtid: {data.tid}, skillTid: {data.skillTid}");
 		}
 
 		return vResult.SetOk();

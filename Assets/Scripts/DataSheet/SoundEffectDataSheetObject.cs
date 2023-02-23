@@ -1,8 +1,8 @@
-//========AUTO GENERATED CODE======//
+﻿//========AUTO GENERATED CODE======//
 using UnityEngine;
 using System;
 [Serializable]
-public class SoundEffectDataSheetObject : ScriptableObject 
+public class SoundEffectDataSheetObject : BaseDataSheetObject
 {
 	[SerializeField]
 	public SoundEffectDataSheet dataSheet;

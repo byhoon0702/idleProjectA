@@ -3,15 +3,65 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+
+
+
+/// <summary>
+/// 아이템이 변경된경우, <see cref="abilityCalculator"/>데이터의 갱신이 필요할 수 있다.
+/// </summary>
 public class Inventory : MonoBehaviour
 {
+	/*
+	 * 자주 쓰는 아이템의경우는 캐싱을 해서 사용한다.
+	 */
+	public long GoldTid
+	{
+		get
+		{
+			if (goldTid == 0)
+			{
+				goldTid = DataManager.Get<ItemDataSheet>().GetByHashTag("gold").tid;
+			}
+
+			return goldTid;
+		}
+	}
+	private long goldTid;
+
+	public long DiaTid
+	{
+		get
+		{
+			if (diaTid == 0)
+			{
+				diaTid = DataManager.Get<ItemDataSheet>().GetByHashTag("dia").tid;
+			}
+
+			return diaTid;
+		}
+	}
+	private long diaTid;
+
+
+
+
+
+
 	public static Inventory Instance;
 	public static Inventory it => Instance;
 
 	private List<ItemBase> items = new List<ItemBase>();
+
+	/// <summary>
+	/// 수치 계산용으로 가져갈때 빼곤 접근하지 말아주세요.
+	/// </summary>
+	public List<ItemBase> Items => items;
+
 	public InventoryAbilityCalculator abilityCalculator = new InventoryAbilityCalculator();
 
 	public float refillCheckDeltaTime;
+
+
 
 
 	private void Awake()
@@ -23,16 +73,16 @@ public class Inventory : MonoBehaviour
 	{
 		refillCheckDeltaTime += Time.deltaTime;
 
-		if(refillCheckDeltaTime < ConfigMeta.it.REFILL_UPDATE_CYCLE)
+		if (refillCheckDeltaTime < ConfigMeta.it.REFILL_UPDATE_CYCLE)
 		{
 			return;
 		}
 
 		refillCheckDeltaTime -= ConfigMeta.it.REFILL_UPDATE_CYCLE;
 
-		foreach(var item in items)
+		foreach (var item in items)
 		{
-			if(item is ItemMoney)
+			if (item is ItemMoney)
 			{
 				ProcessRefill(item as ItemMoney);
 			}
@@ -43,10 +93,10 @@ public class Inventory : MonoBehaviour
 	{
 		items.Clear();
 
-		foreach(var item in instantItems)
+		foreach (var item in instantItems)
 		{
-			ItemBase itemBase = ItemCreator.MakeItemBase(item, out VResult vResult);
-			if(vResult.Fail())
+			ItemBase itemBase = ItemCreator.MakeItemBase(item.DeepClone(), out VResult vResult);
+			if (vResult.Fail())
 			{
 				PopAlert.it.Create(vResult);
 				continue;
@@ -55,7 +105,16 @@ public class Inventory : MonoBehaviour
 			items.Add(itemBase);
 		}
 
-		abilityCalculator.CalculateAbility(items);
+
+		foreach (var item in items)
+		{
+			if (item is ItemMoney)
+			{
+				ProcessRefill(item as ItemMoney);
+			}
+		}
+
+		abilityCalculator.CalculateAbilityAll(items);
 	}
 
 	public IdleNumber ItemCount(long _itemTid)
@@ -74,7 +133,7 @@ public class Inventory : MonoBehaviour
 	public IdleNumber ItemCount(string _hashTag)
 	{
 		ItemBase itemBase = FindItemByHashTag(_hashTag);
-		if(itemBase != null)
+		if (itemBase != null)
 		{
 			return itemBase.Count;
 		}
@@ -84,24 +143,11 @@ public class Inventory : MonoBehaviour
 		}
 	}
 
-	public long ItemTid(string _hashTag)
-	{
-		var itemData = DataManager.it.Get<ItemDataSheet>().GetByHashTag(_hashTag);
-		if (itemData != null)
-		{
-			return itemData.tid;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
 	public ItemBase FindItemByHashTag(string _hashTag)
 	{
-		foreach(var item in items)
+		foreach (var item in items)
 		{
-			if(item.data.hashTag == _hashTag)
+			if (item.data.hashTag == _hashTag)
 			{
 				return item;
 			}
@@ -122,11 +168,17 @@ public class Inventory : MonoBehaviour
 			}
 		}
 
-		return null;
+		return resultItems;
 	}
 
 	public ItemBase FindItemByTid(Int64 _tid)
 	{
+		if (_tid == 0)
+		{
+			// 0인경우 명시적으로 처리
+			return null;
+		}
+
 		for (int i = 0; i < items.Count; i++)
 		{
 			var item = items[i];
@@ -135,6 +187,7 @@ public class Inventory : MonoBehaviour
 				return item;
 			}
 		}
+
 		return null;
 	}
 
@@ -149,7 +202,7 @@ public class Inventory : MonoBehaviour
 			return vResult.SetFail(VResultCode.LACK_ITEM, "Item is Empty", _tidParams: _tid);
 		}
 
-		if(item.Count < _count)
+		if (item.Count < _count)
 		{
 			return vResult.SetFail(VResultCode.LACK_ITEM, $"has: {item.Count}, need: {_count}", _tidParams: _tid);
 		}
@@ -159,7 +212,7 @@ public class Inventory : MonoBehaviour
 
 	public VResult CheckMoney(string _hashTag, IdleNumber _count)
 	{
-		var itemData = DataManager.it.Get<ItemDataSheet>().GetByHashTag(_hashTag);
+		var itemData = DataManager.Get<ItemDataSheet>().GetByHashTag(_hashTag);
 		if (itemData != null)
 		{
 			return CheckMoney(itemData.tid, _count);
@@ -178,32 +231,41 @@ public class Inventory : MonoBehaviour
 
 		if (item == null)
 		{
-			return vResult.SetFail(VResultCode.LACK_ITEM, "Item is Empty", _tidParams: _tid );
+			return vResult.SetFail(VResultCode.LACK_ITEM, "Item is Empty", _tidParams: _tid);
 		}
 
-		if(item is ItemMoney)
+		if (item is ItemMoney)
 		{
 			// 최대개수보다 적어지는 순간에 리필 시간 갱신이 필요하다
 			var itemMoney = (item as ItemMoney);
-			if(itemMoney.Refillable && itemMoney.PrepareNextRefillUpdate(1, out string nextRefill))
+			if (itemMoney.Refillable && itemMoney.PrepareNextRefillUpdate(1, out string nextRefill))
 			{
 				itemMoney.SetNextRefill(nextRefill);
 			}
 		}
-
 
 		if (item.Count < _count)
 		{
 			return vResult.SetFail(VResultCode.LACK_ITEM, $"has: {item.Count}, need: {_count}", _tidParams: _tid);
 		}
 
+		if (_count == 0)
+		{
+			return vResult.SetFail(VResultCode.INVALID_ITEM_CHANDE_0, _tidParams: _tid);
+		}
+
+		IdleNumber before = item.Count;
 		item.Count -= _count;
+
+		VLog.ItemLog($"[{item.ItemName}({item.Tid})] 소비 {before.ToString()} -> {item.Count.ToString()}. consume: {_count.ToString()}");
+
+		EventCallbacks.CallItemChanged(new List<long>() { _tid });
 		return vResult.SetOk();
 	}
 
 	public VResult ConsumeItem(string _hashTag, IdleNumber _count)
 	{
-		var itemData = DataManager.it.Get<ItemDataSheet>().GetByHashTag(_hashTag);
+		var itemData = DataManager.Get<ItemDataSheet>().GetByHashTag(_hashTag);
 		if (itemData != null)
 		{
 			return ConsumeItem(itemData.tid, _count);
@@ -214,36 +276,91 @@ public class Inventory : MonoBehaviour
 		}
 	}
 
-	public VResult AddItem(long _tid, long _count)
+	public void AddItems(List<GachaResult> _resultItems)
 	{
-		var vResult = new VResult();
-		var item = FindItemByTid(_tid);
+		List<long> changedItems = new List<long>();
 
-		// 없으면 새로 생성
-		if (item == null)
+		foreach (var resultItem in _resultItems)
 		{
-			var itemData = DataManager.it.Get<ItemDataSheet>().Get(_tid);
-			if(itemData == null)
+			VResult result = AddItem(resultItem.itemTid, resultItem.itemCount, false);
+			if (result.Fail())
 			{
-				return vResult.SetFail(VResultCode.NO_META_DATA, $"ItemDataSheet. invalid tid: {_tid}");
+				VLog.ItemLogError(result.ToString());
+				continue;
+			}
+
+			if (changedItems.Contains(resultItem.itemTid) == false)
+			{
+				changedItems.Add(resultItem.itemTid);
+			}
+		}
+
+		EventCallbacks.CallItemChanged(changedItems);
+		abilityCalculator.CalculateAbilityAll(items);
+	}
+
+	public VResult AddItem(string _hashTag, IdleNumber _count, bool _sendEventAndUpdateData = true)
+	{
+		var itemData = DataManager.Get<ItemDataSheet>().GetByHashTag(_hashTag);
+
+		if (itemData == null)
+		{
+			return new VResult().SetFail(VResultCode.NO_META_DATA, $"ItemDataSheet. invalid hashtag: {_hashTag}");
+		}
+
+		return AddItem(itemData.tid, _count, _sendEventAndUpdateData);
+	}
+
+	/// <summary>
+	/// _sendEventAndUpdateData : 아이템 변화에 따른 데이터 자동 업데이트
+	/// </summary>
+	public VResult AddItem(long _tid, IdleNumber _count, bool _sendEventAndUpdateData = true)
+	{
+		var result = new VResult();
+		ItemBase item = FindItemByTid(_tid);
+
+		if (_count == 0)
+		{
+			return result.SetFail(VResultCode.INVALID_ITEM_CHANDE_0, _tidParams: _tid);
+		}
+
+		IdleNumber before;
+		// 없으면 새로 생성
+		if (item != null)
+		{
+			before = item.Count;
+			item.Count += _count;
+		}
+		else
+		{
+			before = new IdleNumber(0);
+
+			var itemData = DataManager.Get<ItemDataSheet>().Get(_tid);
+			if (itemData == null)
+			{
+				return result.SetFail(VResultCode.NO_META_DATA, $"ItemDataSheet. invalid tid: {_tid}");
 			}
 
 			var instantItem = ItemCreator.MakeInstantItem(itemData);
-			ItemBase itemBase = ItemCreator.MakeItemBase(instantItem, out vResult);
-			if(vResult.Fail())
+			item = ItemCreator.MakeItemBase(instantItem, out result);
+			if (result.Fail())
 			{
-				return vResult;
+				return result;
 			}
 
-			itemBase.Count += _count;
-			items.Add(itemBase);
-
-			return vResult.SetOk();
+			item.Count += _count;
+			items.Add(item);
 		}
 
+		VLog.ItemLog($"[{item.ItemName}({item.Tid})] 획득 {before.ToString()} -> {item.Count.ToString()}. added: {_count.ToString()}");
 
-		item.Count += _count;
-		return vResult.SetOk();
+		if (_sendEventAndUpdateData)
+		{
+			EventCallbacks.CallItemChanged(new List<long>() { _tid });
+			abilityCalculator.CalculateAbilityAll(items);
+		}
+
+		return result.SetOk();
 	}
 
 	/// <summary>
@@ -257,7 +374,7 @@ public class Inventory : MonoBehaviour
 		bool is_refill = _itemMoney.ProcessUpdate(out refillResult);
 		if (is_refill)
 		{
-			for (int i = 0 ; i < items.Count ; i++)
+			for (int i = 0; i < items.Count; i++)
 			{
 				var item = items[i];
 				if (item.Tid == _itemMoney.Tid)
@@ -273,187 +390,20 @@ public class Inventory : MonoBehaviour
 			}
 		}
 	}
-}
 
-public class InventoryAbilityCalculator
-{
-	public class AbilityCalculator
+	public void ResetProperty()
 	{
-		private ItemType itemType;
-
-
-		/// <summary>
-		/// 장착시 제일 좋은 아이템
-		/// </summary>
-		public long bestEquipTid;
-		/// <summary>
-		/// 장착효과
-		/// </summary>
-		public AbilityInfo equipAbility;
-		/// <summary>
-		/// 보유 보너스
-		/// </summary>
-		public Dictionary<AbilityType, IdleNumber> toOwnAbilities = new Dictionary<AbilityType, IdleNumber>();
-
-
-		public AbilityCalculator(ItemType _itemType)
+		foreach (var propItem in FindItemsByType(ItemType.Property))
 		{
-			itemType = _itemType;
-		}
-
-		public void Calculate(List<ItemBase> _items)
-		{
-			toOwnAbilities.Clear();
-			ItemBase bestItem = null;
-			ItemBase equipItem = null;
-			Int64 equipTid = GetUserEquipItem(itemType);
-
-			foreach (var item in _items)
-			{
-				if (item.Type != itemType)
-				{
-					continue;
-				}
-
-				// 보유효과 계산
-				if (toOwnAbilities.ContainsKey(item.ToOwnAbility.type) == false)
-				{
-					toOwnAbilities.Add(item.ToOwnAbility.type, new IdleNumber());
-				}
-
-				toOwnAbilities[item.ToOwnAbility.type] += item.ToOwnAbility.value;
-
-
-				// 장착시 제일 좋은 아이템 체크
-				if (bestItem == null)
-				{
-					bestItem = item;
-				}
-				else if (bestItem.ToOwnAbility.value < item.ToOwnAbility.value)
-				{
-					bestItem = item;
-				}
-
-				// 장착중인 아이템이 있으면 캐싱
-				if (item.Tid == equipTid)
-				{
-					equipItem = item;
-				}
-			}
-
-			// 아이템을 아예 보유하지 않은경우 bestItem이 없을 수 있다
-			if (bestItem != null)
-			{
-				bestEquipTid = bestItem.Tid;
-			}
-
-			// 장착 아이템 체크
-			if (equipItem != null)
-			{
-				equipAbility = equipItem.EquipAbility;
-			}
-			else
-			{
-				equipAbility = new AbilityInfo();
-			}
+			(propItem as ItemProperty).ResetLevel();
 		}
 	}
 
-	public AbilityCalculator weapon = new AbilityCalculator(ItemType.Weapon);
-	public AbilityCalculator armor = new AbilityCalculator(ItemType.Armor);
-	public AbilityCalculator accessory = new AbilityCalculator(ItemType.Accessory);
-	public AbilityCalculator relic = new AbilityCalculator(ItemType.Relic);
-
-	public Dictionary<AbilityType, IdleNumber> abilityTotal = new Dictionary<AbilityType, IdleNumber>();
-
-
-	public static long GetUserEquipItem(ItemType _itemType)
+	public void ResetMastery()
 	{
-		switch (_itemType)
+		foreach (var mastery in FindItemsByType(ItemType.Mastery))
 		{
-			case ItemType.Weapon:
-				return UserInfo.EquipWeaponTid;
-			case ItemType.Armor:
-				return UserInfo.EquipArmorTid;
-			case ItemType.Accessory:
-				return UserInfo.EquipAccessoryTid;
-			default:
-				return 0;
-		}
-	}
-
-
-	/// <summary>
-	/// 효과가 변경됬을때 호출
-	/// (최적화 하고 싶으면 타입별로 부분부분 호출후에 RefreshAbilityTotal() 갱신만 해주면 됨)
-	/// </summary>
-	public void CalculateAbility(List<ItemBase> _items)
-	{
-		weapon.Calculate(_items);
-		armor.Calculate(_items);
-		accessory.Calculate(_items);
-		relic.Calculate(_items);
-
-		RefreshAbilityTotal();
-	}
-
-	public void RefreshAbilityTotal()
-	{
-		abilityTotal.Clear();
-
-
-		// 보유보너스 계산
-		foreach(var abil in weapon.toOwnAbilities)
-		{
-			if(abilityTotal.ContainsKey(abil.Key) == false)
-			{
-				abilityTotal.Add(abil.Key, new IdleNumber());
-			}
-
-			abilityTotal[abil.Key] += abil.Value;
-		}
-		foreach (var abil in armor.toOwnAbilities)
-		{
-			if (abilityTotal.ContainsKey(abil.Key) == false)
-			{
-				abilityTotal.Add(abil.Key, new IdleNumber());
-			}
-
-			abilityTotal[abil.Key] += abil.Value;
-		}
-		foreach (var abil in accessory.toOwnAbilities)
-		{
-			if (abilityTotal.ContainsKey(abil.Key) == false)
-			{
-				abilityTotal.Add(abil.Key, new IdleNumber());
-			}
-
-			abilityTotal[abil.Key] += abil.Value;
-		}
-		foreach (var abil in relic.toOwnAbilities)
-		{
-			if (abilityTotal.ContainsKey(abil.Key) == false)
-			{
-				abilityTotal.Add(abil.Key, new IdleNumber());
-			}
-
-			abilityTotal[abil.Key] += abil.Value;
-		}
-
-
-
-		// 장착 보너스 계산
-		if (weapon.equipAbility != null && weapon.equipAbility.type != AbilityType._NONE && abilityTotal.ContainsKey(weapon.equipAbility.type) == false)
-		{
-			abilityTotal[weapon.equipAbility.type] += weapon.equipAbility.value;
-		}
-		if (armor.equipAbility != null && armor.equipAbility.type != AbilityType._NONE && abilityTotal.ContainsKey(armor.equipAbility.type) == false)
-		{
-			abilityTotal[armor.equipAbility.type] += armor.equipAbility.value;
-		}
-		if (accessory.equipAbility != null && accessory.equipAbility.type != AbilityType._NONE && abilityTotal.ContainsKey(accessory.equipAbility.type) == false)
-		{
-			abilityTotal[accessory.equipAbility.type] += accessory.equipAbility.value;
+			(mastery as ItemMastery).ResetLevel();
 		}
 	}
 }

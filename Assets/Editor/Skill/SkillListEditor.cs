@@ -59,7 +59,7 @@ public class SkillListEditor : EditorWindow
 		}
 
 		// 초기화가 안된경우, 초기화 해줌
-		if (VGameManager.it.skillMeta == null)
+		if (DataManager.SkillMeta == null)
 		{
 			GUILayout.Label("메타 초기화가 안됨");
 			return;
@@ -73,10 +73,21 @@ public class SkillListEditor : EditorWindow
 		GUILayout.Label("Skill List", "PreToolbar");
 
 		scrollPos = GUILayout.BeginScrollView(scrollPos);
-		foreach (var skill in SkillMeta.it.dic)
+		foreach (var skill in DataManager.SkillMeta.dic)
 		{
 			var skillData = skill.Value;
-			string titleText = $"[{skill.Key} - {skillData.skillName}({skill.Value})] : {skillData.description}";
+			var sheetData = DataManager.Get<SkillDataSheet>().Get(skillData.tid);
+
+
+			string titleText;
+			if(sheetData != null)
+			{
+				titleText = $"[{skill.Key} - {sheetData.skillName}({skill.Value})] : {sheetData.description}";
+			}
+			else
+			{
+				titleText = $"[{skill.Key}({skill.Value})]";
+			}
 
 			if (string.IsNullOrEmpty(filter) == false)
 			{

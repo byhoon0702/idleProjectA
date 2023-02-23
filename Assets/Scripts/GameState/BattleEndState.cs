@@ -1,11 +1,16 @@
 ﻿
 public class BattleEndState : RootState
 {
-	float elapsedTime;
-
 	public override void OnEnter()
 	{
-		SceneCamera.it.StopCameraMove();
+		if (SceneCameraV2.it != null)
+		{
+			SceneCameraV2.it.StopCameraMove();
+		}
+		else
+		{
+			SceneCamera.it.StopCameraMove();
+		}
 		elapsedTime = 0f;
 
 		UnitGlobal.it.WaveFinish();

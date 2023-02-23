@@ -49,8 +49,8 @@ public class BattleRecordEditor : EditorWindow
 		GUILayout.Label("플레이어", "PreToolbar");
 		GUILayout.Label($"{VGameManager.it.battleRecord.playerDPS}");
 
-		GUILayout.Label("동료", "PreToolbar");
-		GUILayout.Label($"{VGameManager.it.battleRecord.companionDPS}");
+		GUILayout.Label("펫", "PreToolbar");
+		GUILayout.Label($"{VGameManager.it.battleRecord.petDPS}");
 
 		GUILayout.Label("적", "PreToolbar");
 		GUILayout.Label($"{VGameManager.it.battleRecord.enemyDPS}");

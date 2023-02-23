@@ -95,9 +95,9 @@ public class ItemMoney : ItemBase
 
 	private void SetupData()
 	{
-		if (data.refillLinkTid != 0)
+		if (data.itemRefillTid != 0)
 		{
-			refillData = DataManager.it.Get<ItemRefillDataSheet>().Get(data.refillLinkTid);
+			refillData = DataManager.Get<ItemRefillDataSheet>().Get(data.itemRefillTid);
 		}
 	}
 

@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdf110233eaa0784b9e6f539b796faf1, type: 3}
+  m_Name: SkillDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: SkillDataSheet
+    prefixID: 2100000000
+    infos:
+    - tid: 2100000001
+      description: "(\uAE30\uBCF8\uACF5\uACA9)"
+      skillName: "\uAE30\uBCF8\uACF5\uACA9"
+      skillDesc: "\uAE30\uBCF8\uACF5\uACA9"
+      cooltime: 1
+      hashTag: default
+      skillEffectTid: 0
+      isHyperSkill: 0
+    - tid: 2100000002
+      description: "\uD504\uB85C\uD1A0\uD0C0\uC785\uC2A4\uD0AC"
+      skillName: "\uD504\uB85C\uD1A0\uD0C0\uC785\uC2A4\uD0AC"
+      skillDesc: "\uD504\uB85C\uD1A0\uD0C0\uC785\uC2A4\uD0AC"
+      cooltime: 3
+      hashTag: 
+      skillEffectTid: 0
+      isHyperSkill: 0
+    - tid: 2100000003
+      description: "\uB3C8\uB358\uC9C0\uAE30"
+      skillName: "\uB3C8\uB358\uC9C0\uAE30"
+      skillDesc: "\uC804\uBC29\uC5D0 \uB3C8\uC744 \uB358\uC838 \uACF5\uACA9\uB825\uC758
+        (100+(a * (\uC2A4\uD0AC\uB808\uBCA8))%\uC758 \uD53C\uD574\uB97C \uC900\uB2E4."
+      cooltime: 3
+      hashTag: 
+      skillEffectTid: 0
+      isHyperSkill: 0
+    - tid: 2100000004
+      description: "\uBC84\uD504\uD14C\uC2A4\uD2B8"
+      skillName: "\uACF5\uACA9\uB825\uC99D\uAC00"
+      skillDesc: "\uBC84\uD504\uD615"
+      cooltime: 5
+      hashTag: 
+      skillEffectTid: 0
+      isHyperSkill: 0
+    - tid: 2100000006
+      description: "\uB1CC\uC804"
+      skillName: "\uB1CC\uC804"
+      skillDesc: skil_basic_c01
+      cooltime: 8
+      hashTag: 
+      skillEffectTid: 0
+      isHyperSkill: 0
+    - tid: 2100000007
+      description: "\uC5FC\uD3ED"
+      skillName: "\uC5FC\uD3ED"
+      skillDesc: skil_basic_a02
+      cooltime: 10
+      hashTag: 
+      skillEffectTid: 0
+      isHyperSkill: 0
+    - tid: 2100000008
+      description: "\uB9E4\uC9C1\uBBF8\uC0AC\uC77C"
+      skillName: "\uB9E4\uC9C1\uBBF8\uC0AC\uC77C"
+      skillDesc: skil_basic_d01
+      cooltime: 6
+      hashTag: 
+      skillEffectTid: 0
+      isHyperSkill: 0
+    - tid: 2100000009
+      description: "\uB3CC\uD48D"
+      skillName: "\uB3CC\uD48D"
+      skillDesc: skil_basic_a03
+      cooltime: 10
+      hashTag: 
+      skillEffectTid: 0
+      isHyperSkill: 0
+    - tid: 2100000010
+      description: "\uC2ED\uC790\uCC38"
+      skillName: "\uC2ED\uC790\uCC38"
+      skillDesc: skil_unique_001
+      cooltime: 8
+      hashTag: 
+      skillEffectTid: 0
+      isHyperSkill: 0
+    - tid: 2100000011
+      description: "\uBA54\uD14C\uC624 \uC2A4\uD2B8\uB77C\uC774\uD06C"
+      skillName: "\uBA54\uD14C\uC624 \uC2A4\uD2B8\uB77C\uC774\uD06C"
+      skillDesc: skil_unique_002
+      cooltime: 3
+      hashTag: 
+      skillEffectTid: 0
+      isHyperSkill: 0
+    - tid: 2100000012
+      description: "\uD50C\uB808\uC784 \uC2A4\uD2B8\uB77C\uC774\uD06C"
+      skillName: "\uD50C\uB808\uC784 \uC2A4\uD2B8\uB77C\uC774\uD06C"
+      skillDesc: skil_unique_003
+      cooltime: 8
+      hashTag: 
+      skillEffectTid: 0
+      isHyperSkill: 0

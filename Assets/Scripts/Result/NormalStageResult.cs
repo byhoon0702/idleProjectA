@@ -6,11 +6,25 @@ public class NormalStageResult : ResultCondition
 {
 	public override bool IsWin()
 	{
-		return SpawnManager.it.IsAllEnemyDead;
+		if (SpawnManagerV2.it != null)
+		{
+			return SpawnManagerV2.it.IsAllEnemyDead;
+		}
+		else
+		{
+			return SpawnManager.it.IsAllEnemyDead;
+		}
 	}
 
 	public override bool IsLose()
 	{
-		return SpawnManager.it.IsAllPlayerDead;
+		if (SpawnManagerV2.it != null)
+		{
+			return SpawnManagerV2.it.IsAllPlayerDead;
+		}
+		else
+		{
+			return SpawnManager.it.IsAllPlayerDead;
+		}
 	}
 }

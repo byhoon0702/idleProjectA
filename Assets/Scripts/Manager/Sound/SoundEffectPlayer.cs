@@ -19,7 +19,7 @@ public class SoundEffectPlayer : MonoBehaviour
 	{
 		soundKey = _soundKey;
 
-		var soundData = DataManager.it.Get<SoundEffectDataSheet>().Get(_soundKey);
+		var soundData = DataManager.Get<SoundEffectDataSheet>().Get(_soundKey);
 		if(soundData == null)
 		{
 			VLog.SoundLogError($"Effect 못찾음. SoundEffectDataSheet. key: {_soundKey}");

@@ -1,9 +1,9 @@
-//========AUTO GENERATED CODE======//
+﻿//========AUTO GENERATED CODE======//
 using UnityEngine;
 using System;
 [Serializable]
-public class UnitLevelupConsumeDataSheetObject : ScriptableObject 
+public class UnitLevelupConsumeDataSheetObject : BaseDataSheetObject
 {
-[SerializeField]
-public UnitLevelupConsumeDataSheet dataSheet;
+	[SerializeField]
+	public UnitLevelupConsumeDataSheet dataSheet;
 }

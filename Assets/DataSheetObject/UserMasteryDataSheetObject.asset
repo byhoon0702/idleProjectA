@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8579d694554db2744b96b77687a567cc, type: 3}
+  m_Name: UserMasteryDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: UserMasteryDataSheet
+    prefixID: 3100000000
+    infos:
+    - tid: 3100000001
+      description: "\uACF5\uACA9\uB825\uB9C8\uC2A4\uD130\uB9AC"
+      preTid: 0
+      step: 1
+      maxLevel: 5
+      consumePoint: 1
+    - tid: 3100000002
+      description: "\uACF5\uACA9\uB8252\uB9C8\uC2A4\uD130\uB9AC"
+      preTid: 3100000001
+      step: 2
+      maxLevel: 10
+      consumePoint: 1
+    - tid: 3100000003
+      description: "\uB3D9\uB8CC\uACF5\uC18D\uB9C8\uC2A4\uD130\uB9AC"
+      preTid: 3100000001
+      step: 2
+      maxLevel: 15
+      consumePoint: 1
+    - tid: 3100000004
+      description: "\uACF5\uACA9\uB8253\uB9C8\uC2A4\uD130\uB9AC"
+      preTid: 3100000002
+      step: 3
+      maxLevel: 20
+      consumePoint: 5

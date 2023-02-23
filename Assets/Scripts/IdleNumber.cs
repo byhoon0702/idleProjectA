@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 
 [Serializable]
-public class IdleNumber
+public struct IdleNumber
 {
 	public static readonly string[] IndexToMagnitude =
 	{
@@ -19,16 +19,16 @@ public class IdleNumber
 
 	public double Value;
 	public int Exp;
-	public const int tencubed = 10000;
+	public const int tencubed = 1000;
 	public const int ten = 10;
 	public const int position = 3;
 	public const int amountofletter = 26;
 	public const int intChar = 'A';
 	public const string regex = @"[A-Z]";
-	public IdleNumber()
-	{
+	//public IdleNumber()
+	//{
 
-	}
+	//}
 
 	public IdleNumber(IdleNumber idlenumber)
 	{
@@ -42,13 +42,15 @@ public class IdleNumber
 	}
 	public IdleNumber(double value)
 	{
+		Value = 0;
+		Exp = 0;
 		NormalizeSelf(value);
 	}
 
 	public string GetUnit_ABC()
 	{
 		string unit = "";
-		int magnitude = Exp;
+		int magnitude = Exp / position;
 
 		// 4승부터 A로 표기
 		if (Exp == 0)
@@ -105,6 +107,10 @@ public class IdleNumber
 
 		return value;
 	}
+	public float GetValueFloat()
+	{
+		return (float)GetValue();
+	}
 
 	public int GetValueToInt()
 	{
@@ -126,8 +132,8 @@ public class IdleNumber
 		Exp = 0;
 		while (Math.Abs(Value) >= tencubed)
 		{
-			Value /= ten;
-			Exp += 1;
+			Value /= tencubed;
+			Exp += 3;
 		}
 		return Value;
 	}
@@ -135,7 +141,20 @@ public class IdleNumber
 	public new string ToString()
 	{
 		IdleNumber a = new IdleNumber(this);
-		return string.Format("{0:0.##}", a.GetTruncateValue()) + a.GetUnit_ABC();
+		double turncateValue = a.GetTruncateValue();
+		string unit = a.GetUnit_ABC();
+		if (turncateValue >= 100)
+		{
+			return $"{Math.Floor(turncateValue)}{unit}";
+		}
+		else if (turncateValue >= 10)
+		{
+			return $"{Math.Floor(turncateValue * 10) / 10:0.#}{unit}";
+		}
+		else
+		{
+			return $"{Math.Floor(turncateValue * 100) / 100:0.##}{unit}";
+		}
 	}
 
 	private void NormalizeSelf(double value)
@@ -144,8 +163,8 @@ public class IdleNumber
 		{
 			while (value >= tencubed)
 			{
-				value /= ten;
-				Exp += 1;
+				value /= tencubed;
+				Exp += 3;
 			}
 		}
 		else
@@ -168,8 +187,8 @@ public class IdleNumber
 		{
 			while (value >= tencubed)
 			{
-				value /= ten;
-				normalize.Exp += 1;
+				value /= tencubed;
+				normalize.Exp += 3;
 			}
 		}
 		normalize.Value = value;
@@ -206,8 +225,9 @@ public class IdleNumber
 
 		return comparison;
 	}
-	private static void AligningIdleNumber(IdleNumber left, IdleNumber right, out IdleNumber big_number)
+	private static IdleNumber AligningIdleNumber(ref IdleNumber left, ref IdleNumber right, out IdleNumber bigNumber, out IdleNumber smallNumber)
 	{
+		IdleNumber result = new IdleNumber();
 		var comparison = left.Exp.CompareTo(right.Exp);
 		if (comparison == 0)
 		{
@@ -219,24 +239,30 @@ public class IdleNumber
 			var diff = right.Exp - left.Exp;
 			if (left.Value != 0)
 			{
-				left.Value = left.Value / Mathf.Pow(10, diff);
+				left.Value = left.Value / Mathf.Pow(ten, diff);
 			}
-			big_number = right;
+			bigNumber = right;
+			result.Exp = diff;
+			smallNumber = left;
 		}
 		else
 		{
 			var diff = left.Exp - right.Exp;
 			if (right.Value != 0)
 			{
-				right.Value = right.Value / Mathf.Pow(10, diff);
+				right.Value = right.Value / Mathf.Pow(ten, diff);
 			}
-			big_number = left;
+			bigNumber = left;
+			result.Exp = diff;
+			smallNumber = right;
 		}
+		return result;
+
 	}
 
 	public static explicit operator IdleNumber(string value)
 	{
-		if(value.IsNullOrEmpty())
+		if (value.IsNullOrEmpty())
 		{
 			return new IdleNumber();
 		}
@@ -281,7 +307,7 @@ public class IdleNumber
 			}
 
 			idleNumber.Value = parseValue;
-			idleNumber.Exp = sum;
+			idleNumber.Exp = sum * 3;
 		}
 		return idleNumber;
 	}
@@ -311,25 +337,41 @@ public class IdleNumber
 
 	private static IdleNumber Calculate(IdleNumber a, IdleNumber b, char operator_symbol)
 	{
-		IdleNumber result = new IdleNumber();
+
 		IdleNumber left = new IdleNumber(a);
 		IdleNumber right = new IdleNumber(b);
 
-		AligningIdleNumber(left, right, out result);
+		IdleNumber result = AligningIdleNumber(ref left, ref right, out IdleNumber big, out IdleNumber small);
 
 		switch (operator_symbol)
 		{
 			case '+':
 				result.Value = left.Value + right.Value;
+				result.Exp = big.Exp;
 				break;
 			case '-':
 				result.Value = left.Value - right.Value;
+				result.Exp = big.Exp;
 				break;
 			case '*':
-				result.Value = left.Value * right.Value;
+				{
+					float diff = Mathf.Pow(ten, result.Exp);
+					//같은 승수를 가지거나 승수가 없을 경우
+					if (diff == 1)
+					{
+						//좌, 우의 승수를 더한다.
+						result.Exp = left.Exp + right.Exp;
+					}
+					//AligningIdleNumber 함수에서 낮은 승수의 값을 소수점으로 변경시키기 때문에 결과에 최종 승수 만큼 곱한다.
+					result.Value = (left.Value * right.Value) * diff;
+				}
 				break;
 			case '/':
-				result.Value = left.Value / right.Value;
+				{
+					result.Value = left.Value / right.Value;
+					result.Exp = 0;
+					result.NormalizeSelf(result.Value);
+				}
 				break;
 		}
 		return result;
@@ -337,7 +379,7 @@ public class IdleNumber
 
 	public static bool NullCheckAndThrow(IdleNumber _idleNumber)
 	{
-		if (_idleNumber is null)
+		if (_idleNumber.Equals(default))
 		{
 			return true;
 		}
@@ -513,7 +555,7 @@ public class IdleNumber
 	{
 		if (a.Value == 0 || b == 0)
 		{
-			Debug.LogError("Can not divide Zero");
+			Debug.LogWarning("Can not divide by Zero");
 			return a;
 		}
 		IdleNumber result = new IdleNumber(a);

@@ -1,0 +1,164 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a437d679977f67f4885ee9badb8c4b0f, type: 3}
+  m_Name: SkillEffectDataSheetObject
+  m_EditorClassIdentifier: 
+  tooltip: 
+  fieldSettings:
+  - fieldName: tid
+    width: 100
+  - fieldName: description
+    width: 100
+  - fieldName: name
+    width: 100
+  - fieldName: speed
+    width: 100
+  - fieldName: isDependent
+    width: 100
+  - fieldName: duration
+    width: 100
+  - fieldName: spawnFxResource
+    width: 100
+  - fieldName: abilitySO
+    width: 100
+  dataSheet:
+    typeName: SkillEffectDataSheet
+    prefixID: 1000000
+    infos:
+    - tid: 1
+      description: "\uC77C\uBC18\uAC80\uAE30"
+      name: "\uC77C\uBC18\uAC80\uAE30"
+      speed: 10
+      isDependent: 0
+      duration: 0
+      spawnFxResource: Empty
+      abilitySO: 
+    - tid: 2
+      description: "\uC77C\uBC18\uD654\uC0B4"
+      name: "\uC77C\uBC18\uD654\uC0B4"
+      speed: 15
+      isDependent: 1
+      duration: 0
+      spawnFxResource: Empty
+      abilitySO: 
+    - tid: 3
+      description: "\uCF54\uC7783\uAC1C \uC3D8\uAE30"
+      name: "\uCF54\uC7783\uAC1C"
+      speed: 2
+      isDependent: 0
+      duration: 0
+      spawnFxResource: Empty
+      abilitySO: 
+    - tid: 4
+      description: "\uC801 \uADFC\uC811\uACF5\uACA9"
+      name: "\uC801 \uADFC\uC811\uACF5\uACA9"
+      speed: 10
+      isDependent: 0
+      duration: 0
+      spawnFxResource: Empty
+      abilitySO: 
+    - tid: 5
+      description: "\uC801 \uAC80\uAE30"
+      name: "\uC801 \uAC80\uAE30"
+      speed: 10
+      isDependent: 0
+      duration: 1
+      spawnFxResource: FX_Melee_2Attack_Start
+      abilitySO: 
+    - tid: 6
+      description: "\uB9C8\uBC95\uC0AC \uAE30\uBCF8"
+      name: Fireball
+      speed: 10
+      isDependent: 0
+      duration: 2
+      spawnFxResource: Empty
+      abilitySO: 
+    - tid: 7
+      description: "\uBA54\uD14C\uC624"
+      name: "\uBA54\uD14C\uC624"
+      speed: 10
+      isDependent: 0
+      duration: 0
+      spawnFxResource: Empty
+      abilitySO: Attack Skill
+    - tid: 8
+      description: "\uC77C\uBC18\uADFC\uC811"
+      name: "\uC77C\uBC18\uADFC\uC811"
+      speed: 10
+      isDependent: 1
+      duration: 0
+      spawnFxResource: Empty
+      abilitySO: Normal Melee
+    - tid: 9
+      description: "\uB1CC\uC804"
+      name: "\uB1CC\uC804"
+      speed: 55
+      isDependent: 0
+      duration: 3
+      spawnFxResource: Empty
+      abilitySO: 
+    - tid: 10
+      description: "\uC5FC\uD3ED"
+      name: "\uC5FC\uD3ED"
+      speed: 55
+      isDependent: 0
+      duration: 0
+      spawnFxResource: Empty
+      abilitySO: 
+    - tid: 11
+      description: "\uB9E4\uC9C1\uBBF8\uC0AC\uC77C"
+      name: "\uB9E4\uC9C1\uBBF8\uC0AC\uC77C"
+      speed: 3.5
+      isDependent: 0
+      duration: 2
+      spawnFxResource: FX_Magic_MagicArrow_Start
+      abilitySO: 
+    - tid: 12
+      description: "\uB3CC\uD48D"
+      name: "\uB3CC\uD48D"
+      speed: 22
+      isDependent: 0
+      duration: 3
+      spawnFxResource: Empty
+      abilitySO: 
+    - tid: 13
+      description: "\uC2ED\uC790\uCC38"
+      name: "\uC2ED\uC790\uCC38"
+      speed: 15
+      isDependent: 0
+      duration: 0
+      spawnFxResource: FX_Melee_2Attack_Start
+      abilitySO: 
+    - tid: 14
+      description: "\uBA54\uD14C\uC624 \uC2A4\uD2B8\uB77C\uC774\uD06C"
+      name: "\uBA54\uD14C\uC624 \uC2A4\uD2B8\uB77C\uC774\uD06C"
+      speed: 7
+      isDependent: 0
+      duration: 5
+      spawnFxResource: Empty
+      abilitySO: 
+    - tid: 15
+      description: "\uD50C\uB808\uC784 \uC2A4\uD2B8\uB77C\uC774\uD06C"
+      name: "\uD50C\uB808\uC784 \uC2A4\uD2B8\uB77C\uC774\uD06C"
+      speed: 0
+      isDependent: 0
+      duration: 0
+      spawnFxResource: 
+      abilitySO: 
+    - tid: 16
+      description: 
+      name: "\uD790\uB9C1"
+      speed: 10
+      isDependent: 0
+      duration: 1
+      spawnFxResource: HCFX_Heart
+      abilitySO: Heal Skill

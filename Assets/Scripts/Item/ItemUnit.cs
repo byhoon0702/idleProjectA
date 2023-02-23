@@ -10,7 +10,7 @@ public class ItemUnit : ItemBase
 	{
 		get
 		{
-			var sheet = DataManager.it.Get<UnitLevelDataSheet>();
+			var sheet = DataManager.Get<UnitLevelDataSheet>();
 			UnitLevelData levelData;
 
 			if (sheet.MaxLv <= Level)
@@ -35,7 +35,7 @@ public class ItemUnit : ItemBase
 		}
 	}
 
-	public override int MaxLevel => DataManager.it.Get<UnitLevelDataSheet>().MaxLv;
+	public override int MaxLevel => DataManager.Get<UnitLevelDataSheet>().MaxLv;
 
 
 	public override VResult Setup(InstantItem _instantItem)
@@ -58,7 +58,7 @@ public class ItemUnit : ItemBase
 	private VResult SetupMetaData()
 	{
 		VResult vResult = new VResult();
-		var sheet = DataManager.it.Get<UnitLevelDataSheet>();
+		var sheet = DataManager.Get<UnitLevelDataSheet>();
 
 		if (sheet.MaxLv <= Level)
 		{
@@ -101,6 +101,15 @@ public class ItemUnit : ItemBase
 		}
 	}
 
+	public bool Equipable()
+	{
+		return true;
+	}
+
+	public bool Levelupable()
+	{
+		return MaxLevel > Level;
+	}
 
 	public override string ToString()
 	{

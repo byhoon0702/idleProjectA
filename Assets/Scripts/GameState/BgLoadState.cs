@@ -9,9 +9,9 @@
 		UIController.it.RefreshUI();
 		elapsedTime = 0;
 
-		var stageInfo = StageManager.it.CurrentStageInfo;
+		var stageInfo = StageManager.it.CurrentNormalStageInfo;
 
-		var bgData = DataManager.it.Get<BgDataSheet>().Get(stageInfo.bgTid);
+		var bgData = DataManager.Get<BgDataSheet>().Get(stageInfo.bgTid);
 
 		VGameManager.it.mapController.SetBG(bgData.bgCloseName, bgData.bgMiddleName, bgData.bgFarName);
 	}

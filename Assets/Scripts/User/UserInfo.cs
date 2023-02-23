@@ -1,51 +1,154 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 
 
+/// <summary>
+/// <see cref="SaveUserData" /> 데이터 저장
+/// </summary>
 public static partial class UserInfo
 {
-	public const Int32 SKILL_SLOT_COUNT = 6;
+	public static string UserDataFilePath
+	{
+		get
+		{
+			return Application.dataPath.Replace("/Assets", "") + "/UserData";
+		}
+	}
+
+	public const int SKILL_SLOT_COUNT = 6;
+	public const int PET_SLOT_COUNT = 3;
+	public const int CORE_ABILITY_COUNT = 7;
+	public const int CORE_ABILITY_PRESET_COUNT = 3;
 
 	public static UserData userData = new UserData(); // 저장데이터. 외부에서 직접 접근은 지양.
 
-	/// <summary>
-	/// 훈련
-	/// </summary>
-	public static TrainingInfo training = new TrainingInfo();
-	/// <summary>
-	/// 특성
-	/// </summary>
-	public static PropertyInfo prop = new PropertyInfo();
-	/// <summary>
-	/// 진급
-	/// </summary>
-	public static HyperModeInfo promo = new HyperModeInfo();
-	/// <summary>
 	/// 진급능력
 	/// </summary>
-	public static PromoteAbilityInfo proAbil = new PromoteAbilityInfo();
-
-
-	/// <summary>
-	/// 유저 레벨 변경
-	/// </summary>
-	public static Action<int/* before level*/, int /*after level*/> onLevelupChanged;
-
-	/// <summary>
-	/// 전투력 변경
-	/// </summary>
-	public static Action<IdleNumber, IdleNumber> onTotalCombatChanged;
+	public static CoreAbilityInfo coreAbil = new CoreAbilityInfo();
 
 
 	public static string UserName => userData.userName;
+	public static int UID => userData.uid;
+	public static long PlayTicks { get => userData.playTicks; set => userData.playTicks = value; }
+	public static string PlayTicksToString
+	{
+		get
+		{
+			var timeSpan = new TimeSpan(UserInfo.PlayTicks);
+			return $"{timeSpan.Days}일 {timeSpan.Hours}시 {timeSpan.Minutes}분 {timeSpan.Seconds}초";
+		}
+	}
+	private static UserGradeData userGrade;
+	public static UserGradeData UserGrade
+	{
+		get
+		{
+			if(userGrade == null || userGrade.grade != userData.userGrade)
+			{
+				userGrade = DataManager.Get<UserGradeDataSheet>().Get(userData.userGrade);
+			}
+
+			return userGrade;
+		}
+	}
 	public static int UserLv => UserDataCalculator.GetLevelInfo(userData.userExp).level;
-	public static long SelectUnitTid => userData.SelectedUnitTid;
+
+	public static long EquipUnitItemTid
+	{
+		get
+		{
+			if (userData.equipUnitItemTid == 0)
+			{
+				var defaultUnit = DataManager.Get<ItemDataSheet>().GetByHashTag("defaultunit");
+				if (defaultUnit == null)
+				{
+					PopAlert.it.Create(new VResult().SetFail(VResultCode.NO_DEFINED_DEFAULT_CHAR), PopupCallback.GoToIntro);
+					return 0;
+				}
+
+				userData.equipUnitItemTid = defaultUnit.tid;
+			}
+
+			return userData.equipUnitItemTid;
+		}
+	}
+
 	public static long EquipWeaponTid => userData.EquipWeaponTid;
 	public static long EquipArmorTid => userData.EquipArmerTid;
 	public static long EquipAccessoryTid => userData.EquipAccessoryTid;
+	public static int TotalPropertyPoint
+	{
+		get
+		{
+			int total = UserDataCalculator.GetPropertyPoint(UserLv);
+			return total;
+		}
+	}
+	public static int RemainPropertyPoint
+	{
+		get
+		{
+			int result = TotalPropertyPoint - UsingPropertyPoint;
 
-	public static long[] skillSlots => userData.skillSlots;
+			return result;
+		}
+	}
+	public static int UsingPropertyPoint
+	{
+		get
+		{
+			var itemList = Inventory.it.FindItemsByType(ItemType.Property);
+			int total = 0;
+			foreach (var item in itemList)
+			{
+				total += (item as ItemProperty).GetUsingPropertyPoint();
+			}
+
+			return total;
+		}
+	}
+	public static int TotalMasteryPoint
+	{
+		get
+		{
+			var unitList = Inventory.it.FindItemsByType(ItemType.Unit);
+			int total = 0;
+			foreach(var unit in unitList)
+			{
+				total += (unit.Level - 1);
+			}
+			return total;
+		}
+	}
+	public static int RemainMasteryPoint
+	{
+		get
+		{
+			int result = TotalMasteryPoint - UsingMasteryPoint;
+
+			return result;
+		}
+	}
+	public static int UsingMasteryPoint
+	{
+		get
+		{
+			var itemList = Inventory.it.FindItemsByType(ItemType.Mastery);
+			int total = 0;
+			foreach (var item in itemList)
+			{
+				total += (item as ItemMastery).GetUsingMasteryPoint();
+			}
+
+			return total;
+		}
+	}
+
+	public static long[] skills => userData.skillSlots;
+	public static long[] pets => userData.petSlots;
+	public static List<InstantItem> InstantItems => userData.instantItems;
 
 	public static long expTotal => userData.userExp;
 	public static long currExp
@@ -71,75 +174,86 @@ public static partial class UserInfo
 			return (float)Math.Clamp((double)currExp / nextExp, 0, 1);
 		}
 	}
+
+
+
+
+
+
+	public static int GachaEquipLv => Inventory.it.FindItemByHashTag("gachaexp_equip").Level;
+	public static long GachaEquipExp => Inventory.it.FindItemByHashTag("gachaexp_equip").Exp;
+	public static long NextGachaEquipExp => (Inventory.it.FindItemByHashTag("gachaexp_equip") as ItemGachaExp).nextExp;
+	public static int GachaEquipAdSummonCount => Inventory.it.ItemCount("gachaexp_equipad").GetValueToInt();
+	public static void IncGachaEquipAdSummonCount()
+	{
+		Inventory.it.AddItem("gachaexp_equipad", new IdleNumber(1));
+	}
+	public static void AddGachaEquipExp(int _summonCount)
+	{
+		Inventory.it.FindItemByHashTag("gachaexp_equip").AddExp(_summonCount);
+	}
+
+
+
+
+
+
+	public static int GachaSkillLv => Inventory.it.FindItemByHashTag("gachaexp_skill").Level;
+	public static long GachaSkillExp => Inventory.it.FindItemByHashTag("gachaexp_skill").Exp;
+	public static long NextGachaSkillExp => (Inventory.it.FindItemByHashTag("gachaexp_skill") as ItemGachaExp).nextExp;
+	public static int GachaSkillAdSummonCount => Inventory.it.ItemCount("gachaexp_skillad").GetValueToInt();
+	public static void IncGachaSkillAdSummonCount()
+	{
+		Inventory.it.AddItem("gachaexp_skillad", new IdleNumber(1));
+	}
+	public static void AddGachaSkillExp(int _summonCount)
+	{
+		Inventory.it.FindItemByHashTag("gachaexp_skill").AddExp(_summonCount);
+	}
+
+
+
+
+
+	public static int GachaPetLv => Inventory.it.FindItemByHashTag("gachaexp_pet").Level;
+	public static long GachaPetExp => Inventory.it.FindItemByHashTag("gachaexp_pet").Exp;
+	public static long NextGachaPetExp => (Inventory.it.FindItemByHashTag("gachaexp_pet") as ItemGachaExp).nextExp;
+	public static int GachaPetAdSummonCount => Inventory.it.ItemCount("gachaexp_petad").GetValueToInt();
+	public static void IncGachaPetAdSummonCount()
+	{
+		Inventory.it.AddItem("gachaexp_petad", new IdleNumber(1));
+	}
+	public static void AddGachaPetExp(int _summonCount)
+	{
+		Inventory.it.FindItemByHashTag("gachaexp_pet").AddExp(_summonCount);
+	}
+
+
+
+
+
+
 	private static IdleNumber _totalCombatPower = new IdleNumber();
 	public static IdleNumber totalCombatPower => _totalCombatPower;
 
-	public static string GetAbiltyTitle(AbilityType _userAbilityType)
+	public static void LoadTestUserData()
 	{
-		switch (_userAbilityType)
-		{
-			case AbilityType.AttackPower:
-				return "공격력";
-
-			case AbilityType.Hp:
-				return "체력";
-
-			case AbilityType.HpRecovery:
-				return "체력회복량";
-
-			case AbilityType.CriticalChance:
-				return "치명타 확률";
-
-			case AbilityType.CriticalAttackPower:
-				return "치명타 피해";
-
-			case AbilityType.CriticalX2AttackChance:
-				return "하이퍼 어택 확률";
-
-			case AbilityType.CriticalX2AttackPower:
-				return "하이퍼 어택 피해량";
-
-			case AbilityType.AttackSpeed:
-				return "공격속도";
-
-			case AbilityType.MoveSpeed:
-				return "이동속도";
-
-			case AbilityType.DoubleAttack:
-				return "더블어택";
-
-			case AbilityType.TripleAttack:
-				return "트리플 어택";
-
-			case AbilityType.SkillColltimeDown:
-				return "스킬 쿨타임 감소";
-
-			case AbilityType.SkillAttackPower:
-				return "스킬 공격력";
-
-			case AbilityType.BossAttackPower:
-				return "보스 피해";
-
-			case AbilityType.FriendAttackPower:
-				return "동료 공격력";
-
-			case AbilityType.FriendAttackSpeed:
-				return "동료 공격속도";
-
-			case AbilityType.Avoid:
-				return "회피율";
-
-			case AbilityType.GoldUp:
-				return "골드 획득량";
-
-			default:
-				return "";
-		}
+		userData.MakeTestInstantItems();
+		userData.MakeTestSkillSlots();
+		userData.MakeTestPetSlots();
 	}
 
-	public static void LoadUserData()
+	public static void UserGradeUp()
 	{
-		CalculateTotalCombatPower();
+		var sheet = DataManager.Get<UserGradeDataSheet>();
+		Grade nextGrade = sheet.NextGrade(UserInfo.UserGrade.grade);
+
+		if(nextGrade < userGrade.grade)
+		{
+			return;
+		}
+
+		userData.userGrade = nextGrade;
 	}
 
 	public static void AddExp(Int64 _exp)
@@ -152,9 +266,91 @@ public static partial class UserInfo
 
 		if (beforeLv != afterLv)
 		{
-			onLevelupChanged?.Invoke(beforeLv, afterLv);
+			EventCallbacks.CallLevelupChanged(beforeLv, afterLv);
 			CalculateTotalCombatPower();
 		}
+	}
+
+	public static bool IsEquipSkill(long _itemTid)
+	{
+		foreach(var v in userData.skillSlots)
+		{
+			if(v == _itemTid)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static void EquipSkill(int _index, long _itemTid)
+	{
+		userData.skillSlots[_index] = _itemTid;
+	}
+
+	public static bool IsEquipPet(long _itemTid)
+	{
+		foreach (var v in userData.petSlots)
+		{
+			if (v == _itemTid)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static void EquipPet(int _index, long _itemTid)
+	{
+		userData.petSlots[_index] = _itemTid;
+	}
+
+
+	public static void EquipUnit(long _itemTid)
+	{
+		userData.equipUnitItemTid = _itemTid;
+	}
+
+	public static void EquipWeapon(long _itemTid)
+	{
+		userData.EquipWeaponTid = _itemTid;
+	}
+	public static void EquipArmor(long _itemTid)
+	{
+		userData.EquipArmerTid = _itemTid;
+	}
+	public static void EquipAccessory(long _itemTid)
+	{
+		userData.EquipAccessoryTid = _itemTid;
+	}
+
+	public static long GetUserEquipItem(ItemType _itemType)
+	{
+		switch (_itemType)
+		{
+			case ItemType.Unit:
+				return EquipUnitItemTid;
+			case ItemType.Weapon:
+				return EquipWeaponTid;
+			case ItemType.Armor:
+				return EquipArmorTid;
+			case ItemType.Accessory:
+				return EquipAccessoryTid;
+			default:
+				return 0;
+		}
+	}
+
+	public static void ResetProperty()
+	{
+		Inventory.it.ResetProperty();
+	}
+
+	public static void ResetMastery()
+	{
+		Inventory.it.ResetMastery();
 	}
 
 	/// <summary>
@@ -165,318 +361,14 @@ public static partial class UserInfo
 		IdleNumber outNumber = new IdleNumber();
 		double total = UserLv * 98765;
 
-		total += userData.training.TotalCombatPower();
-		total += userData.currProp.TotalCombatPower();
-
 		IdleNumber beforeCombatPower = _totalCombatPower;
 		_totalCombatPower = outNumber.Normalize(total);
 
-		onTotalCombatChanged?.Invoke(beforeCombatPower, totalCombatPower);
+		EventCallbacks.CallTotalCombatChanged(beforeCombatPower, totalCombatPower);
 	}
 
-	public class UserData
+	public static void SaveUserData()
 	{
-		public string userName = "VIVID";
-		public int uid = 12345678;
-
-		private long selectedUnitTid;
-		public long SelectedUnitTid
-		{
-			get
-			{
-				if(selectedUnitTid == 0)
-				{
-					var defaultUnit = DataManager.it.Get<ItemDataSheet>().GetByHashTag("defaultunit");
-					if(defaultUnit == null)
-					{
-						PopAlert.it.Create(new VResult().SetFail(VResultCode.NO_DEFINED_DEFAULT_CHAR), PopupCallback.GoToIntro);
-						return 0;
-					}
-
-					selectedUnitTid = defaultUnit.tid;
-				}
-
-				return selectedUnitTid;
-			}
-		}
-
-		public long EquipWeaponTid = 10;
-		public long EquipArmerTid;
-		public long EquipAccessoryTid;
-
-		public long[] skillSlots = new long[SKILL_SLOT_COUNT];
-
-		public Int64 userExp = 65;
-
-
-		// 훈련
-		public TrainingSave training = new TrainingSave();
-
-		// 특성
-		public Int32 selectedPropIndex = 0;
-		public PropertySave[] props = new PropertySave[0];
-		public PropertySave currProp => props[selectedPropIndex];
-
-		// 진급
-		public HyperModeSave promo = new HyperModeSave();
-
-		// 진급능력
-		public PromoteAbilitySave proAbil = new PromoteAbilitySave();
-
-
-
-		public UserData()
-		{
-			props = new PropertySave[PROPERTY_PRESET_COUNT];
-			for (Int32 i = 0; i < props.Length; i++)
-			{
-				props[i] = new PropertySave();
-			}
-
-
-			skillSlots[0] = 1004;
-			skillSlots[1] = 1005;
-		}
-	}
-}
-
-
-public enum AbilityType
-{
-	_NONE,
-	/// <summary>
-	/// 공격력
-	/// </summary>
-	AttackPower,
-	/// <summary>
-	/// HP
-	/// </summary>
-	Hp,
-	/// <summary>
-	/// 체력 회복량
-	/// </summary>
-	HpRecovery,
-	/// <summary>
-	/// 치명타 확률
-	/// </summary>
-	CriticalChance,
-	/// <summary>
-	/// 치명타 피해
-	/// </summary>
-	CriticalAttackPower,
-	/// <summary>
-	/// 하이퍼 어택 확률
-	/// </summary>
-	CriticalX2AttackChance,
-	/// <summary>
-	/// 하이퍼 어택 피해량
-	/// </summary>
-	CriticalX2AttackPower,
-	/// <summary>
-	/// 공격속도
-	/// </summary>
-	AttackSpeed,
-	/// <summary>
-	/// 이동속도
-	/// </summary>
-	MoveSpeed,
-	/// <summary>
-	/// 더블어택
-	/// </summary>
-	DoubleAttack,
-	/// <summary>
-	/// 트리플 어택
-	/// </summary>
-	TripleAttack,
-	/// <summary>
-	/// 스킬 쿨타임 감소
-	/// </summary>
-	SkillColltimeDown,
-	/// <summary>
-	/// 스킬피해
-	/// </summary>
-	SkillAttackPower,
-	/// <summary>
-	/// 보스피해
-	/// </summary>
-	BossAttackPower,
-	/// <summary>
-	/// 동료 공격력
-	/// </summary>
-	FriendAttackPower,
-	/// <summary>
-	/// 동료 공격속도
-	/// </summary>
-	FriendAttackSpeed,
-	/// <summary>
-	/// 회피율
-	/// </summary>
-	Avoid,
-	/// <summary>
-	/// 골드 획득량
-	/// </summary>
-	GoldUp,
-}
-
-
-[Serializable]
-public class AbilityInfo
-{
-	public AbilityType type;
-	public IdleNumber value;
-
-	public AbilityInfo()
-	{
-
-	}
-
-	public AbilityInfo(AbilityType _type, IdleNumber _value)
-	{
-		type = _type;
-		value = _value;
-	}
-
-	public override string ToString()
-	{
-		return $"{type}. {value}";
-	}
-}
-
-public abstract class UserInfoLevelSaveBase
-{
-	public abstract Int32 defaultLevel { get; }
-	public List<UserInfoLevelSaveData> saveData = new List<UserInfoLevelSaveData>();
-
-	public abstract double TotalCombatPower();
-
-	public virtual Int32 GetLevel(AbilityType _ability)
-	{
-		Int64 tid = DataManager.it.Get<AbilityInfoDataSheet>().GetTid(_ability);
-
-		if (tid == 0)
-		{
-			VLog.LogError($"UserAbilityInfoDataSheet에 정의되지 않은 어빌리티. abil: {_ability}, type: {GetType()}");
-			return defaultLevel;
-		}
-
-		for (Int32 i = 0; i < saveData.Count; i++)
-		{
-			if (saveData[i].tid == tid)
-			{
-				return saveData[i].value;
-			}
-		}
-
-		return defaultLevel;
-	}
-
-	public virtual void SetLevel(AbilityType _ability, Int32 _value)
-	{
-		Int64 tid = DataManager.it.Get<AbilityInfoDataSheet>().GetTid(_ability);
-		if (tid == 0)
-		{
-			VLog.LogError($"UserAbilityInfoDataSheet에 정의되지 않은 어빌리티. abil: {_ability}, type: {GetType()}");
-			return;
-		}
-
-		for (Int32 i = 0; i < saveData.Count; i++)
-		{
-			if (saveData[i].tid == tid)
-			{
-				saveData[i].value = _value;
-				return;
-			}
-		}
-
-		saveData.Add(new UserInfoLevelSaveData(tid, _value));
-	}
-}
-
-
-public abstract class UserInfoValueSaveBase
-{
-	public List<UserInfoValueSaveData> saveData = new List<UserInfoValueSaveData>();
-
-	public abstract double TotalCombatPower();
-
-	public virtual IdleNumber GetValue(AbilityType _ability)
-	{
-		Int64 tid = DataManager.it.Get<AbilityInfoDataSheet>().GetTid(_ability);
-
-		if (tid == 0)
-		{
-			VLog.LogError($"UserAbilityInfoDataSheet에 정의되지 않은 어빌리티. abil: {_ability}, type: {GetType()}");
-			return new IdleNumber();
-		}
-
-		for (Int32 i = 0 ; i < saveData.Count ; i++)
-		{
-			if (saveData[i].tid == tid)
-			{
-				return saveData[i].value;
-			}
-		}
-
-		return new IdleNumber();
-	}
-
-	public virtual void SetValue(AbilityType _ability, IdleNumber _value)
-	{
-		Int64 tid = DataManager.it.Get<AbilityInfoDataSheet>().GetTid(_ability);
-		if (tid == 0)
-		{
-			VLog.LogError($"UserAbilityInfoDataSheet에 정의되지 않은 어빌리티. abil: {_ability}, type: {GetType()}");
-			return;
-		}
-
-		for (Int32 i = 0 ; i < saveData.Count ; i++)
-		{
-			if (saveData[i].tid == tid)
-			{
-				saveData[i].value = _value;
-				return;
-			}
-		}
-
-		saveData.Add(new UserInfoValueSaveData(tid, _value));
-	}
-}
-
-
-[Serializable]
-public class UserInfoLevelSaveData
-{
-	public Int64 tid;
-	public Int32 value;
-
-
-	public UserInfoLevelSaveData()
-	{
-
-	}
-
-	public UserInfoLevelSaveData(Int64 _tid, Int32 _value)
-	{
-		tid = _tid;
-		value = _value;
-	}
-}
-
-[Serializable]
-public class UserInfoValueSaveData
-{
-	public Int64 tid;
-	public IdleNumber value;
-
-
-	public UserInfoValueSaveData()
-	{
-
-	}
-
-	public UserInfoValueSaveData(Int64 _tid, IdleNumber _value)
-	{
-		tid = _tid;
-		value = _value;
+		userData.SaveUserData();
 	}
 }

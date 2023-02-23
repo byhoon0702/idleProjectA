@@ -11,6 +11,19 @@ public enum VResultType
 
 public class VResult
 {
+	public VResult Clone()
+	{
+		var result = new VResult();
+
+		result.data = data;
+		result.resultType = resultType;
+		result.description = description;
+		result.tidParams = tidParams;
+
+		return result;
+	}
+
+
 	public ResultCodeData data;
 	private VResultType resultType;
 	public string description;
@@ -47,7 +60,7 @@ public class VResult
 
 	public VResult SetOk(VResultCode _resultCode = VResultCode._NONE, string _description = "", params Int64[] _tidParams)
 	{
-		data = DataManager.it.Get<ResultCodeDataSheet>().Get(_resultCode.ToString());
+		data = DataManager.Get<ResultCodeDataSheet>().Get(_resultCode.ToString());
 		resultType = VResultType.Ok;
 		description = _description;
 		tidParams = _tidParams;
@@ -56,7 +69,7 @@ public class VResult
 
 	public VResult SetFail(VResultCode _resultCode, string _description = "", params Int64[] _tidParams)
 	{
-		data = DataManager.it.Get<ResultCodeDataSheet>().Get(_resultCode.ToString());
+		data = DataManager.Get<ResultCodeDataSheet>().Get(_resultCode.ToString());
 		resultType = VResultType.Fail;
 		description = _description;
 		tidParams = _tidParams;
@@ -74,16 +87,6 @@ public class VResult
 		return resultType == VResultType.Fail;
 	}
 
-	public VResult Clone()
-	{
-		var result = new VResult();
-
-		result.data = data;
-		result.resultType = resultType;
-
-		return result;
-	}
-
 	private string[] GetStringParams()
 	{
 		if (tidParams != null && tidParams.Length > 0)
@@ -91,7 +94,7 @@ public class VResult
 			string[] stringParams = new string[tidParams.Length];
 
 			// 아이템 테이블에 있는지 검색
-			var itemDataSheet = DataManager.it.Get<ItemDataSheet>();
+			var itemDataSheet = DataManager.Get<ItemDataSheet>();
 
 			if (itemDataSheet == null)
 			{
@@ -123,5 +126,10 @@ public class VResult
 		{
 			return new string[0];
 		}
+	}
+
+	public override string ToString()
+	{
+		return $"{data.key}({data.tid}) : {data.description}. / {description}";
 	}
 }

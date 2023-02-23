@@ -12,150 +12,291 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd15194f3dd71814a8d49d0a888e4590, type: 3}
   m_Name: UnitDataSheetObject
   m_EditorClassIdentifier: 
+  tooltip: 
+  fieldSettings:
+  - fieldName: tid
+    width: 100
+  - fieldName: description
+    width: 100
+  - fieldName: name
+    width: 100
+  - fieldName: resource
+    width: 100
+  - fieldName: skillEffectTidNormal
+    width: 100
+  - fieldName: grade
+    width: 100
+  - fieldName: starlevel
+    width: 100
+  - fieldName: statusDataList
+    width: 100
+  - fieldName: attackTime
+    width: 100
+  - fieldName: attackCoolTime
+    width: 100
+  - fieldName: criticalRate
+    width: 100
+  - fieldName: criticalPowerRate
+    width: 100
+  - fieldName: skillTid
+    width: 100
+  - fieldName: finalSkillTid
+    width: 100
+  - fieldName: statusPerLevels
+    width: 100
   dataSheet:
     typeName: UnitDataSheet
+    prefixID: 2600000000
     infos:
-    - tid: 1
-      description: 
-      name: Land
-      resource: elf_01_B
-      classTid: 1
+    - tid: 2600000001
+      description: "\uBA54\uC774\uC9C0"
+      name: Mage
+      resource: staff_01_S
+      skillEffectTidNormal: 2
       grade: 0
       starlevel: 1
-      hp: 10000
-      attackPower: 100
-      attackSpeed: 1
-      attackSound: 
-      attackType: 1
+      statusDataList:
+      - tid: 111000001
+        value: 1000
+      - tid: 111000002
+        value: 10
+      - tid: 111000003
+        value: 1
+      - tid: 111000004
+        value: 6
+      attackTime: 0
+      attackCoolTime: 0
       criticalRate: 0
       criticalPowerRate: 0
-      moveSpeed: 2
-      skillTid: 1003
-      rankType: 0
-      projectileResource: SwordEnergy
-    - tid: 2
-      description: 
+      skillTid: 2100012001
+      finalSkillTid: 2100011001
+      statusPerLevels:
+      - level: 1
+        attackPower: 100
+        attackPowerPerLevel: 0
+        hp: 10000
+        hpPerLevel: 1.5
+    - tid: 2600000002
+      description: "\uC5D8\uB808\uB098"
       name: Sword
       resource: elf_01_SS
-      classTid: 3
+      skillEffectTidNormal: 1
       grade: 0
       starlevel: 1
-      hp: 10000
-      attackPower: 500
-      attackSpeed: 1
-      attackSound: swordman_hit_01
-      attackType: 2
+      statusDataList:
+      - tid: 111000001
+        value: 1000
+      - tid: 111000002
+        value: 10
+      - tid: 111000003
+        value: 1
+      - tid: 111000004
+        value: 6
+      attackTime: 0
+      attackCoolTime: 0
       criticalRate: 0
       criticalPowerRate: 0
-      moveSpeed: 6
-      skillTid: 1003
-      rankType: 0
-      projectileResource: SwordEnergy
-    - tid: 3
+      skillTid: 2100012001
+      finalSkillTid: 2100011001
+      statusPerLevels:
+      - level: 1
+        attackPower: 100
+        attackPowerPerLevel: 0
+        hp: 10000
+        hpPerLevel: 1.5
+    - tid: 2600000003
       description: 
       name: ddda
       resource: elf_01_A
-      classTid: 3
+      skillEffectTidNormal: 1
       grade: 0
       starlevel: 1
-      hp: 10000
-      attackPower: 100
-      attackSpeed: 1
-      attackSound: 
-      attackType: 2
+      statusDataList:
+      - tid: 111000001
+        value: 1000
+      - tid: 111000002
+        value: 100
+      - tid: 111000003
+        value: 1
+      - tid: 111000004
+        value: 6
+      attackTime: 0
+      attackCoolTime: 0
       criticalRate: 0
       criticalPowerRate: 0
-      moveSpeed: 2
-      skillTid: 0
-      rankType: 0
-      projectileResource: SwordEnergy
-    - tid: 4
+      skillTid: 2100012001
+      finalSkillTid: 2100011001
+      statusPerLevels:
+      - level: 1
+        attackPower: 100
+        attackPowerPerLevel: 0
+        hp: 100
+        hpPerLevel: 1.5
+    - tid: 2600000004
       description: 
-      name: enemy
-      resource: human_01_B_rvs
-      classTid: 1
+      name: greenslime
+      resource: slime_green
+      skillEffectTidNormal: 8
       grade: 0
       starlevel: 1
-      hp: 10000
-      attackPower: 100
-      attackSpeed: 1
-      attackSound: 
-      attackType: 2
+      statusDataList:
+      - tid: 111000001
+        value: 1000
+      - tid: 111000002
+        value: 100
+      - tid: 111000003
+        value: 1
+      - tid: 111000004
+        value: 6
+      attackTime: 0
+      attackCoolTime: 0
       criticalRate: 0
       criticalPowerRate: 0
-      moveSpeed: 2
       skillTid: 0
-      rankType: 0
-      projectileResource: SwordEnergy
-    - tid: 5
+      finalSkillTid: 0
+      statusPerLevels:
+      - level: 1
+        attackPower: 100
+        attackPowerPerLevel: 0
+        hp: 100
+        hpPerLevel: 1.5
+    - tid: 2600000005
       description: 
-      name: enemy2
+      name: enemysoldier
       resource: human_01_D_rvs
-      classTid: 1
+      skillEffectTidNormal: 8
       grade: 0
       starlevel: 1
-      hp: 10000
-      attackPower: 100
-      attackSpeed: 1
-      attackSound: 
-      attackType: 1
+      statusDataList:
+      - tid: 111000001
+        value: 1000
+      - tid: 111000002
+        value: 100
+      - tid: 111000003
+        value: 1
+      - tid: 111000004
+        value: 6
+      attackTime: 0
+      attackCoolTime: 0
       criticalRate: 0
       criticalPowerRate: 0
-      moveSpeed: 2
       skillTid: 0
-      rankType: 0
-      projectileResource: SwordEnergy
-    - tid: 1000
+      finalSkillTid: 0
+      statusPerLevels:
+      - level: 1
+        attackPower: 100
+        attackPowerPerLevel: 0
+        hp: 100
+        hpPerLevel: 1.5
+    - tid: 2600000006
       description: 
-      name: wall
-      resource: human_01_SS_rvs
-      classTid: 4
+      name: pinkslime
+      resource: slime_pink
+      skillEffectTidNormal: 8
       grade: 0
       starlevel: 1
-      hp: 5000
-      attackPower: 100
-      attackSpeed: 1
-      attackSound: 
-      attackType: 1
+      statusDataList:
+      - tid: 111000001
+        value: 1000
+      - tid: 111000002
+        value: 100
+      - tid: 111000003
+        value: 1
+      - tid: 111000004
+        value: 6
+      attackTime: 0
+      attackCoolTime: 0
       criticalRate: 0
       criticalPowerRate: 0
-      moveSpeed: 2
       skillTid: 0
-      rankType: 0
-      projectileResource: SwordEnergy
-    - tid: 10
+      finalSkillTid: 0
+      statusPerLevels:
+      - level: 1
+        attackPower: 100
+        attackPowerPerLevel: 0
+        hp: 100
+        hpPerLevel: 1.5
+    - tid: 2600000007
       description: 
       name: Archer
       resource: human_02_SS
-      classTid: 2
+      skillEffectTidNormal: 1
       grade: 0
       starlevel: 1
-      hp: 5000
-      attackPower: 100
-      attackSpeed: 1
-      attackSound: 
-      attackType: 2
+      statusDataList:
+      - tid: 111000001
+        value: 1000
+      - tid: 111000002
+        value: 100
+      - tid: 111000003
+        value: 1
+      - tid: 111000004
+        value: 6
+      attackTime: 0
+      attackCoolTime: 0
       criticalRate: 0
       criticalPowerRate: 0
-      moveSpeed: 2
       skillTid: 0
-      rankType: 0
-      projectileResource: Arrow
-    - tid: 999
+      finalSkillTid: 0
+      statusPerLevels:
+      - level: 1
+        attackPower: 100
+        attackPowerPerLevel: 0
+        hp: 100
+        hpPerLevel: 1.5
+    - tid: 2600000008
       description: 
       name: Boss
       resource: human_01_SS_rvs
-      classTid: 5
+      skillEffectTidNormal: 1
       grade: 0
       starlevel: 1
-      hp: 300000
-      attackPower: 300
-      attackSpeed: 1
-      attackSound: 
-      attackType: 1
+      statusDataList:
+      - tid: 111000001
+        value: 1000
+      - tid: 111000002
+        value: 100
+      - tid: 111000003
+        value: 1
+      - tid: 111000004
+        value: 6
+      attackTime: 0
+      attackCoolTime: 0
       criticalRate: 0
       criticalPowerRate: 0
-      moveSpeed: 2
       skillTid: 0
-      rankType: 0
-      projectileResource: SwordEnergy
+      finalSkillTid: 0
+      statusPerLevels:
+      - level: 1
+        attackPower: 100
+        attackPowerPerLevel: 0
+        hp: 100
+        hpPerLevel: 1.5
+    - tid: 2600000009
+      description: "\uBC14\uC2A4\uD2F0\uC548"
+      name: spear
+      resource: 
+      skillEffectTidNormal: 1
+      grade: 0
+      starlevel: 1
+      statusDataList:
+      - tid: 111000001
+        value: 1000
+      - tid: 111000002
+        value: 100
+      - tid: 111000003
+        value: 1
+      - tid: 111000004
+        value: 6
+      attackTime: 0
+      attackCoolTime: 0
+      criticalRate: 0
+      criticalPowerRate: 0
+      skillTid: 2100012001
+      finalSkillTid: 2100011001
+      statusPerLevels:
+      - level: 1
+        attackPower: 100
+        attackPowerPerLevel: 0
+        hp: 100
+        hpPerLevel: 1.5

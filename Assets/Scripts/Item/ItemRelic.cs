@@ -4,30 +4,25 @@ using UnityEngine;
 
 public class ItemRelic : ItemBase
 {
-	public ItemRelicData relicData;
-
-	public override int MaxLevel => relicData.maxLevel;
-	public int LevelupConsumeCount => relicData.consumePoint;
-
+	public EquipLevelData levelData;
 
 	public override int Exp
 	{
 		get
 		{
-			int itemCount = Inventory.it.ItemCount(Tid).GetValueToInt();
+			int itemCount = Inventory.it.ItemCount(Tid).GetValueToInt() - 1;// 1개는 보유해야함
 			return itemCount;
 		}
 	}
 
+	public int NextExp => levelData.needCount;
 
-	public int NextExp
+	public float expRatio
 	{
 		get
 		{
-			var sheet = DataManager.it.Get<ItemRelicDataSheet>();
-			ItemRelicData levelData = sheet.Get(data.relicLinkTid);
-
-			return levelData.consumePoint;
+			float outValue = Mathf.Clamp((float)Exp / NextExp, 0, 1);
+			return outValue;
 		}
 	}
 
@@ -40,51 +35,48 @@ public class ItemRelic : ItemBase
 			return vResult;
 		}
 
-		var sheet = DataManager.it.Get<ItemRelicDataSheet>();
-
-		relicData = sheet.Get(data.relicLinkTid);
-
-		if (relicData == null)
+		vResult = SetupMetaData();
+		if (vResult.Fail())
 		{
-			return vResult.SetFail(VResultCode.NO_META_DATA, $"ItemRelicDataSheet. tid: {data.tid}, relicLinkTid: {data.relicLinkTid}");
+			return vResult;
 		}
 
-		return vResult;
+		return vResult.SetOk();
 	}
 
-	/// <summary>
-	/// 유물 레벨업 확률
-	/// </summary>
-	public float GetLevelupRatio(int _level)
+	private VResult SetupMetaData()
 	{
-		return relicData.startUpgradeRatio - (_level * relicData.decreaseSuccessRatio);
-	}
+		VResult vResult = new VResult();
 
-	/// <summary>
-	/// 유물 레벨업 확률(현재레벨)
-	/// </summary>
-	public float GetCurrentLevelupRatio()
-	{
-		return GetLevelupRatio(Level);
-	}
+		var sheet = DataManager.Get<EquipLevelDataSheet>();
+		levelData = sheet.FindLevelInfo(Level);
 
-	/// <summary>
-	/// 레벨업 시도. 소비는 별도 처리필요
-	/// </summary>
-	public bool TryLevelUp()
-	{
-		float ratio = GetCurrentLevelupRatio();
-		bool result = SkillUtility.Cumulative(ratio);
-
-		if(result)
+		if (levelData == null)
 		{
-			AddLevel(1);
+			return vResult.SetFail(VResultCode.NO_META_DATA, $"EquipLevelDataSheet. tid: {data.tid}, lv: {Level}");
 		}
 
-		return result;
+		return vResult.SetOk();
 	}
+
+	public bool Levelupable()
+	{
+		return NextExp <= Exp;
+	}
+
+	public override void AddLevel(int _level)
+	{
+		base.AddLevel(_level);
+
+		VResult vResult = SetupMetaData();
+		if (vResult.Fail())
+		{
+			PopAlert.it.Create(vResult);
+		}
+	}
+
 	public override string ToString()
 	{
-		return $"[{ItemName}({Tid})] -  [{Grade}], lv: {Level}, {Exp}/{NextExp}";
+		return $"[{ItemName}({Tid})] -  [{Grade}], lv: {Level}, {Exp}/{NextExp}({expRatio})";
 	}
 }

@@ -33,7 +33,14 @@ public class PopAlertDefault : MonoBehaviour
 	public void Init(VResult _result, Action _onOkCallback = null, Action _onCancelCallback = null)
 	{
 		result = _result;
-		VLog.Log($"{result.data.key}({result.data.tid}) : {result.data.description}. \n{result.description}");
+		if (_result.data.alertType == PopAlertType.ERROR)
+		{
+			VLog.LogError(result.ToString());
+		}
+		else
+		{
+			VLog.Log(result.ToString());
+		}
 
 		onOkCallback = _onOkCallback;
 		onCancelCallback = _onCancelCallback;
@@ -132,7 +139,7 @@ public class PopAlertDefault : MonoBehaviour
 		// 리절트 코드
 		if(UnityEnv.HouseMode)
 		{
-			resultCodeText.text = $"result.data.tid.ToString() : {result.data.key}";
+			resultCodeText.text = $"{result.data.tid.ToString()} : {result.data.key}";
 		}
 		else
 		{

@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 583deee8a2e92634abd17575f06ed080, type: 3}
+  m_Name: GachaLevelDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: GachaLevelDataSheet
+    prefixID: 3600000000
+    infos:
+    - tid: 3600000001
+      description: 
+      level: 1
+      nextExp: 100
+    - tid: 3600000002
+      description: 
+      level: 2
+      nextExp: 300
+    - tid: 3600000003
+      description: 
+      level: 3
+      nextExp: 600
+    - tid: 3600000004
+      description: 
+      level: 4
+      nextExp: 1000
+    - tid: 3600000005
+      description: 
+      level: 5
+      nextExp: 1500
+    - tid: 3600000006
+      description: 
+      level: 6
+      nextExp: 2100
+    - tid: 3600000007
+      description: 
+      level: 7
+      nextExp: 2800
+    - tid: 3600000008
+      description: 
+      level: 8
+      nextExp: 3500
+    - tid: 3600000009
+      description: 
+      level: 9
+      nextExp: 4500
+    - tid: 3600000010
+      description: 
+      level: 10
+      nextExp: 5500
