@@ -1,0 +1,86 @@
+{
+    "typeName": "SkillEffectDataSheet",
+    "prefixID": 2200000000,
+    "infos": [
+        {
+            "tid": 2200000001,
+            "description": "일반근접",
+            "name": "일반근접",
+            "speed": 10.0,
+            "isDependent": true,
+            "duration": 0.0,
+            "spawnFxResource": "Empty",
+            "skillInfoObject": "NormalMelee"
+        },
+        {
+            "tid": 2200000002,
+            "description": "발차기",
+            "name": "발차기",
+            "speed": 10.0,
+            "isDependent": true,
+            "duration": 0.0,
+            "spawnFxResource": "Empty",
+            "skillInfoObject": "TripleKick"
+        },
+        {
+            "tid": 2200000003,
+            "description": "3연타",
+            "name": "3연타",
+            "speed": 15.0,
+            "isDependent": true,
+            "duration": 0.0,
+            "spawnFxResource": "Empty",
+            "skillInfoObject": "TripleAttack"
+        },
+        {
+            "tid": 2200010004,
+            "description": "적 근접공격",
+            "name": "적 근접공격",
+            "speed": 10.0,
+            "isDependent": true,
+            "duration": 0.0,
+            "spawnFxResource": "Empty",
+            "skillInfoObject": "NormalMeleeEnemySlime"
+        },
+        {
+            "tid": 2200010005,
+            "description": "공격력버프",
+            "name": "공격력버프",
+            "speed": 10.0,
+            "isDependent": false,
+            "duration": 1.0,
+            "spawnFxResource": "Empty",
+            "skillInfoObject": "AttackPowerBuff"
+        },
+        {
+            "tid": 2200010006,
+            "description": "하이퍼일반1",
+            "name": "하이퍼일반1",
+            "speed": 10.0,
+            "isDependent": true,
+            "duration": 1.0,
+            "spawnFxResource": "Empty",
+            "skillInfoObject": "HyperAttack1"
+        },
+        {
+            "tid": 2200010007,
+            "description": "하이퍼일반2",
+            "name": "하이퍼일반2",
+            "speed": 10.0,
+            "isDependent": true,
+            "duration": 1.0,
+            "spawnFxResource": "Empty",
+            "skillInfoObject": "HyperAttack2"
+        },
+        {
+            "tid": 2200010009,
+            "description": "하이퍼일반3",
+            "name": "하이퍼일반3",
+            "speed": 10.0,
+            "isDependent": true,
+            "duration": 1.0,
+            "spawnFxResource": "Empty",
+            "skillInfoObject": "HyperAttack3"
+        }
+    ]
+}

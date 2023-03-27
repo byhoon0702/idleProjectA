@@ -1,0 +1,646 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1359a705a6aba1049978d4dfef599602, type: 3}
+  m_Name: New Inventory Object
+  m_EditorClassIdentifier: 
+  itemList: []
+  Gold:
+    Value: 0
+    Exp: 0
+  Dia:
+    Value: 0
+    Exp: 0
+  weaponItemList:
+  - tid: 1701300001
+    level: 1
+    count: 1
+    itemObject: {fileID: 11400000, guid: 495d621339803874cb296a43773d62fd, type: 2}
+  - tid: 1701300002
+    level: 1
+    count: 1
+    itemObject: {fileID: 11400000, guid: 192fd9410cb77664dace9de762b6381f, type: 2}
+  - tid: 1701300003
+    level: 1
+    count: 1
+    itemObject: {fileID: 11400000, guid: 25e86b34e37745440945c39cc451fbd1, type: 2}
+  - tid: 1701300004
+    level: 1
+    count: 1
+    itemObject: {fileID: 11400000, guid: e52f57aad34038b45becd92c6cb146d1, type: 2}
+  - tid: 1701300005
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: b97d60804a3dd894ebc5544e5ee6a7e5, type: 2}
+  - tid: 1701300006
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 79586fe93300ff7419ccd7f25e558197, type: 2}
+  - tid: 1701300007
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 51a108419a26c1f4b8e1280741f58983, type: 2}
+  - tid: 1701300008
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: e6d1e9346041b0b4b94d1346bd87bf1e, type: 2}
+  - tid: 1701300009
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 52adaeb01ed32fc4c9c4c93ccd427d2d, type: 2}
+  - tid: 1701300010
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: f6169e268b3645c44b530a1b349ef313, type: 2}
+  - tid: 1701300011
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 3587461cf3cabb74a8f0d5cb1e23da94, type: 2}
+  - tid: 1701300012
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 8cc9e066f3e09b64ca97e0619a852121, type: 2}
+  - tid: 1701300013
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 7cc874c317e1bc64491b71d43bd733e2, type: 2}
+  - tid: 1701300014
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: a51cce8373d810842a4cc8b2e212f4fc, type: 2}
+  - tid: 1701300015
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: df0d8c34d304b2b49afb3612f1f09c81, type: 2}
+  - tid: 1701300016
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: f7a4ef4d3bedce14d93975b2dbf4ac5a, type: 2}
+  - tid: 1701300017
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 1a4f6ee21d4f54c46a4e1450702c6cdb, type: 2}
+  - tid: 1701300018
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 51bcd6b9e28b238419febfa18461d492, type: 2}
+  - tid: 1701300019
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: b38a7e93b60338e478267a1de9e4332f, type: 2}
+  - tid: 1701300020
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 01d550cfc0878e2418995d9757994b27, type: 2}
+  - tid: 1701300021
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: e39e55bd0e7b4794e9405ac9497d317d, type: 2}
+  - tid: 1701300022
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: f76d2df0463bcd64aa8a6576552a8d53, type: 2}
+  - tid: 1701300023
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: cc7f6010f1d668d4d993232296bcf9a8, type: 2}
+  - tid: 1701300024
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: aafba90f8a7954a46ab14d9297701452, type: 2}
+  - tid: 1701300025
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 2f0b1210ac021fc4dbe0c28c4b8c98b2, type: 2}
+  - tid: 1701300026
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 012e1c25947a81a49b4166bbf7583fa1, type: 2}
+  - tid: 1701300027
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: ff482fac7553de142a77c25e55975a23, type: 2}
+  - tid: 1701300028
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 9def8e3275c695f4a88ecd0f91cbad9c, type: 2}
+  armorItemList:
+  - tid: 1701400001
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 95790089b0ce8564ab02e1389837c473, type: 2}
+  - tid: 1701400002
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: bba6c66454e23414db087cbfd86f53c2, type: 2}
+  - tid: 1701400003
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 211bbf7ee1206b64484cc9bcc1d37af3, type: 2}
+  - tid: 1701400004
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 283d6c9901eb4544ba13b270aec79440, type: 2}
+  - tid: 1701400005
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 3a350f6957eb8574ea39b9e42681f47a, type: 2}
+  - tid: 1701400006
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 28edde62aae67024bb94c47a4163d7c5, type: 2}
+  - tid: 1701400007
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: ce5feef4b64e39c4d82d6c28ccb8b2de, type: 2}
+  - tid: 1701400008
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: b995e0486c7d9db4fa0f0b699e5ff6c1, type: 2}
+  - tid: 1701400009
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 7795b593f6d05784eb29182f369b1b16, type: 2}
+  - tid: 1701400010
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: c0dab977e5439b34db92700c756e6f38, type: 2}
+  - tid: 1701400011
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 78d86558cb11bd240a09219cdd38f9dc, type: 2}
+  - tid: 1701400012
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 1db4225d682fa8848bd025574e6648e1, type: 2}
+  - tid: 1701400013
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 2b18a49b83b18d7488bc13945c33e726, type: 2}
+  - tid: 1701400014
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: e52a6c6652546544a9256f6a9d0aa987, type: 2}
+  - tid: 1701400015
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: d665ff6dfbcd3a042b7a8ce638c2e5c8, type: 2}
+  - tid: 1701400016
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 7bce9e61ef3e63648b5d4279bba8cd8f, type: 2}
+  - tid: 1701400017
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 56d0018e187533c449cd27b498875fe7, type: 2}
+  - tid: 1701400018
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 6de017d0330263e48a29a9aae87dc71a, type: 2}
+  - tid: 1701400019
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 2a21adc3e8235d84e937236aaf8d6b6c, type: 2}
+  - tid: 1701400020
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 6f467b5376bda684f8ce8659eb66ac71, type: 2}
+  - tid: 1701400021
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 436640b44026f21488f951711539ba8d, type: 2}
+  - tid: 1701400022
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: c5d838bb37da31244818fe8ff64c37ad, type: 2}
+  - tid: 1701400023
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: ef266224c7300544faf609e67d4d39ea, type: 2}
+  - tid: 1701400024
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 23c1cc9b670e5f649b60fe1072cbbd67, type: 2}
+  - tid: 1701400025
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 06d04c088a2877341964be07cd8a567b, type: 2}
+  - tid: 1701400026
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 9c97d946646d66749973a141415a0661, type: 2}
+  - tid: 1701400027
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: ed73fdfd4354b744a98eb7c84f14fe5c, type: 2}
+  - tid: 1701400028
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 225127ab8e79d1141b83a28ed7c1653e, type: 2}
+  ringItemList:
+  - tid: 1701500001
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: a0021aa4a2756d94abbeb20bd6ae9369, type: 2}
+  - tid: 1701500002
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: c4291392d03ab2949a2b71e4f566477f, type: 2}
+  - tid: 1701500003
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: ab64e70365ccda942917459c9bb8656e, type: 2}
+  - tid: 1701500004
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 8306a636965813e43a0c5b486dbc15c0, type: 2}
+  - tid: 1701500005
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: ed0693500ca1b5746ad45ef20efafa0e, type: 2}
+  - tid: 1701500006
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: ae3fe321065b8264e87422e0438ee3ba, type: 2}
+  - tid: 1701500007
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 4d2604da7631a424c88f3f2e329dd2c3, type: 2}
+  - tid: 1701500008
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 2daa71b4b0c13c54f93a1ce8b3332531, type: 2}
+  - tid: 1701500009
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: df989ac9eae75a14f9b37f9365cfd621, type: 2}
+  - tid: 1701500010
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: ea9f0f269f6a4674eb24e11c7c8904e0, type: 2}
+  - tid: 1701500011
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 364c8ac7008d43e46ae8838a85fcb8bc, type: 2}
+  - tid: 1701500012
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 9a127be0a0014ad4d8875607d0726aa6, type: 2}
+  - tid: 1701500013
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 6fd19f78f6d29fa4e8c12a68ad540a37, type: 2}
+  - tid: 1701500014
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 403b8c47c7d2f5940896855a4cf4330c, type: 2}
+  - tid: 1701500015
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 12144c043cfaaf24693900dd87ff22c8, type: 2}
+  - tid: 1701500016
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 7e7a10ade572a1445ab545a694ea2775, type: 2}
+  - tid: 1701500017
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 74514d002b966144e9e3890bd83dae80, type: 2}
+  - tid: 1701500018
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: e5157ebd7f1e69a4e91506083ccc2a5c, type: 2}
+  - tid: 1701500019
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: b5eda8496f91d68459bfcd8355f08ff9, type: 2}
+  - tid: 1701500020
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 435b3d127af92a14c859dae34d4af290, type: 2}
+  - tid: 1701500021
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 2a79eeaef24e8954199bed4db4ec10a2, type: 2}
+  - tid: 1701500022
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 867ea87d34370284a98214c47143b583, type: 2}
+  - tid: 1701500023
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: fe425a13de4935048a50fea278c0c00f, type: 2}
+  - tid: 1701500024
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: bb4143b5b3151114b97410f35d717efe, type: 2}
+  - tid: 1701500025
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 67ef023b9320987439de7932a5054891, type: 2}
+  - tid: 1701500026
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 447f4e7c48758e74ba581e617257126b, type: 2}
+  - tid: 1701500027
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 3ebf4c4138912984594a3ed0bf53c0d5, type: 2}
+  - tid: 1701500028
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 38034dd7fe9479947ba3bfee3457d581, type: 2}
+  necklaceItemList:
+  - tid: 1702500001
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 48d877adfec6a8f4cb6e56d6be4ba044, type: 2}
+  - tid: 1702500002
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 4121ebce8aab748489a70713268716cb, type: 2}
+  - tid: 1702500003
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 6b6ab474462b1b94cb06952791f7e7d5, type: 2}
+  - tid: 1702500004
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 904793c3e24b08348ace856e0e98699f, type: 2}
+  - tid: 1702500005
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 26a96ad3ff297da49ab81f005dd99232, type: 2}
+  - tid: 1702500006
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 933e0e88f24f05541878a8a00482646d, type: 2}
+  - tid: 1702500007
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: e9e82a94e924e7e4cafaba57d8008da8, type: 2}
+  - tid: 1702500008
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 3b411ba2a9100fd49aff26df12cebedc, type: 2}
+  - tid: 1702500009
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 0b147927d69ac074597605d8d0a465a6, type: 2}
+  - tid: 1702500010
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: fdf57a6d7b8f9804bbd354f19f74f166, type: 2}
+  - tid: 1702500011
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: f7e92897c39b47544b5e45888ee66800, type: 2}
+  - tid: 1702500012
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 45ebc84e1315ae34aa71cf198c2bb373, type: 2}
+  - tid: 1702500013
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 60297852c074b0949aa2b22c3a3a04c6, type: 2}
+  - tid: 1702500014
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 1d8a27a65017e9f41a9fab48737bdfb2, type: 2}
+  - tid: 1702500015
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 2c60616d969448c42961583eba7edd90, type: 2}
+  - tid: 1702500016
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 84d07377ddd9e6546a6d46e4cdbfd030, type: 2}
+  - tid: 1702500017
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 28c055655774bbd4eb4e8e60e0cada93, type: 2}
+  - tid: 1702500018
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 282efce0a7884ca4e85329c81e23bd1b, type: 2}
+  - tid: 1702500019
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 87cc99b17e910b04e94efa18e922d286, type: 2}
+  - tid: 1702500020
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: ef54e5cbe89d8ea4faffec0dde8b88db, type: 2}
+  - tid: 1702500021
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 1ce47ea7859f3944db163b5214ff0aa3, type: 2}
+  - tid: 1702500022
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 9e5aed86c80c8de48a24f2b11e9b1e8c, type: 2}
+  - tid: 1702500023
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: cc3ddab4244ccf445a45e4ac3bd09630, type: 2}
+  - tid: 1702500024
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 0d804b865d0683843a727109503276c1, type: 2}
+  - tid: 1702500025
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 9fc6f5be7b5649641bcb37db554d1d67, type: 2}
+  - tid: 1702500026
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 05cac45d73d717b41aa96159bc742e78, type: 2}
+  - tid: 1702500027
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 7a1682a0b48937f4abe31f61bd300f53, type: 2}
+  - tid: 1702500028
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 7385058eefa14ad4ea025e9706d66499, type: 2}
+  costumeHeadList:
+  - tid: 4102000001
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 76e8dac99441b2342a3d1f910d8b0ac7, type: 2}
+  - tid: 4102000002
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 89c57131c79a9e64da691798c11a3003, type: 2}
+  - tid: 4102000003
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 5099957709e158c4db1d324167dde9ca, type: 2}
+  costumeBodyList:
+  - tid: 4101000001
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 5e21250eb1d8421498910cd913dd50c4, type: 2}
+  - tid: 4101000002
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 9fc5ed2c37b418a4e96325a8ad9fe9db, type: 2}
+  - tid: 4101000003
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: ecce7e0caf707794cbb47c0efb6b8b28, type: 2}
+  costumeWeaponList:
+  - tid: 4100000001
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 8ab4f367e2f944d4e9136ee0ab173b64, type: 2}
+  - tid: 4100000002
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 272224dcc7b43e64da11ef868e39d51b, type: 2}
+  - tid: 4100000003
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: becca1b7b2bdd704485eb19504c08979, type: 2}
+  - tid: 4100000004
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: c0f77663497e4db4284938aae1919cc9, type: 2}
+  - tid: 4100000005
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 7bac92a6592f05f4bb8333dcb3c516f9, type: 2}
+  - tid: 4100000006
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 105270a6eec3f204db4079fee6cd172f, type: 2}
+  petList:
+  - tid: 1300000001
+    level: 1
+    count: 1
+    itemObject: {fileID: 11400000, guid: f563898f6d7c9a24c8d6b601a639fd22, type: 2}
+  - tid: 1300000002
+    level: 1
+    count: 1
+    itemObject: {fileID: 11400000, guid: 55f8598422cb50d49affaba87ef9e38c, type: 2}
+  - tid: 1300000003
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: e1831c8c51ddb5841a2c6d99279025f9, type: 2}
+  - tid: 1300000004
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 66699d6a5052b8647ae51db27278fc17, type: 2}
+  - tid: 1300000005
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 1e70a54cf288313498b979cd046f0ef5, type: 2}
+  - tid: 1300000006
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 62ac6bcff99179242828692c84777687, type: 2}
+  - tid: 1300000007
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 1d95a4dc7744207468edf29172612e0b, type: 2}
+  - tid: 1300000008
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 35af0c69231fef343a45d314088c0289, type: 2}
+  - tid: 1300000009
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: c329978ed1ab58445880c47e4511fadc, type: 2}
+  - tid: 1300000010
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: f7dd77abc1574f1478d0787342b6f2fe, type: 2}
+  - tid: 1300000011
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: c8635c5023f373840887cbeb9ddf0e73, type: 2}
+  - tid: 1300000012
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: fd28de5fad55027478c8df66041a41e0, type: 2}
+  - tid: 1300000013
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: a2b207485904c154bb6abd8e42733d16, type: 2}
+  - tid: 1300000014
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 6bd3785ab07ff8e438a3c2537fa20229, type: 2}
+  - tid: 1300000015
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 47fb02c0316b0654899812f5917c528f, type: 2}
+  - tid: 1300000016
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 38e8287e87a75264ca1a792eec17a567, type: 2}
+  - tid: 1300000017
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: a3f29fbf2291dce4db1554954c6a9f91, type: 2}
+  - tid: 1300000018
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 62a2a5c722aea1143990beb7929bb783, type: 2}
+  - tid: 1300000019
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 90d598e5b761ab8429affa8a8236dba7, type: 2}
+  - tid: 1300000020
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: fd276c5aaab8119468c2bb7e7a048a03, type: 2}
+  - tid: 1300000021
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: f343647b509bd4b4d8ab7bd7de08bdd2, type: 2}
+  - tid: 1300000022
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 5488e45893a2d994994b02903827fbf3, type: 2}
+  - tid: 1300000023
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 8402b91374bf47044875a29789a512c4, type: 2}
+  - tid: 1300000024
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 0efc16a2ff6689248870e1fbf5a644c8, type: 2}
+  - tid: 1300000025
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: d73691b4103ca7843aa69dcd802811c6, type: 2}
+  - tid: 1300000026
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 4e26bfcc5a7d77141a4aafbd035c6983, type: 2}
+  - tid: 1300000027
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 360731f29fcbaec469921b6e9b8bfd02, type: 2}
+  - tid: 1300000028
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: cc141c10a6e29c9469b5aa62d99e63cf, type: 2}
+  - tid: 1300000029
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 9e95c52b3d7f77548b30838e209e932d, type: 2}
+  - tid: 1300000030
+    level: 1
+    count: 0
+    itemObject: {fileID: 11400000, guid: 3f56c421ad617cd4c86563a880e82294, type: 2}
+  skillList: []

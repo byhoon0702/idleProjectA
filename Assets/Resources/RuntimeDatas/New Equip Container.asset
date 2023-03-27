@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6467ce1727d884ea6b3795e006ca6b, type: 3}
+  m_Name: New Equip Container
+  m_EditorClassIdentifier: 
+  equipitemlist: 21c767650000000022c7676500000000
+  equipSlot:
+  - type: 0
+    tid: 1701300001
+    item: {fileID: 11400000, guid: 1f80dd201d7199340b9589e67ce2151a, type: 2}
+  - type: 1
+    tid: 0
+    item: {fileID: 0}
+  - type: 2
+    tid: 0
+    item: {fileID: 0}
+  - type: 3
+    tid: 0
+    item: {fileID: 0}

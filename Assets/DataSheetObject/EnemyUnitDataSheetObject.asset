@@ -1,0 +1,1205 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a809dd7918f7fab4a8a7fef048fe79ad, type: 3}
+  m_Name: EnemyUnitDataSheetObject
+  m_EditorClassIdentifier: 
+  tooltip: 
+  fieldSettings:
+  - fieldName: tid
+    width: 100
+  - fieldName: description
+    width: 100
+  - fieldName: name
+    width: 100
+  - fieldName: resource
+    width: 100
+  - fieldName: hyperResource
+    width: 100
+  - fieldName: skillEffectTidNormal
+    width: 100
+  - fieldName: type
+    width: 100
+  - fieldName: grade
+    width: 100
+  - fieldName: starlevel
+    width: 100
+  - fieldName: statusDataList
+    width: 100
+  - fieldName: skillTid
+    width: 100
+  - fieldName: finalSkillTid
+    width: 100
+  - fieldName: spawnType
+    width: 100
+  - fieldName: spawnLevelMin
+    width: 100
+  - fieldName: spawnLevelMax
+    width: 100
+  dataSheet:
+    typeName: EnemyUnitDataSheet
+    prefixID: 4300000000
+    infos:
+    - tid: 4300000010
+      description: "\uC791\uC740 \uC2AC\uB77C\uC784"
+      name: "\uC791\uC740 \uC2AC\uB77C\uC784"
+      resource: monster_01_03
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 2
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 5.15B
+      - type: 111000002
+        value: 1.03J
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 1
+      spawnLevelMin: 1
+      spawnLevelMax: 20
+    - tid: 4300000011
+      description: "\uC911\uAC04 \uC2AC\uB77C\uC784"
+      name: "\uC911\uAC04 \uC2AC\uB77C\uC784"
+      resource: monster_01_04
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 2
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 7.73B
+      - type: 111000002
+        value: 1.55J
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 1
+      spawnLevelMin: 10
+      spawnLevelMax: 30
+    - tid: 4300000012
+      description: "\uD070 \uC2AC\uB77C\uC784"
+      name: "\uD070 \uC2AC\uB77C\uC784"
+      resource: monster_01_04
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 2
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 2.57B
+      - type: 111000002
+        value: 8.1J
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 1
+      spawnLevelMin: 20
+      spawnLevelMax: 100
+    - tid: 4300000013
+      description: "\uC2AC\uB77C\uC784\uD038"
+      name: "\uC2AC\uB77C\uC784\uD038"
+      resource: monster_01_04
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 3.86B
+      - type: 111000002
+        value: 1.34J
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 2
+      spawnLevelMin: 1
+      spawnLevelMax: 19
+    - tid: 4300000014
+      description: "\uC2AC\uB77C\uC784\uD0B9"
+      name: "\uC2AC\uB77C\uC784\uD0B9"
+      resource: monster_01_04
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 3.86B
+      - type: 111000002
+        value: 1.34J
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 2
+      spawnLevelMin: 20
+      spawnLevelMax: 20
+    - tid: 4300000015
+      description: "\uAC15\uD55C\uC2AC\uB77C\uC784\uD038"
+      name: "\uAC15\uD55C\uC2AC\uB77C\uC784\uD038"
+      resource: monster_01_04
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 3.86B
+      - type: 111000002
+        value: 1.34J
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 2
+      spawnLevelMin: 21
+      spawnLevelMax: 100
+    - tid: 4300000050
+      description: "\uBCF4\uBB3C\uC0C1\uC790"
+      name: "\uBCF4\uBB3C\uC0C1\uC790"
+      resource: treasure_box
+      hyperResource: 
+      skillEffectTidNormal: 0
+      type: 4
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 5000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 1
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000051
+      description: "\uCC38\uAE68 \uC2AC\uB77C\uC784"
+      name: "\uCC38\uAE68 \uC2AC\uB77C\uC784"
+      resource: monster_01_04
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 2
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 3
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000052
+      description: "\uC6A9\uC0AC \uC2AC\uB77C\uC784"
+      name: "\uC6A9\uC0AC \uC2AC\uB77C\uC784"
+      resource: monster_01_04
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 2
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 4
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000053
+      description: "\uC6A9\uC0AC \uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      name: "\uC6A9\uC0AC \uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      resource: monster_01_04
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 4
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000054
+      description: "\uC624\uC5FC\uB41C\uBD80\uD654\uC7A5 \uBCF4\uC2A4"
+      name: "\uC624\uC5FC\uB41C\uBD80\uD654\uC7A5 \uBCF4\uC2A4"
+      resource: slime_green
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 5
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000055
+      description: "\uBD88\uB85C\uCD08\uC2AC\uB77C\uC784"
+      name: "\uBD88\uB85C\uCD08\uC2AC\uB77C\uC784"
+      resource: slime_green
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 6
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000056
+      description: "\uC545\uBABD\uC758\uD0D1\uC2AC\uB77C\uC784"
+      name: "\uC545\uBABD\uC758\uD0D1\uC2AC\uB77C\uC784"
+      resource: slime_green
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 2
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 101
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000057
+      description: "\uC545\uBABD\uC758\uD0D1\uC2AC\uB77C\uC784\uBCF4\uC2A4"
+      name: "\uC545\uBABD\uC758\uD0D1\uC2AC\uB77C\uC784\uBCF4\uC2A4"
+      resource: slime_green
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 101
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000058
+      description: "CA\uC2AC\uB77C\uC784"
+      name: "CA\uC2AC\uB77C\uC784"
+      resource: slime_green
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 2
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 102
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000059
+      description: "\uC544\uC774\uC2A4\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      name: "\uC544\uC774\uC2A4\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      resource: slime_green
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 103
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000060
+      description: "\uD654\uC5FC\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      name: "\uD654\uC5FC\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      resource: slime_green
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 104
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000061
+      description: "\uBC14\uC704\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      name: "\uBC14\uC704\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      resource: slime_green
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 105
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000062
+      description: "\uC5B4\uB460\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      name: "\uC5B4\uB460\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      resource: slime_green
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 106
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000063
+      description: "\uBD80\uC11C\uC9C4\uBC30\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      name: "\uBD80\uC11C\uC9C4\uBC30\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      resource: slime_green
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 107
+      spawnLevelMin: 1
+      spawnLevelMax: 100
+    - tid: 4300000064
+      description: "\uD654\uC0B0\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      name: "\uD654\uC0B0\uBCF4\uC2A4\uC2AC\uB77C\uC784"
+      resource: slime_green
+      hyperResource: 
+      skillEffectTidNormal: 2200010004
+      type: 3
+      grade: 0
+      starlevel: 0
+      statusDataList:
+      - type: 111000001
+        value: 100
+      - type: 111000002
+        value: 1000
+      - type: 111000003
+        value: 1
+      - type: 111000004
+        value: 0
+      - type: 111000005
+        value: 0
+      - type: 111000006
+        value: 0
+      - type: 111000007
+        value: 0
+      - type: 111000008
+        value: 1
+      - type: 111000009
+        value: 0
+      - type: 111000010
+        value: 0
+      - type: 111000011
+        value: 0
+      - type: 111000012
+        value: 0
+      - type: 111000013
+        value: 0
+      - type: 111000014
+        value: 0
+      - type: 111000015
+        value: 0
+      - type: 111000016
+        value: 0
+      - type: 111000017
+        value: 0
+      - type: 111000018
+        value: 0
+      - type: 111000019
+        value: 5
+      - type: 111000020
+        value: 0
+      skillTid: 0
+      finalSkillTid: 0
+      spawnType: 108
+      spawnLevelMin: 1
+      spawnLevelMax: 100

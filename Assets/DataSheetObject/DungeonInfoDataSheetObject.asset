@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f58507a194eba904895e9c7737c71b00, type: 3}
+  m_Name: DungeonInfoDataSheetObject
+  m_EditorClassIdentifier: 
+  tooltip: 
+  fieldSettings:
+  - fieldName: tid
+    width: 100
+  - fieldName: description
+    width: 100
+  - fieldName: name
+    width: 100
+  - fieldName: needItemTid
+    width: 100
+  - fieldName: itemCount
+    width: 100
+  - fieldName: waveType
+    width: 100
+  dataSheet:
+    typeName: DungeonInfoDataSheet
+    prefixID: 1000000
+    infos:
+    - tid: 1000001
+      description: "\uCC38\uAE68\uB3D9\uAD74"
+      name: "\uCC38\uAE68\uB3D9\uAD74"
+      needItemTid: 1701105034
+      itemCount: 1
+      waveType: 3
+    - tid: 1000002
+      description: "\uC6A9\uC0AC\uC758 \uBB34\uB364"
+      name: "\uC6A9\uC0AC\uC758 \uBB34\uB364"
+      needItemTid: 1701105035
+      itemCount: 1
+      waveType: 4
+    - tid: 1000003
+      description: "\uC624\uC5FC\uB41C \uBD80\uD654\uC7A5"
+      name: "\uC624\uC5FC\uB41C \uBD80\uD654\uC7A5"
+      needItemTid: 1701105036
+      itemCount: 1
+      waveType: 5
+    - tid: 1000004
+      description: "\uBD88\uB85C\uCD08 \uD3C9\uC6D0"
+      name: "\uBD88\uB85C\uCD08 \uD3C9\uC6D0"
+      needItemTid: 1701105037
+      itemCount: 1
+      waveType: 6
+    - tid: 1000005
+      description: "\uD68C\uCD98\uB358\uC804"
+      name: "\uD68C\uCD98\uB358\uC804"
+      needItemTid: 1701105038
+      itemCount: 1
+      waveType: 7

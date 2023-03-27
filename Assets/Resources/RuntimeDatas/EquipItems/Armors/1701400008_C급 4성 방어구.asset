@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 556a6c9c8b720114ba10f74bd4c2f1b6, type: 3}
+  m_Name: "1701400008_C\uAE09 4\uC131 \uBC29\uC5B4\uAD6C"
+  m_EditorClassIdentifier: 
+  tid: 1701400008
+  icon: {fileID: 0}
+  itemName: "C\uAE09 4\uC131 \uBC29\uC5B4\uAD6C"
+  description: "C\uAE09 4\uC131 \uBC29\uC5B4\uAD6C"
+  itemGrade: 1
+  starLv: 4
+  type: 1
+  equipObject: {fileID: 0}
+  equipAbilities:
+  - type: 111000002
+    value:
+      Value: 2.592
+      Exp: 0
+    inc:
+      Value: 0.0432
+      Exp: 0
+  ownedAbilities:
+  - type: 111000002
+    value:
+      Value: 0.5
+      Exp: 0
+    inc:
+      Value: 0.05
+      Exp: 0

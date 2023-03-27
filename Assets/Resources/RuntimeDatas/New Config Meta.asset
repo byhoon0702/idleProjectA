@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88199f88e8a8b4741a3f2520f8399efd, type: 3}
+  m_Name: New Config Meta
+  m_EditorClassIdentifier: 
+  ATTACK_SPEED_MIN: 0.1
+  ATTACK_SPEED_MAX: 3
+  CRITICAL_CHANCE_MAX_RATIO: 0.8
+  MIN_DAMAGE_MUL: 0.01
+  MAX_DAMAGE_MUL: 5
+  TARGET_SEARCH_FRONT_ENEMY_RANGE: 2
+  TARGET_SEARCH_MANY_ENEMY_RANGE: 4
+  STUN_DURATION: 3
+  KNOCKBACK_DURATION: 0.5
+  KNOCKBACK_DISTANCE: 1
+  BUFF_DURATION: 2
+  TARGET_SEARCH_DELAY: 0.1
+  RESULT_CODE_DEFAULT_TITLE_TEXT: Info
+  RESULT_CODE_ERROR_TITLE_TEXT: Error
+  RESULT_CODE_DEFAULT_OK_TEXT: Ok
+  RESULT_CODE_DEFAULT_CANCEL_TEXT: Cancel
+  PROMOTE_ATTACK_POWER_PER_LEVEL_RATIO: 0.01
+  PROMOTE_HP_PER_LEVEL_RATIO: 0.02
+  PROMOTE_CRITICAL_ATTACK_POWER_PER_LEVEL_RATIO: 0.01
+  PROMOTE_SKILL_ATTACK_POWER_PER_LEVEL_RATIO: 0.005
+  PROMOTE_BOSS_ATTACK_POWER_PER_LEVEL_RATIO: 0.005
+  CORE_ABILITY_DEFAULT_CONSUME_COUNT: 10
+  REFILL_UPDATE_CYCLE: 10
+  PLAYER_TARGET_RANGE_CLOSE: 1.5
+  PLAYER_TARGET_RANGE_FAR: 6
+  ENEMY_TARGET_RANGE_CLOSE: 1.5
+  ENEMY_TARGET_RANGE_FAR: 6
+  BOSS_TARGET_RANGE_CLOSE: 3
+  BOSS_TARGET_RANGE_FAR: 6
+  NORMAL_DUNGEON_SPAWN_CYCLE: 10
+  PLAYER_HP_RECOVERY_CYCLE: 1
+  RANGE_SKILL_POSITION: 6
+  RANGE_SKILL_RADIUS: 6
+  DAILY_GOLD_BOX_LIMIT: 5
+  MINIMUM_GOLD_AD_FREQUENCY: 300
+  MAXIMUM_GOLD_AD_FREQUENCY: 3600
+  DAILY_DIA_BOX_LIMIT: 5
+  MINIMUM_DIA_AD_FREQUENCY: 300
+  MAXIMUM_DIA_AD_FREQUENCY: 4200
+  UNIT_LEVELUP_EXP: 15
+  USEREXP_MAX_LEVEL: 500
+  USEREXP_DEFAULT: 500
+  USEREXP_INC: 50
+  USEREXP_WEIGHT_1: 0.2
+  USEREXP_WEIGHT_2: 0.05
+  PROPERTY_POINT_PER_LEVEL: 3
+  UNIT_STATE_WEIGHT_1: 1.85
+  UNIT_STATE_WEIGHT_2: 0.2
+  UNIT_STATE_WEIGHT_3: 2
+  UNIT_STATE_ATTACK_POWER_WEIGHT: 1.05
+  UNIT_STATE_HP_WEIGHT: 1.35
+  STAGE_REWARD_NORMAL_ENEMY_MUL: 1
+  STAGE_REWARD_BOSS_ENEMY_MUL: 2
+  STAGE_REWARD_TREASURE_BOX_MUL: 6
+  PET_LEVELUP_REQUIREMENT:
+  - grade: 0
+    basicConsumption: 5
+    evolutionWeight: 1
+    incrementRange: 3
+    levelWeight: 1
+  - grade: 1
+    basicConsumption: 15
+    evolutionWeight: 3
+    incrementRange: 12
+    levelWeight: 2
+  - grade: 2
+    basicConsumption: 50
+    evolutionWeight: 10
+    incrementRange: 40
+    levelWeight: 3
+  - grade: 3
+    basicConsumption: 150
+    evolutionWeight: 30
+    incrementRange: 140
+    levelWeight: 4
+  - grade: 4
+    basicConsumption: 500
+    evolutionWeight: 50
+    incrementRange: 390
+    levelWeight: 5
+  - grade: 5
+    basicConsumption: 1200
+    evolutionWeight: 70
+    incrementRange: 940
+    levelWeight: 6
+  - grade: 6
+    basicConsumption: 3300
+    evolutionWeight: 100
+    incrementRange: 2450
+    levelWeight: 7

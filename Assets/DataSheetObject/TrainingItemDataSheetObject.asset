@@ -1,0 +1,240 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d8f90a0a01c6de49a1a5f732a864271, type: 3}
+  m_Name: TrainingItemDataSheetObject
+  m_EditorClassIdentifier: 
+  tooltip: 
+  fieldSettings:
+  - fieldName: tid
+    width: 100
+  - fieldName: description
+    width: 100
+  - fieldName: name
+    width: 100
+  - fieldName: itemDesc
+    width: 100
+  - fieldName: itemType
+    width: 100
+  - fieldName: itemGrade
+    width: 100
+  - fieldName: starLv
+    width: 100
+  - fieldName: hashTag
+    width: 100
+  - fieldName: toOwnAbility
+    width: 100
+  - fieldName: toOwnValue
+    width: 100
+  - fieldName: toOwnInc
+    width: 100
+  - fieldName: itemRefillTid
+    width: 100
+  - fieldName: userMasteryTid
+    width: 100
+  - fieldName: ownValue
+    width: 100
+  - fieldName: userTrainingTid
+    width: 100
+  dataSheet:
+    typeName: TrainingItemDataSheet
+    prefixID: 1701900000
+    infos:
+    - tid: 1701900001
+      description: "\uACF5\uACA9\uB825"
+      name: "\uACF5\uACA9\uB825"
+      itemDesc: 
+      itemType: 9
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      toOwnAbility: 0
+      toOwnValue: 
+      toOwnInc: 
+      itemRefillTid: 0
+      userMasteryTid: 0
+      ownValue:
+        type: 111000001
+        pairType: 0
+        value: 10
+        perLevel: 10
+      userTrainingTid: 3300000001
+    - tid: 1701900002
+      description: "\uCCB4\uB825"
+      name: "\uCCB4\uB825"
+      itemDesc: 
+      itemType: 9
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      toOwnAbility: 0
+      toOwnValue: 
+      toOwnInc: 
+      itemRefillTid: 0
+      userMasteryTid: 0
+      ownValue:
+        type: 111000002
+        pairType: 0
+        value: 100
+        perLevel: 10
+      userTrainingTid: 3300000002
+    - tid: 1701900003
+      description: "\uCCB4\uB825\uD68C\uBCF5\uB7C9"
+      name: "\uCCB4\uB825\uD68C\uBCF5\uB7C9"
+      itemDesc: 
+      itemType: 9
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      toOwnAbility: 0
+      toOwnValue: 
+      toOwnInc: 
+      itemRefillTid: 0
+      userMasteryTid: 0
+      ownValue:
+        type: 111000003
+        pairType: 0
+        value: 5
+        perLevel: 0.5
+      userTrainingTid: 3300000003
+    - tid: 1701900004
+      description: "\uCE58\uBA85\uD0C0\uD655\uB960"
+      name: "\uCE58\uBA85\uD0C0\uD655\uB960"
+      itemDesc: 
+      itemType: 9
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      toOwnAbility: 0
+      toOwnValue: 
+      toOwnInc: 
+      itemRefillTid: 0
+      userMasteryTid: 0
+      ownValue:
+        type: 111000004
+        pairType: 0
+        value: 0
+        perLevel: 0.2
+      userTrainingTid: 3300000004
+    - tid: 1701900005
+      description: "\uCE58\uBA85\uD0C0\uD53C\uD574"
+      name: "\uCE58\uBA85\uD0C0\uD53C\uD574"
+      itemDesc: 
+      itemType: 9
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      toOwnAbility: 0
+      toOwnValue: 
+      toOwnInc: 
+      itemRefillTid: 0
+      userMasteryTid: 0
+      ownValue:
+        type: 111000005
+        pairType: 0
+        value: 1.1
+        perLevel: 1
+      userTrainingTid: 3300000005
+    - tid: 1701900006
+      description: "\uD558\uC774\uD37C\uC5B4\uD0DD\uD655\uB960"
+      name: "\uD558\uC774\uD37C\uC5B4\uD0DD\uD655\uB960"
+      itemDesc: 
+      itemType: 9
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      toOwnAbility: 0
+      toOwnValue: 
+      toOwnInc: 
+      itemRefillTid: 0
+      userMasteryTid: 0
+      ownValue:
+        type: 111000006
+        pairType: 0
+        value: 0
+        perLevel: 0.2
+      userTrainingTid: 3300000006
+    - tid: 1701900007
+      description: "\uD558\uC774\uD37C\uC5B4\uD0DD\uD53C\uD574"
+      name: "\uD558\uC774\uD37C\uC5B4\uD0DD\uD53C\uD574"
+      itemDesc: 
+      itemType: 9
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      toOwnAbility: 0
+      toOwnValue: 
+      toOwnInc: 
+      itemRefillTid: 0
+      userMasteryTid: 0
+      ownValue:
+        type: 111000007
+        pairType: 0
+        value: 1.1
+        perLevel: 1
+      userTrainingTid: 3300000007
+    - tid: 1701900008
+      description: "\uACF5\uACA9\uC18D\uB3C4"
+      name: "\uACF5\uACA9\uC18D\uB3C4"
+      itemDesc: 
+      itemType: 9
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      toOwnAbility: 0
+      toOwnValue: 
+      toOwnInc: 
+      itemRefillTid: 0
+      userMasteryTid: 0
+      ownValue:
+        type: 111000008
+        pairType: 0
+        value: 1
+        perLevel: 0.01
+      userTrainingTid: 3300000008
+    - tid: 1701900009
+      description: "\uB354\uBE14\uC5B4\uD0DD"
+      name: "\uB354\uBE14\uC5B4\uD0DD"
+      itemDesc: 
+      itemType: 9
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      toOwnAbility: 0
+      toOwnValue: 
+      toOwnInc: 
+      itemRefillTid: 0
+      userMasteryTid: 0
+      ownValue:
+        type: 111000013
+        pairType: 0
+        value: 0
+        perLevel: 0.2
+      userTrainingTid: 3300000009
+    - tid: 1701900010
+      description: "\uD2B8\uB9AC\uD50C\uC5B4\uD0DD"
+      name: "\uD2B8\uB9AC\uD50C\uC5B4\uD0DD"
+      itemDesc: 
+      itemType: 9
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      toOwnAbility: 0
+      toOwnValue: 
+      toOwnInc: 
+      itemRefillTid: 0
+      userMasteryTid: 0
+      ownValue:
+        type: 111000014
+        pairType: 0
+        value: 0
+        perLevel: 0.2
+      userTrainingTid: 3300000010

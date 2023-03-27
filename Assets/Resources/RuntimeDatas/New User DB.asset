@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 753a5d79390289b44a77042d15bdc59a, type: 3}
+  m_Name: New User DB
+  m_EditorClassIdentifier: 
+  configMeta: {fileID: 11400000, guid: 442f229782343664aa48645015397e4d, type: 2}
+  training: {fileID: 11400000, guid: b3a2979d521df964fb7d34ece430a26e, type: 2}
+  equipContainer: {fileID: 11400000, guid: 89da23267bfc27c499fca38ffdc19c7a, type: 2}
+  skillContainer: {fileID: 11400000, guid: 2a135b75a795ca34ab3e603c4fc8e8c4, type: 2}
+  costumeContainer: {fileID: 11400000, guid: 28fc530d53f7254438d8e4e78a4162d9, type: 2}
+  petContainer: {fileID: 11400000, guid: 9d4229a8b229d334fa4d39a37b0dd6d1, type: 2}
+  inventory: {fileID: 11400000, guid: 4cb647e0498554c4aa39457fb9e3c667, type: 2}
+  characterTid: 2600000002
+  userName: VIVID
+  uid: 12345678
+  playTicks: 0
+  userGrade: 0

@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca422824074edfc46b83cd01d6c069f1, type: 3}
+  m_Name: StageMapDataSheetObject
+  m_EditorClassIdentifier: 
+  tooltip: 
+  fieldSettings:
+  - fieldName: tid
+    width: 100
+  - fieldName: description
+    width: 120
+  - fieldName: name
+    width: 120
+  - fieldName: bgTid
+    width: 150
+  - fieldName: spawnEnemies
+    width: 100
+  dataSheet:
+    typeName: StageMapDataSheet
+    prefixID: 4400000000
+    infos:
+    - tid: 4400000001
+      description: "\uC2DC\uC791\uC758 \uC232"
+      name: "\uC2DC\uC791\uC758 \uC232"
+      bgTid: 1100000001
+      spawnEnemies:
+      - enemyUnitTid: 4300000010
+      - enemyUnitTid: 4300000011
+      - enemyUnitTid: 4300000050
+    - tid: 4400000002
+      description: "\uC2DC\uC791\uC758 \uC232(\uBCF4\uC2A4)"
+      name: "\uC2DC\uC791\uC758 \uC232"
+      bgTid: 1100000002
+      spawnEnemies:
+      - enemyUnitTid: 4300000012
+    - tid: 4400000003
+      description: "\uC2DC\uC791\uC758 \uC232(\uD5C8\uB4E4\uBCF4\uC2A4)"
+      name: "\uC2DC\uC791\uC758 \uC232"
+      bgTid: 1100000002
+      spawnEnemies:
+      - enemyUnitTid: 4300000014
+    - tid: 4400000004
+      description: "\uB9C8\uC655\uC131"
+      name: "\uB9C8\uC655\uC131"
+      bgTid: 1100000001
+      spawnEnemies:
+      - enemyUnitTid: 4300000011
+      - enemyUnitTid: 4300000012
+      - enemyUnitTid: 4300000050
+    - tid: 4400000005
+      description: "\uB9C8\uC655\uC131(\uBCF4\uC2A4)"
+      name: "\uB9C8\uC655\uC131"
+      bgTid: 1100000002
+      spawnEnemies:
+      - enemyUnitTid: 4300000013
+    - tid: 4400000006
+      description: "\uB9C8\uC655\uC131(\uD5C8\uB4E4\uBCF4\uC2A4)"
+      name: "\uB9C8\uC655\uC131"
+      bgTid: 1100000002
+      spawnEnemies:
+      - enemyUnitTid: 4300000014
+    - tid: 4400000007
+      description: "\uCC38\uAE68\uB358\uC804"
+      name: "\uCC38\uAE68\uB358\uC804"
+      bgTid: 1100000002
+      spawnEnemies:
+      - enemyUnitTid: 4300000051
+    - tid: 4400000008
+      description: "\uC6A9\uC0AC\uC758 \uBB34\uB364"
+      name: "\uC6A9\uC0AC\uC758 \uBB34\uB364"
+      bgTid: 1100000002
+      spawnEnemies:
+      - enemyUnitTid: 4300000052
+      - enemyUnitTid: 4300000053
+    - tid: 4400000009
+      description: "\uC624\uC5FC\uB41C \uBD80\uD654\uC7A5"
+      name: "\uC624\uC5FC\uB41C \uBD80\uD654\uC7A5"
+      bgTid: 1100000002
+      spawnEnemies:
+      - enemyUnitTid: 4300000054
+    - tid: 4400000010
+      description: "\uBD88\uB85C\uCD08 \uB358\uC804"
+      name: "\uBD88\uB85C\uCD08 \uB358\uC804"
+      bgTid: 1100000002
+      spawnEnemies:
+      - enemyUnitTid: 4300000055
+    - tid: 4400000011
+      description: "\uC545\uBABD\uC758 \uD0D1"
+      name: "\uC545\uBABD\uC758 \uD0D1"
+      bgTid: 1100000002
+      spawnEnemies:
+      - enemyUnitTid: 4300000056
+      - enemyUnitTid: 4300000057
+    - tid: 4400000012
+      description: "\uB118\uCE58\uB294 \uD65C\uB825\uC758 CA"
+      name: "\uB118\uCE58\uB294 \uD65C\uB825\uC758 CA"
+      bgTid: 0
+      spawnEnemies:
+      - enemyUnitTid: 4300000058

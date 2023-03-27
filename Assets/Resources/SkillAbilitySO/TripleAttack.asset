@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 922e59c2bb87daf4eafbf1c035e4241b, type: 3}
+  m_Name: TripleAttack
+  m_EditorClassIdentifier: 
+  iconResource: {fileID: 21300000, guid: a316f87205656c949a135f4c7ae8d5f2, type: 3}
+  animatorName: skil_basic_b02
+  mainSkillInfo:
+    skillType: 1
+    skillActionType: 0
+    infoList:
+    - timing: 0.65
+      spawnFxResource: {fileID: 0}
+      hitFxResource: {fileID: 5512152689894143079, guid: c726ac492f3c6df4d911260fd6a4de2f, type: 3}
+      objectResource: {fileID: 0}
+      damageRate: 1
+      damageCount: 3
+      damageInterval: 0.2
+      actionBehavior: {fileID: 0}
+      appliedDamageBehavior: {fileID: 11400000, guid: 4a52347b6cc7e2244bad1e0b6e65adc1, type: 2}
+    value:
+      type: 111000001
+      pairType: 0
+      value: 1
+      perLevel: 5
+    fourArithmetic: 
+    calculator: 
+  subSkillInfo:
+    skillType: 0
+    skillActionType: 0
+    infoList:
+    - timing: 0
+      spawnFxResource: {fileID: 0}
+      hitFxResource: {fileID: 0}
+      objectResource: {fileID: 0}
+      damageRate: 0
+      damageCount: 0
+      damageInterval: 0
+      actionBehavior: {fileID: 0}
+      appliedDamageBehavior: {fileID: 0}
+    value:
+      type: 0
+      pairType: 0
+      value: 
+      perLevel: 
+    fourArithmetic: 
+    calculator: 

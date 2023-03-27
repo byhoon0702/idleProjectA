@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 120a9b686b728c5448fb66a06411d5fd, type: 3}
+  m_Name: EquipUpgradeDataSheetObject
+  m_EditorClassIdentifier: 
+  dataSheet:
+    typeName: EquipLevelDataSheet
+    infos:
+    - tid: 1
+      description: 
+      level: 1
+      needCount: 1
+    - tid: 2
+      description: 
+      level: 2
+      needCount: 2
+    - tid: 3
+      description: 
+      level: 3
+      needCount: 3
+    - tid: 4
+      description: 
+      level: 4
+      needCount: 4
+    - tid: 5
+      description: 
+      level: 5
+      needCount: 5
+    - tid: 6
+      description: 
+      level: 6
+      needCount: 6
+    - tid: 7
+      description: 
+      level: 7
+      needCount: 7
+    - tid: 8
+      description: 
+      level: 8
+      needCount: 8
+    - tid: 9
+      description: 
+      level: 9
+      needCount: 9
+    - tid: 10
+      description: 
+      level: 10
+      needCount: 10
+    - tid: 11
+      description: 
+      level: 11
+      needCount: 15
+    - tid: 100
+      description: 
+      level: 100
+      needCount: 50

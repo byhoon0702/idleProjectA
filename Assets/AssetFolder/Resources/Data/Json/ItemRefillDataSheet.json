@@ -1,0 +1,45 @@
+{
+    "typeName": "ItemRefillDataSheet",
+    "prefixID": 1800000000,
+    "infos": [
+        {
+            "tid": 1800000001,
+            "description": "5분리필",
+            "defaultAmount": 60,
+            "systemMaximumAmount": 60,
+            "refill_isUse": true,
+            "refill_intervalMinutes": 5,
+            "refill_amount": 1,
+            "reset_isUse": false,
+            "reset_setHour": 0,
+            "reset_setMinute": 0,
+            "reset_amount": 0
+        },
+        {
+            "tid": 1800000002,
+            "description": "리셋1",
+            "defaultAmount": 0,
+            "systemMaximumAmount": 0,
+            "refill_isUse": false,
+            "refill_intervalMinutes": 0,
+            "refill_amount": 0,
+            "reset_isUse": true,
+            "reset_setHour": 20,
+            "reset_setMinute": 0,
+            "reset_amount": 1
+        },
+        {
+            "tid": 1800000003,
+            "description": "광고소환리셋",
+            "defaultAmount": 3,
+            "systemMaximumAmount": 3,
+            "refill_isUse": false,
+            "refill_intervalMinutes": 0,
+            "refill_amount": 0,
+            "reset_isUse": true,
+            "reset_setHour": 20,
+            "reset_setMinute": 0,
+            "reset_amount": 3
+        }
+    ]
+}

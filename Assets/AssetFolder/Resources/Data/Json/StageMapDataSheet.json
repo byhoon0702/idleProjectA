@@ -1,0 +1,240 @@
+{
+    "typeName": "StageMapDataSheet",
+    "prefixID": 4400000000,
+    "infos": [
+        {
+            "tid": 4400000001,
+            "description": "시작의 숲",
+            "name": "시작의 숲",
+            "bgTid": 1100000001,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000010
+                },
+                {
+                    "enemyUnitTid": 4300000011
+                },
+                {
+                    "enemyUnitTid": 4300000050
+                }
+            ]
+        },
+        {
+            "tid": 4400000002,
+            "description": "시작의 숲(보스)",
+            "name": "시작의 숲",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000013
+                }
+            ]
+        },
+        {
+            "tid": 4400000003,
+            "description": "시작의 숲(허들보스)",
+            "name": "시작의 숲",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000014
+                }
+            ]
+        },
+        {
+            "tid": 4400000004,
+            "description": "마왕성",
+            "name": "마왕성",
+            "bgTid": 1100000001,
+            "areaIndex": 1,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000011
+                },
+                {
+                    "enemyUnitTid": 4300000012
+                },
+                {
+                    "enemyUnitTid": 4300000050
+                }
+            ]
+        },
+        {
+            "tid": 4400000005,
+            "description": "마왕성(보스)",
+            "name": "마왕성",
+            "bgTid": 1100000002,
+            "areaIndex": 1,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000013
+                }
+            ]
+        },
+        {
+            "tid": 4400000006,
+            "description": "마왕성(허들보스)",
+            "name": "마왕성",
+            "bgTid": 1100000002,
+            "areaIndex": 1,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000014
+                }
+            ]
+        },
+        {
+            "tid": 4400000007,
+            "description": "참깨던전",
+            "name": "참깨던전",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000051
+                }
+            ]
+        },
+        {
+            "tid": 4400000008,
+            "description": "용사의 무덤",
+            "name": "용사의 무덤",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000052
+                },
+                {
+                    "enemyUnitTid": 4300000053
+                }
+            ]
+        },
+        {
+            "tid": 4400000009,
+            "description": "오염된 부화장",
+            "name": "오염된 부화장",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000054
+                }
+            ]
+        },
+        {
+            "tid": 4400000010,
+            "description": "불로초 던전",
+            "name": "불로초 던전",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000055
+                }
+            ]
+        },
+        {
+            "tid": 4400000011,
+            "description": "악몽의 탑",
+            "name": "악몽의 탑",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000056
+                },
+                {
+                    "enemyUnitTid": 4300000057
+                }
+            ]
+        },
+        {
+            "tid": 4400000012,
+            "description": "넘치는 활력의 CA",
+            "name": "넘치는 활력의 CA",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000058
+                }
+            ]
+        },
+        {
+            "tid": 4400000013,
+            "description": "보스러쉬-냉기지대",
+            "name": "보스러쉬-냉기지대",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000059
+                }
+            ]
+        },
+        {
+            "tid": 4400000014,
+            "description": "보스러쉬-화염지대",
+            "name": "보스러쉬-화염지대",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000060
+                }
+            ]
+        },
+        {
+            "tid": 4400000015,
+            "description": "보스러쉬-바위지대",
+            "name": "보스러쉬-바위지대",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000061
+                }
+            ]
+        },
+        {
+            "tid": 4400000016,
+            "description": "보스러쉬-어둠지대",
+            "name": "보스러쉬-어둠지대",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000062
+                }
+            ]
+        },
+        {
+            "tid": 4400000017,
+            "description": "보스러쉬-부서진배",
+            "name": "보스러쉬-부서진배",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000063
+                }
+            ]
+        },
+        {
+            "tid": 4400000018,
+            "description": "보스러쉬-화산지대",
+            "name": "보스러쉬-화산지대",
+            "bgTid": 1100000002,
+            "areaIndex": 0,
+            "spawnEnemies": [
+                {
+                    "enemyUnitTid": 4300000064
+                }
+            ]
+        }
+    ]
+}

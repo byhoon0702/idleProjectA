@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8648600733069432266
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2012465745900705922}
+  - component: {fileID: 4307653667647437191}
+  m_Layer: 0
+  m_Name: Fireball
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2012465745900705922
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8648600733069432266}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.70000005, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 609733247762317917}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4307653667647437191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8648600733069432266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 951e0269319f13146ad0f84fb8f45a1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectileView: {fileID: 609733247762317917}
+  behavior: {fileID: 11400000, guid: 30129a2a29620674b9b622276bf66746, type: 2}
+  applyDamageBehavior: {fileID: 11400000, guid: 4a52347b6cc7e2244bad1e0b6e65adc1, type: 2}
+  speed: 10
+  angle: 0
+  endActionType: 0
+  points:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  duration: 0
+  vy: 0
+  velocityXZ: {x: 0, y: 0, z: 0}
+  elapsedTime: 0
+  hitEffect: 
+--- !u!1001 &2813565386457449780
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2012465745900705922}
+    m_Modifications:
+    - target: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422172661298481002, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+      propertyPath: m_Name
+      value: FX_Magic_Fire_01_Missle
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+--- !u!4 &609733247762317917 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3422172661298481001, guid: a6e6b99a7dec1ef4d823b44dd8df2dfb, type: 3}
+  m_PrefabInstance: {fileID: 2813565386457449780}
+  m_PrefabAsset: {fileID: 0}

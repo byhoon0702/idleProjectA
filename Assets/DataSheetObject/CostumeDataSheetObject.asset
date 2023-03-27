@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d500bc1ac27c46141b34cc1b4b48dcd1, type: 3}
+  m_Name: CostumeDataSheetObject
+  m_EditorClassIdentifier: 
+  tooltip: 
+  fieldSettings:
+  - fieldName: tid
+    width: 100
+  - fieldName: description
+    width: 100
+  - fieldName: name
+    width: 100
+  - fieldName: itemDesc
+    width: 100
+  - fieldName: itemType
+    width: 100
+  - fieldName: itemGrade
+    width: 100
+  - fieldName: starLv
+    width: 100
+  - fieldName: hashTag
+    width: 100
+  - fieldName: costumeType
+    width: 100
+  - fieldName: equipValues
+    width: 100
+  - fieldName: ownValues
+    width: 100
+  dataSheet:
+    typeName: CostumeDataSheet
+    prefixID: 4100000000
+    infos:
+    - tid: 4100000001
+      description: "\uAE30\uBCF8 \uBB34\uAE30"
+      name: "\uBABD\uB465\uC774"
+      itemDesc: 
+      itemType: 3
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      costumeType: 2
+      equipValues: []
+      ownValues: []
+    - tid: 4100000002
+      description: "\uB18D\uBD80 \uBB34\uAE30"
+      name: "\uB18D\uC5C5 \uC0BC\uC9C0\uCC3D"
+      itemDesc: 
+      itemType: 3
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      costumeType: 2
+      equipValues: []
+      ownValues: []
+    - tid: 4100000003
+      description: "\uAD11\uBD80 \uBB34\uAE30"
+      name: "\uACE1\uAD2D\uC774"
+      itemDesc: 
+      itemType: 3
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      costumeType: 2
+      equipValues: []
+      ownValues: []
+    - tid: 4100000004
+      description: "\uCCA0\uAC80"
+      name: "\uCCA0\uAC80"
+      itemDesc: 
+      itemType: 3
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      costumeType: 2
+      equipValues: []
+      ownValues: []
+    - tid: 4100000005
+      description: "\uB3CC\uB3C4\uB07C"
+      name: "\uB3CC\uB3C4\uB07C"
+      itemDesc: 
+      itemType: 3
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      costumeType: 2
+      equipValues: []
+      ownValues: []
+    - tid: 4100000006
+      description: "\uBAA9\uAC80"
+      name: "\uBAA9\uAC80"
+      itemDesc: 
+      itemType: 3
+      itemGrade: 0
+      starLv: 0
+      hashTag: 
+      costumeType: 2
+      equipValues: []
+      ownValues: []

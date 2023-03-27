@@ -1,0 +1,190 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43ea5a6d6f54ffb47b1efb2606d6df7b, type: 3}
+  m_Name: StageWaveDataSheetObject
+  m_EditorClassIdentifier: 
+  tooltip: 
+  fieldSettings:
+  - fieldName: tid
+    width: 100
+  - fieldName: description
+    width: 100
+  - fieldName: waveType
+    width: 120
+  - fieldName: waveCount
+    width: 100
+  - fieldName: spawnNormal
+    width: 100
+  - fieldName: spawnTreasureBox
+    width: 100
+  - fieldName: spawnBoss
+    width: 100
+  - fieldName: spawnImmotal
+    width: 100
+  - fieldName: waveDistance
+    width: 100
+  - fieldName: timeLimit
+    width: 100
+  dataSheet:
+    typeName: StageWaveDataSheet
+    prefixID: 3700000000
+    infos:
+    - tid: 3700000001
+      description: "\uC77C\uBC18"
+      waveType: 1
+      waveCount: 3
+      spawnNormal: 1
+      spawnTreasureBox: 1
+      spawnBoss: 0
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 0
+    - tid: 3700000002
+      description: "\uBCF4\uC2A4\uC804"
+      waveType: 2
+      waveCount: 1
+      spawnNormal: 0
+      spawnTreasureBox: 0
+      spawnBoss: 1
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 40
+    - tid: 3700000003
+      description: "\uCC38\uAE68\uB358\uC804"
+      waveType: 3
+      waveCount: 2
+      spawnNormal: 1
+      spawnTreasureBox: 1
+      spawnBoss: 0
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 40
+    - tid: 3700000004
+      description: "\uC6A9\uC0AC\uC758\uBB34\uB364"
+      waveType: 4
+      waveCount: 2
+      spawnNormal: 1
+      spawnTreasureBox: 0
+      spawnBoss: 1
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 40
+    - tid: 3700000005
+      description: "\uC624\uC5FC\uB41C \uBD80\uD654\uC7A5"
+      waveType: 5
+      waveCount: 1
+      spawnNormal: 0
+      spawnTreasureBox: 0
+      spawnBoss: 1
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 40
+    - tid: 3700000006
+      description: "\uBD88\uB85C\uCD08\uB358\uC804"
+      waveType: 6
+      waveCount: 1
+      spawnNormal: 0
+      spawnTreasureBox: 0
+      spawnBoss: 0
+      spawnImmotal: 1
+      waveDistance: 12
+      timeLimit: 40
+    - tid: 3700000007
+      description: "\uD68C\uCD98\uB358\uC804"
+      waveType: 7
+      waveCount: 0
+      spawnNormal: 0
+      spawnTreasureBox: 0
+      spawnBoss: 0
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 40
+    - tid: 3700000008
+      description: "\uC545\uBABD\uC758 \uD0D1"
+      waveType: 101
+      waveCount: 4
+      spawnNormal: 1
+      spawnTreasureBox: 0
+      spawnBoss: 1
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 60
+    - tid: 3700000009
+      description: "\uB118\uCE58\uB294 \uD65C\uB825\uC758 CA"
+      waveType: 102
+      waveCount: 0
+      spawnNormal: 1
+      spawnTreasureBox: 0
+      spawnBoss: 0
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 60
+    - tid: 3700000010
+      description: "\uBCF4\uC2A4\uB7EC\uC26C-\uB0C9\uAE30\uC9C0\uB300"
+      waveType: 103
+      waveCount: 1
+      spawnNormal: 0
+      spawnTreasureBox: 0
+      spawnBoss: 1
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 40
+    - tid: 3700000011
+      description: "\uBCF4\uC2A4\uB7EC\uC26C-\uD654\uC5FC\uC9C0\uB300"
+      waveType: 104
+      waveCount: 1
+      spawnNormal: 0
+      spawnTreasureBox: 0
+      spawnBoss: 1
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 40
+    - tid: 3700000012
+      description: "\uBCF4\uC2A4\uB7EC\uC26C-\uBC14\uC704\uC9C0\uB300"
+      waveType: 105
+      waveCount: 1
+      spawnNormal: 0
+      spawnTreasureBox: 0
+      spawnBoss: 1
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 40
+    - tid: 3700000013
+      description: "\uBCF4\uC2A4\uB7EC\uC26C-\uC5B4\uB460\uC9C0\uB300"
+      waveType: 106
+      waveCount: 1
+      spawnNormal: 0
+      spawnTreasureBox: 0
+      spawnBoss: 1
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 40
+    - tid: 3700000014
+      description: "\uBCF4\uC2A4\uB7EC\uC26C-\uBD80\uC11C\uC9C4\uBC30"
+      waveType: 107
+      waveCount: 1
+      spawnNormal: 0
+      spawnTreasureBox: 0
+      spawnBoss: 1
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 40
+    - tid: 3700000015
+      description: "\uBCF4\uC2A4\uB7EC\uC26C-\uD654\uC0B0\uC9C0\uB300"
+      waveType: 108
+      waveCount: 1
+      spawnNormal: 0
+      spawnTreasureBox: 0
+      spawnBoss: 1
+      spawnImmotal: 0
+      waveDistance: 12
+      timeLimit: 40

@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6df6970482d2310439d72ea75018d67b, type: 3}
+  m_Name: UserBuffDataSheetObject
+  m_EditorClassIdentifier: 
+  tooltip: 
+  fieldSettings:
+  - fieldName: tid
+    width: 100
+  - fieldName: description
+    width: 100
+  - fieldName: name
+    width: 100
+  - fieldName: maxLevel
+    width: 100
+  dataSheet:
+    typeName: UserBuffDataSheet
+    prefixID: 1000000
+    infos:
+    - tid: 3900000001
+      description: "\uACF5\uACA9\uB825\uC99D\uAC00"
+      name: "\uACF5\uACA9\uB825\uC99D\uAC00"
+      maxLevel: 10
+    - tid: 3900000002
+      description: "\uCCB4\uB825\uC99D\uAC00"
+      name: "\uCCB4\uB825\uC99D\uAC00"
+      maxLevel: 10
+    - tid: 3900000003
+      description: "\uACE8\uB4DC\uD68D\uB4DD\uC99D\uAC00"
+      name: "\uACE8\uB4DC\uD68D\uB4DD\uC99D\uAC00"
+      maxLevel: 10

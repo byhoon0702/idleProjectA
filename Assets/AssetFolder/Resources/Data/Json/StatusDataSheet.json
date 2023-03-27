@@ -1,0 +1,206 @@
+{
+    "typeName": "StatusDataSheet",
+    "prefixID": 111000000,
+    "infos": [
+        {
+            "tid": 111000001,
+            "description": "공격력",
+            "name": "attackpower",
+            "type": 111000001,
+            "uiName": "공격력",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": false
+        },
+        {
+            "tid": 111000002,
+            "description": "생명력",
+            "name": "hp",
+            "type": 111000002,
+            "uiName": "생명력",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": false
+        },
+        {
+            "tid": 111000003,
+            "description": "생명력 회복량",
+            "name": "hp_recovery",
+            "type": 111000003,
+            "uiName": "생명력 회복량",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": false
+        },
+        {
+            "tid": 111000004,
+            "description": "치명타확률",
+            "name": "critical_chance",
+            "type": 111000004,
+            "uiName": "치명타확률",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000005,
+            "description": "치명타피해량",
+            "name": "critical_damage",
+            "type": 111000005,
+            "uiName": "치명타피해량",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000006,
+            "description": "회심의 일격 확률",
+            "name": "super_critical_chance",
+            "type": 111000006,
+            "uiName": "회심의 일격 확률",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000007,
+            "description": "회심의 일격 피해량",
+            "name": "super_critical_damage",
+            "type": 111000007,
+            "uiName": "회심의 일격 피해량",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000008,
+            "description": "공격속도",
+            "name": "attack_speed",
+            "type": 111000008,
+            "uiName": "공격속도",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000009,
+            "description": "공격력 증폭",
+            "name": "attackpower_increase",
+            "type": 111000009,
+            "uiName": "공격력 증폭",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000010,
+            "description": "생명력 증폭",
+            "name": "hp_increase",
+            "type": 111000010,
+            "uiName": "생명력 증폭",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000011,
+            "description": "스킬 쿨타임 감소",
+            "name": "skill_cooldown",
+            "type": 111000011,
+            "uiName": "스킬 쿨타임 감소",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000012,
+            "description": "스킬 피해량 추가",
+            "name": "skill_damage",
+            "type": 111000012,
+            "uiName": "스킬 피해량 추가",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000013,
+            "description": "일반 몬스터 피해량 추가",
+            "name": "enemy_damage_plus",
+            "type": 111000013,
+            "uiName": "일반 몬스터 피해량 추가",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000014,
+            "description": "보스 피해량 추가",
+            "name": "boss_damage_plus",
+            "type": 111000014,
+            "uiName": "보스 피해량 추가",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000015,
+            "description": "회피율",
+            "name": "evasion",
+            "type": 111000015,
+            "uiName": "회피율",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000016,
+            "description": "골드 획득량 추가",
+            "name": "gain_gold",
+            "type": 111000016,
+            "uiName": "골드 획득량 추가",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000017,
+            "description": "경험치 획득량 추가",
+            "name": "gain_userexp",
+            "type": 111000017,
+            "uiName": "경험치 획득량 추가",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000018,
+            "description": "아이템 획득확률 추가",
+            "name": "gain_item",
+            "type": 111000018,
+            "uiName": "아이템 획득확률 추가",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000019,
+            "description": "이동속도",
+            "name": "movespeed",
+            "type": 111000019,
+            "uiName": "이동속도",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        },
+        {
+            "tid": 111000020,
+            "description": "최종 데미지",
+            "name": "total_damage",
+            "type": 111000020,
+            "uiName": "최종 데미지",
+            "minValue": "1",
+            "maxValue": "999ZZ",
+            "isPercentage": true
+        }
+    ]
+}

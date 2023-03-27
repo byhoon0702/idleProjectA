@@ -1,0 +1,106 @@
+{
+    "typeName": "ResultCodeDataSheet",
+    "prefixID": 2000000000,
+    "infos": [
+        {
+            "tid": 2000000001,
+            "description": "",
+            "key": "_NONE",
+            "alertType": 0,
+            "title": "",
+            "content": "",
+            "okText": "",
+            "cancelText": ""
+        },
+        {
+            "tid": 2000000002,
+            "description": "에러 기본",
+            "key": "NO_META_DATA",
+            "alertType": 1,
+            "title": "",
+            "content": "메타데이터 없음",
+            "okText": "",
+            "cancelText": ""
+        },
+        {
+            "tid": 2000000003,
+            "description": "",
+            "key": "INVALID_DATA",
+            "alertType": 1,
+            "title": "",
+            "content": "GO TO INTRO",
+            "okText": "",
+            "cancelText": ""
+        },
+        {
+            "tid": 2000000004,
+            "description": "앱 종료",
+            "key": "APPLICATION_QUIT",
+            "alertType": 0,
+            "title": "",
+            "content": "Quit?",
+            "okText": "Exit",
+            "cancelText": ""
+        },
+        {
+            "tid": 2000000005,
+            "description": "아이템에 기본 캐릭터 정의 안됨",
+            "key": "NO_DEFINED_DEFAULT_CHAR",
+            "alertType": 1,
+            "title": "",
+            "content": "아이템에 기본 캐릭터 정의 안됨",
+            "okText": "GoToIntro",
+            "cancelText": ""
+        },
+        {
+            "tid": 2000000006,
+            "description": "아이템 부족",
+            "key": "LACK_ITEM",
+            "alertType": 0,
+            "title": "",
+            "content": "{0} 아이템이 부족합니다",
+            "okText": "",
+            "cancelText": ""
+        },
+        {
+            "tid": 2000000007,
+            "description": "0 소비 오류",
+            "key": "INVALID_ITEM_CHANDE_0",
+            "alertType": 0,
+            "title": "",
+            "content": "0값을 사용시도",
+            "okText": "",
+            "cancelText": ""
+        },
+        {
+            "tid": 2000000008,
+            "description": "TID 0",
+            "key": "TID_IS_0",
+            "alertType": 1,
+            "title": "",
+            "content": "TID 0 오류",
+            "okText": "",
+            "cancelText": ""
+        },
+        {
+            "tid": 2000000009,
+            "description": "생성실패",
+            "key": "MAKE_FAIL",
+            "alertType": 1,
+            "title": "",
+            "content": "생성실패",
+            "okText": "",
+            "cancelText": ""
+        },
+        {
+            "tid": 2000000010,
+            "description": "스테이지 안열림",
+            "key": "STAGE_NO_OPEND",
+            "alertType": 0,
+            "title": "",
+            "content": "스테이지가 안녈림",
+            "okText": "",
+            "cancelText": ""
+        }
+    ]
+}

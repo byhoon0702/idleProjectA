@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03cab3b7739d6c9439dc99bdb44941e9, type: 3}
+  m_Name: Damage Ground Area Behavior
+  m_EditorClassIdentifier: 
+  targetFilter:
+  - {fileID: 11400000, guid: ded778a5f67fe4b46adcb5a5653516ab, type: 2}
+  dummyTargetFilter: {fileID: 11400000, guid: c5604d805ce44a840ae567b6bfb4ce38, type: 2}
+  baseAbilitySO: {fileID: 11400000, guid: 4ef7e4b0bd510d644aa135e01649073b, type: 2}
+  splashAreaSize: 3

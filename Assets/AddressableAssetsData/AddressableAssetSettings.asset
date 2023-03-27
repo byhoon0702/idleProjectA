@@ -1,0 +1,996 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
+  m_Name: AddressableAssetSettings
+  m_EditorClassIdentifier: 
+  m_DefaultGroup: 5e318d320fa7fdc45bb2906825efe8dc
+  m_CachedHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_OptimizeCatalogSize: 0
+  m_BuildRemoteCatalog: 1
+  m_BundleLocalCatalog: 0
+  m_CatalogRequestsTimeout: 3
+  m_DisableCatalogUpdateOnStart: 0
+  m_IgnoreUnsupportedFilesInBuild: 0
+  m_UniqueBundleIds: 1
+  m_NonRecursiveBuilding: 0
+  m_CCDEnabled: 0
+  m_maxConcurrentWebRequests: 10
+  m_ContiguousBundles: 0
+  m_StripUnityVersionFromBundleBuild: 0
+  m_DisableVisibleSubAssetRepresentations: 0
+  m_ShaderBundleNaming: 0
+  m_ShaderBundleCustomNaming: 
+  m_MonoScriptBundleNaming: 0
+  m_MonoScriptBundleCustomNaming: 
+  m_RemoteCatalogBuildPath:
+    m_Id: 97ba005af7a2400498bba935c1474d3f
+  m_RemoteCatalogLoadPath:
+    m_Id: acb8fbfce72cd4d468b0eed7ffa8ee56
+  m_ContentStateBuildPath: 
+  m_BuildAddressablesWithPlayerBuild: 0
+  m_overridePlayerVersion: 1.0.live.asset
+  m_GroupAssets:
+  - {fileID: 11400000, guid: 4373056fad51ab2469db0c33396c094b, type: 2}
+  - {fileID: 11400000, guid: b006af0902e8fd54685db07e5709efe2, type: 2}
+  - {fileID: 11400000, guid: f9fee900105adb945968ea94706b6c22, type: 2}
+  - {fileID: 11400000, guid: 005e250591c1815499143cc3c0be3f1e, type: 2}
+  m_BuildSettings:
+    m_CompileScriptsInVirtualMode: 0
+    m_CleanupStreamingAssetsAfterBuilds: 1
+    m_LogResourceManagerExceptions: 1
+    m_BundleBuildPath: Temp/com.unity.addressables/AssetBundles
+  m_ProfileSettings:
+    m_Profiles:
+    - m_InheritedParent: 
+      m_Id: dc7e16b4bd586fb4d9e87c2f12912a1a
+      m_ProfileName: Default
+      m_Values:
+      - m_Id: 4400b457dbf4de84d9dd6dda72f46698
+        m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+      - m_Id: baf40fd6b3505b547aaef3502b8a13eb
+        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+      - m_Id: 4f4702428ee5b924382712164b7de107
+        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: fb67acedf28ac0f4dba9a19b19b61fc5
+        m_Value: ServerData/[BuildTarget]
+      - m_Id: 4a4a9082502f72e44b993f8419d80275
+        m_Value: http://[PrivateIpAddress]:[HostingServicePort]
+      - m_Id: 97ba005af7a2400498bba935c1474d3f
+        m_Value: '[VividBuildPath]'
+      - m_Id: acb8fbfce72cd4d468b0eed7ffa8ee56
+        m_Value: '[VividAsset]'
+      - m_Id: d33f5c2a580391845b26d711e29cbba5
+        m_Value: '{Addressable.AddressablePath.UserMetaPath}'
+      - m_Id: 7a0f21de0c0197343a121795826db984
+        m_Value: '[VividBuildPath]'
+      - m_Id: 2ec24ab5691bf574daf35a71d23acd44
+        m_Value: '[VividAsset]'
+      - m_Id: f608c35bb46908141bb759f7d7f07077
+        m_Value: '{Addressable.AddressablePath.UserPath}'
+      - m_Id: 9da1d6defddf5df44bdca09bd7c5e064
+        m_Value: '[Addressable.AddressablePath.UserBuildPath]/[Addressable.AddressablePath.UserPlatform]'
+    - m_InheritedParent: 
+      m_Id: 23c06862a5ca54547a961f6acd309140
+      m_ProfileName: VIVID
+      m_Values:
+      - m_Id: 4400b457dbf4de84d9dd6dda72f46698
+        m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+      - m_Id: baf40fd6b3505b547aaef3502b8a13eb
+        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+      - m_Id: 4f4702428ee5b924382712164b7de107
+        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: fb67acedf28ac0f4dba9a19b19b61fc5
+        m_Value: ServerData/[BuildTarget]
+      - m_Id: 4a4a9082502f72e44b993f8419d80275
+        m_Value: http://[PrivateIpAddress]:[HostingServicePort]
+      - m_Id: 97ba005af7a2400498bba935c1474d3f
+        m_Value: '[VividBuildPath]'
+      - m_Id: acb8fbfce72cd4d468b0eed7ffa8ee56
+        m_Value: '[VividAsset]'
+      - m_Id: d33f5c2a580391845b26d711e29cbba5
+        m_Value: '{Addressable.AddressablePath.UserMetaPath}'
+      - m_Id: 7a0f21de0c0197343a121795826db984
+        m_Value: '[VividBuildPath]'
+      - m_Id: 2ec24ab5691bf574daf35a71d23acd44
+        m_Value: '[VividMeta]'
+      - m_Id: f608c35bb46908141bb759f7d7f07077
+        m_Value: '{Addressable.AddressablePath.UserPath}'
+      - m_Id: 9da1d6defddf5df44bdca09bd7c5e064
+        m_Value: '[Addressable.AddressablePath.UserBuildPath]/[Addressable.AddressablePath.UserPlatform]'
+    m_ProfileEntryNames:
+    - m_Id: 4400b457dbf4de84d9dd6dda72f46698
+      m_Name: BuildTarget
+      m_InlineUsage: 0
+    - m_Id: baf40fd6b3505b547aaef3502b8a13eb
+      m_Name: Local.BuildPath
+      m_InlineUsage: 0
+    - m_Id: 4f4702428ee5b924382712164b7de107
+      m_Name: Local.LoadPath
+      m_InlineUsage: 0
+    - m_Id: fb67acedf28ac0f4dba9a19b19b61fc5
+      m_Name: Remote.BuildPath
+      m_InlineUsage: 0
+    - m_Id: 4a4a9082502f72e44b993f8419d80275
+      m_Name: Remote.LoadPath
+      m_InlineUsage: 0
+    - m_Id: 97ba005af7a2400498bba935c1474d3f
+      m_Name: Vivid.BuildPath
+      m_InlineUsage: 0
+    - m_Id: acb8fbfce72cd4d468b0eed7ffa8ee56
+      m_Name: Vivid.LoadPath
+      m_InlineUsage: 0
+    - m_Id: d33f5c2a580391845b26d711e29cbba5
+      m_Name: VividMeta
+      m_InlineUsage: 0
+    - m_Id: 7a0f21de0c0197343a121795826db984
+      m_Name: VividMeta.BuildPath
+      m_InlineUsage: 0
+    - m_Id: 2ec24ab5691bf574daf35a71d23acd44
+      m_Name: VividMeta.LoadPath
+      m_InlineUsage: 0
+    - m_Id: f608c35bb46908141bb759f7d7f07077
+      m_Name: VividAsset
+      m_InlineUsage: 0
+    - m_Id: 9da1d6defddf5df44bdca09bd7c5e064
+      m_Name: VividBuildPath
+      m_InlineUsage: 0
+    m_ProfileVersion: 1
+  m_LabelTable:
+    m_LabelNames:
+    - default
+    - Arena
+    - Scene
+    - Battle
+    - CallStone
+    - CardSummon
+    - CharacterCustom
+    - Collection
+    - DateV2
+    - Event
+    - Friends
+    - Inventory
+    - Loading
+    - Lobby
+    - Mail
+    - Mission
+    - MyCardNew
+    - MyInfo
+    - Pet
+    - Events
+    - Popup
+    - PremiumPass
+    - Quest
+    - RollingNotice
+    - Package
+    - Shop_V2
+    - Shop
+    - StarMap
+    - Story
+    - StoryRoom
+    - Tower
+    - WorldMap
+    - Bg
+    - Bundle
+    - BgFull
+    - CardFull
+    - CardNormal
+    - ContentGuide
+    - ContentOpen
+    - Date
+    - Font
+    - GUIAsset
+    - GUIPrefab
+    - ItemIcon
+    - Music
+    - PetBattle
+    - PetFull
+    - PetNormal
+    - Spine
+    - SpriteAtlas
+    - StorySound
+    - Story_H
+    - Summon
+    - Transition
+    - UILocaleImage
+    - UISound
+    - voiceReact
+    - voiceSound
+    - WorldMapArea
+    - _Art
+    - Video
+    - Meta
+    - MyAbility
+    - DateV2_1
+    - Prefabs
+    - CardSummonV2_1
+    - Adriana
+    - Adrianasd
+    - BgThumb
+    - PartOpen
+    - _Default
+    - _Common
+    - MyCard
+    - _Legacy
+    - _Scene
+    - LoadingScreen
+    - Sound
+    - Tutorial
+    - 10100@Bg
+    - 10200@Bg
+    - 10201@Bg
+    - 10300@Bg
+    - 10301@Bg
+    - 10400@Bg
+    - 10401@Bg
+    - 10500@Bg
+    - 10600@Bg
+    - 10601@Bg
+    - 10602@BG
+    - 10700@Bg
+    - 10701@Bg
+    - 10702@Bg
+    - 10800@Bg
+    - 10801@Bg
+    - 10802@Bg
+    - 10900@Bg
+    - 10901@Bg
+    - 10902@Bg
+    - 11000@Bg
+    - 11001@Bg
+    - 11100@Bg
+    - 11200@Bg
+    - 11201@Bg
+    - 11202@Bg
+    - 11300@Bg
+    - 11301@Bg
+    - 11400@Bg
+    - 11401@Bg
+    - 11500@Bg
+    - 11501@Bg
+    - 11600@Bg
+    - 11601@Bg
+    - 11700@Bg
+    - 11800@Bg
+    - 11801@Bg
+    - 11900@Bg
+    - 12000@Bg
+    - 12001@Bg
+    - 12200@Bg
+    - 12201@Bg
+    - 12300@Bg
+    - 12301@Bg
+    - 12400@Bg
+    - 12500@Bg
+    - 12600@Bg
+    - 12601@Bg
+    - 12800@Bg
+    - 12900@Bg
+    - 13200@Bg
+    - 13500@Bg
+    - 13700@Bg
+    - 13900@Bg
+    - 13901@Bg
+    - 14000@Bg
+    - 14100@Bg
+    - 14200@Bg
+    - 14201@Bg
+    - 14300@Bg
+    - 14400@Bg
+    - 14600@Bg
+    - 14601@Bg
+    - 14700@Bg
+    - 14900@Bg
+    - 14901@Bg
+    - 15000@Bg
+    - 15001@Bg
+    - 15100@Bg
+    - 15101@Bg
+    - 15200@Bg
+    - 15300@Bg
+    - 15301@Bg
+    - 1538169@Bg
+    - 1538170@Bg
+    - 1538171@Bg
+    - 1538172@Bg
+    - 1538173@Bg
+    - 1538174@Bg
+    - 1538175@Bg
+    - 1538176@Bg
+    - 1538177@Bg
+    - 1538178@Bg
+    - 1538179@Bg
+    - 1538180@Bg
+    - 1538181@Bg
+    - 1538182@Bg
+    - 1538183@Bg
+    - 1538184@Bg
+    - 15400@Bg
+    - 15401@Bg
+    - 15500@Bg
+    - 15501@Bg
+    - 15600@Bg
+    - 15601@Bg
+    - 15700@Bg
+    - 15701@Bg
+    - 15900@Bg
+    - 16000@Bg
+    - 16100@Bg
+    - 16200@Bg
+    - 16300@Bg
+    - 16400@Bg
+    - 16500@Bg
+    - 16700@Bg
+    - 16800@Bg
+    - 16900@Bg
+    - 17000@Bg
+    - 17100@Bg
+    - 17200@Bg
+    - 17201@Bg
+    - 17300@Bg
+    - 17400@Bg
+    - 17500@Bg
+    - 17600@Bg
+    - 17800@Bg
+    - 17900@Bg
+    - 18000@Bg
+    - 18100@Bg
+    - 18200@Bg
+    - 18300@Bg
+    - 18400@Bg
+    - 18500@Bg
+    - 18600@Bg
+    - 18700@Bg
+    - 18701@Bg
+    - 18800@Bg
+    - 18900@Bg
+    - 20000@Bg
+    - 20100@Bg
+    - 90000@Bg
+    - 90001@Bg
+    - 90002@Bg
+    - Animation
+    - black@Bg
+    - BoyFriendsPage
+    - middle@Bg
+    - WorldScroll
+    - 001@CardFull
+    - 002@CardFull
+    - 003@CardFull
+    - 101@CardFull
+    - 102@CardFull
+    - 103@CardFull
+    - 104@CardFull
+    - 105@CardFull
+    - 106@CardFull
+    - 107@CardFull
+    - 108@CardFull
+    - 109@CardFull
+    - 1102@CardFull
+    - 110@CardFull
+    - 1395896@CardFull
+    - 1395897@CardFull
+    - 1395898@CardFull
+    - 1395899@CardFull
+    - 1395900@CardFull
+    - 1395901@CardFull
+    - 1395903@CardFull
+    - 1395905@CardFull
+    - 1395907@CardFull
+    - 1395908@CardFull
+    - 1395915@CardFull
+    - 1395948@CardFull
+    - 1395951@CardFull
+    - 201@CardFull
+    - 202@CardFull
+    - 203@CardFull
+    - 204@CardFull
+    - 205@CardFull
+    - 206@CardFull
+    - 207@CardFull
+    - 208@CardFull
+    - 209@CardFull
+    - 2102@CardFull
+    - 210@CardFull
+    - 301@CardFull
+    - 302@CardFull
+    - 303@CardFull
+    - 304@CardFull
+    - 305@CardFull
+    - 306@CardFull
+    - 307@CardFull
+    - 308@CardFull
+    - 309@CardFull
+    - 310@CardFull
+    - 3731285@CardFull
+    - 3771608@CardFull
+    - 401@CardFull
+    - 402@CardFull
+    - 403@CardFull
+    - 404@CardFull
+    - 405@CardFull
+    - 406@CardFull
+    - 407@CardFull
+    - 408@CardFull
+    - 409@CardFull
+    - 410@CardFull
+    - 501@CardFull
+    - 502@CardFull
+    - 503@CardFull
+    - 504@CardFull
+    - 505@CardFull
+    - 506@CardFull
+    - 507@CardFull
+    - 508@CardFull
+    - 509@CardFull
+    - 510@CardFull
+    - 601@CardFull
+    - 602@CardFull
+    - 603@CardFull
+    - 604@CardFull
+    - 605@CardFull
+    - 606@CardFull
+    - 607@CardFull
+    - 608@CardFull
+    - 609@CardFull
+    - 610@CardFull
+    - 701@CardFull
+    - 702@CardFull
+    - 703@CardFull
+    - 704@CardFull
+    - 705@CardFull
+    - 706@CardFull
+    - 707@CardFull
+    - 708@CardFull
+    - 709@CardFull
+    - 710@CardFull
+    - 711@CardFull
+    - 801@CardFull
+    - 802@CardFull
+    - 803@CardFull
+    - 804@CardFull
+    - 805@CardFull
+    - 806@CardFull
+    - 807@CardFull
+    - 808@CardFull
+    - 809@CardFull
+    - 810@CardFull
+    - 901@CardFull
+    - 902@CardFull
+    - 903@CardFull
+    - 904@CardFull
+    - 905@CardFull
+    - 906@CardFull
+    - 907@CardFull
+    - 908@CardFull
+    - 1395880
+    - 1395881
+    - 1395882
+    - 1395883
+    - 1395884
+    - 1395885
+    - 1395886
+    - 1395887
+    - 1395896
+    - 1395897
+    - 1395898
+    - 1395899
+    - 1395900
+    - 1395901
+    - 1395903
+    - 1395905
+    - 1395907
+    - 1395908
+    - 1395915
+    - 1395916
+    - 1445555
+    - 1508361
+    - 1595842
+    - 2649633
+    - 2650825
+    - 2650828
+    - 2652301
+    - 2817580
+    - 2915481
+    - 2926924
+    - 2926933
+    - 2926935
+    - 3137117
+    - 3137118
+    - 3167635
+    - 3167636
+    - 3167637
+    - 3167638
+    - 3203744
+    - 3204074
+    - 3204075
+    - 3242810
+    - 3282141
+    - 3360763
+    - 3731285
+    - 3731294
+    - 3771608
+    - 3947377
+    - 4012023
+    - CharImage
+    - extra_boy
+    - extra_concubine
+    - extra_empty
+    - extra_general
+    - extra_girl
+    - extra_knight
+    - extra_maid
+    - extra_man
+    - extra_men
+    - extra_oldman
+    - extra_oldwoman
+    - extra_princess
+    - extra_servant
+    - extra_someone
+    - extra_woman
+    - extra_women
+    - 7Day
+    - Attendance
+    - Attendance7
+    - Banner
+    - ChapterPackage
+    - ContinuousPackage
+    - CumulativeCharge
+    - EventButton
+    - FirstBuy
+    - HotTime
+    - LevelUpPackage
+    - TimeAttendance
+    - BgmSound
+    - CardVoiceSound
+    - StoryEffectSound
+    - StoryVoiceSound
+    - UISoundEffect
+    - Ability
+    - Callstone
+    - Card
+    - Costume
+    - Friend
+    - World
+    - Guide_AccountLink
+    - Guide_Achievement
+    - Guide_Battle_AttributeInfo
+    - Guide_CardDetail
+    - Guide_CardList
+    - Guide_CardSetting01
+    - Guide_CardSetting02
+    - Guide_CardSetting03
+    - Guide_CardV2_Levelup
+    - Guide_Collection
+    - Guide_Date
+    - Guide_Friend
+    - Guide_Fusion
+    - Guide_Investigation
+    - Guide_Investigation2
+    - Guide_InvestigationMap
+    - Guide_Invest_SelectCard
+    - Guide_Invest_Start
+    - Guide_MailBox
+    - Guide_Mission
+    - Guide_MyInfo
+    - Guide_QuestRoom
+    - Guide_QuestStart_01
+    - Guide_Setting
+    - Guide_StageFail
+    - Guide_Starmap
+    - Guide_Story
+    - Guide_SummonCode
+    - Guide_TimeReward
+    - Guide_Tower1
+    - Guide_Tower2
+    - Guide_Tower3
+    - Guide_Tower4
+    - Guide_Tutorial_Arena
+    - Guide_Tutorial_Battle_01
+    - Guide_Tutorial_Battle_02
+    - Guide_Tutorial_Battle_03
+    - Guide_Tutorial_Battle_04
+    - Guide_Tutorial_Battle_05
+    - Guide_Tutorial_Battle_06
+    - Guide_Tutorial_Battle_07
+    - Guide_Tutorial_Battle_08
+    - Guide_Tutorial_Battle_09
+    - Guide_Tutorial_Battle_10
+    - Guide_Tutorial_CallStone
+    - Guide_Tutorial_Collection
+    - Guide_Tutorial_Date
+    - Guide_Tutorial_DynamicMission
+    - Guide_Tutorial_DynamicMissionReward
+    - Guide_Tutorial_Fusion1
+    - Guide_Tutorial_Fusion2
+    - Guide_Tutorial_Levelup
+    - Guide_Tutorial_Lobbychar
+    - Guide_Tutorial_Pet
+    - Guide_Tutorial_StageFail
+    - Guide_Tutorial_Starmap
+    - Guide_Tutorial_Summon
+    - Guide_Tutorial_TimeReward
+    - Guide_Tutorial_Tower
+    - Guide_Working
+    - test
+    - _Help
+    - _Images
+    - _TimelineAsset
+    - ContentOpen_Arena
+    - ContentOpen_CharacterChoice
+    - ContentOpen_Default
+    - ContentOpen_Event
+    - ContentOpen_Friend
+    - ContentOpen_Mail
+    - ContentOpen_Mission
+    - ContentOpen_MyCard
+    - ContentOpen_Pet
+    - ContentOpen_QuestRoom
+    - ContentOpen_Summon
+    - ContentOpen_TimeReward
+    - ContentOpen_Tower
+    - CardUI
+    - EventH
+    - HInvest
+    - HLobby
+    - Inventory_Bag
+    - LocalizeUI
+    - Map
+    - QuestRoom
+    - SummonH
+    - cn
+    - jp
+    - kr
+    - th
+    - tw
+    - us
+    - _CommonVoiceSound
+    - "\uB09C \uB0B4 \uAC70\uB2E4!-1"
+    - "\uB09C \uB0B4 \uAC70\uB2E4!-2"
+    - "\uB09C \uB0B4 \uAC70\uB2E4!-3"
+    - "\uB09C \uB0B4 \uAC70\uB2E4!-4"
+    - "\uB0B4 \uAC78 \uAC74\uB4DC\uB9B0 \uAC70\uB2E4-1"
+    - "\uB0B4 \uAC78 \uAC74\uB4DC\uB9B0 \uAC70\uB2E4-2"
+    - "\uBA38\uB9AC\uCE74\uB77D\uC740 \uC9C0\uC9C0-1"
+    - "\uBA38\uB9AC\uCE74\uB77D\uC740 \uC9C0\uC9C0-2"
+    - "\uBA38\uB9AC\uCE74\uB77D\uC740 \uC9C0\uC9C0-3"
+    - "\uC194\uB808\uC774 \uAD81\uC73C\uB85C-1"
+    - "\uC194\uB808\uC774 \uAD81\uC73C\uB85C-2"
+    - "\uC288\uD37C\uD788\uC5B4\uB85C-1"
+    - "\uC288\uD37C\uD788\uC5B4\uB85C-2"
+    - "\uC288\uD37C\uD788\uC5B4\uB85C-3"
+    - "\uC288\uD37C\uD788\uC5B4\uB85C-4"
+    - "\uC288\uD37C\uD788\uC5B4\uB85C-5"
+    - "\uC77C\uB9B0\uC5F0\uC560\uACB0\uC0AC\uB2E8-1"
+    - "\uC77C\uB9B0\uC5F0\uC560\uACB0\uC0AC\uB2E8-2"
+    - "\uC77C\uB9B0\uC5F0\uC560\uACB0\uC0AC\uB2E8-3"
+    - "\uC804\uB780\uC758 \uC528\uC557"
+    - "\uCD08\uCF5C\uB9BF \uB3C4\uB451-1"
+    - "\uCD08\uCF5C\uB9BF \uB3C4\uB451-2"
+    - "\uCD08\uCF5C\uB9BF \uB3C4\uB451-4"
+    - "\uD504\uB864\uB85C\uADF8"
+    - "\uD53C\uC758 \uD669\uC81C 1-1"
+    - "\uD53C\uC758 \uD669\uC81C 1-2"
+    - "\uD53C\uC758 \uD669\uC81C 2-1"
+    - "\uD53C\uC758 \uD669\uC81C 2-2"
+    - "\uD53C\uC758 \uD669\uC81C 2-3"
+    - "\uD53C\uC758 \uD669\uC81C 3-1"
+    - "\uD53C\uC758 \uD669\uC81C 3-2"
+    - "\uD53C\uC758 \uD669\uC81C-1"
+    - 3102@CardFull
+    - "\uD53C\uC758 \uD669\uC81C-2"
+    - "\uD53C\uC758 \uD669\uC81C-3"
+    - "\uD53C\uC758 \uD669\uC81C-4"
+    - "\uD53C\uC758 \uD669\uC81C-5"
+    - "\uD53C\uC758 \uD669\uC81C-6"
+    - PlayEvent
+    - 4102@CardFull
+    - Guide_CardScoreFocus
+    - Guide_InvestigationStarReward1
+    - Guide_InvestigationStarReward2
+    - Guide_prologue_conflict
+    - EventPlayStage
+    - Guide_Answerselect
+    - Guide_TimeLimitItem
+    - Guide_prologue_myability
+    - Guide_AccountLink_Clickable
+    - Guide_Achievement_Clickable
+    - Guide_Active__Starmap1_Clickable
+    - Guide_Active__Starmap2_Clickable
+    - Guide_Answerselect_Clickable
+    - Guide_CardDetail_Clickable
+    - Guide_CardList_Clickable
+    - Guide_CardV2_Levelup_Clickable
+    - Guide_Collection_Clickable
+    - Guide_DanceCardsetting_Clickable
+    - Guide_Date_Clickable
+    - Guide_Friend_Clickable
+    - Guide_Investigation3
+    - Guide_InvestigationMap_Clickable
+    - Guide_Investigation_Clickable
+    - Guide_Investigation_storyroom_Clickable
+    - Guide_Invest_SelectCard_Clickable
+    - Guide_Invest_Start_Clickable
+    - Guide_Mission_Clickable
+    - Guide_QuestRoom_Clickable
+    - Guide_QuestStart_01_Clickable
+    - Guide_Setting_Clickable
+    - Guide_StageFail_Clickable
+    - Guide_SummonCode_Clickable
+    - Guide_Tower1_Clickable
+    - Guide_Tower2_Clickable
+    - Guide_Tower3_Clickable
+    - Guide_Tower4_Clickable
+    - Guide_Tutorial_Collection_Clickable
+    - Guide_Tutorial_Date_Clickable
+    - Guide_Tutorial_DynamicMissionReward_Clickable
+    - Guide_Tutorial_DynamicMission_Clickable
+    - Guide_Tutorial_Fusion1_Clickable
+    - Guide_Tutorial_Fusion2_Clickable
+    - Guide_Tutorial_Levelup_Clickable
+    - Guide_Tutorial_Lobbychar_Clickable
+    - Guide_Tutorial_Pet_Clickable
+    - Guide_Tutorial_StageFail_Clickable
+    - Guide_Tutorial_Starmap_Clickable
+    - Guide_Tutorial_Summon_Clickable
+    - Guide_Tutorial_TimeReward_Clickable
+    - Guide_Tutorial_Tower_Clickable
+    - Guide_Investigation2_Clickable
+    - Guide_Tutorial_Arena_Clickable
+    - Guide_Tutorial_CallStone_Clickable
+    - Guide_InvestigationStarReward2_Clickable
+    - EventLocaleImage
+    - EventPlayStageLocaleImage
+    - en
+    - 5102@CardFull
+    - 6102@CardFull
+    - 7102@CardFull
+    - 8102@CardFull
+    - Guide_Fusion_Start_Clickable
+    - Guide_Investigation4_Clickable
+    - Guide_Mission_Start_Clickable
+    - Guide_Storyroom1_Clickable
+    - Guide_Storyroom2_Clickable
+    - Guide_SummonCode2_Clickable
+    - Guide_Tutorial_DynamicMission2
+    - "\uCD08\uCF5C\uB9BF \uB3C4\uB451-3"
+    - ItemSummon
+    - Guide_Hardquest_count
+    - Guide_Tutorial_HardQuest_Clickable
+    - StarMap2
+    - ArenaAtlas
+    - CallStoneAtlas
+    - CardAtlas
+    - CardSummonAtlas
+    - CardUIAtlas
+    - CollectionAtlas
+    - CostumeAtlas
+    - DateAtlas
+    - EventHAtlas
+    - FriendsAtlas
+    - HInvestAtlas
+    - HLobbyAtlas
+    - Inventory_BagAtlas
+    - LocalizeUIAtlas
+    - MailAtlas
+    - MapAtlas
+    - MissionAtlas
+    - MyAbilityAtlas
+    - MyInfoAtlas
+    - PetAtlas
+    - QuestRoomAtlas
+    - ShopAtlas
+    - StarMapAtlas
+    - StoryRoomAtlas
+    - SummonHAtlas
+    - TowerAtlas
+    - AnimationData
+    - LobbyCharImage
+    - RelationDungeon
+    - Guide_StageFail_00_Clickable
+    - Guide_StageFail_01_Clickable
+    - Gacha
+    - Guide_Gacha2_Clickable
+    - Guide_GachaCode
+    - Guide_Gacha_Clickable
+    - Guide_Tutorial_Gacha_Clickable
+    - ContentOpen_Gacha
+    - GachaAtlas
+    - GachaHAtlas
+    - ItemGacha
+    - 999999_Myroom@Bg
+    - BabyRia
+    - 3623023@Bg
+    - 3623024@Bg
+    - AdultRia
+    - ChildRia
+    - 3841143@CardFull
+    - 3841144@CardFull
+    - 3841145@CardFull
+    - 3841146@CardFull
+    - 3841147@CardFull
+    - 3841148@CardFull
+    - 3841149@CardFull
+    - 3841150@CardFull
+    - 3841151@CardFull
+    - 3841152@CardFull
+    - 3841154@CardFull
+    - 3841155@CardFull
+    - 3841156@CardFull
+    - 3841157@CardFull
+    - 3841158@CardFull
+    - 3841159@CardFull
+    - 3841160@CardFull
+    - 3841161@CardFull
+    - 3841162@CardFull
+    - 3841163@CardFull
+    - 3841165@CardFull
+    - 3841166@CardFull
+    - 3841167@CardFull
+    - 3841168@CardFull
+    - 3841169@CardFull
+    - 3841170@CardFull
+    - 3841171@CardFull
+    - 3841172@CardFull
+    - 3841173@CardFull
+    - 3841174@CardFull
+    - 3841176@CardFull
+    - 3841177@CardFull
+    - 3841178@CardFull
+    - 3841179@CardFull
+    - 3841180@CardFull
+    - 3841181@CardFull
+    - 3841182@CardFull
+    - 3841183@CardFull
+    - 3841184@CardFull
+    - 3841185@CardFull
+    - 3841187@CardFull
+    - 3841188@CardFull
+    - 3841189@CardFull
+    - 3841190@CardFull
+    - 3841191@CardFull
+    - 3841192@CardFull
+    - 3841193@CardFull
+    - 3841194@CardFull
+    - 3841195@CardFull
+    - 3841196@CardFull
+    - 3841198@CardFull
+    - 3841199@CardFull
+    - 3841200@CardFull
+    - 3841201@CardFull
+    - 3841202@CardFull
+    - 3841203@CardFull
+    - 3841204@CardFull
+    - 3841205@CardFull
+    - 3841206@CardFull
+    - 3841207@CardFull
+    - 3841209@CardFull
+    - 3841210@CardFull
+    - 3841211@CardFull
+    - 3841212@CardFull
+    - 3841213@CardFull
+    - 3841214@CardFull
+    - 3841215@CardFull
+    - 3841216@CardFull
+    - 3841217@CardFull
+    - 3841218@CardFull
+    - 3841219@CardFull
+    - 3841221@CardFull
+    - 3841222@CardFull
+    - 3841223@CardFull
+    - 3841224@CardFull
+    - 3841225@CardFull
+    - 3841226@CardFull
+    - 3841227@CardFull
+    - 3841228@CardFull
+    - 3841229@CardFull
+    - 3841230@CardFull
+    - 4008481@CardFull
+    - 4008482@CardFull
+    - 4008483@CardFull
+    - 4008484@CardFull
+    - 4008485@CardFull
+    - 4008486@CardFull
+    - 4008487@CardFull
+    - 4008488@CardFull
+    - 4073040@CardFull
+    - 4073041@CardFull
+    - 4073042@CardFull
+    - 4073043@CardFull
+    - 4073044@CardFull
+    - 4073045@CardFull
+    - 4073046@CardFull
+    - 4106997@CardFull
+    - 4627241@CardFull
+    - 4627242@CardFull
+    - 4627243@CardFull
+    - 4627244@CardFull
+    - 4633764@CardFull
+    - 4633765@CardFull
+    - 4633766@CardFull
+    - 4633767@CardFull
+    - MyRoom
+    - sd_001
+    - sd_002
+    - sd_003
+    - sd_004
+    - sd_005
+    - sd_006
+    - sd_007
+    - sd_008
+    - Fusion
+    - 9999999_riababy
+    - 17101@Bg
+    - 18101@Bg
+    - 3623044@Bg
+    - 3623045@Bg
+    - 3623046@Bg
+    - 3623048@Bg
+    - 3623050@Bg
+    - 4106998@CardFull
+    - 4106999@CardFull
+    - 4107000@CardFull
+    - 4107001@CardFull
+    - 4107002@CardFull
+    - HeroRoom
+    - 3623047@Bg
+    - 3623049@Bg
+    - 3623051@Bg
+    - 3623052@Bg
+    - 3012084
+    - 3012085
+    - 3012086
+    - 3012094
+    - 3012096
+    - 3012097
+    - 3012098
+    - 3012105
+    - 3012106
+    - 3012107
+    - 3326581
+    - 3837410
+    - 3837411
+    - 3837412
+    - 3837413
+    - 3837414
+    - 3837415
+    - 3837417
+    - 3837418
+    - 3837419
+    - 3837420
+    - 3837421
+    - 3837422
+    - 3837423
+    - 3837424
+    - 3837425
+    - 4395263
+    - 5103558@Bg
+  m_SchemaTemplates: []
+  m_GroupTemplateObjects:
+  - {fileID: 11400000, guid: dc7f112ff6c57c541918e7fb828c931d, type: 2}
+  m_InitializationObjects: []
+  m_CertificateHandlerType:
+    m_AssemblyName: 
+    m_ClassName: 
+  m_ActivePlayerDataBuilderIndex: 3
+  m_DataBuilders:
+  - {fileID: 11400000, guid: 21f9cc967d3091f44907f1972d35aa53, type: 2}
+  - {fileID: 11400000, guid: 9b6ec8b60dc94b0468575d6895505cc1, type: 2}
+  - {fileID: 11400000, guid: eb58eb69e5db23d45ac1b31bc23fd387, type: 2}
+  - {fileID: 11400000, guid: 6244700a0e18ec540b885f31e846e570, type: 2}
+  m_ActiveProfileId: 23c06862a5ca54547a961f6acd309140
+  m_HostingServicesManager:
+    m_HostingServiceInfos: []
+    m_Settings: {fileID: 11400000}
+    m_NextInstanceId: 0
+    m_RegisteredServiceTypeRefs: []

@@ -1,0 +1,125 @@
+{
+    "typeName": "SkillDataSheet",
+    "prefixID": 2100012000,
+    "infos": [
+        {
+            "tid": 2100012000,
+            "description": "(기본공격)",
+            "skillName": "기본공격",
+            "skillDesc": "전방에 미사일을 날려 공격력의 {150+(a * {1-스킬레벨}}%의 피해를 준다.",
+            "cooltime": 1.0,
+            "skillMaxLevel": 1,
+            "skillValue": {
+                "type": 111000001,
+                "value": "",
+                "perLevel": ""
+            },
+            "hashTag": "default",
+            "skillEffectTid": 2200000001,
+            "isHyperSkill": false,
+            "trigger": 0
+        },
+        {
+            "tid": 2100012001,
+            "description": "매직 미사일",
+            "skillName": "매직 미사일",
+            "skillDesc": "물을 폭발시켜 공격력의 {80+(a * {1-스킬레벨}}%의 범위 피해를 준다.",
+            "cooltime": 5.0,
+            "skillMaxLevel": 100,
+            "skillValue": {
+                "type": 111000001,
+                "value": "150",
+                "perLevel": "5"
+            },
+            "hashTag": "",
+            "skillEffectTid": 2200000002,
+            "isHyperSkill": false,
+            "trigger": 0
+        },
+        {
+            "tid": 2100012002,
+            "description": "워터 글라이드",
+            "skillName": "워터 글라이드",
+            "skillDesc": "화염을 폭발시켜 공격력의 {80+(a * {1-스킬레벨}}%의 범위 피해를 준다.",
+            "cooltime": 5.0,
+            "skillMaxLevel": 100,
+            "skillValue": {
+                "type": 111000001,
+                "value": "120",
+                "perLevel": "5"
+            },
+            "hashTag": "",
+            "skillEffectTid": 2200000003,
+            "isHyperSkill": false,
+            "trigger": 0
+        },
+        {
+            "tid": 2100012003,
+            "description": "공격력 버프",
+            "skillName": "공격력 버프",
+            "skillDesc": "",
+            "cooltime": 5.0,
+            "skillMaxLevel": 100,
+            "skillValue": {
+                "type": 111000001,
+                "value": "5",
+                "perLevel": "5"
+            },
+            "hashTag": "",
+            "skillEffectTid": 2200010005,
+            "isHyperSkill": false,
+            "trigger": 0
+        },
+        {
+            "tid": 2100012004,
+            "description": "하이퍼1",
+            "skillName": "하이퍼1",
+            "skillDesc": "",
+            "cooltime": 0.0,
+            "skillMaxLevel": 0,
+            "skillValue": {
+                "type": 111000001,
+                "value": "5",
+                "perLevel": "5"
+            },
+            "hashTag": "",
+            "skillEffectTid": 2200010006,
+            "isHyperSkill": false,
+            "trigger": 2
+        },
+        {
+            "tid": 2100012005,
+            "description": "하이퍼2",
+            "skillName": "하이퍼2",
+            "skillDesc": "",
+            "cooltime": 0.0,
+            "skillMaxLevel": 0,
+            "skillValue": {
+                "type": 111000001,
+                "value": "5",
+                "perLevel": "5"
+            },
+            "hashTag": "",
+            "skillEffectTid": 2200010007,
+            "isHyperSkill": false,
+            "trigger": 2
+        },
+        {
+            "tid": 2100012006,
+            "description": "하이퍼3",
+            "skillName": "하이퍼3",
+            "skillDesc": "",
+            "cooltime": 0.0,
+            "skillMaxLevel": 0,
+            "skillValue": {
+                "type": 111000001,
+                "value": "5",
+                "perLevel": "5"
+            },
+            "hashTag": "",
+            "skillEffectTid": 2200010009,
+            "isHyperSkill": false,
+            "trigger": 2
+        }
+    ]
+}

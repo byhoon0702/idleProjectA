@@ -1,0 +1,30 @@
+{
+    "typeName": "StageInfoDataSheet",
+    "prefixID": 2500000000,
+    "infos": [
+        {
+            "tid": 2500000001,
+            "description": "",
+            "stageMapTid": 4400000013,
+            "subTitle": "1",
+            "stageLevel": 1,
+            "difficulty": 0,
+            "stageWaveTid": 3700000010,
+            "enemyCount": 1,
+            "levelWeight": 1.0,
+            "bossWeight": 2.0,
+            "killRewards": [
+                {
+                    "tid": 1701105002,
+                    "count": "300",
+                    "dropRatio": 0.0
+                },
+                {
+                    "tid": 1701300001,
+                    "count": "1",
+                    "dropRatio": 1.0
+                }
+            ]
+        }
+    ]
+}

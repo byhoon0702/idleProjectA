@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 922e59c2bb87daf4eafbf1c035e4241b, type: 3}
+  m_Name: AttackPowerBuff
+  m_EditorClassIdentifier: 
+  iconResource: {fileID: 21300000, guid: 6beb8e38e8501cf43a43b3ffe212d893, type: 3}
+  animatorName: 
+  mainSkillInfo:
+    skillType: 3
+    skillActionType: 0
+    spawnFxResource: {fileID: 4810989940296232052, guid: ac77f1579c8d4054e860ddb588a3adcf, type: 3}
+    fourArithmetic: 
+    calculator: 
+    infoList:
+    - timing: 0
+      hitFxResource: {fileID: 0}
+      hitEffectPos: 0
+      objectResource: {fileID: 0}
+      objectStartPos: 0
+      damageRate: 1
+      damageCount: 1
+      damageInterval: 0
+      actionBehavior: {fileID: 0}
+      appliedDamageBehavior: {fileID: 11400000, guid: 196347f28d7619f4d8d39513a1a7b687, type: 2}
+  subSkillInfo:
+    skillType: 0
+    skillActionType: 0
+    spawnFxResource: {fileID: 0}
+    fourArithmetic: 
+    calculator: 
+    infoList: []
