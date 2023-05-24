@@ -53,17 +53,19 @@ public class ConfigMetaEditor : EditorWindow
 		{
 			Application.OpenURL(ConfigMeta.filePath + ConfigMeta.fileName);
 		}
-		if (Application.isPlaying == false)
-		{
-			EditorGUILayout.LabelField("플레이중이 아님");
-			return;
-		}
+		//if (Application.isPlaying == false)
+		//{
+		//	EditorGUILayout.LabelField("플레이중이 아님");
+		//	return;
+		//}
 
 		// 초기화가 안된경우, 초기화 해줌
 		if (instanceSO == null)
 		{
-			instanceSO = new SerializedObject(ConfigMeta.it);
+			var scriptable = Resources.Load("RuntimeDatas/New Config Meta");
+			instanceSO = new SerializedObject(scriptable);
 		}
+
 		if (metaSO == null)
 		{
 			ReloadMetaConfig();

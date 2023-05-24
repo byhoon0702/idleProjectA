@@ -24,14 +24,11 @@ public class SceneChangeWindow : EditorWindow
 
 	private void OnGUI()
 	{
-		if(GUILayout.Button($"{UserInfo.UserDataFilePath}"))
-		{
-			Application.OpenURL(UserInfo.UserDataFilePath);
-		}
+
 
 		GUILayout.BeginHorizontal();
 		loadUserData = EditorGUILayout.TextField("Load Data(File Name)", loadUserData);
-		if(GUILayout.Button("Apply", GUILayout.MaxWidth(60)))
+		if (GUILayout.Button("Apply", GUILayout.MaxWidth(60)))
 		{
 			PlayerPrefs.SetString("LoadUserInfoFileName", loadUserData);
 		}
@@ -41,18 +38,29 @@ public class SceneChangeWindow : EditorWindow
 
 		GUILayout.Space(20);
 		EditorGUILayout.BeginHorizontal();
-		if (GUILayout.Button($"Play SampleScene({prefsSave})", GUILayout.MinHeight(40), GUILayout.ExpandWidth(true)))
+		if (GUILayout.Button($"Play({prefsSave})", GUILayout.MinHeight(40), GUILayout.ExpandWidth(true)))
 		{
-			Play("SampleScene");
-		}
-		if (GUILayout.Button($"Play Oldman({prefsSave})", GUILayout.MinHeight(40), GUILayout.ExpandWidth(true)))
-		{
-			Play("Oldman");
+			Play();
 		}
 		EditorGUILayout.EndHorizontal();
+
+		GUILayout.Space(20);
+		GUILayout.Label("Load Scene", "PreToolbar");
+		if (GUILayout.Button($"Intro", GUILayout.MinHeight(40), GUILayout.ExpandWidth(true)))
+		{
+			EditorSceneManager.OpenScene("Assets/Scenes/Intro.unity");
+		}
+		if (GUILayout.Button($"Oldman", GUILayout.MinHeight(40), GUILayout.ExpandWidth(true)))
+		{
+			EditorSceneManager.OpenScene("Assets/Scenes/Oldman.unity");
+		}
+		if (GUILayout.Button($"UnitEditor", GUILayout.MinHeight(40), GUILayout.ExpandWidth(true)))
+		{
+			EditorSceneManager.OpenScene("Assets/Scenes/UnitEditor.unity");
+		}
 	}
 
-	public void Play(string _sceneName)
+	public void Play()
 	{
 		if (EditorApplication.isPlaying)
 		{
@@ -67,7 +75,5 @@ public class SceneChangeWindow : EditorWindow
 
 		EditorSceneManager.OpenScene("Assets/Scenes/Intro.unity");
 		EditorApplication.isPlaying = true;
-
-		PlayerPrefs.SetString("GameSceneName", _sceneName);
 	}
 }

@@ -40,23 +40,23 @@ public class BattleRecordEditor : EditorWindow
 			return;
 		}
 
-		if(VGameManager.it.battleRecord == null)
+		if(GameManager.it.battleRecord == null)
 		{
 			GUILayout.Label("Record is nulll");
 			return;
 		}
 
 		GUILayout.Label("플레이어", "PreToolbar");
-		GUILayout.Label($"{VGameManager.it.battleRecord.playerDPS}");
+		GUILayout.Label($"{GameManager.it.battleRecord.playerDPS}");
 
 		GUILayout.Label("펫", "PreToolbar");
-		GUILayout.Label($"{VGameManager.it.battleRecord.petDPS}");
+		GUILayout.Label($"{GameManager.it.battleRecord.petDPS}");
 
 		GUILayout.Label("적", "PreToolbar");
-		GUILayout.Label($"{VGameManager.it.battleRecord.enemyDPS}");
+		GUILayout.Label($"{GameManager.it.battleRecord.enemyDPS}");
 
 		GUILayout.Label("Unknown", "PreToolbar");
-		GUILayout.Label($"{VGameManager.it.battleRecord.unknownDPS}");
+		GUILayout.Label($"{GameManager.it.battleRecord.unknownDPS}");
 	}
 
 	private void Update()

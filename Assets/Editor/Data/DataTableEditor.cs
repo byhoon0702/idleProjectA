@@ -6,10 +6,8 @@ using System.Text;
 
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
+
 using System.Collections;
-
-
 
 [Serializable]
 public class ContainedData
@@ -53,6 +51,20 @@ public class DataContainer
 		return null;
 	}
 
+	public List<ContainedData> FindAll(System.Type type)
+	{
+		List<ContainedData> datas = new List<ContainedData>();
+		for (int i = 0; i < dataContainer.Count; i++)
+		{
+			var data = dataContainer[i];
+			if (data.type == type)
+			{
+				datas.Add(data);
+			}
+		}
+		return datas;
+	}
+
 }
 
 
@@ -83,7 +95,6 @@ public partial class DataTableEditor : EditorWindow
 	private int addArraySize = 0;
 	private int pageSize = 10;
 
-
 	SerializedProperty infosProperty;
 
 	private int pageIndex = 0;
@@ -102,7 +113,7 @@ public partial class DataTableEditor : EditorWindow
 	private const string prefixMinusDescription = "해당 프리픽스 만큼 현재 TID 에서 뺌";
 	public const long minTidPrefix = 1000000;
 
-	[MenuItem("Custom Menu/DataEditor/DataTableEditor", false, 5000)]
+	[MenuItem("Custom Menu/DataEditor/DataTableEditor", false, 0)]
 	public static void Init()
 	{
 		var window = EditorWindow.CreateWindow<DataTableEditor>(new Type[] { typeof(DataTableEditor), });
@@ -310,7 +321,7 @@ public partial class DataTableEditor : EditorWindow
 		LoadSettings();
 
 		EditorGUILayout.Space(10);
-		if(GUILayout.Button("TID 규칙"))
+		if (GUILayout.Button("TID 규칙"))
 		{
 			Application.OpenURL("https://docs.google.com/spreadsheets/d/1GRH90StHBWwtqGP3OsufETLJONKXJ6TKFoEbtC-pABY/edit#gid=864885465");
 		}
@@ -321,11 +332,11 @@ public partial class DataTableEditor : EditorWindow
 		{
 			DrawDataList();
 		}
-		else if(pageIndex == 1)
+		else if (pageIndex == 1)
 		{
 			DrawDataEdit();
 		}
-		else if(pageIndex == 2)
+		else if (pageIndex == 2)
 		{
 			DrawTidList();
 		}
@@ -412,6 +423,11 @@ public partial class DataTableEditor : EditorWindow
 		if (currentJsonFileName.IsNullOrEmpty())
 		{
 			currentJsonFileName = "";
+		}
+		if (currentJsonFileName.Contains(label) == false)
+		{
+			currentJsonFileName = $"{label}.json";
+			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Data/Json/{label}.json";
 		}
 
 		if (currentJsonFilePath.Contains(".csv"))
@@ -546,8 +562,22 @@ public partial class DataTableEditor : EditorWindow
 		var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
 
 		string csv = CsvConverter.FromData(targetObje);
-		string path = $"{Application.dataPath}/AssetFolder/Resources/Data/Csv/{label}.csv";
-		using (StreamWriter streamWriter = new StreamWriter(path, false, System.Text.Encoding.UTF8))
+		if (currentJsonFilePath.IsNullOrEmpty())
+		{
+			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Data/Csv/{label}.csv";
+		}
+		if (currentJsonFileName.IsNullOrEmpty())
+		{
+			currentJsonFileName = "";
+		}
+
+		if (currentJsonFilePath.Contains(".json"))
+		{
+			currentJsonFilePath = $"{Application.dataPath}/AssetFolder/Resources/Data/Csv/{label}.csv";
+		}
+		currentJsonFileName = currentJsonFileName.Replace(".json", ".csv");
+
+		using (StreamWriter streamWriter = new StreamWriter(currentJsonFilePath, false, System.Text.Encoding.UTF8))
 		{
 			streamWriter.Write(csv);
 			streamWriter.Close();
@@ -634,11 +664,21 @@ public partial class DataTableEditor : EditorWindow
 				sb.AppendLine($"//========AUTO GENERATED CODE======//");
 				sb.AppendLine("using UnityEngine;");
 				sb.AppendLine("using System;");
+				sb.AppendLine("#if UNITY_EDITOR");
+				sb.AppendLine("using UnityEditor;");
+				sb.AppendLine("#endif");
 				sb.AppendLine("[Serializable]");
 				sb.AppendLine($"public class {label}Object : BaseDataSheetObject ");
 				sb.AppendLine("{");
 				sb.AppendLine("\t[SerializeField]");
 				sb.AppendLine($"\tpublic {label} dataSheet;");
+
+				sb.AppendLine("public override void Call()");
+				sb.AppendLine("{");
+				sb.AppendLine("#if UNITY_EDITOR");
+				sb.AppendLine("#endif");
+				sb.AppendLine("}");
+
 				sb.AppendLine("}");
 
 				writer.Write(sb.ToString());
@@ -691,4 +731,6 @@ public partial class DataTableEditor : EditorWindow
 	//	AssetDatabase.Refresh();
 
 	//}
+
+
 }

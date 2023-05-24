@@ -34,7 +34,7 @@ public class LinkedTypeContainer
 	{
 		container.Add(info);
 	}
-	public void Add(string name, System.Type type)
+	public void Add(string name, List<System.Type> type)
 	{
 		LinkTypeInfo info = new LinkTypeInfo();
 		info.fieldName = name;
@@ -72,8 +72,8 @@ public class LinkedTypeContainer
 public class LinkTypeInfo
 {
 	public string fieldName;
-	[SerializeField]
-	public System.Type type;
+
+	public List<System.Type> type;
 }
 
 public partial class DataTableEditor
@@ -312,8 +312,14 @@ public partial class DataTableEditor
 			GUILayout.EndHorizontal();
 
 		}
+		if (dataContainer == null || dataContainer.dataContainer.Count == 0)
+		{
+			LoadAllJson();
+		}
+
 		DrawProperty();
 	}
+
 	void DrawProperty()
 	{
 		if (scriptableObject == null)
@@ -355,7 +361,7 @@ public partial class DataTableEditor
 
 			prefixIDProperty = dataSheetProperty.FindPropertyRelative("prefixID");
 			Type rawDataType = infosProperty.arrayElementType.GetAssemblyType();
-			FieldInfo[] fields = rawDataType.GetFields();
+			FieldInfo[] fields = EditorHelper.GetSerializedField(rawDataType);
 
 			float width = fields.Length * (settings.cellSize.x + settings.rowSpace) + 34;
 
@@ -383,6 +389,16 @@ public partial class DataTableEditor
 				EditorGUILayout.LabelField($"데이터 타입: {tableType.Name}", GUILayout.Width(width));
 
 				DrawPrefixButton();
+
+				var methodinfo = targetObje.GetType().GetMethod($"Call");
+				if (methodinfo != null)
+				{
+					if (GUILayout.Button("Call"))
+					{
+						methodinfo.Invoke(targetObje, null);
+					}
+				}
+
 			}
 			DrawVerifyLinktidButton();
 			DrawHeader(width);
@@ -403,7 +419,7 @@ public partial class DataTableEditor
 				totalWidth += settings.columeSpace * 2;
 			}
 
-			EditorGUILayout.LabelField("", GUILayout.Width(totalWidth));
+			EditorGUILayout.LabelField("", GUILayout.Width(totalWidth - 140));
 			GUILayout.EndScrollView();
 		}
 
@@ -442,8 +458,12 @@ public partial class DataTableEditor
 		{
 			return;
 		}
+
+
+
 		dataSheetProperty = serializedObject.FindProperty("dataSheet");
 		infosProperty = dataSheetProperty.FindPropertyRelative("infos");
+
 
 
 		maleeReorderableList = ReorderableDataList.Init(settings, serializedObject, infosProperty).SetLoadedData(dataContainer).Build(pageSize, true);

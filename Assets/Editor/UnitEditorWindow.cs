@@ -137,7 +137,7 @@ public class UnitEditorWindow : EditorWindow
 					}
 
 
-					linkedTypeContainer.Add(fields[i].Name, type);
+					linkedTypeContainer.Add(fields[i].Name, new List<System.Type>() { type });
 				}
 				if (fields[i].Name.Contains("DataList", StringComparison.Ordinal))
 				{
@@ -155,7 +155,7 @@ public class UnitEditorWindow : EditorWindow
 						continue;
 					}
 
-					linkedTypeContainer.Add(fields[i].Name, type);
+					linkedTypeContainer.Add(fields[i].Name, new List<System.Type>() { type });
 				}
 			}
 		}
@@ -174,33 +174,37 @@ public class UnitEditorWindow : EditorWindow
 				linkedDataDic = null;
 				continue;
 			}
-
-			var containedData = dataContainer.Find(linkType.type);
 			List<long> tids = new List<long>();
 			List<string> names = new List<string>();
-			if (containedData != null)
+			for (int ii = 0; ii < linkType.type.Count; ii++)
 			{
-				FieldInfo obj = containedData.type.GetField("infos");
-				object ff = obj.GetValue(containedData.data);
-				tids.Add(0);
-				names.Add("0 : Empty");
-				if (typeof(IList).IsAssignableFrom(ff))
+				var containedData = dataContainer.Find(linkType.type[ii]);
+
+				if (containedData != null)
 				{
-					IList list = (IList)ff;
-					Type itemType = typeof(BaseData);
-					FieldInfo tidField = itemType.GetField("tid");
-					FieldInfo descField = itemType.GetField("description");
-					for (int ii = 0; ii < list.Count; ii++)
+					FieldInfo obj = containedData.type.GetField("infos");
+					object ff = obj.GetValue(containedData.data);
+					tids.Add(0);
+					names.Add("0 : Empty");
+					if (typeof(IList).IsAssignableFrom(ff))
 					{
-						object item = list[ii];
+						IList list = (IList)ff;
+						Type itemType = typeof(BaseData);
+						FieldInfo tidField = itemType.GetField("tid");
+						FieldInfo descField = itemType.GetField("description");
+						for (int iii = 0; iii < list.Count; iii++)
+						{
+							object item = list[iii];
 
-						long id = (long)tidField.GetValue(item);
-						tids.Add(id);
-						names.Add($"{id} :{(string)descField.GetValue(item)}");
+							long id = (long)tidField.GetValue(item);
+							tids.Add(id);
+							names.Add($"{id} :{(string)descField.GetValue(item)}");
 
+						}
 					}
 				}
 			}
+
 			linkedDataDic.Add(fieldName, new LinkedData() { tidArray = tids.ToArray(), nameArray = names.ToArray() });
 		}
 
@@ -354,6 +358,8 @@ public class UnitEditorWindow : EditorWindow
 		string path = $"{Application.dataPath}/AssetFolder/Resources/Data/Json/UnitDataSheet.json";
 		JsonConverter.FromData(unitDataSheet, path);
 	}
+
+	Vector2 scrollPos;
 	void DrawUnitDataPanel()
 	{
 		EditorGUILayout.BeginVertical("window");
@@ -392,14 +398,9 @@ public class UnitEditorWindow : EditorWindow
 			int star = EditorGUILayout.IntField("starlevel", type.GetValue<int>("starlevel", data));
 			type.SetValue("starlevel", data, star);
 
+			scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 			DrawStatusListField(fakeobj, dataProperty.FindPropertyRelative("statusDataList"), data);
-
-			EditorGUILayout.PropertyField(dataProperty.FindPropertyRelative("statusPerLevels"));
-
-			EditorGUILayout.FloatField("attackTime", type.GetValue<float>("attackTime", data));
-			EditorGUILayout.FloatField("attackCoolTime", type.GetValue<float>("attackCoolTime", data));
-			EditorGUILayout.FloatField("criticalRate", type.GetValue<float>("criticalRate", data));
-			EditorGUILayout.FloatField("criticalPowerRate", type.GetValue<float>("criticalPowerRate", data));
+			EditorGUILayout.EndScrollView();
 
 			DrawLinkTidGUILayoutField(type, "skillTid", index, data);
 			DrawLinkTidGUILayoutField(type, "finalSkillTid", index, data);
@@ -551,7 +552,7 @@ public class UnitEditorWindow : EditorWindow
 			if (UnitEditor.it != null)
 			{
 				UnitEditor.it.OnClickSpawn(currentData);
-				UnitEditor.it.editorToolUI.skillEffectEditorPanel.SetUnitAnimationState(UnitEditor.it.layerStates);
+				//UnitEditor.it.editorToolUI.skillEffectEditorPanel.SetUnitAnimationState(UnitEditor.it.layerStates);
 			}
 			else
 			{

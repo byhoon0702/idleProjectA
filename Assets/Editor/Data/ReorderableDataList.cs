@@ -2,11 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using DG.DemiEditor;
+
 using Unity.VisualScripting;
+
 using UnityEditor;
 using UnityEngine;
-
+using DG.DemiEditor;
 
 public class ReorderableDataList
 {
@@ -67,12 +68,13 @@ public class ReorderableDataList
 	private void CreateMainList()
 	{
 		Type rawDataType = property.arrayElementType.GetAssemblyType();
-		FieldInfo[] fields = rawDataType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+		FieldInfo[] fieldInfos = EditorHelper.GetSerializedField(rawDataType);
 
 		linkedTypeContainer = new LinkedTypeContainer();
 		linkedDataDic = new Dictionary<string, LinkedData>();
 
-		CreateLinkedTypeContainer(fields);
+		CreateLinkedTypeContainer(fieldInfos);
 		CreateLinkedData();
 
 		reorderableList.headerHeight = 50;
@@ -82,61 +84,31 @@ public class ReorderableDataList
 			Rect tempRect = new Rect(rect);
 			Rect inputRect = new Rect(rect);
 			SerializedProperty fieldSettings = serializedObject.FindProperty("fieldSettings");
-			if (fieldSettings.arraySize != fields.Length)
+			if (fieldSettings.arraySize != fieldInfos.Length)
 			{
-				fieldSettings.arraySize = fields.Length;
+				fieldSettings.arraySize = fieldInfos.Length;
 			}
 
 			float width = 0;
 			tempRect.height = EditorGUIUtility.singleLineHeight;
 
-			var elementproperty = fieldSettings.GetArrayElementAtIndex(0);
-			width = GetWidth(elementproperty);
-			tempRect.x = rect.x;
-			tempRect.width = width;
-			inputRect = tempRect;
 
-			SetFieldWidthUI(elementproperty, "tid", inputRect);
-			EditorGUI.LabelField(tempRect, "tid", EditorStyles.boldLabel);
-
-			elementproperty = fieldSettings.GetArrayElementAtIndex(1);
-			tempRect.x += (width + settings.rowSpace);
-
-			width = GetWidth(elementproperty);
-			tempRect.width = width;
-
-			inputRect = tempRect;
-
-			SetFieldWidthUI(elementproperty, "description", inputRect);
-			EditorGUI.LabelField(tempRect, "description", EditorStyles.boldLabel);
-
-
-			for (int i = 0; i < fields.Length; i++)
+			for (int i = 0; i < fieldInfos.Length; i++)
 			{
-				//tempRect.width = settings.cellSize.x;
-
-				if (fields[i].Attributes.HasFlag(FieldAttributes.NotSerialized))
+				var field = fieldInfos[i];
+				if (field.Attributes.HasFlag(FieldAttributes.NotSerialized))
 				{
 					continue;
 				}
 
-				if (fields[i].Name == "tid" || fields[i].Name == "description")
-				{
-					continue;
-				}
+				var elementproperty = fieldSettings.GetArrayElementAtIndex(i);
+				tempRect.x += width + settings.rowSpace;
+				width = GetWidth(elementproperty);
+				tempRect.width = width;
+				inputRect = tempRect;
 
-				{
-					elementproperty = fieldSettings.GetArrayElementAtIndex(i + 2);
-					tempRect.x += width + settings.rowSpace;
-					width = GetWidth(elementproperty);
-					tempRect.width = width;
-					inputRect = tempRect;
-
-					SetFieldWidthUI(elementproperty, fields[i].Name, inputRect);
-					EditorGUI.LabelField(tempRect, fields[i].Name, EditorStyles.boldLabel);
-				}
-
-				//tempRect.x += width + settings.rowSpace;
+				SetFieldWidthUI(elementproperty, field.Name, inputRect);
+				EditorGUI.LabelField(tempRect, field.Name, EditorStyles.boldLabel);
 			}
 		};
 
@@ -188,71 +160,45 @@ public class ReorderableDataList
 			Type type = rawDataType;
 			SerializedProperty fieldSettings = serializedObject.FindProperty("fieldSettings");
 
-
-			SerializedProperty sf = info.FindPropertyRelative("tid");
-			SerializedProperty elementproperty = fieldSettings.GetArrayElementAtIndex(0);
-			width = GetWidth(elementproperty);
-			tempRect.x = rect.x;
-			tempRect.width = width;
-			EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
-
-
-			sf = info.FindPropertyRelative("description");
-			elementproperty = fieldSettings.GetArrayElementAtIndex(1);
-			tempRect.x += (width + settings.rowSpace);
-			width = GetWidth(elementproperty);
-			tempRect.width = width;
-			EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
-
-
-			for (int i = 0; i < fields.Length; i++)
+			for (int i = 0; i < fieldInfos.Length; i++)
 			{
-				var field = fields[i];
+				var field = fieldInfos[i];
 				tempRect.y = rect.y;
 				tempRect.height = EditorGUIUtility.singleLineHeight;
-				sf = info.FindPropertyRelative(field.Name);
+				SerializedProperty sf = info.FindPropertyRelative(field.Name);
 				if (sf == null)
 				{
 					continue;
 				}
-				var tidField = info.FindPropertyRelative("tid");
 
-				if (field.Name == "tid" || field.Name == "description")
+				var elementproperty = fieldSettings.GetArrayElementAtIndex(i);
+				tempRect.x += width + settings.rowSpace;
+
+				width = GetWidth(elementproperty);
+				tempRect.width = width;
+				if (sf.propertyType.Equals(SerializedPropertyType.Generic))
+
 				{
-					continue;
+					if (GUI.Button(tempRect, "Edit"))
+					{
+						CreateSubWindow(tempRect, sf);
+					}
 				}
-
 				else
 				{
-					elementproperty = fieldSettings.GetArrayElementAtIndex(i + 2);
-					tempRect.x += width + settings.rowSpace;
-					//Rect relativeRect = new Rect(tempRect.x + ((width + settings.rowSpace)), tempRect.y, width, tempRect.height);
-					width = GetWidth(elementproperty);
-					tempRect.width = width;
-					if (sf.propertyType.Equals(SerializedPropertyType.Generic))
-
+					if (linkedTypeContainer.Find(field.Name) != null)
 					{
-						if (GUI.Button(tempRect, "Edit"))
+						if (DrawLinkedProperty(tempRect, tempRect, sf, field.Name))
 						{
-							CreateSubWindow(tempRect, sf);
+							continue;
 						}
 					}
 					else
 					{
-						if (linkedTypeContainer.Find(field.Name) != null)
-						{
-							if (DrawLinkedProperty(tempRect, tempRect, sf, field.Name))
-							{
-								//tempRect.x += width + settings.rowSpace;
-								continue;
-							}
-						}
-						else
-						{
-							EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
-						}
+						EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
 					}
 				}
+
 			}
 		};
 	}
@@ -277,10 +223,25 @@ public class ReorderableDataList
 					continue;
 				}
 
-
-				linkedTypeContainer.Add(fields[i].Name, type);
+				linkedTypeContainer.Add(fields[i].Name, new List<System.Type>() { type });
 			}
-			if (fields[i].Name.Contains("DataList", StringComparison.Ordinal))
+
+			else if (fields[i].Name.Contains("ItemRewards", StringComparison.Ordinal))
+			{
+				List<System.Type> typelist = new List<Type>();
+				for (int ii = 0; ii < dataContainer.dataContainer.Count; ii++)
+				{
+					if (dataContainer.dataContainer[ii].type.Name.Contains("ItemData"))
+					{
+						if (typelist.Find(x => x.Equals(dataContainer.dataContainer[ii].type)) == null)
+						{
+							typelist.Add(dataContainer.dataContainer[ii].type);
+						}
+					}
+				}
+				linkedTypeContainer.Add(fields[i].Name, typelist);
+			}
+			else if (fields[i].Name.Contains("DataList", StringComparison.Ordinal))
 			{
 				string[] split = fields[i].Name.Split("DataList");
 				string typeName = $"{split[0]}DataSheet".FirstCharacterToUpper();
@@ -296,43 +257,51 @@ public class ReorderableDataList
 					continue;
 				}
 
-				linkedTypeContainer.Add(fields[i].Name, type);
+				linkedTypeContainer.Add(fields[i].Name, new List<System.Type>() { type });
 			}
 		}
 	}
 	private void CreateLinkedData()
 	{
+
 		for (int i = 0; i < linkedTypeContainer.container.Count; i++)
 		{
 			string fieldName = linkedTypeContainer.container[i].fieldName;
 			var linkType = linkedTypeContainer.Find(fieldName);
 
-			var containedData = dataContainer.Find(linkType.type);
 			List<long> tids = new List<long>();
 			List<string> names = new List<string>();
-			if (containedData != null)
+
+			for (int ii = 0; ii < linkType.type.Count; ii++)
 			{
-				FieldInfo obj = containedData.type.GetField("infos");
-				object ff = obj.GetValue(containedData.data);
+				var containedDatas = dataContainer.FindAll(linkType.type[ii]);
 				tids.Add(0);
 				names.Add("0 : Empty");
-				if (typeof(IList).IsAssignableFrom(ff))
+				for (int iii = 0; iii < containedDatas.Count; iii++)
 				{
-					IList list = (IList)ff;
-					Type itemType = typeof(BaseData);
-					FieldInfo tidField = itemType.GetField("tid");
-					FieldInfo descField = itemType.GetField("description");
-					for (int ii = 0; ii < list.Count; ii++)
+					var containedData = containedDatas[iii];
+					FieldInfo obj = containedData.type.GetField("infos");
+					object ff = obj.GetValue(containedData.data);
+
+					if (typeof(IList).IsAssignableFrom(ff))
 					{
-						object item = list[ii];
+						IList list = (IList)ff;
+						Type itemType = typeof(BaseData);
+						FieldInfo tidField = itemType.GetField("tid");
+						FieldInfo descField = itemType.GetField("description");
+						for (int iiii = 0; iiii < list.Count; iiii++)
+						{
+							object item = list[iiii];
 
-						long id = (long)tidField.GetValue(item);
-						tids.Add(id);
-						names.Add($"{id} :{(string)descField.GetValue(item)}");
+							long id = (long)tidField.GetValue(item);
+							tids.Add(id);
+							names.Add($"{id} :{(string)descField.GetValue(item)}");
 
+						}
 					}
 				}
 			}
+
 			linkedDataDic.Add(fieldName, new LinkedData() { tidArray = tids.ToArray(), nameArray = names.ToArray() });
 		}
 
@@ -349,31 +318,27 @@ public class ReorderableDataList
 			return false;
 		}
 
-		//var containedData = dataContainer.Find(linkType.type);
+		int selectedIndex = 0;
 
-		//if (containedData != null)
+		for (int ii = 0; ii < linkedDataDic[_fieldName].tidArray.Length; ii++)
 		{
-			int selectedIndex = 0;
+			long item = linkedDataDic[_fieldName].tidArray[ii];
 
-			for (int ii = 0; ii < linkedDataDic[_fieldName].tidArray.Length; ii++)
+			if (_sf.longValue == item)
 			{
-				long item = linkedDataDic[_fieldName].tidArray[ii];
-
-				if (_sf.longValue == item)
-				{
-					selectedIndex = ii;
-				}
+				selectedIndex = ii;
 			}
-
-			if (linkedDataDic[_fieldName].nameArray.Length > 0)
-			{
-				selectedIndex = EditorGUI.Popup(_relativeRect, selectedIndex, linkedDataDic[_fieldName].nameArray);
-				_sf.longValue = linkedDataDic[_fieldName].tidArray[selectedIndex];
-				_rect.x += _rect.width + settings.rowSpace;
-				return true;
-			}
-
 		}
+
+		if (linkedDataDic[_fieldName].nameArray.Length > 0)
+		{
+			selectedIndex = EditorGUI.Popup(_relativeRect, selectedIndex, linkedDataDic[_fieldName].nameArray);
+			_sf.longValue = linkedDataDic[_fieldName].tidArray[selectedIndex];
+			_rect.x += _rect.width + settings.rowSpace;
+			return true;
+		}
+
+
 		return true;
 	}
 
@@ -404,99 +369,3 @@ public class ReorderableDataList
 
 
 
-public static class EditorHelper
-{
-	public static void AddNewElement(SerializedProperty property, long tid)
-	{
-		System.Type type = ConvertUtility.ConvertStringToType(property.type);
-		System.Type baseType = type;
-		System.Type check = type;
-		while (baseType != null)
-		{
-			check = baseType;
-			baseType = check.BaseType;
-		}
-
-		bool isObject = check.Equals(typeof(System.Object));
-
-		if (isObject)
-		{
-			var newData = Activator.CreateInstance(type);
-			var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-			foreach (var field in fields)
-			{
-				var relativeProperty = property.FindPropertyRelative(field.Name);
-
-				if (relativeProperty == null)
-				{
-					continue;
-				}
-				object value = field.GetValue(newData);
-				if (field.Name == "tid")
-				{
-					value = tid;
-				}
-
-				try
-				{
-					EditorHelper.SetSerializedPropertyValue(relativeProperty, value);
-
-				}
-				catch (Exception e)
-				{
-					Debug.LogError($"{relativeProperty.propertyType} , {field.Name}");
-				}
-			}
-		}
-	}
-	public static void SetSerializedPropertyValue(SerializedProperty p, object value)
-	{
-		System.Type type = ConvertUtility.ConvertStringToType(p.type);
-		if (type == null)
-		{
-			p.SetValue(value);
-			return;
-		}
-		if (type.Equals(typeof(int)))
-		{
-			p.intValue = (int)value;
-		}
-		else if (type.Equals(typeof(long)))
-		{
-			p.longValue = (long)value;
-		}
-		else if (type.Equals(typeof(string)))
-		{
-			if (value == null)
-			{
-				p.stringValue = "";
-			}
-			else
-			{
-				p.stringValue = (string)value;
-			}
-		}
-		else
-		{
-			p.SetValue(value);
-		}
-	}
-	public static long ReplacePrefixTid(long originID, long prefix)
-	{
-		int count = 0;
-
-		long origin = prefix;
-
-		while (origin % 10 == 0)
-		{
-			origin /= 10;
-			count++;
-		}
-
-		if (count > 0)
-		{
-			originID = originID % (int)Mathf.Pow(10, count) + prefix;
-		}
-		return originID;
-	}
-}

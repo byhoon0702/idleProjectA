@@ -19,13 +19,13 @@ public class TimeEditor : EditorWindow
 
 	private void OnGUI()
 	{
-		if(Application.isPlaying == false)
+		if (Application.isPlaying == false)
 		{
 			return;
 		}
 
 		TimeScale();
-		if(TimeManager.it == null)
+		if (TimeManager.it == null)
 		{
 			return;
 		}
@@ -38,7 +38,7 @@ public class TimeEditor : EditorWindow
 		GUILayout.Label("Now", "PreToolbar");
 		GUILayout.Label(TimeManager.it.m_now.ToString());
 		GUILayout.Label("Play Time", "PreToolbar");
-		GUILayout.Label(UserInfo.PlayTicksToString);
+		//GUILayout.Label(UserInfo.PlayTicksToString);
 	}
 
 	private void Update()

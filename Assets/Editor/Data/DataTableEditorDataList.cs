@@ -124,7 +124,7 @@ public partial class DataTableEditor
 		{
 			System.Type t = datalist.Value.data.GetType();
 
-			FieldInfo fieldinfo = t.GetField("prefixID", BindingFlags.NonPublic | BindingFlags.Instance);
+			FieldInfo fieldinfo = t.GetField("prefixID", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 			long prefixID = 0;
 			if (fieldinfo != null)
 			{

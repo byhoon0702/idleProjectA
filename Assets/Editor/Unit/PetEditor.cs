@@ -39,13 +39,13 @@ public class PetEditor : Editor
 		EditorGUILayout.Space();
 		if (GUILayout.Button("Extension"))
 		{
-			UnitInfoEditorExtension.ShowEditor(pet);
+			//UnitInfoEditorExtension.ShowEditor(pet);
 		}
 
 		try
 		{
 			EditorGUILayout.Space();
-			UnitEditorUtility.ShowUnitInfo(pet.info, new IdleNumber(), new IdleNumber());
+			//UnitEditorUtility.ShowUnitInfo(pet.info, new IdleNumber(), new IdleNumber());
 		}
 		catch (Exception e)
 		{
