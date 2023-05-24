@@ -7,17 +7,10 @@ using UnityEngine;
 /// </summary>
 public class UnitSkillState : UnitFSM
 {
-	public void Init(Unit _owner)
-	{
-		owner = _owner;
-	}
-	public override void OnEnter()
-	{
 
-	}
-	public override void OnEnter<T>(T data = default)
+	public override FSM OnEnter()
 	{
-
+		return this;
 	}
 
 	public override void OnExit()
@@ -27,11 +20,10 @@ public class UnitSkillState : UnitFSM
 
 	public override void OnUpdate(float time)
 	{
-		if (owner.isSkillAttack)
-		{
-			return;
-		}
-		owner.unitSkillModule.GetUsableSkill().Action();
+		//if (owner.isSkillAttack)
+		//{
+		//	return;
+		//}
 		//if (owner.IsTargetAlive() == false)
 		//{
 		//	owner.ChangeState(StateType.MOVE);
@@ -55,5 +47,9 @@ public class UnitSkillState : UnitFSM
 		//	// 스킬을 사용할 수 있으면 무조건 스킬우선사용
 		//	owner.ChangeState(StateType.ATTACK);
 		//}
+	}
+	public override void OnFixedUpdate(float fixedTime)
+	{
+
 	}
 }

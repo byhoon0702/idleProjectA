@@ -1,60 +1,184 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Media;
 using UnityEngine;
 
+//public class UnitStats
+//{
+//	public List<UserAbility> abilities = new List<UserAbility>();
+//	//public List<Ability> keys = new List<Ability>();
+//	//public List<IdleNumber> values = new List<IdleNumber>();
+//	public UserAbility this[Ability key]
+//	{
+//		get
+//		{
+//			var ability = abilities.Find(x => x.Type.Equals(key));
+
+//			if (ability == null)
+//			{
+//				Debug.LogWarning($"Can not find {key} Ability");
+//				return new UserAbility(key, (IdleNumber)0, (IdleNumber)"0", (IdleNumber)"999ZZ");
+//			}
+
+//			return ability;
+//		}
+
+//		set
+//		{
+//			int index = abilities.FindIndex(x => x.Equals(key));
+//			if (index >= 0 && index < abilities.Count)
+//			{
+//				abilities[index] = value;
+
+//			}
+//			else
+//			{
+//				abilities.Add(value);
+//			}
+//		}
+//	}
+
+//	public UnitStats Clone()
+//	{
+//		var newStats = new UnitStats();
+//		newStats.abilities = abilities;
+
+//		return newStats;
+//	}
+//}
+
+
+[RequireComponent(typeof(UnitFsmModule))]
 public abstract class UnitBase : MonoBehaviour
 {
-	public Unit target { get; protected set; }
-	public UnitAnimation unitAnimation;
+	/// <summary>
+	/// 절대로 사용하지 말것
+	/// </summary>
+	[SerializeField] protected UnitStats stats;
+	public UnitStats instaneStats { get; protected set; }
+
+	[HideInInspector] public new Rigidbody2D rigidbody2D;
+	protected Collider2D boxCollider2D;
+
+	public HittableUnit target { get; protected set; }
+	[HideInInspector] public UnitAnimation unitAnimation;
+	[HideInInspector] public UnitFacial unitFacial;
+	public SkillModule skillModule;
+	public NormalUnitCostume unitCostume { get; protected set; }
 	public StateType currentState;
 
-	public FiniteStateMachine currentfsm;
 
-	public TargetFilterBehaviorSO targetFilterBehavior;
+	public UnitFsmModule fsmModule;
+	public HyperModule hyperModule;
+
+
 	public TargetPriorityBehaviorSO targetPriorityBehavior;
 	public Vector3 position { get => transform.position; set => transform.position = value; }
+	public virtual Vector3 CenterPosition => unitAnimation.CenterPivot.position;
+
+	public virtual Vector3 HeadPosition => unitAnimation.HeadPivot != null ? unitAnimation.HeadPivot.position : CenterPosition;
 	public Vector3 localPos { get => transform.localPosition; set => transform.localPosition = value; }
 
 	public Int32 CharID => GetInstanceID();
 	public virtual string CharName => gameObject.name;
 	public virtual string NameAndId => $"{CharName}({CharID})";
 	public virtual string defaultAttackSoundPath => "";
+	public abstract UnitType UnitType { get; }
 	public abstract ControlSide ControlSide { get; }
 	public virtual float SearchRange { get; } = 1;
 	public abstract IdleNumber AttackPower { get; }
-	public abstract float AttackSpeedMul { get; }
+	public abstract HitInfo HitInfo { get; }
+	public abstract float AttackSpeed { get; }
 	public virtual float AttackTime => 1;
 	public virtual float CriticalDamageMultifly => 1;
 	public virtual float CriticalX2DamageMultifly => 1;
 
+	public UnitModeBase unitMode;
+	public UnitModeBase unitHyperMode;
+
+	protected UnitModeBase currentMode;
+	public Vector3 headingDirection { get; set; }
+	public GameObject dashEffet;
+
 	public virtual CriticalType RandomCriticalType => CriticalType.Normal;
 	protected float searchInterval;
 
-	protected abstract string ModelResourceName { get; }
 	protected GameObject model;
 
 
-
-
-	public abstract void SetAttack();
-	public abstract void DefaultAttack(float time);
-	public abstract void ResetDefaultAttack();
-
+	public virtual void EndUpdateSkill() { }
+	public virtual void Death() { }
 	public virtual float MoveSpeed => 0;
 	public virtual Vector3 MoveDirection => Vector3.zero;
 
-	public abstract SkillEffectData GetSkillEffectData();
+	public int currentDir { get; protected set; } = 1;
 
+
+	public virtual void Dash(float power)
+	{
+
+	}
+
+	public virtual void SetUnitCosutmeComponent(NormalUnitCostume _unitCostume)
+	{
+		unitCostume = _unitCostume;
+	}
+	public virtual void PlayAnimation(string name, float normalizedTime = 1)
+	{
+		unitAnimation.PlayAnimation(name, normalizedTime);
+	}
 
 	public virtual void PlayAnimation(StateType type)
 	{
 		unitAnimation.PlayAnimation(type);
 	}
-
-	public virtual bool IsAlive()
+	public virtual void HeadingToTarget()
 	{
+
+		if (target != null)
+		{
+			Vector3 normal = (target.transform.position - transform.position).normalized;
+			headingDirection = normal;
+			if (normal.x < 0)
+			{
+				if (currentDir != -1)
+				{
+					currentDir = -1;
+					Vector3 scale = unitAnimation.transform.localScale;
+					scale.x = Mathf.Abs(scale.x) * currentDir;
+					unitAnimation.transform.localScale = scale;
+				}
+			}
+			else if (normal.x > 0)
+			{
+				if (currentDir != 1)
+				{
+					currentDir = 1;
+					Vector3 scale = unitAnimation.transform.localScale;
+					scale.x = Mathf.Abs(scale.x);
+					unitAnimation.transform.localScale = scale;
+				}
+
+			}
+		}
+
+	}
+	protected virtual bool TargetRemovable()
+	{
+		if (target != null)
+		{
+			if (target.currentState == StateType.DEATH)
+			{
+				// 타겟이 죽은경우 타겟을 지워준다.
+				return true;
+			}
+
+			else if (Mathf.Abs((target.transform.position - transform.position).magnitude) >= SearchRange && unitAnimation.IsAttacking() == true)
+			{
+				// 타겟이 멀어진경우, 타겟을 지워준다
+				return true;
+			}
+		}
+
 		return false;
 	}
 
@@ -68,59 +192,21 @@ public abstract class UnitBase : MonoBehaviour
 		return target.IsAlive();
 	}
 
-	protected virtual bool TargetRemovable()
+	protected virtual HittableUnit FindNewTarget(List<HittableUnit> _searchTargets)
 	{
-		if (target != null)
-		{
-			if (target.currentState == StateType.DEATH)
-			{
-				// 타겟이 죽은경우 타겟을 지워준다.
-				return true;
-			}
-
-			else if (Mathf.Abs(target.transform.position.x - transform.position.x) >= SearchRange && unitAnimation.IsAttacking() == true)
-			{
-				// 타겟이 멀어진경우, 타겟을 지워준다
-				return true;
-			}
-		}
-
-		return false;
-	}
-	protected virtual Unit FindNewTarget(List<Unit> _searchTargets)
-	{
-		Unit newTarget = null;
+		HittableUnit newTarget = null;
 		var array = targetPriorityBehavior.FilterObject(transform.position, _searchTargets);
 
 		if (array != null && array.Count > 0)
 		{
 			newTarget = array[0];
 		}
-		//float minDistance = float.MaxValue;
-
-		//for (int i = 0; i < _searchTargets.Count; i++)
-		//{
-		//	float distance = _searchTargets[i].transform.position.x - transform.position.x;
-
-		//	if (distance < minDistance)
-		//	{
-		//		newTarget = _searchTargets[i];
-		//		minDistance = distance;
-		//	}
-		//}
-
-		//if (minDistance <= SearchRange)
-		//{
-		//	return newTarget;
-		//}
-
-
 
 		return newTarget;
 	}
 
 
-	protected virtual bool TargetAddable(Unit _newTarget)
+	protected virtual bool TargetAddable(HittableUnit _newTarget)
 	{
 		if (target == null && _newTarget != null)
 		{
@@ -159,39 +245,11 @@ public abstract class UnitBase : MonoBehaviour
 
 	}
 
-	public void SetTarget(Unit _target)
+	public void SetTarget(HittableUnit _target)
 	{
 		target = _target;
 	}
 
-	public void LoadModel()
-	{
-		var obj = UnitModelPoolManager.it.Get(ModelResourceName);
-		obj.transform.SetParent(transform);
-		obj.transform.localPosition = Vector3.zero;
-		obj.transform.localScale = Vector3.one;
-
-		Camera sceneCam;
-		if (SceneCameraV2.it != null)
-		{
-			sceneCam = SceneCameraV2.it.sceneCamera;
-		}
-		else
-		{
-			sceneCam = SceneCamera.it.sceneCamera;
-		}
-
-		obj.transform.LookAt(obj.transform.position + sceneCam.transform.rotation * Vector3.forward, sceneCam.transform.rotation * Vector3.up);
-		AnimationEventReceiver eventReceiver = obj.animator.gameObject.GetComponent<AnimationEventReceiver>();
-		if (eventReceiver == null)
-		{
-			eventReceiver = obj.animator.gameObject.AddComponent<AnimationEventReceiver>();
-		}
-		eventReceiver.Init(this);
-
-		model = obj.gameObject;
-		gameObject.name = NameAndId;
-	}
 
 	public void DisposeModel()
 	{
@@ -199,27 +257,26 @@ public abstract class UnitBase : MonoBehaviour
 		model = null;
 	}
 
-	public virtual void Move(float delta)
+	public virtual void OnMove(float delta)
 	{
+
 		transform.Translate(MoveDirection * MoveSpeed * delta);
 	}
 
-	public virtual void Hit(HitInfo _hitInfo)
+	public virtual void OverrideAnimator(AnimatorOverrideController overrideController)
 	{
-
+		unitAnimation.OverrideAnimation(overrideController);
 	}
 
-	public virtual void Heal(HealInfo _healInfo)
+	public void ResetAnimator()
 	{
-
+		unitAnimation.ResetOverrideController();
 	}
 
-	public virtual void Debuff(DebuffInfo _debuffInfo)
-	{
 
-	}
-	public virtual void Buff()
+	public virtual void PlayDamageWhite()
 	{
 
 	}
 }
+

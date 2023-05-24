@@ -7,6 +7,7 @@ public delegate void OnSelect(long tid);
 
 public interface ISelectListener
 {
+	void SetSelectedTid(long tid);
 	void AddSelectListener(OnSelect callback);
 	void RemoveSelectListener(OnSelect callback);
 
@@ -19,6 +20,7 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 	[SerializeField] private TextMeshProUGUI toOwnText;
 
 	[Header("장착동료")]
+	[SerializeField] private GameObject[] petSlotHighlights;
 	[SerializeField] private UIPetSlot[] petSlots;
 
 	[Header("아이템리스트")]
@@ -31,21 +33,37 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 
 	public event OnSelect onSelect;
 
+	void OnEnable()
+	{
+		AddCloseListener();
+	}
+	void OnDisable()
+	{
+		RemoveCloseListener();
+	}
+	public void AddCloseListener()
+	{
+		GameUIManager.it.onClose += Close;
+	}
 
+	public void RemoveCloseListener()
+	{
+		GameUIManager.it.onClose -= Close;
+	}
 	private void Awake()
 	{
 		//closeButton.onClick.RemoveAllListeners();
 		//closeButton.onClick.AddListener(Close);
 	}
-	private void OnEnable()
-	{
-		UIController.it.SetCoinEffectActivate(false);
-	}
+	//private void OnEnable()
+	//{
+	//	UIController.it.SetCoinEffectActivate(false);
+	//}
 
-	private void OnDisable()
-	{
-		UIController.it.SetCoinEffectActivate(true);
-	}
+	//private void OnDisable()
+	//{
+	//	UIController.it.SetCoinEffectActivate(true);
+	//}
 
 
 	public void OnUpdate(bool _refreshGrid)
@@ -71,25 +89,43 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 		}
 	}
 
+	public void SetSelectedTid(long tid)
+	{
+		if (exchangeSlot)
+		{
+			return;
+		}
+
+		selectedItemTid = tid;
+	}
+
 	public void UpdateEquipItem()
 	{
-		var petContainer = VGameManager.it.userDB.petContainer;
-		for (int i = 0; i < petContainer.petSlot.Length; i++)
+		var petContainer = GameManager.UserDB.petContainer;
+		for (int i = 0; i < petContainer.PetSlots.Length; i++)
 		{
-			petSlots[i].gameObject.SetActive(true);
-			petSlots[i].OnUpdate(this, petContainer.petSlot[i].item, () =>
+
+			var slot = petSlots[i];
+			var slotData = petContainer.PetSlots[i];
+			slot.gameObject.SetActive(true);
+			slot.OnUpdate(this, slotData.item, () =>
 			{
+				if (exchangeSlot)
+				{
+					ExchangePet(slotData);
+					return;
+				}
 				UpdateInfo();
 			});
-
 		}
 	}
 
-	public long selectedItemTid;
+	public long selectedItemTid
+	{ get; private set; }
 	public void UpdateItemList(bool _refresh)
 	{
 
-		int countForMake = VGameManager.it.userDB.inventory.petList.Count - itemRoot.childCount;
+		int countForMake = GameManager.UserDB.petContainer.petList.Count - itemRoot.childCount;
 
 		if (countForMake > 0)
 		{
@@ -107,7 +143,7 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 			{
 
 				var child = itemRoot.GetChild(i);
-				if (i >= VGameManager.it.userDB.inventory.petList.Count - 1)
+				if (i >= GameManager.UserDB.petContainer.petList.Count - 1)
 				{
 					child.gameObject.SetActive(false);
 					continue;
@@ -116,13 +152,12 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 				child.gameObject.SetActive(true);
 				UIPetSlot slot = child.GetComponent<UIPetSlot>();
 
-				var info = VGameManager.it.userDB.inventory.petList[i];
+				var info = GameManager.UserDB.petContainer.petList[i];
 				slot.OnUpdate(this, info, () =>
 				{
 					selectedItemTid = info.tid;
 					UpdateInfo();
 				});
-				slot.ShowSlider(true);
 			}
 			return;
 		}
@@ -135,16 +170,20 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 
 	public void UpdateInfo()
 	{
-
+		exchangeSlot = false;
+		for (int i = 0; i < petSlotHighlights.Length; i++)
+		{
+			petSlotHighlights[i].SetActive(false);
+		}
 		RuntimeData.PetInfo info = null;
-		info = VGameManager.UserDB.inventory.petList.Find(x => x.tid == selectedItemTid);
+		info = GameManager.UserDB.petContainer.petList.Find(x => x.tid == selectedItemTid);
 		if (info == null)
 		{
-			info = VGameManager.UserDB.inventory.petList[0];
+			info = GameManager.UserDB.petContainer.petList[0];
 			selectedItemTid = info.tid;
 		}
 
-		petInfoUI.OnUpdate(this, info);
+		// petInfoUI.OnUpdate(this, info);
 
 		onSelect?.Invoke(selectedItemTid);
 	}
@@ -159,22 +198,20 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 		//toOwnText.text = "보유효과: ??";
 	}
 
-	private int GetEmptySlot()
+
+
+	public bool exchangeSlot;
+
+	public void ExchangePet(PetSlot slot)
 	{
-		for (int i = 0; i < UserInfo.equip.pets.Length; i++)
+		GameManager.UserDB.petContainer.Unequip(slot.itemTid);
+		GameManager.UserDB.petContainer.Equip(selectedItemTid);
+
+		for (int i = 0; i < petSlotHighlights.Length; i++)
 		{
-			if (UserInfo.equip.pets[i] == 0)
-			{
-				return i;
-			}
+			petSlotHighlights[i].SetActive(false);
 		}
-
-		return -1;
-	}
-
-	public void EquipPet()
-	{
-		VGameManager.UserDB.petContainer.Equip(selectedItemTid);
+		exchangeSlot = false;
 
 		UpdateToOwn();
 		UpdateEquipItem();
@@ -182,19 +219,44 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 		UpdateButton();
 		UpdateInfo();
 
-		StageManager.it.RetryStage();
+		SpawnManager.it.ChangePet(GameManager.UserDB.petContainer.GetIndex(selectedItemTid));
+		//StageManager.it.RetryStage();
+	}
+	public void EquipPet()
+	{
+		bool equipped = GameManager.UserDB.petContainer.Equip(selectedItemTid);
+
+		if (equipped == false)
+		{
+			exchangeSlot = true;
+			for (int i = 0; i < petSlotHighlights.Length; i++)
+			{
+				petSlotHighlights[i].SetActive(true);
+			}
+			return;
+		}
+
+		SpawnManager.it.AddPet(GameManager.UserDB.petContainer.GetIndex(selectedItemTid));
+		UpdateToOwn();
+		UpdateEquipItem();
+		UpdateItemList(false);
+		UpdateButton();
+		UpdateInfo();
+
+
 	}
 
 	public void UnEquipPet()
 	{
-		VGameManager.UserDB.petContainer.Unequip(selectedItemTid);
+		SpawnManager.it.RemovePet(GameManager.UserDB.petContainer.GetIndex(selectedItemTid));
+		GameManager.UserDB.petContainer.Unequip(selectedItemTid);
 
 		UpdateToOwn();
 		UpdateEquipItem();
 		UpdateItemList(false);
 		UpdateButton();
 		UpdateInfo();
-		StageManager.it.RetryStage();
+
 	}
 
 	public bool Closable()

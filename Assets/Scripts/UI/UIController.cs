@@ -2,20 +2,34 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 
 public class UIController : MonoBehaviour
 {
 	private static UIController instance;
-	public static UIController it => instance;
+	public static UIController it
+	{
+		get
+		{
+			if (instance == null)
+			{
+				instance = GameObject.FindObjectOfType<UIController>();
 
-	[SerializeField] private TextMeshProUGUI textStageTitle;
+			}
+			return instance;
+		}
+	}
 
-	[SerializeField] private Button buttonPlayBoss;
+	[SerializeField] private UIStageInfo uiStageInfo;
 
 	[Header("Bottoms")]
 	[SerializeField] private UIManagement management;
-	[SerializeField] private UIPet pet;
-	[SerializeField] private UIGacha gacha;
+	[SerializeField] private UIManagementEquip equipment;
+	[SerializeField] private UIManagementSkill skill;
+	[SerializeField] private UIManagementJuvenescence juvenescence;
+	//[SerializeField] private UIManagementPet pet;
+	[SerializeField] private UIDungeonList dungeonList;
+
 
 	[Header("-------------------------")]
 	[SerializeField] private UITraining training;
@@ -25,20 +39,26 @@ public class UIController : MonoBehaviour
 	[SerializeField] private UICoinEffectPool coinEffectPool;
 	[SerializeField] private UIAdRewardChest adRewardChest;
 	[SerializeField] private UIRewardLog uiRewardLog;
-	[SerializeField] private UIGachaRewardPopup gachaRewardPopup;
 
+	[SerializeField] private UIBottomMenu bottomMenu;
+
+
+	public UIBottomMenu BottomMenu => bottomMenu;
+	public UIManagement Management => management;
+	public UIManagementEquip Equipment => equipment;
+	//public UIManagementSkill Skill => skill;
+	//	public UIManagementPet Pet => pet;
+	public UIDungeonList DungeonList => dungeonList;
+
+
+	public UIStageInfo UiStageInfo => uiStageInfo;
 	public HyperSkillUi HyperSkill => hyperSkill;
 	public SkillGlobalUi SkillGlobal => skillGlobal;
+	public UIDungeonList UIDungeonList => dungeonList;
 
 	private bool isCoinEffectActivated = true;
 
 
-
-	private void Start()
-	{
-		buttonPlayBoss.onClick.RemoveAllListeners();
-		buttonPlayBoss.onClick.AddListener(OnClickPlayBoss);
-	}
 
 	private void Awake()
 	{
@@ -66,55 +86,15 @@ public class UIController : MonoBehaviour
 
 		topMoney.Init();
 		adRewardChest.Init();
-	}
 
-	private void OnClickPlayBoss()
+	}
+	public void ShowAdRewardChest(bool isShow)
 	{
-		if(SpawnManagerV2.it != null)
-		{
-			SpawnManagerV2.it.KillAllEnemy();
-			SpawnManagerV2.it.SpawnBoss();
-		}
-		else
-		{
-			SpawnManager.it.KillAllEnemy();
-			SpawnManager.it.SpawnBoss();
-		}
-		buttonPlayBoss.gameObject.SetActive(false);
 
-		//var stageInfo = DataManager.Get<StageInfoDataSheet>().Get(4);
-		//StageManager.it.PlayStage(stageInfo);
+		adRewardChest.Switch(isShow);
+
 	}
 
-	// 현재 플레이중인 스테이지에 맞춰서 하단메뉴, 우측메뉴, dps 현황표 등 활성화 메뉴 결정.
-	public void RefreshUI()
-	{
-		var stageInfo = StageManager.it.CurrentNormalStageInfo;
-
-		textStageTitle.text = $"{stageInfo.areaName}\nACT {stageInfo.act}-{stageInfo.stage}";
-
-		switch (StageManager.it.CurrentStageType)
-		{
-			case StageType.NORMAL:
-				{
-					bool isBossAlive;
-					if(SpawnManagerV2.it != null)
-					{
-						isBossAlive = SpawnManagerV2.it.IsBossDead == false;
-					}
-					else
-					{
-						 isBossAlive = SpawnManager.it.IsBossDead == false;
-					}
-					bool isInfiniteSpawn = StageManager.it.isCurrentStageLimited == false;
-
-					bool canChallengeToBoss = isBossAlive == false && isInfiniteSpawn == true;
-
-					buttonPlayBoss.gameObject.SetActive(canChallengeToBoss);
-				}
-				break;
-		}
-	}
 
 	public void ShowDefeatNavigator()
 	{
@@ -130,15 +110,11 @@ public class UIController : MonoBehaviour
 
 		Vector2 pos = GameUIManager.it.ToUIPosition(_fromObject.position);
 
-		var coinEffect = coinEffectPool.Get();
+		var coinEffect = coinEffectPool.Get("", "default");
 		coinEffect.Run(pos);
 	}
 
-	public void ShowGachaRewardPopup(UIGachaData _uiData, List<GachaResult> _newItems)
-	{
-		gachaRewardPopup.gameObject.SetActive(true);
-		gachaRewardPopup.OnUpdate(_uiData, _newItems);
-	}
+
 
 	public void ShowItemLog(int _tid, IdleNumber _count)
 	{
@@ -162,34 +138,108 @@ public class UIController : MonoBehaviour
 		management.OnUpdate();
 	}
 
-	public void TogglePet()
+	public void ToggleEquipment(EquipTabType type = EquipTabType.WEAPON, long tid = 0)
 	{
 		InactiveAllMainUI();
-		if (pet.gameObject.activeInHierarchy)
+		if (equipment.gameObject.activeInHierarchy)
 		{
 			return;
 		}
 
-		pet.gameObject.SetActive(true);
-		pet.OnUpdate(false);
+		equipment.gameObject.SetActive(true);
+		equipment.OnUpdate(type, tid);
+	}
+
+	public void ToggleJuvenescence()
+	{
+		InactiveAllMainUI();
+		if (juvenescence.gameObject.activeInHierarchy)
+		{
+			return;
+		}
+
+		juvenescence.gameObject.SetActive(true);
+		juvenescence.SetPage(JuvenescencePage.Juvenescence);
+	}
+
+	public void ToggleSkill()
+	{
+		InactiveAllMainUI();
+		if (skill.gameObject.activeInHierarchy)
+		{
+			return;
+		}
+
+		skill.gameObject.SetActive(true);
+		skill.OnUpdate(0);
+	}
+	public void TogglePet()
+	{
+		//InactiveAllMainUI();
+		//if (pet.gameObject.activeInHierarchy)
+		//{
+		//	return;
+		//}
+
+		//pet.gameObject.SetActive(true);
+		//pet.OnUpdate(false);
+	}
+
+	public void ToggleShop()
+	{
+		//InactiveAllMainUI();
+		//if (dungeonList.gameObject.activeInHierarchy)
+		//{
+		//	return;
+		//}
+
+		//dungeonList.gameObject.SetActive(true);
+		//dungeonList.OnUpdate();
+	}
+	public void ShowDungeonList()
+	{
+		InactiveAllMainUI();
+		if (dungeonList.gameObject.activeInHierarchy)
+		{
+			return;
+		}
+
+		dungeonList.gameObject.SetActive(true);
+		dungeonList.OnUpdate();
+	}
+
+	public void ToggleMemory()
+	{
+
 	}
 
 	public void ToggleGacha()
 	{
-		InactiveAllMainUI();
-		if(gacha.gameObject.activeInHierarchy)
-		{
-			return;
-		}
 
-		gacha.gameObject.SetActive(true);
-		gacha.OnUpdate();
 	}
 
-	private void InactiveAllMainUI()
+	public void InactiveAllMainUI()
 	{
 		management.gameObject.SetActive(false);
-		pet.gameObject.SetActive(false);
-		gacha.gameObject.SetActive(false);
+		equipment.gameObject.SetActive(false);
+
+		skill.gameObject.SetActive(false);
+		juvenescence.gameObject.SetActive(false);
+		dungeonList.gameObject.SetActive(false);
+	}
+
+	public void InactivateAllBottomToggle()
+	{
+		bottomMenu.InactivateAllToggle();
+	}
+
+	public void ShowMap()
+	{
+
+	}
+
+	public void ShowBuffPage()
+	{
+
 	}
 }

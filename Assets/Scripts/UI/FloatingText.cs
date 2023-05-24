@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.Pool;
-using UnityEngine.UIElements;
+
 
 public class FloatingText : MonoBehaviour
 {
@@ -24,38 +24,14 @@ public class FloatingText : MonoBehaviour
 		managedPool = pool;
 	}
 
-	public void Show(string text, Color color, Vector2 position, CriticalType _criticalType, bool isPlayerHit = false)
+	public void Show(IdleNumber value, Vector3 position, Vector3 endPosition, CriticalType _criticalType)
 	{
 		gameObject.SetActive(true);
-		//// floatingTextMesh.color = color;
-		//if (color != Color.white)
-		//{
-		//	if (color == Color.magenta)
-		//	{
-		//		currentTextMesh = floatingTextMeshForCritical;
-		//		floatingTextMeshForDamage.gameObject.SetActive(false);
-		//	}
-		//	else
-		//	{
-		//		floatingTextMeshForCritical.gameObject.SetActive(false);
-		//		currentTextMesh = floatingTextMeshForDamage;
-		//	}
-		//	floatingTextMesh.gameObject.SetActive(false);
 
-		//}
-		//else
-		//{
-		//	floatingTextMeshForDamage.gameObject.SetActive(false);
-		//	floatingTextMeshForCritical.gameObject.SetActive(false);
-		//	currentTextMesh = floatingTextMesh;
-		//}
 
-		//if (!currentTextMesh.gameObject.activeSelf) currentTextMesh.gameObject.SetActive(true);
-		//currentTextMesh.text = text;
-		//currentTextMesh.color = new Color(1, 1, 1, 1); // DoFade 때문에 Alpha가 0인 상태로 넘어옴
-		//											   //rectTransform = (transform as RectTransform);
-		//											   //rectTransform.anchoredPosition = position;
 		transform.position = position;
+		Camera sceneCam = SceneCamera.it.sceneCamera;
+
 		if (currentTextMesh != null)
 		{
 			currentTextMesh.gameObject.SetActive(false);
@@ -74,31 +50,38 @@ public class FloatingText : MonoBehaviour
 		}
 		currentTextMesh.gameObject.SetActive(true);
 		currentTextMesh.alpha = 1;
-		currentTextMesh.text = text;
+		currentTextMesh.text = value.ToFloatingString();
 
 		void FadeFont()
 		{
 			currentTextMesh.DOFade(0, 0.4f).OnComplete(OnReturnPool);
 		}
 
-		Vector2 endPos = new Vector2(position.x + Random.Range(0.1f, 0.5f), position.y + Random.Range(0.1f, 0.5f));
-		if (isPlayerHit)
-		{
-			endPos.x = position.x - Random.Range(0.1f, 0.5f);
-		}
-		transform.DOMoveX(endPos.x, 0.4f);
-		transform.DOMoveY(endPos.y + 1, 0.6f).OnComplete(FadeFont);
+		Vector2 endPos = endPosition;
+
+		transform.transform.localScale = Vector3.one * 2;
+		scale = transform.DOScale(1, 0.2f);
+		movex = transform.DOMoveX(endPos.x, 0.2f);
+		movey = transform.DOMoveY(endPos.y, 0.1f).OnComplete(FadeFont);
 	}
 
+	Tweener scale;
+	Tweener movex;
+	Tweener movey;
 	void OnReturnPool()
 	{
-		DOTween.Kill(transform);
+		//DOTween.Kill(transform);
+		scale?.Kill();
+		movex?.Kill();
+		movey?.Kill();
 		managedPool.Release(this);
 	}
 	private void OnDestroy()
 	{
 
-		DOTween.Kill(transform);
+		scale?.Kill();
+		movex?.Kill();
+		movey?.Kill();
 	}
 
 }

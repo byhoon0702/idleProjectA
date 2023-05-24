@@ -4,13 +4,10 @@ using UnityEngine;
 
 public class UnitFsmModule : MonoBehaviour
 {
-	public UnitAttackState attackState;
-	public UnitIdleState idleState;
-	public UnitMoveState moveState;
-	public UnitDeadState deadState;
-	public UnitSkillState skillState;
-	public UnitNeutralizeState neutralizeState;
 
+	public UnitFSM[] fsmStates;
+
+	public Dictionary<StateType, UnitFSM> fsmDictionary = new Dictionary<StateType, UnitFSM>();
 	private UnitFSM currentfsm;
 	private Unit owner;
 	private StateType currentState;
@@ -18,50 +15,20 @@ public class UnitFsmModule : MonoBehaviour
 	{
 		owner = unit;
 
-		if (attackState != null)
+		for (int i = 0; i < fsmStates.Length; i++)
 		{
-			attackState = Instantiate(attackState);
-			attackState.Init(owner);
-		}
+			if (fsmStates[i] == null)
+			{
+				continue;
+			}
 
-		if (idleState != null)
-		{
-			idleState = Instantiate(idleState);
-			idleState.Init(owner);
-		}
-		if (moveState != null)
-		{
-			moveState = Instantiate(moveState);
-			moveState.Init(owner);
-		}
-		if (deadState != null)
-		{
-			deadState = Instantiate(deadState);
-			deadState.Init(owner);
-		}
+			fsmStates[i] = Instantiate(fsmStates[i]);
+			fsmStates[i].Init(owner);
 
-		if (skillState != null)
-		{
-			skillState = Instantiate(skillState);
-			skillState.Init(owner);
+			fsmDictionary.Add(fsmStates[i].State, fsmStates[i]);
 		}
-
-		if (neutralizeState != null)
-		{
-			neutralizeState = Instantiate(neutralizeState);
-			neutralizeState.Init(owner);
-		}
-
 	}
 
-	//public void ChangeState<T>(StateType type, T param = default, bool force = false)
-	//{
-	//	if (currentState == type && force == false)
-	//	{
-	//		return;
-	//	}
-	//	OnChangeStateWithParam(type, param);
-	//}
 	public void ChangeState(StateType type, bool force = false)
 	{
 		if (currentState == type && force == false)
@@ -76,28 +43,16 @@ public class UnitFsmModule : MonoBehaviour
 		currentfsm?.OnUpdate(time);
 	}
 
+	public void OnFixedUpdate(float time)
+	{
+		currentfsm?.OnFixedUpdate(time);
+	}
+
 	protected UnitFSM GetFSM(StateType stateType)
 	{
-		switch (stateType)
+		if (fsmDictionary.ContainsKey(stateType))
 		{
-			case StateType.IDLE:
-				return idleState;
-
-			case StateType.MOVE:
-				return moveState;
-
-			case StateType.ATTACK:
-				return attackState;
-
-			case StateType.DEATH:
-				return deadState;
-
-			case StateType.SKILL:
-				return skillState;
-
-			case StateType.NEUTRALIZE:
-				return neutralizeState;
-
+			return fsmDictionary[stateType];
 		}
 		return currentfsm;
 	}

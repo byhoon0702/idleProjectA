@@ -7,11 +7,11 @@ using UnityEngine;
 public class UnitItemData : ItemData
 {
 	public long unitTid;
-	public List<StatsValue> equipValues;
-	public List<StatsValue> ownValues;
+	public List<ItemStats> equipValues;
+	public List<ItemStats> ownValues;
 	public UnitItemData()
 	{
-		itemType = ItemType.Unit;
+
 	}
 }
 
@@ -28,14 +28,14 @@ public class UnitItemDataSheet : DataSheetBase<UnitItemData>
 			return data;
 		}
 
-		for (int i = 0; i < infos.Count; i++)
-		{
-			if (infos[i].hashTag == _hashTag)
-			{
-				cachedTidList.Add(_hashTag, infos[i]);
-				return infos[i];
-			}
-		}
+		//for (int i = 0; i < infos.Count; i++)
+		//{
+		//	if (infos[i].hashTag == _hashTag)
+		//	{
+		//		cachedTidList.Add(_hashTag, infos[i]);
+		//		return infos[i];
+		//	}
+		//}
 
 		return null;
 	}

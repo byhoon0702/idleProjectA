@@ -14,7 +14,7 @@ public class ProjectileEditorPanel : BaseEditorPanel
 {
 
 	[HideInInspector]
-	public SkillObject createdPrefab;
+	//public SkillObject createdPrefab;
 	public TMP_Dropdown projectileDataListDropdown;
 	public TMP_Dropdown projectileObjectListDropdown;
 	public TMP_Dropdown hitEffectListDropdown;
@@ -27,7 +27,7 @@ public class ProjectileEditorPanel : BaseEditorPanel
 	private ProjectileDataSheet projectileDataSheet;
 
 	private float currentSpeed;
-	private SkillActionBehavior selectedBehavior;
+	//private SkillActionBehavior selectedBehavior;
 	private GameObject selectedObjectEffect;
 	private GameObject selectedHitEffect;
 

@@ -5,35 +5,36 @@ using UnityEngine;
 [System.Serializable]
 public class CostumeData : ItemData
 {
+	public int starLevel;
 	public CostumeType costumeType;
-	public List<StatsValue> equipValues;
-	public List<StatsValue> ownValues;
+	public List<ItemStats> equipValues;
+	public List<ItemStats> ownValues;
 
-	public override List<AbilityInfo> EquipAbilityInfos()
-	{
-		List<AbilityInfo> abilityInfo = new List<AbilityInfo>();
-		for (int i = 0; i < equipValues.Count; i++)
-		{
-			var equip = equipValues[i];
-			AbilityInfo info = new AbilityInfo(equip.type, (IdleNumber)equip.value, (IdleNumber)equip.perLevel);
-			abilityInfo.Add(info);
-		}
+	//public override List<AbilityInfo> EquipAbilityInfos()
+	//{
+	//	List<AbilityInfo> abilityInfo = new List<AbilityInfo>();
+	//	for (int i = 0; i < equipValues.Count; i++)
+	//	{
+	//		var equip = equipValues[i];
+	//		AbilityInfo info = new AbilityInfo(equip.type, (IdleNumber)equip.value, (IdleNumber)equip.perLevel, equip.isMultiply);
+	//		abilityInfo.Add(info);
+	//	}
 
-		return abilityInfo;
-	}
+	//	return abilityInfo;
+	//}
 
-	public override List<AbilityInfo> OwnAbilityInfos()
-	{
-		List<AbilityInfo> abilityInfo = new List<AbilityInfo>();
-		for (int i = 0; i < ownValues.Count; i++)
-		{
-			var equip = ownValues[i];
-			AbilityInfo info = new AbilityInfo(equip.type, (IdleNumber)equip.value, (IdleNumber)equip.perLevel);
-			abilityInfo.Add(info);
-		}
+	//public override List<AbilityInfo> OwnAbilityInfos()
+	//{
+	//	List<AbilityInfo> abilityInfo = new List<AbilityInfo>();
+	//	for (int i = 0; i < ownValues.Count; i++)
+	//	{
+	//		var equip = ownValues[i];
+	//		AbilityInfo info = new AbilityInfo(equip.type, (IdleNumber)equip.value, (IdleNumber)equip.perLevel, equip.isMultiply);
+	//		abilityInfo.Add(info);
+	//	}
 
-		return abilityInfo;
-	}
+	//	return abilityInfo;
+	//}
 }
 [System.Serializable]
 public class CostumeDataSheet : DataSheetBase<CostumeData>

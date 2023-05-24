@@ -18,14 +18,14 @@ public class EditorToolUI : MonoBehaviour
 	[Header("==== Panels ====")]
 	public ProjectileEditorPanel projectileEditorPanel;
 	public AnimationEditorPanel animationEditorPanel;
-	public SkillEffectEditorPanel skillEffectEditorPanel;
+
 	[Header("==== ====== ====")]
 	[Space(1)]
 	public TMP_Dropdown dropdown;
 	public Toggle showDummyToggle;
 	public Slider enemyCountSlider;
 	public TextMeshProUGUI enemyCountSliderNumber;
-	public SkillObject projectileForEdit;
+	//public SkillObject projectileForEdit;
 
 	public Toggle hyperMode;
 
@@ -48,7 +48,6 @@ public class EditorToolUI : MonoBehaviour
 
 		animationEditorPanel.Init(this);
 		projectileEditorPanel.Init(this);
-		skillEffectEditorPanel.Init(this);
 	}
 
 	public void SetUnit(EditorUnit _unit, UnityEditor.Animations.AnimatorController _animatorController)
@@ -57,7 +56,6 @@ public class EditorToolUI : MonoBehaviour
 		animatorController = _animatorController;
 		animationEditorPanel.SetUnit(viewTarget, animatorController);
 		projectileEditorPanel.SetUnit(viewTarget, animatorController);
-		skillEffectEditorPanel.SetUnit(viewTarget, animatorController);
 	}
 
 	//public void ToggleTab(int index)
@@ -104,7 +102,6 @@ public class EditorToolUI : MonoBehaviour
 		UnitEditor.it.OnClickSpawn(unitdata[dropdown.value]);
 		UnitEditor.it.SetAnimationSpeed(1);
 		UnitEditor.it.SetAttackTime(0.1f);
-		skillEffectEditorPanel.SetUnitAnimationState(UnitEditor.it.layerStates);
 	}
 
 	public void OnClickHyper(bool hyper)
@@ -117,19 +114,16 @@ public class EditorToolUI : MonoBehaviour
 		if (hyper)
 		{
 			UnitEditor.it.viewPlayer.ActivateHyperMode();
-			skillEffectEditorPanel.SetUnitAnimationState(UnitEditor.it.layerStates);
 		}
 		else
 		{
 			UnitEditor.it.viewPlayer.DeactivateHyperMode();
-			skillEffectEditorPanel.SetUnitAnimationState(UnitEditor.it.layerStates);
 		}
 	}
 
 
 	public void OnClickSkillEditorWindow()
 	{
-		skillEffectEditorPanel.OnClickSkillEffectEditorWindow();
 	}
 }
 #endif

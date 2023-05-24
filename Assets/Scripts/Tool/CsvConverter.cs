@@ -1,16 +1,17 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 
 using System.IO;
 using System.Text;
 using Unity.VisualScripting;
-using UnityEditor;
+
 using UnityEngine;
 using System.Reflection;
 using System.Collections;
 
 using System.Text.RegularExpressions;
-using JetBrains.Annotations;
+using System.Linq;
 
 public static class CsvConverter
 {
@@ -19,6 +20,8 @@ public static class CsvConverter
 	private static char[] TRIM_CHARS = { '\"' };
 	private const string assembly = "Assembly-CSharp";
 	private const string delimeter = ",";
+
+#if UNITY_EDITOR
 	public static string FromData(UnityEngine.Object unityObject)
 	{
 		var targetObje = unityObject;
@@ -36,32 +39,31 @@ public static class CsvConverter
 
 
 	}
+
 	private static int CreateTypeField(StringBuilder sb, Type itemType)
 	{
 		int totalFieldCount = 0;
-		FieldInfo tidField = itemType.GetField("tid");
-		FieldInfo descField = itemType.GetField("description");
-		var listFields = itemType.GetFields();
-		string typename = ConvertUtility.ConvertTypeToString(tidField.FieldType.Name);
-		totalFieldCount++;
-		sb.Append($"{typename}:tid");
 
-		typename = ConvertUtility.ConvertTypeToString(descField.FieldType.Name);
-		totalFieldCount++;
-		sb.Append($",{typename}:description");
+		var listFields = EditorHelper.GetSerializedField(itemType);
 
+		string typename = "";
+
+		string _delimeter = "";
 		foreach (var listField in listFields)
 		{
-
-			if (listField.Name == "tid" || listField.Name == "description")
+			if (totalFieldCount == 0)
 			{
-				continue;
+				_delimeter = "";
 			}
-
+			else
+			{
+				_delimeter = delimeter;
+			}
 			typename = ConvertUtility.ConvertTypeToString(listField.FieldType.Name);
 			if (typename == "list")
 			{
-				sb.Append($"{delimeter}{typename}:{listField.Name}");
+				string listHeader = $"{_delimeter}{typename}:{listField.Name}";
+				sb.Append(listHeader);
 
 				var sublistTypes = listField.FieldType.GetGenericArguments();
 				totalFieldCount++;
@@ -69,37 +71,68 @@ public static class CsvConverter
 				{
 					Type sublistType = sublistTypes[0];
 					var subListFields = sublistType.GetFields();
+
+
+					void TitleHeader(StringBuilder sddd, string listName, FieldInfo fieldInfo)
+					{
+						string convertedname = ConvertUtility.ConvertTypeToString(fieldInfo.FieldType.Name);
+
+						if (convertedname.Equals("object"))
+						{
+							var ss = fieldInfo.FieldType.GetFields();
+							if (ss.Length > 0)
+							{
+								for (int i = 0; i < ss.Length; i++)
+								{
+									TitleHeader(sddd, $"{listName}:{fieldInfo.FieldType.Name}:{fieldInfo.Name}", ss[i]);
+								}
+							}
+						}
+						else
+						{
+							totalFieldCount++;
+							sddd.Append($"{listName}:{fieldInfo.FieldType.Name}:{fieldInfo.Name}");
+						}
+					}
+
+
 					for (int ii = 0; ii < subListFields.Length; ii++)
 					{
-						totalFieldCount++;
+
 						var subListField = subListFields[ii];
-						sb.Append($"{delimeter}{typename}:{listField.Name}:{subListField.ReflectedType.Name}:{subListFields[ii].Name}");
+
+						TitleHeader(sb, $"{listHeader}:{subListField.ReflectedType.Name}", subListField);
+
 					}
 				}
 				else
 				{
 					totalFieldCount++;
 					Type sublistType = sublistTypes[0];
-					sb.Append($"{delimeter}{typename}:{listField.Name}:{sublistType.Name}");
+					sb.Append($"{listHeader}:{sublistType.Name}");
 				}
 			}
 			else if (typename == "object")
 			{
-				sb.Append($"{delimeter}{typename}:{listField.FieldType.Name}:{listField.Name}");
+				totalFieldCount++;
+				sb.Append($"{_delimeter}{typename}:{listField.FieldType.Name}:{listField.Name}");
 				var objectFields = listField.FieldType.GetFields();
 				for (int i = 0; i < objectFields.Length; i++)
 				{
-					sb.Append($"{delimeter}{typename}:{listField.FieldType.Name}:{listField.Name}:{objectFields[i].Name}");
+					totalFieldCount++;
+					sb.Append($"{_delimeter}{typename}:{listField.FieldType.Name}:{listField.Name}:{objectFields[i].FieldType.Name}:{objectFields[i].Name}");
 				}
 			}
 			else
 			{
+
 				totalFieldCount++;
-				sb.Append($"{delimeter}{typename}:{listField.Name}");
+				sb.Append($"{_delimeter}{typename}:{listField.FieldType.Name}:{listField.Name}");
 			}
 		}
 		return totalFieldCount;
 	}
+
 
 	private static string CreateCSV(object obj)
 	{
@@ -109,6 +142,11 @@ public static class CsvConverter
 		StringBuilder sb = new StringBuilder();
 		foreach (var field in fields)
 		{
+			if (field.IsNotSerialized || field.IsInitOnly)
+			{
+				continue;
+			}
+
 			object value = field.GetValue(obj);
 			if (typeof(IList).IsAssignableFrom(value) == false)
 			{
@@ -134,7 +172,7 @@ public static class CsvConverter
 				for (int i = 0; i < list.Count; i++)
 				{
 					object listitem = list[i];
-					var listFields = itemType.GetFields();
+					var listFields = EditorHelper.GetSerializedField(listitem.GetType());
 					List<string> datastring = new List<string>();
 					//컬럼 먼저
 					FieldInfo tidField = itemType.GetField("tid");
@@ -145,16 +183,18 @@ public static class CsvConverter
 					int indent = 0;
 
 					datastring.Add($"{tidField.GetValue(listitem)}");
+					indent++;
 					datastring.Add($"{descField.GetValue(listitem)}");
-
+					indent++;
 
 					foreach (var listField in listFields)
 					{
 						if (listField.Name == "tid" || listField.Name == "description")
 						{
+
 							continue;
 						}
-						indent++;
+
 						string typename = ConvertUtility.ConvertTypeToString(listField.FieldType.Name);
 						if (typename == "list")
 						{
@@ -162,17 +202,22 @@ public static class CsvConverter
 
 							IList datalist = (IList)data;
 
-							CreateListTable(datalist, datastring, listField.FieldType, indent, indentedData);
+							Type[] sublistTypes = listField.FieldType.GetGenericArguments();
+
+							CreateListTable(datalist, datastring, sublistTypes[0], ref indent, indentedData);
+
 						}
 						else if (typename == "object")
 						{
 							object data = listField.GetValue(listitem);
+							FieldInfo[] fieldInfos = EditorHelper.GetSerializedField(listField.FieldType);
+							CreateObjectField(data, datastring, fieldInfos, ref indent);
 
-							CreateObjectField(data, datastring, listField.FieldType);
 						}
 						else
 						{
 							datastring.Add($"{listField.GetValue(listitem)}");
+							indent++;
 							//리스트 형태가 아닌 단일 데이터 필드
 						}
 					}
@@ -189,7 +234,16 @@ public static class CsvConverter
 							{
 								lowerListData.Add(new string[totalFieldCount]);
 							}
-							lowerListData[ii][datad.Key] = datad.Value[ii];
+							try
+							{
+								lowerListData[ii][datad.Key] = datad.Value[ii];
+							}
+							catch (Exception e)
+							{
+								Debug.LogError(e.Message);
+							}
+
+
 						}
 					}
 
@@ -227,89 +281,199 @@ public static class CsvConverter
 		return sb.ToString();
 	}
 
-	private static void CreateListTable(IList datalist, List<string> stringdata, Type fieldType, int indent, Dictionary<int, List<string>> indentedData)
+	private static void CreateListTable(IList datalist, List<string> stringdata, Type fieldType, ref int indent, Dictionary<int, List<string>> indentedData)
 	{
-		Type[] sublistTypes = fieldType.GetGenericArguments();
-
-		if (sublistTypes[0].BaseType.Equals(typeof(object)))
+		if (fieldType.BaseType.Equals(typeof(object)))
 		{
-			Type sublistType = sublistTypes[0];
+			Type sublistType = fieldType;
 			var subListFields = sublistType.GetFields();
 
-
-			indent++;
 			stringdata.Add("");
+			indent++;
 			if (datalist.Count > 0)
 			{
-				indent++;
+
 				for (int i = 0; i < subListFields.Length; i++)
 				{
-
 					var subListField = subListFields[i];
-					stringdata.Add($"{subListField.GetValue(datalist[0])}");
-				}
+					DDDD(subListField, ref indent);
+					void DDDD(FieldInfo sublistField, ref int indent)
+					{
+						string converted = ConvertUtility.ConvertTypeToString(sublistField.FieldType.Name);
 
+						if (converted.Equals("object"))
+						{
+							var fields = sublistField.FieldType.GetFields();
+
+							var data = sublistField.GetValue(datalist[0]);
+							for (int i = 0; i < fields.Length; i++)
+							{
+								var dds = fields[i];
+
+								stringdata.Add($"{dds.GetValue(data)}");
+								indent++;
+							}
+						}
+						else
+						{
+							stringdata.Add($"{subListField.GetValue(datalist[0])}");
+							indent++;
+						}
+					}
+				}
 				for (int i = 1; i < datalist.Count; i++)
 				{
+					indent -= CalculateIndent();
 
+					int CalculateIndent()
+					{
+						int fieldLength = 0;
+
+						for (int i = 0; i < subListFields.Length; i++)
+						{
+							var subListField = subListFields[i];
+							string converted = ConvertUtility.ConvertTypeToString(subListField.FieldType.Name);
+
+							if (converted.Equals("object"))
+							{
+
+								fieldLength += subListField.FieldType.GetFields().Length;
+							}
+							else
+							{
+								fieldLength += 1;
+							}
+
+						}
+						return fieldLength;
+					}
 					for (int ii = 0; ii < subListFields.Length; ii++)
 					{
 						var subListField = subListFields[ii];
 
-						indent++;
-						if (indentedData.ContainsKey(indent) == false)
+						DDDD(subListField, ref indent);
+
+
+						void DDDD(FieldInfo sublistField, ref int indent)
 						{
-							indentedData.Add(indent, new List<string>());
+							string converted = ConvertUtility.ConvertTypeToString(sublistField.FieldType.Name);
+
+							if (converted.Equals("object"))
+							{
+								var fields = sublistField.FieldType.GetFields();
+								var data = sublistField.GetValue(datalist[i]);
+
+								for (int i = 0; i < fields.Length; i++)
+								{
+									var dds = fields[i];
+
+									if (indentedData.ContainsKey(indent) == false)
+									{
+										indentedData.Add(indent, new List<string>());
+									}
+									indentedData[indent].Add($"{dds.GetValue(data)}");
+									indent++;
+								}
+
+							}
+							else
+							{
+								if (indentedData.ContainsKey(indent) == false)
+								{
+									indentedData.Add(indent, new List<string>());
+								}
+								indentedData[indent].Add($"{subListField.GetValue(datalist[i])}");
+								indent++;
+							}
 						}
-						indentedData[indent].Add($"{subListField.GetValue(datalist[i])}");
+
 					}
 				}
+
 			}
 			else
 			{
 
 				for (int i = 0; i < subListFields.Length; i++)
 				{
-					indent++;
+
 					stringdata.Add($"");
+					indent++;
 				}
 			}
 		}
 
 		else
 		{
-			indent++;
+
 			stringdata.Add("");
+			indent++;
 			if (datalist.Count > 0)
 			{
-
 				stringdata.Add($"{datalist[0]}");
 				//따로 리스트로 저장 해둔 다음 스트링 다시 추가
 				for (int i = 1; i < datalist.Count; i++)
 				{
+
 					if (indentedData.ContainsKey(indent) == false)
 					{
 						indentedData.Add(indent, new List<string>());
 					}
 					indentedData[indent].Add($"{datalist[i]}");
+
 				}
+				indent++;
 			}
 			else
 			{
-				indent++;
+
 				stringdata.Add($"");
+				indent++;
 			}
 		}
 	}
-	private static void CreateObjectField(object objectData, List<string> stringdata, Type fieldType)
+	private static void CreateObjectField(object objectData, List<string> stringdata, FieldInfo[] fieldInfos, ref int indent)
 	{
-		FieldInfo[] objectFields = fieldType.GetFields();
+		FieldInfo[] objectFields = fieldInfos;
 
 		stringdata.Add("");
+		indent++;
 		for (int i = 0; i < objectFields.Length; i++)
 		{
 			stringdata.Add($"{objectFields[i].GetValue(objectData)}");
+			indent++;
 		}
+	}
+	static object ConvertDataType(Type fieldType, string value)
+	{
+		object convertedValue = null;
+		if (fieldType.BaseType == typeof(Enum))
+		{
+			Enum.TryParse(fieldType, value, out convertedValue);
+		}
+		else
+		{
+			try
+			{
+				if (fieldType == typeof(int) || fieldType == typeof(long) || fieldType == typeof(float) || fieldType == typeof(double))
+				{
+					if (value == "")
+					{
+						value = "0";
+					}
+				}
+				convertedValue = Convert.ChangeType(value, fieldType);
+				if (convertedValue == null)
+				{
+					convertedValue = "";
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.LogError($"{fieldType}, {fieldType.Name}, {value}");
+			}
+		}
+		return convertedValue;
 	}
 
 
@@ -326,14 +490,30 @@ public static class CsvConverter
 
 		string[] lines = Regex.Split(source, LINE_SPLIT_RE);
 
-		System.Type type = lines[1].GetAssemblyType();
+		int strindex = lines[1].IndexOf(',');
+
+		string typename = lines[1];
+
+		if (strindex > -1)
+		{
+			typename = typename.Remove(strindex, lines[1].Length - strindex);
+		}
+		System.Type type = typename.GetAssemblyType();
 		var instance = Activator.CreateInstance(type);
 
 		FieldInfo typeField = type.GetField("typeName");
-		typeField.SetValue(instance, lines[1]);
+		typeField.SetValue(instance, typename);
 
 		FieldInfo prefixIDField = type.GetField("prefixID", BindingFlags.NonPublic | BindingFlags.Instance);
-		prefixIDField.SetValue(instance, long.Parse(lines[3]));
+
+		strindex = lines[3].IndexOf(',');
+		string tid = lines[3];
+		if (strindex > -1)
+		{
+			tid = tid.Remove(strindex, lines[3].Length - strindex);
+		}
+
+		prefixIDField.SetValue(instance, long.Parse(tid));
 
 		FieldInfo infosField = type.GetField("infos");
 		Type elementType = null;
@@ -386,6 +566,7 @@ public static class CsvConverter
 				}
 				else
 				{
+
 					dataDic[currentID][headerName].Add("");
 				}
 
@@ -404,7 +585,7 @@ public static class CsvConverter
 				string headerName = dic.Key;//header
 				string[] headerSplit = headerName.Split(':');
 
-				FieldInfo info = elementType.GetField(headerSplit[1]);
+				FieldInfo info = elementType.GetField(headerSplit[headerSplit.Length - 1]);
 				if (headerSplit[0].Equals("list") == false)
 				{
 					//리스트가 아니면 데이터는 무조건 첫번째 배열에만 들어있다. 그게 아닌경우 데이터 쓰기에서 버그가 발생한것
@@ -434,6 +615,7 @@ public static class CsvConverter
 				}
 				else
 				{
+					info = elementType.GetField(headerSplit[1]);
 					//데이터를 Set 하지 않고 한번더 필터링을 거친다
 					//헤더 스플릿의 2번째 배열 까지가 리스트의 이름이기 때문에 3번째 부터 데이터 여부를 검사 한다.
 					if (headerSplit.Length > 2)
@@ -442,6 +624,8 @@ public static class CsvConverter
 						{
 							string className = headerSplit[2];
 							string classVariableName = headerSplit[3];
+							//헤더의 마지막은 언제나 변수 이름이다.
+							int lastIndex = headerSplit.Length - 1;
 							if (objectDataList.ContainsKey(info) == false)
 							{
 								objectDataList.Add(info, new Dictionary<string, List<string>>());
@@ -449,15 +633,13 @@ public static class CsvConverter
 
 							for (int i = 0; i < dic.Value.Count; i++)
 							{
-								//if (dic.Value[i] == "")
-								//{
-								//	continue;
-								//}
-								if (objectDataList[info].ContainsKey(classVariableName) == false)
+
+								if (objectDataList[info].ContainsKey(headerName) == false)
 								{
-									objectDataList[info].Add(classVariableName, new List<string>());
+									objectDataList[info].Add(headerName, new List<string>());
 								}
-								objectDataList[info][classVariableName].Add(dic.Value[i]);
+
+								objectDataList[info][headerName].Add(dic.Value[i]);
 							}
 							//클래스, 구조체 등의 자료형을 가지는 리스트 
 						}
@@ -495,30 +677,148 @@ public static class CsvConverter
 
 			}
 
+			//하위 리스트에대한 부분 처리
 			if (objectDataList.Count > 0 || singleDataList.Count > 0)
 			{
 				foreach (var objectData in objectDataList)
 				{
-
+					var listValue = objectData.Value;
 					var genericTypes = objectData.Key.FieldType.GenericTypeArguments[0];
 					var subinst = Activator.CreateInstance(objectData.Key.FieldType);
-					if (objectData.Value.Count == 0)
+					if (listValue.Count == 0)
 					{
 						objectData.Key.SetValue(dataInstance, subinst);
 						continue;
 					}
-					int index = 0;
-					FieldInfo[] genericFields = genericTypes.GetFields();
 
-					while (index < objectData.Value[genericFields[0].Name].Count)
+					int index = 0;
+					FieldInfo[] genericFields = EditorHelper.GetSerializedField(genericTypes);
+
+					listValue.TryFirstOrDefault(out var outData);
+
+					int listCount = outData.Value.Count;
+					while (index < listCount)
 					{
+						bool dataExist = false;
+
+						for (int i = 0; i < genericFields.Length; i++)
+						{
+							if (CheckDataExist(genericFields[i]))
+							{
+								dataExist = true;
+								break;
+							}
+
+
+							bool CheckDataExist(FieldInfo fieldInfo)
+							{
+								string converted = ConvertUtility.ConvertTypeToString(fieldInfo.FieldType.Name);
+								if (converted.Equals("object"))
+								{
+
+									var fieldInfos = fieldInfo.FieldType.GetFields();
+
+									for (int ii = 0; ii < fieldInfos.Length; ii++)
+									{
+										var child = fieldInfos[ii];
+										string fieldName = $"{fieldInfo.FieldType.Name}:{fieldInfo.Name}:{child.FieldType.Name}:{child.Name}";
+
+										foreach (var listData in listValue)
+										{
+											if (listData.Key.Contains(fieldName))
+											{
+												if (listData.Value[index].IsNullOrEmpty() == false)
+												{
+													return true;
+												}
+											}
+										}
+									}
+								}
+								else
+								{
+									foreach (var listData in listValue)
+									{
+										if (listData.Key.Contains($"{fieldInfo.FieldType.Name}:{fieldInfo.Name}"))
+										{
+											if (listData.Value[index].IsNullOrEmpty() == false)
+											{
+												return true;
+											}
+										}
+									}
+								}
+								return false;
+							}
+
+						}
+						if (dataExist == false)
+						{
+							index++;
+							continue;
+						}
 						var classinst = Activator.CreateInstance(genericTypes);
 						for (int i = 0; i < genericFields.Length; i++)
 						{
 							var fieldInfo = genericFields[i];
-							var ss = objectData.Value[fieldInfo.Name][index];
-							var converted = ConvertDataType(fieldInfo.FieldType, ss);
-							fieldInfo.SetValue(classinst, converted);
+
+							string value = "";
+
+							SetValue(fieldInfo);
+							void SetValue(FieldInfo fieldInfo)
+							{
+								string converted = ConvertUtility.ConvertTypeToString(fieldInfo.FieldType.Name);
+								int subIndex = 0;
+								if (converted.Equals("object"))
+								{
+									var fieldInfos = fieldInfo.FieldType.GetFields();
+									var subclass = Activator.CreateInstance(fieldInfo.FieldType);
+									for (int i = 0; i < fieldInfos.Length; i++)
+									{
+										var child = fieldInfos[i];
+										string fieldName = $"{fieldInfo.FieldType.Name}:{fieldInfo.Name}:{child.FieldType.Name}:{child.Name}";
+
+										foreach (var listData in listValue)
+										{
+											if (listData.Value.Count - 1 < subIndex)
+											{
+												subIndex = 0;
+												break;
+											}
+											if (listData.Key.Contains(fieldName))
+											{
+
+												if (listData.Value[subIndex].IsNullOrEmpty() == false)
+												{
+													value = listData.Value[subIndex];
+													var data = ConvertDataType(child.FieldType, value);
+													child.SetValue(subclass, data);
+												}
+											}
+										}
+									}
+									subIndex++;
+									fieldInfo.SetValue(classinst, subclass);
+
+								}
+								else
+								{
+									foreach (var listData in listValue)
+									{
+										if (listData.Key.Contains($"{fieldInfo.FieldType.Name}:{fieldInfo.Name}"))
+										{
+											if (listData.Value[index].IsNullOrEmpty() == false)
+											{
+												value = listData.Value[index];
+											}
+										}
+									}
+
+									var data = ConvertDataType(fieldInfo.FieldType, value);
+									fieldInfo.SetValue(classinst, data);
+								}
+							}
+
 						}
 						index++;
 						((IList)subinst).Add(classinst);
@@ -549,31 +849,6 @@ public static class CsvConverter
 		return instance;
 	}
 
-	static object ConvertDataType(Type fieldType, string value)
-	{
-		object convertedValue = null;
-		if (fieldType.BaseType == typeof(Enum))
-		{
-			Enum.TryParse(fieldType, value, out convertedValue);
-		}
-		else
-		{
-			try
-			{
-				if (fieldType == typeof(int) || fieldType == typeof(long) || fieldType == typeof(float) || fieldType == typeof(double))
-				{
-					if (value == "")
-					{
-						value = "0";
-					}
-				}
-				convertedValue = Convert.ChangeType(value, fieldType);
-			}
-			catch (Exception ex)
-			{
-				Debug.LogError($"{fieldType}, {fieldType.Name}, {value}");
-			}
-		}
-		return convertedValue;
-	}
+
+#endif
 }

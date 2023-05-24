@@ -1,193 +1,79 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 
 
-public class Pet : UnitBase
+public class Pet : MonoBehaviour
 {
-	public SkillModule skillModule;
-
-	public PetInfo info;
-	public PetIdleState idleState;
-	public PetAttackState attackState;
-
-	public PetMoveState petMoveState;
-
-	public float acceleration = 1;
-	public override string CharName => info.data.name;
-	protected override string ModelResourceName => info.data.resource;
-	public override string defaultAttackSoundPath => info.data.attackSound;
-	public override ControlSide ControlSide => ControlSide.PLAYER;
-	public override IdleNumber AttackPower => info.AttackPower();
-	public override float AttackSpeedMul => info.AttackSpeedMul();
-	public override float CriticalDamageMultifly => info.CriticalDamageMultifly();
-	public override float CriticalX2DamageMultifly => info.CriticalX2DamageMultifly();
-
-	public override float SearchRange => 10;
-	public override float MoveSpeed => info.MoveSpeed();
-	public override Vector3 MoveDirection => Vector3.right;
-
-	private SkillEffectObject normalSkillObject = null;
-
-
-
-	public void InitState()
+	public PlayerUnit follow;
+	public int index;
+	public float speed = 5f;
+	public UnitAnimation unitAnimation;
+	public new Rigidbody2D rigidbody;
+	protected virtual void FixedUpdate()
 	{
-		idleState = new PetIdleState();
-		petMoveState = new PetMoveState();
-		attackState = new PetAttackState();
-
-
-		idleState.Init(this);
-		petMoveState.Init(this);
-		attackState.Init(this);
-
-
-		currentfsm = idleState;
-		currentState = StateType.IDLE;
+		Move();
 	}
-	public void ChangeState(StateType stateType)
+
+	public void Spawn(PetSlot petSlot, int _index, PlayerUnit _follow)
 	{
-		currentState = stateType;
-		currentfsm?.OnExit();
-		switch (stateType)
+		index = _index;
+		follow = _follow;
+		GameObject go = Instantiate(petSlot.item.PetObject, transform);
+		Vector3 pos = new Vector3(index * -0.8f, 0, 0);
+		if (follow != null)
 		{
-			case StateType.IDLE:
-				currentfsm = idleState;
-				break;
-			case StateType.MOVE:
-				currentfsm = petMoveState;
-				break;
-			case StateType.ATTACK:
-				currentfsm = attackState;
-				break;
+			pos += follow.position;
 		}
-		currentfsm?.OnEnter();
+		transform.position = pos;
+		transform.localScale = Vector3.one;
+
+		Camera sceneCam = SceneCamera.it.sceneCamera;
+		go.transform.LookAt(go.transform.position + sceneCam.transform.rotation * Vector3.forward, sceneCam.transform.rotation * Vector3.up);
+		UnitAnimation petAnimation = go.GetComponent<UnitAnimation>();
+		petAnimation.Init();
+		unitAnimation = petAnimation;
+		rigidbody = GetComponent<Rigidbody2D>();
+
+		speed = Random.Range(1f, 3f);
 	}
-	int positionIndex = 0;
-	public void Init(int index)
+
+
+	void Move()
 	{
-
-		positionIndex = index;
-
-		InitState();
-
-		unitAnimation = model.GetComponent<UnitAnimation>();
-		if (unitAnimation == null)
-		{
-			unitAnimation = model.AddComponent<UnitAnimation>();
-		}
-
-		if (SpawnManagerV2.it != null)
-		{
-			petPosition = SpawnManagerV2.it.GetPartyPos(positionIndex);
-		}
-		else
-		{
-			petPosition = UnitManager.it.GetPartyPos(positionIndex);
-		}
-	}
-	protected virtual void Update()
-	{
-		if (VGameManager.it.currentState != GameState.BATTLE
-			&& VGameManager.it.currentState != GameState.REWARD
-			&& VGameManager.it.currentState != GameState.BOSSBATTLE)
+		if (follow == null)
 		{
 			return;
 		}
+		Vector3 targetPos = follow.transform.position + (follow.headingDirection * -1 * (index * 0.5f));
 
-		float delta = Time.deltaTime;
-		if (SpawnManagerV2.it != null)
+
+		Vector3 myPos = transform.position;
+
+
+		if (targetPos.x - myPos.x > 0.1f)
 		{
-			petPosition = SpawnManagerV2.it.GetPartyPos(positionIndex);
+			unitAnimation.transform.localScale = new Vector3(1, 1, 1);
+		}
+		else if (targetPos.x - myPos.x < -0.1f)
+		{
+			unitAnimation.transform.localScale = new Vector3(-1, 1, 1);
+		}
+
+		if (Vector3.Distance(targetPos, myPos) > 0.05f)
+		{
+			rigidbody.MovePosition(myPos + (targetPos - myPos).normalized * Time.deltaTime * speed);
+			unitAnimation.PlayAnimation(StateType.MOVE);
 		}
 		else
 		{
-			petPosition = UnitManager.it.GetPartyPos(positionIndex);
+			rigidbody.position = Vector3.Lerp(myPos, targetPos, 0.05f);
+			unitAnimation.PlayAnimation(StateType.IDLE);
 		}
 
-		// idle상태이면 move로 이동 시도
-		if (currentState == StateType.IDLE)
-		{
-			ChangeState(StateType.MOVE);
-		}
 
-		currentfsm?.OnUpdate(delta);
-	}
-	public override void SetAttack()
-	{
-		if (normalSkillObject == null)
-		{
-			SkillEffectData data = GetSkillEffectData();
-
-			normalSkillObject = SkillEffectObjectPool.it.Get();
-			normalSkillObject.SetData(data);
-		}
-
-		if (target != null)
-		{
-			normalSkillObject.OnSkillStart(this, target.unitAnimation.CenterPivot.position, AttackPower);
-		}
-	}
-	public override void DefaultAttack(float time)
-	{
-		if (normalSkillObject == null)
-		{
-			return;
-		}
-		normalSkillObject.UpdateFromOutSide(time);
-		//normalSkillObject.Attack(time);
-	}
-	public override void ResetDefaultAttack()
-	{
-		if (normalSkillObject == null)
-		{
-			return;
-		}
-
-		normalSkillObject.Reset();
-	}
-	public void AttackStart()
-	{
-
-		PlayAnimation(StateType.ATTACK);
-	}
-	public void Spawn(PetData _data, int index)
-	{
-		info = new PetInfo(this, _data);
-
-		if (model == null)
-		{
-			LoadModel();
-		}
-
-		Init(index);
-
-	}
-
-	Vector3 petPosition = Vector3.zero;
-
-	public override void Move(float _delta)
-	{
-		Vector3 toward = Vector3.MoveTowards(position, petPosition, _delta * info.MoveSpeed() * acceleration);
-
-		transform.SetPositionAndRotation(toward, transform.rotation);
-
-		float distance = petPosition.x - position.x;
-		if (distance > 0.1f)
-		{
-			acceleration = 1.5f;
-		}
-		else
-		{
-			acceleration = 1f;
-		}
-	}
-
-	public override SkillEffectData GetSkillEffectData()
-	{
-		return info.normalSkillEffectData;
 	}
 }

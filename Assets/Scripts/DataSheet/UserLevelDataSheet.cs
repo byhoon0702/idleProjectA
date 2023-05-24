@@ -1,26 +1,29 @@
-﻿
-using System;
-
-[Serializable]
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+[System.Serializable]
 public class UserLevelData : BaseData
 {
-	public Int32 level;
-	public Int32 nextExp;
-	public Int32 propertyPoint;
+	public int level;
+	public int baseExp;
+	public int expIncrement;
+	public float firstWeight;
+	public float secondWeight;
 }
-
-[Serializable]
+[System.Serializable]
 public class UserLevelDataSheet : DataSheetBase<UserLevelData>
 {
-	public UserLevelData Get(long tid)
+
+	public UserLevelData GetDataByLevel(int level)
 	{
-		for (int i = 0; i < infos.Count; i++)
+		for (int i = infos.Count - 1; i >= 0; i--)
 		{
-			if (infos[i].tid == tid)
+			if (infos[i].level <= level)
 			{
 				return infos[i];
 			}
 		}
+
 		return null;
 	}
 }

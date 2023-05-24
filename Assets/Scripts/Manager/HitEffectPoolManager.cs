@@ -23,24 +23,26 @@ public class HitEffectPoolManager : VObjectPool<HitEffect>
 		_object.Set(_pool);
 	}
 
-	protected override string GetPath(string _name)
+	protected override string GetPath(string _path, string _name)
 	{
-		return $"{PathHelper.hyperCasualFXPath}/{_name}";
+		return $"{PathHelper.hitEffectPath}/{_name}";
 	}
 
-	protected override HitEffect OnCreateObject(string _name)
+	protected override HitEffect OnCreateObject(string _path, string _name)
 	{
-		if (GetResource(_name) == null)
+		if (GetResource("", _name) == null)
 		{
 			return null;
 		}
-		HitEffect effect = Instantiate(GetResource(_name), transform);
+		HitEffect effect = Instantiate(GetResource("", _name), transform);
 		effect.name = _name;
 		return effect;
 	}
 
 	protected override void OnGetObject(HitEffect _object)
 	{
+		base.OnGetObject(_object);
+
 		if (_object == null)
 		{
 			return;
@@ -50,6 +52,8 @@ public class HitEffectPoolManager : VObjectPool<HitEffect>
 
 	protected override void OnReleaseObject(HitEffect _object)
 	{
+		base.OnReleaseObject(_object);
+
 		if (_object == null)
 		{
 			return;

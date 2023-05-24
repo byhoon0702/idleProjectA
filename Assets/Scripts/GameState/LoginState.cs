@@ -1,39 +1,31 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class LoginState : RootState
 {
+	public override void Init()
+	{
 
-	public override void OnEnter()
+	}
+	public override FSM RunNextState(float time)
+	{
+		return this;
+	}
+
+	public override FSM OnEnter()
 	{
 		elapsedTime = 0;
 
 		Intro.it.SetActiveTabToStart(true);
-
-		string userFileName = PlayerPrefs.GetString("LoadUserInfoFileName", "");
-		if (userFileName.HasStringValue())
+		if (Intro.it.userDB.LoadLoginData() == false)
 		{
-			try
-			{
-				string json = System.IO.File.ReadAllText($"{UserInfo.UserDataFilePath}/{userFileName}.json");
-				JsonUtility.FromJsonOverwrite(json, UserInfo.userData);
-				Debug.Log($"UserData 로드. 파일명: {userFileName}. name: {UserInfo.UserName}({UserInfo.UID})");
-			}
-			catch (Exception e)
-			{
-				Debug.LogError($"UserData 로드 실패. 파일명: {userFileName}\n{e}");
-				UserInfo.LoadTestUserData();
-			}
-		}
-		else
-		{
-			Debug.Log($"UserData TestData 로드. name: {UserInfo.UserName}({UserInfo.UID})");
-			UserInfo.LoadTestUserData();
+			Intro.it.uiPopupLogin.OnUpdate();
 		}
 
-		UserInfo.CalculateTotalCombatPower();
+		return this;
 	}
 
 	public override void OnExit()

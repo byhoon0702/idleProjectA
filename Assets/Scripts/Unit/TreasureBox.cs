@@ -5,15 +5,19 @@ using UnityEngine;
 public class TreasureBox : HittableUnit
 {
 	public UnitData info;
-	public override UnitStats GetStats => new UnitStats();
 	public override IdleNumber AttackPower => (IdleNumber)0;
 
-	protected override string ModelResourceName => info.resource;
 
 	public override ControlSide ControlSide => ControlSide.ENEMY;
 	public override UnitType UnitType => UnitType.TreasureBox;
-
-	public override float AttackSpeedMul => 0;
+	public override HitInfo HitInfo
+	{
+		get
+		{
+			return new HitInfo(AttackPower);
+		}
+	}
+	public override float AttackSpeed => 0;
 
 	public override IdleNumber Hp { get; set; }
 
@@ -25,18 +29,24 @@ public class TreasureBox : HittableUnit
 	protected bool isRewardable = true;
 
 
-	public void Spawn(EnemySpawnInfo _spawnInfo, GameStageInfo _stageInfo)
+	public void Spawn(UnitData _spawnInfo, StageInfo _stageInfo)
 	{
-		info = _spawnInfo.unitData;
+		info = _spawnInfo;
 
 		if (model == null)
 		{
-			var model = Instantiate(Resources.Load<GameObject>($"B/{ModelResourceName}"));
+			var model = Instantiate(Resources.Load<GameObject>($"B/TreasureBox"));
 			model.transform.SetParent(transform);
 			model.transform.localPosition = Vector3.zero;
 			model.transform.localScale = Vector3.one;
-			maxHp = _stageInfo.UnitHP(false);
+			//maxHp = _stageInfo.UnitHP(false);
 			Hp = maxHp;
+
+			if (SceneCamera.it != null)
+			{
+				Camera sceneCam = SceneCamera.it.sceneCamera;
+				model.transform.LookAt(model.transform.position + sceneCam.transform.rotation * Vector3.forward, sceneCam.transform.rotation * Vector3.up);
+			}
 
 			base.model = model.gameObject;
 			model.gameObject.tag = "Enemy";
@@ -56,7 +66,7 @@ public class TreasureBox : HittableUnit
 		if (isRewardable && IsAlive() == false)
 		{
 			isRewardable = false;
-			StageManager.it.CheckKillRewards(UnitType, transform);
+			//StageManager.it.CheckKillRewards(UnitType, transform);
 		}
 	}
 
@@ -68,39 +78,31 @@ public class TreasureBox : HittableUnit
 			{
 				SceneCamera.it.ShakeCamera();
 			}
-			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower.ToString(), _hitInfo.fontColor, CenterPosition, _hitInfo.criticalType, isPlayer: _hitInfo.IsPlayerCast == false);
+			GameObject go = Instantiate(hitEffect);
+			go.transform.position = CenterPosition;
+			go.transform.localScale = Vector3.one;
+			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, _hitInfo.criticalType);
+			unitAnimation?.PlayDamageWhite();
 		}
-		unitAnimation?.PlayDamageWhite();
+
 		Hp -= _hitInfo.TotalAttackPower;
 
-		VGameManager.it.battleRecord.RecordAttackPower(_hitInfo);
-		if (ControlSide == ControlSide.ENEMY)
-		{
-			UIController.it.UiStageInfo.RefreshDPSCount();
-		}
+		GameManager.it.battleRecord.RecordAttackPower(_hitInfo);
+		//if (ControlSide == ControlSide.ENEMY)
+		//{
+		//	UIController.it.UiStageInfo.RefreshDPSCount();
+		//}
 		if (_hitInfo.hitSound.IsNullOrWhiteSpace() == false)
 		{
 			VSoundManager.it.PlayEffect(_hitInfo.hitSound);
 		}
 	}
 
-	public override void SetAttack(SkillEffectData data, SkillInfoObject infoObject = null, SkillData _skillData = null)
-	{
-		//throw new System.NotImplementedException();
-	}
+	//public override void SetAttack(SkillEffectData data, SkillInfoObject infoObject = null, SkillData _skillData = null)
+	//{
+	//	//throw new System.NotImplementedException();
+	//}
 
-	public override void OnUpdateAttack(float time)
-	{
-		//throw new System.NotImplementedException();
-	}
 
-	public override void EndUpdateAttack()
-	{
-		//throw new System.NotImplementedException();
-	}
 
-	public override SkillEffectData GetSkillEffectData()
-	{
-		throw new System.NotImplementedException();
-	}
 }

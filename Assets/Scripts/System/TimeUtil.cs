@@ -108,7 +108,7 @@ public static class TimeUtil
 		{
 			if (false == DateTime.TryParse(datetime_string, out date_time))
 			{
-				gplat.Log.logger("util.time").ErrorFormat("fail string to datetime, format : {0}", datetime_string);
+				//gplat.Log.logger("util.time").ErrorFormat("fail string to datetime, format : {0}", datetime_string);
 			}
 
 		}
@@ -125,7 +125,7 @@ public static class TimeUtil
 		{
 			if (false == DateTime.TryParse(datetime_string, out date_time))
 			{
-				gplat.Log.logger("util.time").ErrorFormat("fail string to datetime, format : {0}", datetime_string);
+				//gplat.Log.logger("util.time").ErrorFormat("fail string to datetime, format : {0}", datetime_string);
 			}
 		}
 
@@ -140,7 +140,7 @@ public static class TimeUtil
 		{
 			if (false == DateTime.TryParse(datetime_string, out date_time))
 			{
-				gplat.Log.logger("util.time").ErrorFormat("fail string to datetime, format : {0}", datetime_string);
+				//gplat.Log.logger("util.time").ErrorFormat("fail string to datetime, format : {0}", datetime_string);
 			}
 		}
 
@@ -155,7 +155,7 @@ public static class TimeUtil
 		{
 			if (false == DateTime.TryParse(datetime_string, out date_time))
 			{
-				gplat.Log.logger("util.time").ErrorFormat("fail string to datetime, format : {0}", datetime_string);
+				//gplat.Log.logger("util.time").ErrorFormat("fail string to datetime, format : {0}", datetime_string);
 			}
 		}
 
@@ -312,27 +312,27 @@ public static class TimeUtil
 		return nextDayOfWeek(TimeManager.it.server_utc, need_day_of_week);
 	}
 
-	public static gplat_define.day_of_week_e getDayOfWeek(DateTime in_time)
-	{
-		switch (in_time.DayOfWeek)
-		{
-			case System.DayOfWeek.Sunday:
-				return gplat_define.day_of_week_e.Sunday;
-			case System.DayOfWeek.Monday:
-				return gplat_define.day_of_week_e.Monday;
-			case System.DayOfWeek.Tuesday:
-				return gplat_define.day_of_week_e.Tuesday;
-			case System.DayOfWeek.Wednesday:
-				return gplat_define.day_of_week_e.Wednesday;
-			case System.DayOfWeek.Thursday:
-				return gplat_define.day_of_week_e.Thursday;
-			case System.DayOfWeek.Friday:
-				return gplat_define.day_of_week_e.Friday;
-			case System.DayOfWeek.Saturday:
-				return gplat_define.day_of_week_e.Saturday;
-		}
-		return gplat_define.day_of_week_e._NONE;
-	}
+	//public static gplat_define.day_of_week_e getDayOfWeek(DateTime in_time)
+	//{
+	//	switch (in_time.DayOfWeek)
+	//	{
+	//		case System.DayOfWeek.Sunday:
+	//			return gplat_define.day_of_week_e.Sunday;
+	//		case System.DayOfWeek.Monday:
+	//			return gplat_define.day_of_week_e.Monday;
+	//		case System.DayOfWeek.Tuesday:
+	//			return gplat_define.day_of_week_e.Tuesday;
+	//		case System.DayOfWeek.Wednesday:
+	//			return gplat_define.day_of_week_e.Wednesday;
+	//		case System.DayOfWeek.Thursday:
+	//			return gplat_define.day_of_week_e.Thursday;
+	//		case System.DayOfWeek.Friday:
+	//			return gplat_define.day_of_week_e.Friday;
+	//		case System.DayOfWeek.Saturday:
+	//			return gplat_define.day_of_week_e.Saturday;
+	//	}
+	//	return gplat_define.day_of_week_e._NONE;
+	//}
 
 	public static bool isToday(DateTime utcTime)
 	{

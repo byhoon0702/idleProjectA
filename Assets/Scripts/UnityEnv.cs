@@ -16,4 +16,6 @@ public static class UnityEnv
 
 		}
 	}
+
+	public static bool IsApplicationQuit = false;
 }

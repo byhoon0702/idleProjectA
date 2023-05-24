@@ -7,12 +7,11 @@ using UnityEngine;
 public class TrainingData : BaseData
 {
 	public string name;
-	public Ability type;
-	public string basicValue;
-	public string perLevelValue;
+
+	public ItemStats buff;
 
 	public int maxLevel;
-	public Ability preconditionType;
+	public StatsType preconditionType;
 	public long preconditionLevel;
 
 	public long basicCost;

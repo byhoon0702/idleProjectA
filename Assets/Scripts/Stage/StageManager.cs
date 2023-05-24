@@ -1,152 +1,205 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
+
+
+[System.Serializable]
+public class StageRuleDictionary : SerializableDictionary<StageType, StageRule>
+{
+
+}
 
 public class StageManager : MonoBehaviour
 {
 	private static StageManager instance;
 	public static StageManager it => instance;
 
-	private StageInfo currentStageInfo = null;
-	private StageInfo currentNormalStageInfo = null;
 
-	public bool isCurrentStageLimited = false;
+	private StageInfo currentStage = null;
 
-	public StageInfo CurrentStageInfo => currentStageInfo;
+	private int currentWaveCount;
+	public int CurrentWave => currentWaveCount;
 
-	public StageInfo CurrentNormalStageInfo
-	{
-		get
-		{
-			if (currentStageInfo == null)
-			{
-				currentStageInfo = GetNormalStageInfo(1, 1);
-			}
-			return currentStageInfo;
-		}
-	}
+	public Transform mapRoot;
+	public int currentKillCount;
+	public int bossKillCount;
+	public StageInfo CurrentStage => currentStage;
 
-	public StageType CurrentStageType
-	{
-		get
-		{
-			if (currentStageInfo == null)
-			{
-				return StageType.NONE;
-			}
-			return currentStageInfo.stageType;
-		}
-	}
+	public StageRuleDictionary rules = new StageRuleDictionary();
+	public StageRule currentRule;
 
-	private void Start()
-	{
-	}
+	public PlayableDirector playableDirector;
+
+	public bool continueBossChallenge = false;
+	public MapObject map { get; private set; }
 
 	private void Awake()
 	{
 		instance = this;
+
 	}
 
-	public StageInfo GetNormalStageInfo(int _act, int _stage)
+	private void Start()
 	{
-		return DataManager.Get<StageInfoDataSheet>().GetNormalStage(_act, _stage);
+		currentStage = GameManager.UserDB.stageContainer.LastPlayedStage();
+		currentRule = rules[(StageType)currentStage.stageType];
+		currentRule.Begin();
+		//GameManager.UserDB.stageContainer.GetNextNormalStage(currentStage);
+		bossSpawn = false;
 	}
 
-	public StageInfo GetNextNormalStageInfo(StageInfo _currentStageInfo)
+	public void ChangeMap(GameObject mapPrefab)
 	{
-		var currentAct = _currentStageInfo.act;
-		var currentStage = _currentStageInfo.stage;
-
-		StageInfo nextStageInfo = null;
-
-		nextStageInfo = GetNormalStageInfo(currentAct, currentStage + 1);
-
-		if (nextStageInfo == null)
+		if (mapPrefab == null)
 		{
-			nextStageInfo = GetNormalStageInfo(currentAct + 1, currentStage);
+			return;
 		}
-		if (nextStageInfo == null)
+		if (map != null)
 		{
-			nextStageInfo = GetNormalStageInfo(1, 1);
+			if (mapPrefab.name == map.name)
+			{
+				return;
+			}
+			Destroy(map.gameObject);
+			map = null;
 		}
-		return nextStageInfo;
+
+		map = Instantiate(mapPrefab, mapRoot).GetComponent<MapObject>();
+		map.name = map.name.Replace("(Clone)", "");
+		map.transform.localPosition = Vector3.zero;
+		map.transform.localScale = Vector3.one;
 	}
-
 	public void PlayStage(StageInfo _stageInfo)
 	{
-		currentStageInfo = _stageInfo;
-		if (_stageInfo.stageType == StageType.NORMAL)
+		bossSpawn = false;
+
+		SetCurrentStage(_stageInfo);
+		currentRule = rules[(StageType)currentStage.stageType];
+		currentRule.Begin();
+	}
+	public void OnClickBoss(StageInfo _stageInfo)
+	{
+		SetCurrentStage(_stageInfo);
+		currentRule.Begin(StageStateType.STAGECUTSCENE);
+	}
+
+	public void NextWave()
+	{
+		currentWaveCount++;
+		//UIController.it.UiStageInfo.SetWaveGauge(Mathf.Clamp01((float)(currentWaveCount - 1) / currentStage.WaveCount));
+	}
+
+	public void RetryStage()
+	{
+		PlayStage(CurrentStage);
+	}
+
+	public void ReturnNormalStage()
+	{
+		continueBossChallenge = false;
+
+		//var lastStageRecord = GameManager.UserDB.stageContainer.GetLastStage(StageType.Normal);
+		//var stage = GameManager.UserDB.stageContainer.GetStage(StageType.Normal, lastStageRecord.stageNumber, lastStageRecord.stageDifficulty);
+		//SetCurrentStage(stage);
+		PlayStage(currentStage);
+	}
+
+	public void NextNormalStage()
+	{
+		//if (continueBossChallenge)
+		//{
+		//	var bossStageInfo = VGameManager.UserDB.stageContainer.GetStage(StageType.Normal, UserInfo.stage.PlayingStageLv(StageType.Normal) + 1, StageManager.it.CurrentStage.Difficulty);
+		//	OnClickBoss(bossStageInfo);
+		//	return;
+		//}
+		var lastStageRecord = GameManager.UserDB.stageContainer.GetLastStage(StageType.Normal);
+		var stage = GameManager.UserDB.stageContainer.GetStage(StageType.Normal, lastStageRecord.stageNumber + 1, lastStageRecord.stageDifficulty);
+		SetCurrentStage(stage);
+
+		PlayStage(currentStage);
+	}
+
+	public void SetCurrentStage(StageInfo stage)
+	{
+		currentStage = stage;
+		currentWaveCount = 0;
+		currentStage.totalSpawnCount = 0;
+		currentStage.totalBossSpawnCount = 0;
+	}
+	public void ResumeStage()
+	{
+		GameManager.GameStop = false;
+	}
+
+	public void PauseTimeline()
+	{
+		playableDirector.Pause();
+	}
+
+
+	/// <summary>
+	/// 처치보상 처리
+	/// </summary>
+	public void CheckKillRewards(UnitType _unitType, Transform _transform = null)
+	{
+		//var rewards = currentStage.GenerateKillReward();
+
+		//for (int i = 0; i < rewards.Count; i++)
+		//{
+		//	var info = rewards[i];
+
+		//	if (info.Tid == Inventory.it.GoldTid && _transform != null)
+		//	{
+		//		UIController.it.ShowCoinEffect(_transform);
+		//	}
+
+		//	IdleNumber totalCount = (IdleNumber)info.RewardCount(_unitType);
+
+
+		//	Inventory.it.AddItem(info.Tid, totalCount);
+		//	UIController.it.ShowItemLog((int)info.Tid, totalCount);
+		//}
+	}
+
+	public void Update()
+	{
+		currentRule?.OnUpdate(Time.deltaTime);
+	}
+
+	public bool bossSpawn = false;
+	public void ShowBoss()
+	{
+		var bossData = CurrentStage.spawnBoss[UnityEngine.Random.Range(0, CurrentStage.spawnBoss.Count)];
+
+		EnemyUnit boss = null;
+
+		if (CurrentStage.stageType == StageType.Immortal)
 		{
-			currentNormalStageInfo = _stageInfo;
-		}
-		VGameManager.it.ChangeState(GameState.BATTLEEND);
-	}
-
-	public void ClearChasingStage()
-	{
-		PlayStage(currentNormalStageInfo);
-	}
-
-	public void ClearNormalStage()
-	{
-		var nextStageInfo = GetNextNormalStageInfo(CurrentNormalStageInfo);
-		isCurrentStageLimited = true;
-		PlayStage(nextStageInfo);
-	}
-
-	public void FailNormalStage()
-	{
-		isCurrentStageLimited = false;
-		PlayStage(currentStageInfo);
-	}
-
-	public void ResetStage()
-	{
-		VGameManager.it.ChangeState(GameState.BATTLEEND);
-	}
-
-	public void GetReward(Transform _transform = null)
-	{
-		for (int i = 0; i < currentStageInfo.stageRewardInfoList.Count; i++)
-		{
-			var info = currentStageInfo.stageRewardInfoList[i];
-			if (GetResult(info.dropRate) == true)
-			{
-				if (info.tid == Inventory.it.GoldTid && _transform != null)
-				{
-					UIController.it.ShowCoinEffect(_transform);
-				}
-				Inventory.it.AddItem(info.tid, new IdleNumber(info.count));
-				UIController.it.ShowItemLog((int)info.tid, new IdleNumber(info.count));
-			}
-		}
-	}
-
-	public void GetBossKillReward(Transform _transform = null)
-	{
-		for (int i = 0; i < currentStageInfo.bossRewardInfoList.Count; i++)
-		{
-			var info = currentStageInfo.bossRewardInfoList[i];
-			{
-				if (info.tid == Inventory.it.GoldTid && _transform != null)
-				{
-					UIController.it.ShowCoinEffect(_transform);
-				}
-				Inventory.it.AddItem(info.tid, new IdleNumber(info.count));
-			}
-		}
-	}
-
-	private bool GetResult(float _percentage)
-	{
-		float randomValue = UnityEngine.Random.Range(0, 100);
-		if (randomValue < _percentage)
-		{
-			return true;
+			boss = SpawnManager.it.MakeImmotal(bossData, 0);
 		}
 		else
 		{
-			return false;
+			boss = SpawnManager.it.MakeBoss(bossData, out VResult result);
 		}
+
+
+		TimelineAsset ta = playableDirector.playableAsset as TimelineAsset;
+
+		var tracks = ta.GetOutputTracks();
+		foreach (var track in tracks)
+		{
+			if (track is UnitDissolveTrack)
+			{
+				playableDirector.SetGenericBinding(track, boss.unitAnimation);
+				break;
+			}
+		}
+
+		UnitManager.it.Boss = boss;
+		//bossSpawn = true;
+		boss.unitAnimation.PlayDissolve(1.5f);
 	}
 }

@@ -1,39 +1,145 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 using DG.Tweening;
 using UnityEngine.Pool;
 using UnityEngine.Rendering;
 
+
 [RequireComponent(typeof(SortingGroup))]
-[UnityEditor.CanEditMultipleObjects]
 public class UnitAnimation : MonoBehaviour
 {
 	public Animator animator;
+	public AnimationEventReceiver animationEventReceiver;
 
 	[SerializeField] private Transform centerPivot;
 	[SerializeField] private Transform headPivot;
 
 	[SerializeField] private GameObject hyperModeEffect;
-	[SerializeField] private Material m_thisCharMaterial;
-	[SerializeField] private float m_attackedWhiteFlipTime = 1f;
+	[SerializeField] private GameObject shadowObject;
+
+	[SerializeField] private float m_attackedWhiteFlipTime = 0.1f;
 	[SerializeField] private ParticleSystem stepEffect;
 
 	public Transform CenterPivot => centerPivot;
 	public Transform HeadPivot => headPivot;
 
-	public StateType _currentState;
+	private StateType currentState;
 
 	private Dictionary<string, int> animatorHashDictionary = new Dictionary<string, int>();
 	private IObjectPool<UnitAnimation> managedPool = null;
 
-	private void Start()
+	private AnimatorOverrideController currentOverrideController;
+
+	[SerializeField] private Material[] charMaterials;
+	[SerializeField] private Renderer[] renderers;
+	private MaterialPropertyBlock propertyBlock;
+	private bool isReleased = false;
+
+	private UnitCostume unitCostume;
+
+	public void Init()
 	{
-		for (int i = 0; i < animator.parameters.Length; i++)
+		unitCostume = transform.GetComponent<UnitCostume>();
+		if (animator != null)
 		{
-			var param = animator.parameters[i];
-			animatorHashDictionary.Add(param.name, param.nameHash);
+			animatorHashDictionary.Clear();
+			for (int i = 0; i < animator.parameters.Length; i++)
+			{
+				var param = animator.parameters[i];
+				animatorHashDictionary.Add(param.name, param.nameHash);
+			}
+		}
+
+		UpdateRenderer();
+		SetMaterialTint(0);
+
+		if (CenterPivot != null)
+		{
+			CenterPivot.localRotation = Quaternion.identity;
+		}
+		SwitchShadow(true);
+
+	}
+	public void UpdateRenderer()
+	{
+		propertyBlock = new MaterialPropertyBlock();
+		renderers = transform.GetComponentsInChildren<Renderer>(true);
+	}
+
+	public void SetParameter(string name, float value)
+	{
+		if (animator.HasParameter(name))
+		{
+			animator.SetFloat(name, value);
 		}
 	}
+
+
+	public void SwitchShadow(bool switchOn)
+	{
+		if (shadowObject != null)
+		{
+			shadowObject.SetActive(switchOn);
+		}
+	}
+
+	public void Get()
+	{
+		isReleased = false;
+	}
+
+	public void AddAnimationEvent()
+	{
+		if (animationEventReceiver == null)
+		{
+			animationEventReceiver = animator.GetComponent<AnimationEventReceiver>();
+			if (animationEventReceiver == null)
+			{
+				animationEventReceiver = animator.gameObject.AddComponent<AnimationEventReceiver>();
+			}
+		}
+	}
+
+	public void AddAttackEvent(OnAttack attackEvent)
+	{
+		AddAnimationEvent();
+		animationEventReceiver.AddEvent(attackEvent);
+	}
+	public void RemoveAttackEvent(OnAttack attackEvent)
+	{
+		AddAnimationEvent();
+		animationEventReceiver.RemoveEvent(attackEvent);
+	}
+
+	public void OverrideAnimation(AnimatorOverrideController overrideController)
+	{
+		if (animator == null)
+		{
+			return;
+		}
+		if (overrideController == null)
+		{
+			return;
+		}
+
+		currentOverrideController = overrideController;
+		animator.runtimeAnimatorController = currentOverrideController;
+
+	}
+
+	public void ResetOverrideController()
+	{
+		if (animator == null)
+		{
+			return;
+		}
+		if (currentOverrideController != null)
+		{
+			animator.runtimeAnimatorController = currentOverrideController.runtimeAnimatorController;
+		}
+	}
+
 
 	public void Set(IObjectPool<UnitAnimation> _managedPool)
 	{
@@ -42,10 +148,22 @@ public class UnitAnimation : MonoBehaviour
 
 	public void Release()
 	{
+		if (isReleased)
+		{
+			return;
+		}
 		if (managedPool != null)
 		{
+			isReleased = true;
 			managedPool.Release(this);
 		}
+	}
+
+
+	public void PlayAnimation(string name, float normalizedTime = 1)
+	{
+		animator.enabled = true;
+		animator.Play(name, -1, normalizedTime);
 	}
 
 	public void PlayAnimation(StateType _stateType)
@@ -54,14 +172,27 @@ public class UnitAnimation : MonoBehaviour
 		{
 			return;
 		}
-		_currentState = _stateType;
-
+		currentState = _stateType;
+		animator.enabled = true;
 		UpdateAnimation();
+	}
+
+	public void PlayIdle()
+	{
+		if (animator == null)
+		{
+			return;
+		}
+		animator.Play("idle", -1, 1);
 	}
 
 	public void ResetAnimation()
 	{
-		_currentState = StateType.NONE;
+		if (animator == null)
+		{
+			return;
+		}
+		currentState = StateType.NONE;
 		animator.SetTrigger("reset");
 
 		InactiveHyperEffect();
@@ -69,6 +200,10 @@ public class UnitAnimation : MonoBehaviour
 
 	public bool IsResetComplete()
 	{
+		if (animator == null)
+		{
+			return true;
+		}
 		// 사망 상태만 아니면 리셋 완료로 취급
 		if (animator.GetCurrentAnimatorStateInfo(0).IsName("death") == true)
 		{
@@ -79,6 +214,10 @@ public class UnitAnimation : MonoBehaviour
 
 	public bool IsAttacking()
 	{
+		if (animator == null)
+		{
+			return false;
+		}
 		bool isCurrentStateAttack = animator.GetCurrentAnimatorStateInfo(0).IsName("attack");
 		bool isCurrentStateEnd = animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f;
 		return isCurrentStateAttack && isCurrentStateEnd;
@@ -91,6 +230,10 @@ public class UnitAnimation : MonoBehaviour
 
 	private void UpdateAnimation()
 	{
+		if (animator == null)
+		{
+			return;
+		}
 		string stateName = GetCurrentStateName();
 
 		// state 누락
@@ -111,11 +254,12 @@ public class UnitAnimation : MonoBehaviour
 		}
 
 		animator.SetTrigger(parameterHash);
+
 	}
 
 	private string GetCurrentStateName()
 	{
-		switch (_currentState)
+		switch (currentState)
 		{
 			case StateType.IDLE:
 				return "idle";
@@ -133,11 +277,55 @@ public class UnitAnimation : MonoBehaviour
 				return null;
 		}
 	}
-
+	Tweener tweener;
+	Tweener dissolve;
 	public void PlayDamageWhite()
 	{
-		float m_current_float = 0f;
-		DOTween.To(() => m_current_float, x => SetMaterialTint(x), 1, m_attackedWhiteFlipTime).SetLoops(1, LoopType.Yoyo);
+		float m_current_float = 50f;
+
+		tweener = DOVirtual.Float(m_current_float, 0, 0.3f, (value) =>
+		{
+			SetMaterialTint(value);
+		});
+	}
+	public void PlayDissolve(float value)
+	{
+		SetMaterialDissolve(value);
+		//float m_current_float = 0f;
+
+		//dissolve = DOVirtual.Float(m_current_float, 1.5f, 0.5f, (value) =>
+		//{
+		//	SetMaterialDissolve(value);
+		//});
+	}
+
+	public void Death()
+	{
+		StartCoroutine(DeathLoop());
+	}
+
+	public IEnumerator DeathLoop()
+	{
+		float m_current_float = 50f;
+		float time = 0.2f;
+		for (int i = 0; i < 10; i++)
+		{
+			SetMaterialTint(m_current_float);
+			yield return new WaitForSeconds(time);
+			SetMaterialTint(0);
+			yield return new WaitForSeconds(time);
+
+			time *= 0.8f;
+		}
+
+	}
+
+	private void OnDisable()
+	{
+		if (tweener != null)
+		{
+			tweener.Kill();
+		}
 	}
 
 	public void PlayDamageWhite(float time)
@@ -146,10 +334,43 @@ public class UnitAnimation : MonoBehaviour
 		DOTween.To(() => m_current_float, x => SetMaterialTint(x), 1, time).SetLoops(1, LoopType.Yoyo);
 	}
 
+
 	private void SetMaterialTint(float value)
 	{
-		if (m_thisCharMaterial != null)
-			m_thisCharMaterial.SetFloat("_TintValue", value);
+		if (unitCostume != null)
+		{
+			unitCostume.SetMaterialTint(value);
+			//return;
+		}
+		for (int i = 0; i < renderers.Length; i++)
+		{
+			if (renderers[i] == null)
+			{
+				continue;
+			}
+			renderers[i].GetPropertyBlock(propertyBlock);
+			propertyBlock.SetFloat("_TintAmount", value);
+			renderers[i].SetPropertyBlock(propertyBlock);
+		}
+	}
+
+	private void SetMaterialDissolve(float value)
+	{
+		if (unitCostume != null)
+		{
+			unitCostume.SetMaterialDissolve(value);
+			return;
+		}
+		for (int i = 0; i < renderers.Length; i++)
+		{
+			if (renderers[i] == null)
+			{
+				continue;
+			}
+			renderers[i].GetPropertyBlock(propertyBlock);
+			propertyBlock.SetFloat("_DissolveAmount", value);
+			renderers[i].SetPropertyBlock(propertyBlock);
+		}
 	}
 
 	public void ActiveHyperEffect()
@@ -177,6 +398,10 @@ public class UnitAnimation : MonoBehaviour
 		}
 
 	}
+	public void StopAnimation()
+	{
+		animator.enabled = false;
+	}
 
 	public void StopParticle()
 	{
@@ -189,8 +414,15 @@ public class UnitAnimation : MonoBehaviour
 	public void SetModel()
 	{
 		animator = GetComponentInChildren<Animator>();
-		SortingGroup group = GetComponent<SortingGroup>();
-		group.sortingLayerName = "CharDepth1";
+		animationEventReceiver = animator.GetComponent<AnimationEventReceiver>();
+
+		if (animationEventReceiver == null)
+		{
+			animationEventReceiver = animator.gameObject.AddComponent<AnimationEventReceiver>();
+		}
+
+		//SortingGroup group = GetComponent<SortingGroup>();
+		//group.sortingLayerName = "CharDepth1";
 
 		centerPivot = transform.Find("ZoomInPivot").transform;
 		headPivot = transform.Find("HeadPivot").transform;
@@ -201,3 +433,5 @@ public class UnitAnimation : MonoBehaviour
 		}
 	}
 }
+
+

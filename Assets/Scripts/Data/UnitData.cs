@@ -2,11 +2,48 @@
 using System.Collections.Generic;
 using System.Data;
 
-[Serializable]
-public class BasicStat
+
+public enum Grade
 {
-	public Stats type;
+	D,
+	C,
+	B,
+	A,
+	S,
+	SS,
+	SSS,
+	_END,
+
+}
+
+
+[Serializable]
+public class StatsStringInfo
+{
+	public StatsType type;
 	public string value;
+
+}
+[Serializable]
+public class AdvancementRequire
+{
+	public long tid;
+	public int stageNumber;
+
+}
+
+
+[System.Serializable]
+public class UnitAdvancementInfo
+{
+	public int level;
+	public string nameKey;
+	public string resource;
+	public List<StatsStringInfo> stats;
+	public Int64 skillTid = 0;
+	public Int64 finalSkillTid = 0;
+
+	public AdvancementRequire requirement;
 }
 
 /// <summary>
@@ -17,38 +54,23 @@ public class UnitData : BaseData
 {
 	public string name;
 	//데이터 테이블에만 표시되는 설명 
+
+	public UnitType type;
 	public string resource;
-	public long skillEffectTidNormal;
-
-	public Grade grade;
-	public int starlevel;
-	public List<BasicStat> statusDataList;
-
-	public float attackTime;
-	public float attackCoolTime;
-
-	public float criticalRate;
-	public float criticalPowerRate;
 
 	public Int64 skillTid = 0;
-	public Int64 finalSkillTid = 0;
-	//유저 캐릭터는 설정 하지 않는 값 
-	//추후 성(star)급은 StarRank 로 이름 지을 것 
-	//public RankType rankType;
+	public List<UnitAdvancementInfo> upgradeInfoList;
 
-	public List<UnitStatusPerLevelData> statusPerLevels;
+
 
 	public UnitData()
 	{
 		//기본적으로 무조건 추가 되어야 할 데이터들
 		//데이터가 없을때만 넣도록 한다.
-		if (statusDataList == null || statusDataList.Count == 0)
+		if (upgradeInfoList == null || upgradeInfoList.Count == 0)
 		{
-			statusDataList = new List<BasicStat>();
-			statusDataList.Add(new BasicStat() { type = Stats.Attackpower, value = "1000" });
-			statusDataList.Add(new BasicStat() { type = Stats.Hp, value = "1" });
-			statusDataList.Add(new BasicStat() { type = Stats.AttackSpeed, value = "1" });
-			statusDataList.Add(new BasicStat() { type = Stats.Movespeed, value = "5" });
+			upgradeInfoList = new List<UnitAdvancementInfo>();
+
 		}
 	}
 
@@ -57,56 +79,21 @@ public class UnitData : BaseData
 		UnitData data = new UnitData();
 		data.name = name;
 		data.resource = resource;
-		data.tid = tid;
-		data.grade = grade;
-		data.starlevel = starlevel;
-		data.attackCoolTime = attackCoolTime;
 
-		data.criticalRate = criticalRate;
-		data.criticalPowerRate = criticalPowerRate;
 		data.skillTid = skillTid;
-		data.finalSkillTid = finalSkillTid;
+		data.tid = tid;
 
-		data.skillEffectTidNormal = skillEffectTidNormal;
-		data.statusPerLevels = new List<UnitStatusPerLevelData>(statusPerLevels);
-		data.statusDataList = statusDataList;
+		data.upgradeInfoList = new List<UnitAdvancementInfo>(upgradeInfoList);
 
 		return data;
 	}
 }
 
-[Serializable]
-public class UnitStatusPerLevelData
+public enum UnitType
 {
-	public int level;
-
-	public string attackPower;
-	public string attackPowerPerLevel;
-
-	public string hp;
-	public string hpPerLevel;
-
-	public UnitStatusPerLevelData Clone()
-	{
-		UnitStatusPerLevelData data = new UnitStatusPerLevelData();
-
-		data.level = level;
-
-		data.attackPower = attackPower;
-		data.attackPowerPerLevel = attackPowerPerLevel;
-
-		data.hp = hp;
-		data.hpPerLevel = hpPerLevel;
-
-		return data;
-	}
-
-	public UnitStatusPerLevelData()
-	{
-		level = 1;
-		attackPower = "100";
-		attackPowerPerLevel = "0";
-		hp = "100";
-		hpPerLevel = "1.5";
-	}
+	_NONE,
+	Player,
+	NormalEnemy,
+	BossEnemy,
+	TreasureBox
 }

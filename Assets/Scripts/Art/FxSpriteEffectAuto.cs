@@ -21,6 +21,10 @@ public class FxSpriteEffectAuto : MonoBehaviour
 
 	public bool IsPlaying { get; private set; }
 
+	public void CopyMaterial()
+	{
+		//m_targetMaterial = Instantiate(m_targetMaterial);
+	}
 	public void Play(Action _OnCompleteAction = null)
 	{
 		IsPlaying = true;
@@ -29,7 +33,7 @@ public class FxSpriteEffectAuto : MonoBehaviour
 		{
 			m_totalFrame = m_colums * m_rows;
 			m_currentIndex = 0;
-			DOTween.To(() => m_currentIndex, x => m_targetMaterial.SetFloat("_PlayFrame", x), m_totalFrame, m_duration).SetLoops(m_repeatCount, LoopType.Restart).SetDelay(m_startDelay).OnComplete(() => { ResetIndex(); _OnCompleteAction?.Invoke(); });
+			DOTween.To(() => m_currentIndex, x => m_targetMaterial.SetFloat("_PlayFrame", x), m_totalFrame, m_duration).OnComplete(() => { CompleteRemoveObject(); _OnCompleteAction?.Invoke(); });
 		}
 		else
 		{
@@ -53,7 +57,7 @@ public class FxSpriteEffectAuto : MonoBehaviour
 		{
 			m_totalFrame = m_colums * m_rows;
 			m_currentIndex = 0;
-			m_returnTween= DOTween.To(() => m_currentIndex, x => m_targetMaterial.SetFloat("_PlayFrame", x), m_totalFrame, m_duration).SetLoops(m_repeatCount, LoopType.Restart).SetDelay(m_startDelay).OnComplete(() => { ResetIndex(); _OnCompleteAction?.Invoke(); });
+			m_returnTween = DOTween.To(() => m_currentIndex, x => m_targetMaterial.SetFloat("_PlayFrame", x), m_totalFrame, m_duration).SetLoops(m_repeatCount, LoopType.Restart).SetDelay(m_startDelay).OnComplete(() => { ResetIndex(); _OnCompleteAction?.Invoke(); });
 		}
 		else
 		{

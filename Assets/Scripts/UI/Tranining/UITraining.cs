@@ -11,61 +11,62 @@ public class UITraining : MonoBehaviour
 
 	private List<UIItemTraining> items = new List<UIItemTraining>();
 
-
 	private void OnEnable()
 	{
 		EventCallbacks.onItemChanged += OnItemChanged;
+
+		SceneCamera.it.ChangeViewPort(true);
 	}
 
 	private void OnDisable()
 	{
 		EventCallbacks.onItemChanged -= OnItemChanged;
+		if (SceneCamera.it != null)
+		{
+			SceneCamera.it.ChangeViewPort(false);
+		}
 	}
 
 	private void OnItemChanged(List<long> _changedItems)
 	{
-		foreach (var tid in _changedItems)
-		{
-			if (tid == Inventory.it.GoldTid)
-			{
-				UpdateItem(true);
-			}
-		}
+
 	}
 
 	public void OnUpdate(bool _refreshGrid)
 	{
-		UpdateItem(_refreshGrid);
+		UpdateItem();
 	}
 
-	public void UpdateItem(bool _refresh)
+	public void UpdateItem()
 	{
-		if (_refresh == false)
+		var list = GameManager.UserDB.training.trainingInfos;
+		int countForMake = list.Count - itemRoot.childCount;
+
+		if (countForMake > 0)
 		{
-			foreach (var v in itemRoot.GetComponentsInChildren<UIItemTraining>())
+			for (int i = 0; i < countForMake; i++)
 			{
-				Destroy(v.gameObject);
-			}
-
-			foreach (var v in DataManager.Get<ItemDataSheet>().GetByItemType(ItemType.Training))
-			{
-				UITrainingData uiData = new UITrainingData();
-				var result = uiData.Setup(v);
-				if(result.Fail())
-				{
-					VLog.LogError(result.ToString());
-					continue;
-				}
-
 				var item = Instantiate(itemPrefab, itemRoot);
-				item.OnUpdate(this, uiData);
 			}
 		}
 
+		list.Sort((a, b) => { return b.isOpen.CompareTo(a.isOpen); });
 
-		foreach (var v in itemRoot.GetComponentsInChildren<UIItemTraining>())
+		for (int i = 0; i < itemRoot.childCount; i++)
 		{
-			v.OnRefresh();
+
+			var child = itemRoot.GetChild(i);
+			if (i > list.Count - 1)
+			{
+				child.gameObject.SetActive(false);
+				continue;
+			}
+
+			child.gameObject.SetActive(true);
+			UIItemTraining slot = child.GetComponent<UIItemTraining>();
+
+			var info = list[i];
+			slot.OnUpdate(this, info);
 		}
 	}
 }

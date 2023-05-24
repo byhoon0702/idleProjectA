@@ -6,86 +6,68 @@ using UnityEngine;
 public class AffectedInfo
 {
 
+	public IdleNumber attackPower = new IdleNumber();
+	public Color fontColor = Color.white;
+	public bool isSkill;
+
 }
 // 게임오브젝트 관련 정보가 여기 있으면 안됨
 public class HitInfo : AffectedInfo
 {
-	public AttackerType attackerType;
-
-	public IdleNumber attackPower = new IdleNumber();
-	public Color fontColor = Color.white;
 	public float criticalChanceMul = 1;
 	public float CriticalX2ChanceMul = 1;
-	public bool isSkill;
-	public bool IsPlayerAttack => attackerType == AttackerType.Player || attackerType == AttackerType.Pet;
 
 	public string hitSound = string.Empty;
-	public string hitEffect
-	{
-		get
-		{
-			if (attackerType != AttackerType.Player)
-			{
-				return "FX_Melee_Attacked_lighting_01";
-			}
-			else
-			{
-				return "";
-			}
-		}
-	}
+	public bool IsPlayerCast;
 
 	public bool ShakeCamera
 	{
 		get
 		{
-			if (attackerType != AttackerType.Player)
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
+			return false;
 		}
 	}
 
-	public IdleNumber TotalAttackPower
-	{
-		get
-		{
-			return attackPower * criticalChanceMul * CriticalX2ChanceMul;
-		}
-	}
 
-	public CriticalType criticalType
-	{
-		get
-		{
-			if (CriticalX2ChanceMul > 1)
-			{
-				return CriticalType.CriticalX2;
-			}
-			else if (criticalChanceMul > 1)
-			{
-				return CriticalType.Critical;
-			}
-			else
-			{
-				return CriticalType.Normal;
-			}
-		}
-	}
+	public IdleNumber TotalAttackPower;
 
-	public HitInfo(AttackerType _attackerType, IdleNumber _attackPower)
+
+	public CriticalType criticalType;
+
+
+	public HitInfo(IdleNumber _attackPower, CriticalType criticalType = CriticalType.Normal)
 	{
-		attackerType = _attackerType;
+
 		attackPower = _attackPower;
+		this.criticalType = criticalType;
+
+		TotalAttackPower = attackPower * criticalChanceMul * CriticalX2ChanceMul;
 	}
 
-	public HitInfo(AttackerType _attackerType, IdleNumber _attackPower, bool _isSkill)
+
+	public HitInfo(UnitBase caster, IdleNumber _attackPower, bool _isSkill = false)
 	{
-		attackerType = _attackerType;
+		if (caster is PlayerUnit)
+		{
+			IsPlayerCast = true;
+		}
+#if UNITY_EDITOR
+		else if (caster is EditorUnit)
+		{
+			IsPlayerCast = true;
+		}
+#endif
+		else
+		{
+			IsPlayerCast = false;
+		}
+
+		attackPower = _attackPower;
+		isSkill = _isSkill;
+	}
+
+	public HitInfo(IdleNumber _attackPower, bool _isSkill)
+	{
 		attackPower = _attackPower;
 		isSkill = _isSkill;
 	}

@@ -41,4 +41,14 @@ public enum VResultCode
 	/// </summary>
 	TID_IS_0 = 2000000008,
 
+	/// <summary>
+	/// 생성실패
+	/// </summary>
+	MAKE_FAIL = 2000000009,
+
+	/// <summary>
+	/// 스테이지 안열림
+	/// </summary>
+	STAGE_NO_OPEND = 2000000010,
+
 }

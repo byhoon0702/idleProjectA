@@ -1,20 +1,18 @@
 ﻿
-public class BattleEndState : RootState
+using UnityEngine;
+[CreateAssetMenu(fileName = "Battle End State", menuName = "ScriptableObject/Stage/State/Battle End", order = 1)]
+public class BattleEndState : StageFSM
 {
-	public override void OnEnter()
+
+	public override FSM OnEnter()
 	{
-		if (SceneCameraV2.it != null)
-		{
-			SceneCameraV2.it.StopCameraMove();
-		}
-		else
-		{
-			SceneCamera.it.StopCameraMove();
-		}
+		SceneCamera.it.StopCameraMove();
 		elapsedTime = 0f;
 
 		UnitGlobal.it.WaveFinish();
+		return this;
 	}
+
 
 	public override void OnExit()
 	{
@@ -23,11 +21,24 @@ public class BattleEndState : RootState
 
 	public override void OnUpdate(float time)
 	{
+		//elapsedTime += time;
+		//if (elapsedTime > 1)
+		//{
+
+		//	VGameManager.it.ChangeState(GameState.LOADING);
+		//}
+	}
+
+	public override FSM RunNextState(float time)
+	{
 		elapsedTime += time;
 		if (elapsedTime > 1)
 		{
-			GameUIManager.it.FadeCurtain(true);
-			VGameManager.it.ChangeState(GameState.LOADING);
+			stageRule.End();
+
+			return null;
+
 		}
+		return this;
 	}
 }

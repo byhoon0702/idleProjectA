@@ -21,28 +21,44 @@ public class UnitModelPoolManager : VObjectPool<UnitAnimation>
 		_object.Set(_pool);
 	}
 
-	protected override string GetPath(string _name)
+	protected override string GetPath(string _path, string _name)
 	{
-		string result = $"B/{_name}";
+		string result = $"{_path}/{_name}";
 		return result;
 	}
 
-	protected override UnitAnimation OnCreateObject(string _name)
+	protected override UnitAnimation OnCreateObject(string _path, string _name)
 	{
-		UnitAnimation model = Instantiate(GetResource(_name));
-		model.name = _name;
-		return model;
+		try
+		{
+
+			UnitAnimation model = Instantiate(GetResource(_path, _name));
+			model.name = _name;
+			return model;
+		}
+		catch (System.Exception ex)
+		{
+			Debug.LogError($"{_name}\n{ex}");
+			return null;
+		}
+
 	}
 
 	protected override void OnGetObject(UnitAnimation _object)
 	{
+		base.OnGetObject(_object);
+		_object.Get();
 		_object.gameObject.SetActive(true);
 	}
 
 	protected override void OnReleaseObject(UnitAnimation _object)
 	{
+		base.OnReleaseObject(_object);
+		_object.gameObject.SetActive(false);
 		_object.transform.SetParent(modelParentTransform, false);
-		_object.GetComponent<UnitAnimation>().ResetAnimation();
+		_object.ResetAnimation();
+
+		_object.gameObject.SetActive(false);
 	}
 
 	protected override void OnDestroyObject(UnitAnimation _object)

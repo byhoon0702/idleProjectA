@@ -86,7 +86,8 @@ public enum GachaType
 {
 	Equip,
 	Skill,
-	Pet
+	Pet,
+	Relic,
 }
 public enum GachaButtonType
 {

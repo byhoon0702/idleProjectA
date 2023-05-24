@@ -3,201 +3,167 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Text;
 
 public class UIStageInfo : MonoBehaviour
 {
-	[Header("이름")]
-	[SerializeField] private GameObject nameRoot;
-	[SerializeField] private TextMeshProUGUI nameText;
-	[SerializeField] private Button bossButton;
-	[SerializeField] private Button exitButton;
+	[SerializeField] private GameObject stageNameRoot;
+	[SerializeField] private TextMeshProUGUI textStageName;
 
-	[Header("웨이브 게이지")]
-	[SerializeField] private GameObject waveGaugeRoot;
-	[SerializeField] private Slider waveSlider;
-	[SerializeField] private GameObject waveRewordNormal;
-	[SerializeField] private GameObject waveRewordSpecial;
+	[SerializeField] private Button btnExit;
+	[SerializeField] private Button btnPlayBoss;
+	[SerializeField] private Toggle toggleContinue;
 
-	[Header("HP 게이지")]
-	[SerializeField] private GameObject hpGaugeRoot;
+	[SerializeField] private GameObject objBossIcon;
+	[SerializeField] private GameObject objNormalIcon;
+
+
+	[SerializeField] private GameObject btnContinueChallange;
+	[SerializeField] private GameObject objNormalButtonGroup;
+
 	[SerializeField] private Slider hpSlider;
-	[SerializeField] private TextMeshProUGUI hpBossNameText;
-	[SerializeField] private TextMeshProUGUI hpGaugeText;
+	[SerializeField] private TextMeshProUGUI textHpSlider;
 
-	[Header("시간 게이지")]
-	[SerializeField] private GameObject timeGaugeRoot;
-	[SerializeField] private Slider timeSlider;
-	[SerializeField] private TextMeshProUGUI timeGaugeText;
+	[Header("타이머")]
+	[SerializeField] private GameObject objectTimer;
+	[SerializeField] private Slider sliderTimeAttack;
+	[SerializeField] private TextMeshProUGUI textTimeAttack;
 
-	[Header("누적 DPS")]
-	[SerializeField] private GameObject dpsRoot;
-	[SerializeField] private TextMeshProUGUI dpsText;
+	private StageInfo stageInfo;
 
-	[Header("처치수")]
-	[SerializeField] private GameObject killRoot;
-	[SerializeField] private TextMeshProUGUI killText;
-
-
-
-	private GameStageInfo stageInfo;
-
-
-	private void Awake()
+	public void ShowNormalButtonGroup(bool isTrue)
 	{
-		//bossButton.onClick.RemoveAllListeners();
-		//bossButton.onClick.AddListener(OnClickPlayBoss);
-
-		//exitButton.onClick.RemoveAllListeners();
-		//exitButton.onClick.AddListener(OnClickExit);
-
-		//gameObject.SetActive(false);
+		objNormalButtonGroup.SetActive(isTrue);
 	}
 
-	public void OnUpdate(GameStageInfo _stageInfo)
+	public void ToggleContinueChallenge(bool isTrue)
 	{
-		//stageInfo = _stageInfo;
-
-		//gameObject.SetActive(true);
-
-		//UpdateName();
-		//UpdateButton();
-		//UpdateWaveGauge();
-		//UpdateHPGauge();
-		//UpdateTimeGauge();
-		//UpdateKill();
-		//UpdateDPS();
+		StageManager.it.continueBossChallenge = isTrue;
 	}
 
-	private void UpdateName()
+	public void OnClickStageChange()
 	{
-		if (stageInfo.IsShowStageNameUI == false)
+
+	}
+
+	public void SwitchBossMode(bool isTrue)
+	{
+		objBossIcon.SetActive(isTrue);
+		objNormalIcon.SetActive(isTrue == false);
+
+		if (isTrue)
 		{
-			nameRoot.SetActive(false);
-			return;
+			textHpSlider.text = "100%";
+			hpSlider.value = 1f;
 		}
-
-		nameRoot.SetActive(true);
-		nameText.text = $"{stageInfo.StageName} {stageInfo.StageSubTitle}";
-	}
-
-	private void UpdateButton()
-	{
-		//bossButton.gameObject.SetActive(stageInfo.WaveType == WaveType.Normal);
-		//exitButton.gameObject.SetActive(stageInfo.WaveType != WaveType.Normal);
-	}
-
-	private void UpdateWaveGauge()
-	{
-		//if (stageInfo.IsShowWaveGaugeUI == false)
-		//{
-		//	waveGaugeRoot.SetActive(false);
-		//	return;
-		//}
-
-		//waveGaugeRoot.SetActive(true);
-		//waveRewordNormal.SetActive(stageInfo.IsShowNormalRewardIcon);
-		//waveRewordSpecial.SetActive(stageInfo.IsShowSpecialRewardIcon);
-
-		//SetWaveGauge(0);
-	}
-
-	private void UpdateHPGauge()
-	{
-		if (stageInfo.IsShowHPGaugeUI == false)
+		else
 		{
-			hpGaugeRoot.SetActive(false);
-			return;
+			textHpSlider.text = "";
+			hpSlider.value = 0f;
 		}
-
-		hpGaugeRoot.SetActive(true);
-
-		SetBossName(stageInfo.spawnLast.unitData.name, stageInfo.spawnLast.spawnLevel);
-		SetHpGauge(1);
+	}
+	public void TurnOffUI()
+	{
+		objectTimer.SetActive(false);
+		stageNameRoot.SetActive(false);
+		objNormalButtonGroup.SetActive(false);
 	}
 
-	public void SetBossName(string _bossName, int _level)
+	public void ShowStageName()
 	{
-		// hpBossNameText.text = $"{_bossName} Lv. {_level}";
+		var curStage = StageManager.it.CurrentStage;
+		hpSlider.value = 0f;
+		stageNameRoot.SetActive(true);
+		textStageName.text = $"{curStage.StageName}";
 	}
 
-	private void UpdateTimeGauge()
+	public void ShowBossName()
 	{
-		if (stageInfo.IsShowTimeGauge == false)
+		stageNameRoot.SetActive(true);
+		textStageName.text = "";
+		if (UnitManager.it.Boss != null)
 		{
-			timeGaugeRoot.SetActive(false);
-			return;
+			textStageName.text = $"{UnitManager.it.Boss.CharName}";
 		}
-
-		timeGaugeRoot.SetActive(true);
-		SetTimeGauge(stageInfo.TimeLimit);
+	}
+	public void SetBossHpGauge(float _ratio)
+	{
+		hpSlider.value = _ratio;
+		textHpSlider.text = $"{_ratio * 100f:0.##}%";
 	}
 
-	private void UpdateKill()
+	public void OnUpdate(StageInfo _stageInfo)
 	{
-		if (stageInfo.IsShowKillUI == false)
-		{
-			killRoot.SetActive(false);
-			return;
-		}
-
-
-		killRoot.SetActive(true);
-		killText.text = $"누적처치수\n{0}";
+		stageInfo = _stageInfo;
+		toggleContinue.isOn = StageManager.it.continueBossChallenge;
 	}
 
-	private void UpdateDPS()
+	public void SetTimer(float time)
 	{
-		if (stageInfo.IsShowDPSUI == false)
-		{
-			dpsRoot.SetActive(false);
-			return;
-		}
+		objectTimer.SetActive(true);
+		sliderTimeAttack.value = 1;
 
-
-		dpsRoot.SetActive(true);
-		dpsText.text = $"누적딜량\n{0}";
+		textTimeAttack.text = $"{time}s";
+	}
+	public void UpdateTimer(float time, float maxTime)
+	{
+		sliderTimeAttack.value = time / maxTime;
+		textTimeAttack.text = $"{time:0.##}s";
 	}
 
 	public void RefreshKillCount()
 	{
-		killText.text = $"누적처치수\n{VGameManager.it.battleRecord.killCount}";
+		if (StageManager.it.bossSpawn)
+		{
+			return;
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		if (StageManager.it.CurrentStage.CountLimit > 0)
+		{
+			if (sb.Length != 0)
+			{
+				sb.Append("\n");
+			}
+			sb.Append($"{GameManager.it.battleRecord.killCount}/{StageManager.it.CurrentStage.CountLimit}");
+		}
+
+		textHpSlider.text = sb.ToString();
+		if (StageManager.it.CurrentStage.CountLimit > 0)
+		{
+			hpSlider.value = (float)(GameManager.it.battleRecord.killCount) / (float)(StageManager.it.CurrentStage.CountLimit);
+		}
 	}
 
 	public void RefreshDPSCount()
 	{
-		var totalDamage = VGameManager.it.battleRecord.playerDPS.attackPower + VGameManager.it.battleRecord.petDPS.attackPower;
-		dpsText.text = $"누적딜량\n{totalDamage.ToString()}";
+		var totalDamage = GameManager.it.battleRecord.playerDPS.attackPower + GameManager.it.battleRecord.petDPS.attackPower;
+		textHpSlider.text = $"누적딜량\n{totalDamage.ToString()}";
 	}
 
-	public void SetWaveGauge(float _ratio)
+
+	public void SwitchContentExitButton(bool isContentEnter)
 	{
-		waveSlider.value = _ratio;
+		btnExit.gameObject.SetActive(isContentEnter);
+		btnPlayBoss.gameObject.SetActive(isContentEnter == false);
 	}
 
-	public void SetTimeGauge(float remainTime)
-	{
-		float time = Mathf.Clamp(remainTime, 0, remainTime);
 
-		timeSlider.value = time / stageInfo.TimeLimit;
-		timeGaugeText.text = $"{remainTime.ToString("F1")}s";
-	}
-
-	public void SetHpGauge(float _ratio)
-	{
-		hpSlider.value = _ratio;
-		hpGaugeText.text = $"{Mathf.CeilToInt(_ratio * 100).ToString()}%";
-	}
-
-	private void OnClickPlayBoss()
+	public void OnClickPlayBoss()
 	{
 		// 현재레벨의 보스 스테이지 찾기
-		var bossStageInfo = StageManager.it.metaGameStage.GetStage(WaveType.NormalBoss, StageManager.it.CurrentStage.StageLv);
-		StageManager.it.PlayStage(bossStageInfo);
+		//var bossStageInfo = StageManager.it.metaGameStage.GetStage(StageType.Normal, StageManager.it.CurrentStage.StageLv);
+		var bossStageInfo = GameManager.UserDB.stageContainer.GetStage(StageType.Normal, StageManager.it.CurrentStage.StageNumber, StageManager.it.CurrentStage.Difficulty);
+		StageManager.it.OnClickBoss(bossStageInfo);
+
 	}
 
-	private void OnClickExit()
+	public void OnClickExit()
 	{
-		var playStage = StageManager.it.metaGameStage.GetStage(WaveType.Normal, UserInfo.stage.PlayingStageLv(WaveType.Normal));
+		var lastStageRecord = GameManager.UserDB.stageContainer.GetLastStage(StageType.Normal);
+		var playStage = GameManager.UserDB.stageContainer.GetStage(StageType.Normal, lastStageRecord.stageNumber, lastStageRecord.stageDifficulty);
 		StageManager.it.PlayStage(playStage);
+		//SwitchContentExitButton(false);
 	}
 }

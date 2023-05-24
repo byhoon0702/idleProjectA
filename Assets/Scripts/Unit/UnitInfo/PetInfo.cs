@@ -14,8 +14,8 @@ public class PetInfo : UnitInfo
 		this.data = _data.Clone();
 		this.rawData = _data;
 
-		rawAttackPower = (IdleNumber)data.attackPower;
-		SetProjectile(data.skillEffectTidNormal);
+		//stats[Ability.Attackpower].SetValue((IdleNumber)data.attackPower);
+		//SetProjectile(data.skillEffectTidNormal);
 
 	}
 
@@ -25,10 +25,10 @@ public class PetInfo : UnitInfo
 		//(unitPower) * (합 버프) * (blessingBuffRatio) * (hyperBonus)
 
 		// 캐릭터기본공격력
-		IdleNumber unitPower = rawAttackPower;
+		IdleNumber unitPower = new IdleNumber();
 
-		// 아이템 장착(무기, 악세, 방어구)버프, 아이템 보유버프
-		IdleNumber itemBuffRatio = Inventory.it.abilityCalculator.GetAbilityValue(Stats.Attackpower);
+
+
 
 		// 드라이브 개조버프
 		IdleNumber driveBuffRatio = new IdleNumber();
@@ -55,47 +55,29 @@ public class PetInfo : UnitInfo
 		float blessingBuffMul = 1;
 
 		// 하이퍼모드 보너스
-		float hyperBonusMul = 1 + UnitGlobal.it.hyperModule.GetHyperAbilityRatio(owner, Stats.Attackpower);
+		//float hyperBonusMul = 1 + UnitGlobal.it.hyperModule.GetHyperAbilityRatio(owner, Ability.Attackpower);
 
 
 		// 합 연산
-		IdleNumber multifly = (IdleNumber)1 + itemBuffRatio + driveBuffRatio + chainBuffRatio + bookBuffRatio + specificityRatio + recordBuffRatio + supportBuffRatio + adBuffRatio;
+		IdleNumber multifly = (IdleNumber)1 + driveBuffRatio + chainBuffRatio + bookBuffRatio + specificityRatio + recordBuffRatio + supportBuffRatio + adBuffRatio;
 		// 곱 연산
-		multifly = multifly * blessingBuffMul * hyperBonusMul;
+		//multifly = multifly * blessingBuffMul * hyperBonusMul;
 
 		IdleNumber total = unitPower * multifly;
 
 		return total;
 	}
 
-	public override float AttackSpeedMul()
+	public override float AttackSpeed()
 	{
-		float hyperBonusMul = UnitGlobal.it.hyperModule.GetHyperAbilityRatio(owner, Stats.AttackSpeed);
-		float total = hyperBonusMul;
+		//float hyperBonusMul = UnitGlobal.it.hyperModule.GetHyperAbilityRatio(owner, Ability.AttackSpeed);
+		float total = 1;
 
-		total = Mathf.Clamp(total, ConfigMeta.it.ATTACK_SPEED_MIN, ConfigMeta.it.ATTACK_SPEED_MAX);
+		total = Mathf.Clamp(total, GameManager.Config.ATTACK_SPEED_MIN, GameManager.Config.ATTACK_SPEED_MAX);
 
 		return total;
 	}
-	public override CriticalType IsCritical()
-	{
-		float total = CriticalChanceRatio();
-		bool isCritical = SkillUtility.Cumulative(total);
-		bool isCriticalX2 = SkillUtility.Cumulative(total);
 
-		if (isCriticalX2 && isCritical)
-		{
-			return CriticalType.CriticalX2;
-		}
-		else if (isCritical)
-		{
-			return CriticalType.Critical;
-		}
-		else
-		{
-			return CriticalType.Normal;
-		}
-	}
 	public override float CriticalChanceRatio()
 	{
 		//전체 능력치를 가지고 계산 해야함
@@ -103,9 +85,9 @@ public class PetInfo : UnitInfo
 		//float total = data.criticalRate + conditionTotalRatio;
 		float total = 1;
 
-		if (total > ConfigMeta.it.CRITICAL_CHANCE_MAX_RATIO)
+		if (total > GameManager.Config.CRITICAL_CHANCE_MAX_RATIO)
 		{
-			total = ConfigMeta.it.CRITICAL_CHANCE_MAX_RATIO;
+			total = GameManager.Config.CRITICAL_CHANCE_MAX_RATIO;
 		}
 
 		return total;
@@ -116,14 +98,14 @@ public class PetInfo : UnitInfo
 	/// </summary>
 	public override float CriticalDamageMultifly()
 	{
-		float hyperBonusMul = 1 + UnitGlobal.it.hyperModule.GetHyperAbilityRatio(owner, Stats.CriticalDamage);
-		float total = hyperBonusMul;//+ data.criticalPowerRate;
+		//	float hyperBonusMul = 1 + UnitGlobal.it.hyperModule.GetHyperAbilityRatio(owner, Ability.CriticalDamage);
+		float total = 1;//+ data.criticalPowerRate;
 
 		return total;
 	}
 
 	public override float MoveSpeed()
 	{
-		return data.moveSpeed;
+		return 6;
 	}
 }

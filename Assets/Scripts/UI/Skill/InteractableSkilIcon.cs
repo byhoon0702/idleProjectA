@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,72 +8,98 @@ using UnityEngine.UI;
 public class InteractableSkilIcon : MonoBehaviour
 {
 	[SerializeField] private Button button;
-	[SerializeField] private Image[] icons;
+	[SerializeField] private Image icon;
 
+	[SerializeField] private Image globalCooltimeGauge;
 	[SerializeField] private Image cooltimeGauge;
-	[SerializeField] private Image remainTimeGauge;
+
 
 	[SerializeField] private GameObject skillIcon;
-	[SerializeField] private GameObject usingIcon; // 사용중
+
 	[SerializeField] private GameObject cooltimeIcon; // 쿨타임중
-	[SerializeField] private GameObject useableIcon; // 사용가능
 
 
-	private SkillBase skill;
+	SkillSlot skillSlot;
 
-
-
-
-	public void OnUpdate(SkillBase _skill = null)
+	public void OnUpdate(SkillSlot _skillSlot = null)
 	{
-		skill = _skill;
+		skillSlot = _skillSlot;
 
-		usingIcon.SetActive(false);
 		cooltimeIcon.SetActive(false);
-		useableIcon.SetActive(false);
 		skillIcon.SetActive(false);
 
-		Sprite iconSprite;
-		if (skill == null)
+		if (_skillSlot == null || _skillSlot.item == null || _skillSlot.item.rawData == null)
 		{
-			iconSprite = Resources.Load<Sprite>($"Icon/_default");
-		}
-		else
-		{
-			iconSprite = Resources.Load<Sprite>($"Icon/{_skill.skillIcon}");
-			skillIcon.SetActive(true);
+			return;
 		}
 
-		foreach (var v in icons)
-		{
-			v.sprite = iconSprite;
-		}
-
+		skillIcon.SetActive(true);
+		icon.sprite = _skillSlot.icon;
+		cooltimeGauge.sprite = _skillSlot.icon;
+		globalCooltimeGauge.sprite = _skillSlot.icon;
 		button.onClick.RemoveAllListeners();
 		button.onClick.AddListener(() =>
 		{
-			if (skill.Usable())
+			if (skillSlot == null)
 			{
-				skill.Action();
+				return;
 			}
+			if (skillSlot.IsUsable() == false)
+			{
+				return;
+			}
+			if (skillSlot.IsReady() == false)
+			{
+				return;
+			}
+
+			if (UnitManager.it.Player == null)
+			{
+				return;
+			}
+
+			if (UnitManager.it.Player.IsAlive() == false)
+			{
+				return;
+			}
+			UnitManager.it.Player.TriggerSkill(skillSlot);
+			//if (skillSlot.item != null)
+			//{
+			//	GameManager.UserDB.skillContainer.GlobalCooldown();
+			//	skillSlot.Trigger(UnitManager.it.Player);
+			//}
 		});
 	}
 
 	private void Update()
 	{
-		if (skill == null)
+		if (skillSlot == null || skillSlot.IsUsable() == false)
 		{
 			return;
 		}
 
-		float cooltimeRatio = skill.remainCooltime / skill.cooltime;
-		cooltimeGauge.fillAmount = cooltimeRatio;
 
-		float usingRatio = skill.skillUseRemainTime / skill.skillUseTime;
-		remainTimeGauge.fillAmount = usingRatio;
+		if (skillSlot.IsReady() == false)
+		{
+			globalCooltimeGauge.gameObject.SetActive(skillSlot.GlobalCooldownProgress > 0);
+			globalCooltimeGauge.fillAmount = skillSlot.GlobalCooldownProgress / 1f;
+			if (cooltimeGauge.gameObject.activeSelf == false)
+			{
+				cooltimeGauge.gameObject.SetActive(true);
+			}
 
-		usingIcon.SetActive(usingRatio > 0);
-		cooltimeIcon.SetActive(cooltimeRatio > 0);
-		useableIcon.SetActive(usingIcon.activeInHierarchy == false && cooltimeIcon.activeInHierarchy == false);
+			var ratio = skillSlot.cooldown.Progress();
+			cooltimeGauge.fillAmount = ratio;
+		}
+		else
+		{
+			if (cooltimeGauge.gameObject.activeSelf)
+			{
+				cooltimeGauge.gameObject.SetActive(false);
+			}
+			cooltimeGauge.fillAmount = 0;
+
+
+		}
 	}
 }

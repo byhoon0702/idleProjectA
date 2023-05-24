@@ -8,9 +8,6 @@ public class UnitGlobal : MonoBehaviour
 	public static UnitGlobal it => instance;
 
 
-	public HyperModule hyperModule = new HyperModule();
-	public SkillGlobalModule skillModule = new SkillGlobalModule();
-
 	private bool waveStarted;
 	public bool WaveStated => waveStarted;
 
@@ -23,14 +20,13 @@ public class UnitGlobal : MonoBehaviour
 
 	public void ResetModule()
 	{
-		hyperModule = new HyperModule();
-		skillModule = new SkillGlobalModule();
 	}
 
 	public void WaveStart()
 	{
 		waveStarted = true;
-		skillModule.SetUnit(UnitManager.it.Player);
+		//skillModule.SetUnit(UnitManager.it.Player);
+
 	}
 
 	public void WaveFinish()
@@ -40,12 +36,11 @@ public class UnitGlobal : MonoBehaviour
 
 	private void Update()
 	{
-		if(waveStarted == false)
+		if (waveStarted == false)
 		{
 			return;
 		}
 
-		hyperModule.Update(Time.deltaTime);
-		skillModule.Update(Time.deltaTime);
+
 	}
 }

@@ -2,52 +2,66 @@
 using System.Collections.Generic;
 
 [System.Serializable]
-public struct StatsValue
+public struct ItemStats
 {
-	public Ability type;
-	//UI 상에 같이 표현, 동일한 값을 적용해야 할 경우
-	//public Stats pairType;
+	public StatsType type;
+	public StatModeType modeType;
+
 	public string value;
 	public string perLevel;
+	public bool isPercentage;
+	public bool isHyper;
 
-	/// <summary>
-	/// 버프(곱연산) 인지 아닌지
-	/// </summary>
-	public bool isBuff;
 }
 
 [System.Serializable]
 public class EquipItemData : ItemData
 {
-	public long costumeTid;
+	public int starLevel;
 	public EquipType equipType;
-	public List<StatsValue> equipValues;
-	public List<StatsValue> ownValues;
+	public List<ItemStats> equipValues;
+	public List<ItemStats> ownValues;
 
-	public override List<AbilityInfo> EquipAbilityInfos()
+
+}
+public class ItemDataBaseSheet<T> : DataSheetBase<T> where T : BaseData, new()
+{
+	protected Dictionary<string/* hashtag */, ItemData> cachedTidList = new Dictionary<string, ItemData>();
+
+	public T GetInfo(long tid)
 	{
-		List<AbilityInfo> abilityInfo = new List<AbilityInfo>();
-		for (int i = 0; i < equipValues.Count; i++)
+		for (int i = 0; i < infos.Count; i++)
 		{
-			var equip = equipValues[i];
-			AbilityInfo info = new AbilityInfo(equip.type, (IdleNumber)equip.value, (IdleNumber)equip.perLevel);
-			abilityInfo.Add(info);
+			if (infos[i].tid == tid)
+			{
+				return infos[i];
+			}
 		}
 
-		return abilityInfo;
+		return null;
 	}
 
-	public override List<AbilityInfo> OwnAbilityInfos()
+	public override T Get(string _hashTag)
 	{
-		List<AbilityInfo> abilityInfo = new List<AbilityInfo>();
-		for (int i = 0; i < ownValues.Count; i++)
+		if (cachedTidList.TryGetValue(_hashTag, out var data))
 		{
-			var equip = ownValues[i];
-			AbilityInfo info = new AbilityInfo(equip.type, (IdleNumber)equip.value, (IdleNumber)equip.perLevel);
-			abilityInfo.Add(info);
+			return data as T;
 		}
 
-		return abilityInfo;
+		for (int i = 0; i < infos.Count; i++)
+		{
+			ItemData itemdata = (infos[i] as ItemData);
+			if (itemdata == null)
+			{
+				continue;
+			}
+			//if (itemdata.hashTag == _hashTag)
+			//{
+			//	cachedTidList.Add(_hashTag, itemdata);
+			//	return itemdata as T;
+			//}
+		}
+		return null;
 	}
 }
 
@@ -70,31 +84,6 @@ public class EquipItemDataSheet : ItemDataBaseSheet<EquipItemData>
 		return outData;
 	}
 
-	public List<EquipItemData> GetByItemTypeAndGrade(ItemType _itemType, Grade _grade)
-	{
-		List<EquipItemData> outData = new List<EquipItemData>();
 
-		for (int i = 0; i < infos.Count; i++)
-		{
-			if (infos[i].itemType == _itemType && infos[i].itemGrade == _grade)
-			{
-				outData.Add(infos[i]);
-			}
-		}
 
-		return outData;
-	}
-
-	//public EquipItemData GetByUnitTid(long _unitTid)
-	//{
-	//	for (int i = 0; i < infos.Count; i++)
-	//	{
-	//		if (infos[i].unitTid == _unitTid)
-	//		{
-	//			return infos[i];
-	//		}
-	//	}
-
-	//	return null;
-	//}
 }

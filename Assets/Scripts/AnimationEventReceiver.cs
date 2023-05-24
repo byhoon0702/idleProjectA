@@ -1,28 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
+
+public delegate void OnAttack();
+
+[RequireComponent(typeof(Animator))]
 public class AnimationEventReceiver : MonoBehaviour
 {
-	public UnitBase unit;
+	public event OnAttack onAttack;
 
-	public void Init(UnitBase _unit)
+	public void AddEvent(OnAttack listener)
 	{
-		unit = _unit;
+		if (onAttack.IsRegistered(listener) == false)
+		{
+			onAttack += listener;
+		}
 	}
-
-	public void RightStepDown()
+	public void RemoveEvent(OnAttack listener)
 	{
-		// GameUIManager.it.ShowStepFog(unit, true);
+		if (onAttack.IsRegistered(listener))
+		{
+			onAttack -= listener;
+		}
 	}
-
-	public void LeftStepDown()
+	public void Attack()
 	{
-		// GameUIManager.it.ShowStepFog(unit, false);
-	}
-
-	public void SwordSwing()
-	{
-
+		onAttack?.Invoke();
 	}
 }

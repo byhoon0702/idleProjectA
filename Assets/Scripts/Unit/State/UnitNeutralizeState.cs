@@ -8,18 +8,10 @@ public class UnitNeutralizeState : UnitFSM
 {
 	float elapsedTime;
 	float airborneTime;
-	public void Init(Unit _owner)
-	{
-		owner = _owner;
-	}
-	public override void OnEnter()
-	{
 
-	}
-	public override void OnEnter<T>(T data = default)
+	public override FSM OnEnter()
 	{
-		//owner.PlayAnimation(StateType.MOVE);
-		//owner.unitAnimation.PlayParticle();
+		return this;
 	}
 
 	public override void OnExit()
@@ -30,13 +22,13 @@ public class UnitNeutralizeState : UnitFSM
 
 	public override void OnUpdate(float time)
 	{
-		if (owner.knockbackPower <= 0 && owner.airbornePower <= 0)
-		{
+		//if (owner.knockbackPower <= 0 && owner.airbornePower <= 0)
+		//{
 
-			owner.unitAnimation.transform.localPosition = Vector3.zero;
-			owner.ChangeState(StateType.IDLE);
-			return;
-		}
+		//	owner.unitAnimation.transform.localPosition = Vector3.zero;
+		//	owner.ChangeState(StateType.IDLE);
+		//	return;
+		//}
 
 		//if (owner.knockbackPower > 0)
 		//{
@@ -61,5 +53,9 @@ public class UnitNeutralizeState : UnitFSM
 
 		//	owner.airbornePower -= 9.8f * airborneTime;
 		//}
+	}
+	public override void OnFixedUpdate(float fixedTime)
+	{
+
 	}
 }

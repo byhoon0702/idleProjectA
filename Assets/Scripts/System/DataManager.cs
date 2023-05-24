@@ -6,6 +6,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Purchasing.MiniJSON;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 /// <summary>
 /// 데이터를 관리하는 객체
@@ -14,15 +15,24 @@ using UnityEngine.Purchasing.MiniJSON;
 /// </summary>
 public static class DataManager
 {
-	private static SkillMeta skillMeta;
+
 	private static Dictionary<Type, object> container;
 
-	public static SkillMeta SkillMeta => skillMeta;
+	private static List<IItemData<BaseData>> dataList;
+
 	public static string path = "";
 
+	public static bool isInit = false;
 	public static void LoadAllJson()
 	{
+		if (isInit)
+		{
+			return;
+		}
+		isInit = true;
 		container = new Dictionary<Type, object>();
+
+		dataList = new List<IItemData<BaseData>>();
 
 		TextAsset[] textAssets = Resources.LoadAll<TextAsset>("Data/Json");
 
@@ -32,7 +42,7 @@ public static class DataManager
 			{
 				continue;
 			}
-			if (LoadFromBinary(file) == false)
+			//if (LoadFromBinary(file) == false)
 			{
 				if (LoadFromNonBinary(file) == false)
 				{
@@ -41,23 +51,22 @@ public static class DataManager
 			}
 		}
 
-		skillMeta = new SkillMeta();
-		skillMeta.LoadData();
+
 	}
 
-	private static bool LoadFromNonBinary(TextAsset file)
+	public static bool LoadFromNonBinary(TextAsset file)
 	{
-		Dictionary<string, object> jsonDict = (Dictionary<string, object>)Json.Deserialize(file.text);
-		if (jsonDict == null)
-		{
-			return false;
-		}
+		//Dictionary<string, object> jsonDict = (Dictionary<string, object>)Json.Deserialize(file.text);
+		//if (jsonDict == null)
+		//{
+		//	return false;
+		//}
 
-		string name = file.name;
-		if (jsonDict.ContainsKey("typeName"))
-		{
-			name = (string)jsonDict["typeName"];
-		}
+		string name = file.name.Split('_')[0];
+		//if (jsonDict.ContainsKey("typeName"))
+		//{
+		//	name = (string)jsonDict["typeName"];
+		//}
 		System.Type t = name.GetAssemblyType();
 
 		if (t == null)
@@ -104,7 +113,7 @@ public static class DataManager
 		}
 		catch (Exception e)
 		{
-			VLog.LogWarning(file);
+			//VLog.LogWarning(file);
 			return false;
 		}
 		return true;
@@ -116,6 +125,7 @@ public static class DataManager
 		if (container.ContainsKey(type) == false)
 		{
 			container.Add(type, data);
+			dataList.Add(data as IItemData<BaseData>);
 		}
 		else
 		{
@@ -156,4 +166,47 @@ public static class DataManager
 
 		return (T)container[type];
 	}
+
+	public static T GetFromAll<T>(long tid) where T : BaseData
+	{
+		for (int i = 0; i < dataList.Count; i++)
+		{
+			var data = dataList[i].Get(tid);
+			if (data != null)
+			{
+				return (T)data;
+			}
+		}
+
+		return default;
+	}
+
+	public static List<T> GetFromAllHashTag<T>(string tag) where T : BaseData
+	{
+		List<T> datas = new List<T>();
+		for (int i = 0; i < dataList.Count; i++)
+		{
+			var data = dataList[i].Get(tag);
+			if (data != null && data is T)
+			{
+				datas.Add((T)data);
+			}
+		}
+
+		return datas;
+	}
+	public static T GetFromHashTag<T>(string tag) where T : BaseData
+	{
+		for (int i = 0; i < dataList.Count; i++)
+		{
+			var data = dataList[i].Get(tag);
+			if (data != null && data is T)
+			{
+				return (T)data;
+			}
+		}
+
+		return null;
+	}
+
 }

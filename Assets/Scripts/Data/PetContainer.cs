@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using Newtonsoft.Json;
+using System.Linq;
 
 public enum PetType
 { }
@@ -11,16 +13,14 @@ public enum PetType
 [System.Serializable]
 public class PetSlot : DataSlot
 {
-
+	public short index { get; private set; }
 	public RuntimeData.PetInfo item;
-
-	public long itemTid
+	public PetSlot(short _index)
 	{
-		get
-		{
-			return item != null ? item.tid : 0;
-		}
+		index = _index;
 	}
+	[SerializeField] private long tid;
+	public long itemTid => tid;
 	public Sprite icon
 	{
 		get
@@ -39,41 +39,26 @@ public class PetSlot : DataSlot
 			return false;
 		}
 
-		var info = VGameManager.UserDB.inventory.FindPetItem(tid);
+		var info = GameManager.UserDB.petContainer.FindPetItem(tid);
 
-		item = info;
-
-		VGameManager.it.userDB.UpdateUserStats();
-		if (item == null)
-		{
-
-		}
-		else
-		{
-			if (info.itemObject == null)
-			{
-
-			}
-			else
-			{
-
-			}
-		}
-
-		return true;
+		return Equip(info);
 	}
 
 
 	public bool Equip(RuntimeData.PetInfo info)
 	{
+		if (info == null)
+		{
+			return false;
+		}
 		if (item != null && item.tid == info.tid)
 		{
 			return false;
 		}
 
 		item = info;
-
-		VGameManager.it.userDB.UpdateUserStats();
+		tid = info.tid;
+		GameManager.UserDB.UpdateUserStats();
 		if (item == null)
 		{
 
@@ -86,96 +71,119 @@ public class PetSlot : DataSlot
 		return true;
 	}
 
-	public override void AddEquipValue(ref IdleNumber _value, Ability _type)
-	{
-		if (item == null || item.itemObject == null)
-		{
-			return;
-		}
-		for (int i = 0; i < item.itemObject.EquipAbilities.Length; i++)
-		{
-			if (item.itemObject.EquipAbilities[i].type == _type)
-			{
-				_value += item.itemObject.EquipAbilities[i].GetValue(item.level);
-			}
-		}
-	}
 
-	public override void AddOwnedValue(ref IdleNumber _value, Ability _type)
-	{
-		if (item == null || item.itemObject == null)
-		{
-			return;
-		}
-		for (int i = 0; i < item.itemObject.OwnedAbilities.Length; i++)
-		{
-			if (item.itemObject.OwnedAbilities[i].type == _type)
-			{
-				_value += item.itemObject.OwnedAbilities[i].GetValue(item.level);
-			}
-		}
-	}
+
 }
 
 [CreateAssetMenu(fileName = "PetContainer", menuName = "ScriptableObject/Container/PetContainer", order = 1)]
 public class PetContainer : BaseContainer
 {
-	public PetSlot this[int i]
+
+	public List<RuntimeData.PetInfo> petList;
+	[SerializeField] private PetSlot[] petSlots;
+	public PetSlot[] PetSlots => petSlots;
+	[SerializeField] private short slotCount;
+	public override string Save()
 	{
-		get
+		var json = JsonUtility.ToJson(this, true);
+		return json;
+	}
+	public override void FromJson(string json)
+	{
+		PetContainer temp = CreateInstance<PetContainer>();
+
+		JsonUtility.FromJsonOverwrite(json, temp);
+		for (int i = 0; i < petList.Count; i++)
 		{
-			return petSlot[i];
+			if (i < temp.petList.Count)
+			{
+				petList[i].Load(temp.petList[i]);
+			}
 		}
 
+		for (int i = 0; i < petSlots.Length; i++)
+		{
+			if (i < temp.petSlots.Length)
+			{
+				petSlots[i].Equip(temp.petSlots[i].itemTid);
+			}
+		}
 	}
-
-	public PetSlot[] petSlot;
-	[SerializeField] private int slotCount;
 	public override void Load(UserDB _parent)
 	{
 		parent = _parent;
+		LoadScriptableObject();
+		SetItemListRawData(ref petList, DataManager.Get<PetDataSheet>().GetInfosClone());
+		petSlots = new PetSlot[slotCount];
 
-		petSlot = new PetSlot[slotCount];
-
-
-		for (int i = 0; i < slotCount; i++)
+		for (short i = 0; i < slotCount; i++)
 		{
-			petSlot[i] = new PetSlot();
-			//임시로 데이터 설정
-			if (parent.inventory.petList[i].count > 0)
-			{
-				petSlot[i].item = parent.inventory.petList[i];
-			}
+			petSlots[i] = new PetSlot(i);
 		}
 	}
-
-	public void Equip(long tid)
+	public RuntimeData.PetInfo FindPetItem(long tid)
 	{
-		for (int i = 0; i < petSlot.Length; i++)
+		var info = petList.Find(x => x.tid == tid);
+		return info;
+	}
+
+	public short GetIndex(long tid)
+	{
+		for (short i = 0; i < petSlots.Length; i++)
 		{
-			if (petSlot[i].item == null)
+			if (petSlots[i].item == null)
 			{
-				petSlot[i].Equip(tid);
-				break;
+				continue;
+
+			}
+			if (petSlots[i].itemTid == tid)
+			{
+				return i;
 			}
 		}
+		return -1;
+	}
+
+	public bool Equip(long tid)
+	{
+		for (short i = 0; i < petSlots.Length; i++)
+		{
+			if (petSlots[i].item == null)
+			{
+				petSlots[i].Equip(tid);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void Unequip(long tid)
 	{
-		for (int i = 0; i < petSlot.Length; i++)
+		for (short i = 0; i < petSlots.Length; i++)
 		{
-			if (petSlot[i].item == null)
+			if (petSlots[i].item == null)
 			{
 				continue;
 			}
-			if (petSlot[i].item.tid == tid)
+			if (petSlots[i].item.tid == tid)
 			{
-				petSlot[i].item = null;
+				petSlots[i].item = null;
 				break;
 
 			}
 		}
 	}
+	public void EvolutionPet(RuntimeData.PetInfo info)
+	{
+		info.Evolution();
 
+
+	}
+
+	public override void LoadScriptableObject()
+	{
+		scriptableDictionary = new ScriptableDictionary();
+		var petlist = Resources.LoadAll<PetItemObject>("RuntimeDatas/Pets");
+		AddDictionary(scriptableDictionary, petlist);
+	}
 }

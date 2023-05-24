@@ -23,18 +23,18 @@ public class ParticleEffectPoolManager : VObjectPool<ParticleEffect>
 		_object.Set(_pool);
 	}
 
-	protected override string GetPath(string _name)
+	protected override string GetPath(string _path, string _name)
 	{
 		return $"{PathHelper.particleEffectPath}/{_name}";
 	}
 
-	protected override ParticleEffect OnCreateObject(string _name)
+	protected override ParticleEffect OnCreateObject(string _path, string _name)
 	{
-		if (GetResource(_name) == null)
+		if (GetResource("", _name) == null)
 		{
 			return null;
 		}
-		ParticleEffect effect = Instantiate(GetResource(_name), transform);
+		ParticleEffect effect = Instantiate(GetResource("", _name), transform);
 		effect.name = _name;
 		return effect;
 	}

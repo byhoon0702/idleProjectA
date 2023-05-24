@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO.Enumeration;
 using Mono.Cecil;
-using server_msg_db;
 using UnityEngine;
 
 public static class ConvertUtility
@@ -42,6 +41,7 @@ public static class ConvertUtility
 				convertedString = "System.String";
 				break;
 			case "enum":
+			case "Enum":
 				convertedString = "System.Enum";
 				break;
 		}
@@ -95,13 +95,21 @@ public static class ConvertUtility
 
 		return convertedString;
 	}
-
 	public static string GetAssemblyName(this string type)
 	{
+		if (type.Contains("_"))
+		{
+			type = type.Split("_")[0];
+		}
 		return $"{type}, Assembly-CSharp";
 	}
 	public static System.Type GetAssemblyType(this string type)
 	{
+		if (type.Contains("_"))
+		{
+			type = type.Split("_")[0];
+		}
 		return System.Type.GetType(type.GetAssemblyName());
 	}
+
 }

@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class DataLoadingState : RootState
 {
-	public override void OnEnter()
+	public override void Init()
+	{
+
+	}
+	public override FSM OnEnter()
 	{
 		elapsedTime = 0;
 
@@ -13,6 +17,13 @@ public class DataLoadingState : RootState
 
 		LoadConfig();
 		DataManager.LoadAllJson();
+		return this;
+
+
+	}
+	public override FSM RunNextState(float time)
+	{
+		return this;
 	}
 
 	public override void OnExit()
@@ -41,6 +52,6 @@ public class DataLoadingState : RootState
 			return;
 		}
 
-		JsonUtility.FromJsonOverwrite(textAsset.text, ConfigMeta.it);
+		//JsonUtility.FromJsonOverwrite(textAsset.text, ConfigMeta.it);
 	}
 }

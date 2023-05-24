@@ -7,10 +7,11 @@ using UnityEngine.EventSystems;
 
 public class RepeatButton : Selectable
 {
-	private const float LONG_CLICK_START_TIME = 1;
+	private const float LONG_CLICK_START_TIME = 0.5f;
 
 
 	public Action repeatCallback;
+	public Action<bool> onbuttonUp;
 
 	private bool isPressed;
 	private bool callRepeat;
@@ -29,8 +30,6 @@ public class RepeatButton : Selectable
 		}
 	}
 
-
-
 	public override void OnPointerDown(PointerEventData eventData)
 	{
 		base.OnPointerDown(eventData);
@@ -43,10 +42,8 @@ public class RepeatButton : Selectable
 	{
 		base.OnPointerUp(eventData);
 		isPressed = false;
-		if (callRepeat == false)
-		{
-			repeatCallback?.Invoke();
-		}
+
+		onbuttonUp?.Invoke(callRepeat);
 	}
 
 	private void Update()

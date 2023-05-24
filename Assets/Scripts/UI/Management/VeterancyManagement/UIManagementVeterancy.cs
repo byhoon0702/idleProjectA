@@ -11,60 +11,59 @@ public class UIManagementVeterancy : MonoBehaviour
 	[SerializeField] private Transform itemRoot;
 	[SerializeField] private Button resetButton;
 
-
-
-
 	private void Awake()
 	{
 		resetButton.onClick.RemoveAllListeners();
 		resetButton.onClick.AddListener(OnResetButtonClick);
 	}
 
-	public void OnUpdate(bool _refreshGrid)
+	public void OnUpdate()
 	{
-		UpdateItem(_refreshGrid);
+		UpdateItem();
 		UpdateMoney();
 	}
 
-	public void UpdateItem(bool _refresh)
+	public void UpdateItem()
 	{
-		if (_refresh == false)
+		var list = GameManager.UserDB.veterancyContainer.veterancyInfos;
+		int countForMake = list.Count - itemRoot.childCount;
+
+		if (countForMake > 0)
 		{
-			foreach (var v in itemRoot.GetComponentsInChildren<UIItemVeterancy>())
+			for (int i = 0; i < countForMake; i++)
 			{
-				Destroy(v.gameObject);
-			}
-
-			foreach (var v in DataManager.Get<PropertyItemDataSheet>().GetInfosClone())
-			{
-				UIVeterancyData uiData = new UIVeterancyData();
-				VResult result = uiData.Setup(v);
-				if (result.Fail())
-				{
-					VLog.LogError(result.ToString());
-					continue;
-				}
-
 				var item = Instantiate(itemPrefab, itemRoot);
-				item.OnUpdate(this, uiData);
 			}
 		}
 
-		foreach (var v in itemRoot.GetComponentsInChildren<UIItemVeterancy>())
+
+
+		for (int i = 0; i < itemRoot.childCount; i++)
 		{
-			v.OnRefresh();
+
+			var child = itemRoot.GetChild(i);
+			if (i > list.Count - 1)
+			{
+				child.gameObject.SetActive(false);
+				continue;
+			}
+
+			child.gameObject.SetActive(true);
+			UIItemVeterancy slot = child.GetComponent<UIItemVeterancy>();
+
+			var info = list[i];
+			slot.OnUpdate(this, info);
 		}
+
 	}
 
 	public void UpdateMoney()
 	{
-		propertyPointText.text = UserInfo.info.RemainPropertyPoint.ToString("N0");
+		//propertyPointText.text = UserInfo.info.RemainPropertyPoint.ToString("N0");
 	}
 
 	public void OnResetButtonClick()
 	{
-		UserInfo.info.ResetProperty();
-		UserInfo.SaveUserData();
-		OnUpdate(true);
+		OnUpdate();
 	}
 }

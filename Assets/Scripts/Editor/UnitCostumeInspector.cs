@@ -5,13 +5,13 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-[CustomEditor(typeof(UnitCostume))]
+[CustomEditor(typeof(NormalUnitCostume))]
 public class UnitCostumeInspector : Editor
 {
-	UnitCostume costume;
+	NormalUnitCostume costume;
 	private void OnEnable()
 	{
-		costume = target as UnitCostume;
+		costume = target as NormalUnitCostume;
 	}
 
 	public override void OnInspectorGUI()

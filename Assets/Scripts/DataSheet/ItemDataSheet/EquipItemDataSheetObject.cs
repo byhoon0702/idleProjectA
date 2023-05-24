@@ -36,11 +36,7 @@ public class EquipItemDataSheetObject : BaseDataSheetObject
 		{
 			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas/EquipItems", $"{typename}s");
 		}
-		else
-		{
-			AssetDatabase.DeleteAsset(path);
-			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas/EquipItems", $"{typename}s");
-		}
+
 
 		for (int i = 0; i < dataSheet.infos.Count; i++)
 		{
@@ -48,14 +44,22 @@ public class EquipItemDataSheetObject : BaseDataSheetObject
 			string name = $"{data.tid}_{data.name}";
 			string assetPath = $"{path}/{name}.asset";
 
-			var scriptable = ScriptableObject.CreateInstance<EquipItemObject>();
-			scriptable.SetBasicData(data.tid, data.name, data.description, data.equipType, data.itemGrade, data.starLv);
-			scriptable.SetEquipAbilities(data.EquipAbilityInfos().ToArray());
-			scriptable.SetOwnedAbilities(data.OwnAbilityInfos().ToArray());
+			var scriptable = (EquipItemObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(EquipItemObject));
+			if (scriptable == null)
+			{
+				scriptable = ScriptableObject.CreateInstance<EquipItemObject>();
+				AssetDatabase.CreateAsset(scriptable, assetPath);
+			}
+			scriptable.SetBasicData(data.tid, data.name, data.description, data.equipType, data.itemGrade, data.starLevel);
 
-			AssetDatabase.CreateAsset(scriptable, assetPath);
-			AssetDatabase.SaveAssets();
+			scriptable.FindIconResource();
+			scriptable.FindEquipObejct();
+			EditorUtility.SetDirty(scriptable);
+			AssetDatabase.SaveAssetIfDirty(scriptable);
+
 		}
+		AssetDatabase.SaveAssets();
+		AssetDatabase.Refresh();
 #endif
 
 	}

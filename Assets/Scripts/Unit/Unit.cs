@@ -1,235 +1,278 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using UnityEngine;
 using DG.Tweening;
+using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
+using static UnityEngine.UI.GridLayoutGroup;
 
-
-public interface UnitFSM : FiniteStateMachine
+public enum NeutralizeType
 {
+	_NONE,
+	KNOCKBACK,
+	AIRBORNE,
+
 }
 
 
-public abstract class Unit : UnitBase
+public class NeutralizeMove
 {
-	public SkillModule skillModule;
-	public ConditionModule conditionModule;
+	public NeutralizeType type;
+	public float power;
+	public Vector3 dir;
+	public float duration;
+	public float additionalRatio;
 
-	public IdleState idleState;
-	public MoveState moveState;
-	public AttackState attackState;
-	public DeadState deadStaet;
-
-	public float shakeAmount = 0.3f;
-	public Vector2 colliderSize = new Vector2(1f, 1.5f);
-
-	public SkillBase usingSkillBase;
-
-	public bool isBoss = false;
+	protected float elapsedTime;
+	protected Transform transform;
 
 
-	protected bool isRewardable = true;
-
-	private BoxCollider2D boxCollider;
-	public virtual long SkillTid => 0;
-
-	public abstract IdleNumber Hp { get; set; }
-	public abstract IdleNumber MaxHp { get; }
-
-	protected SkillEffectObject normalSkillObject = null;
-
-	public void InitState()
+	protected bool isLastHit = false;
+	public void Set(Transform _transform, NeutralizeType _type, float _power, Vector3 _dir, float _duration, bool _isLastHit = true)
 	{
-		idleState = new IdleState();
-		moveState = new MoveState();
-		attackState = new AttackState();
-		deadStaet = new DeadState();
+		type = _type;
+		power = _power;
+		dir = _dir;
+		duration = _duration;
 
-		idleState.Init(this);
-		moveState.Init(this);
-		attackState.Init(this);
-		deadStaet.Init(this);
-
-		currentfsm = idleState;
-		currentState = StateType.IDLE;
+		transform = _transform;
+		isLastHit = _isLastHit;
+		elapsedTime = 0;
 	}
 
-	public void Init()
+	public void IsLastHit(bool _isLastHit = true)
 	{
-		// 스킬초기화
-		var skillData = ScriptableObject.CreateInstance<DefaultAttackData>();
-		skillData.cooltime = AttackTime;
-
-		skillModule = new SkillModule(this, new DefaultAttack(skillData));
-		InitSkill(skillModule);
-
-		conditionModule = new ConditionModule(this);
-
-		InitState();
-
-		unitAnimation = model.GetComponent<UnitAnimation>();
-		if (unitAnimation == null)
+		isLastHit = _isLastHit;
+	}
+	public virtual void AddPower(float _power)
+	{
+		if (power > 0)
 		{
-			unitAnimation = model.AddComponent<UnitAnimation>();
+			power += _power * additionalRatio;
 		}
-
-		if (boxCollider == null)
+		else
 		{
-			boxCollider = transform.GetComponent<BoxCollider2D>();
-			if (boxCollider == null)
-			{
-				boxCollider = gameObject.AddComponent<BoxCollider2D>();
-			}
+			power = _power;
 		}
+	}
+	public virtual void OnUpdate(float delta)
+	{
 
-		boxCollider.offset = new Vector2(0, colliderSize.y / 2);
-		boxCollider.size = new Vector2(1f, 1.5f);
-		boxCollider.isTrigger = true;
-
-
+		float force = Mathf.Lerp(power, 0, elapsedTime);
+		transform.Translate(dir * force * delta);
+		elapsedTime += delta;
 	}
 
-
-	public void ShakeUnit()
+	public bool IsEnd()
 	{
-		model.transform.localPosition = UnityEngine.Random.insideUnitCircle * 0.3f;
-		model.transform.DOLocalMove(Vector3.zero, 0.1f);
+		return power <= 0;
 	}
+}
 
-
-
-	public void AttackStart(SkillBase _skillBase)
+public class KnockbackMove : NeutralizeMove
+{
+	public void InstantlyMove(float power)
 	{
-		usingSkillBase = _skillBase;
-		usingSkillBase.SetCooltime();
-		usingSkillBase.coolDowning = true;
-		PlayAnimation(StateType.ATTACK);
+		transform.Translate(dir * power, Space.Self);
 	}
-	public override void ResetDefaultAttack()
+	public override void OnUpdate(float delta)
 	{
-		if (normalSkillObject == null)
+		if (isLastHit == false)
 		{
 			return;
 		}
+		float force = power - (3f * elapsedTime);
+		if (force < 0)
+		{
+			power = 0;
+			return;
+		}
+		transform.Translate(dir * force * delta);
+		elapsedTime += delta;
+	}
+}
 
-		normalSkillObject.Reset();
-		normalSkillObject.Release();
+public class AirborneMove : NeutralizeMove
+{
+	bool reachedMaximum = false;
+	bool checkMaximum = false;
+
+	public override void AddPower(float _power)
+	{
+		if (power > 0)
+		{
+
+			power += _power * additionalRatio;
+		}
+		else
+		{
+			power = _power;
+		}
 	}
 
-	public override void SetAttack()
+	public void InstantlyMove(float power)
+	{
+		transform.Translate(dir * power, Space.Self);
+	}
+	public override void OnUpdate(float delta)
+	{
+		if (isLastHit == false)
+		{
+			return;
+		}
+		if (reachedMaximum)
+		{
+			duration -= delta;
+			if (duration <= 0)
+			{
+				reachedMaximum = false;
+			}
+			return;
+		}
+
+		float force = power - (9.8f * elapsedTime);
+
+		if (force < 0 && checkMaximum == false)
+		{
+			if (reachedMaximum == false)
+			{
+				reachedMaximum = true;
+				checkMaximum = true;
+				Debug.Log("최고 높이");
+			}
+		}
+
+		if (transform.localPosition.y < 0)
+		{
+			transform.localPosition = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
+			power = 0;
+			return;
+		}
+		transform.Translate(dir * force * delta, Space.Self);
+		elapsedTime += delta;
+	}
+}
+
+
+
+
+
+public abstract class Unit : HittableUnit
+{
+	public float shakeAmount = 0.3f;
+	public Vector2 colliderSize = new Vector2(1f, 1.5f);
+
+	public bool isBoss = false;
+
+	protected bool isRewardable = true;
+
+	public UnitBehavior unitBehavior;
+
+	public int attackCount;
+	public int killCount;
+	public int hitCount;
+
+	public List<NeutralizeMove> neutralizeMoves = new List<NeutralizeMove>();
+	public List<AdditionalDamageModule> additionalDamageModules = new List<AdditionalDamageModule>();
+
+	public void InitState()
+	{
+		fsmModule = GetComponent<UnitFsmModule>();
+		fsmModule.Init(this);
+
+		currentState = StateType.IDLE;
+	}
+
+	public virtual void Init()
+	{
+		// 스킬초기화
+		attackCount = 0;
+		hitCount = 0;
+		killCount = 0;
+		InitState();
+
+		if (boxCollider2D == null)
+		{
+			boxCollider2D = transform.GetComponent<Collider2D>();
+			if (boxCollider2D == null)
+			{
+				boxCollider2D = gameObject.AddComponent<Collider2D>();
+			}
+		}
+
+		//boxCollider.isTrigger = true;
+	}
+
+	public void InitMode(string path, UnitInfo info)
+	{
+		unitMode?.OnInit(this);
+		unitMode?.OnSpawn(path, info.resource);
+
+		unitHyperMode?.OnInit(this);
+		//unitHyperMode?.OnSpawn(path, info.hyperResource);
+
+		unitHyperMode?.OnModeExit();
+		unitMode?.OnModeEnter(StateType.IDLE);
+		currentMode = unitMode;
+	}
+	public void ShakeUnit()
+	{
+		unitAnimation.transform.localPosition = UnityEngine.Random.insideUnitCircle * 0.3f;
+		unitAnimation.transform.DOLocalMove(Vector3.zero, 0.1f);
+	}
+	public virtual bool TriggerSkill(SkillSlot skillSlot)
 	{
 
-		if (normalSkillObject == null)
-		{
-			SkillEffectData data = GetSkillEffectData();
-
-			normalSkillObject = SkillEffectObjectPool.it.Get();
-			normalSkillObject.SetData(data);
-		}
-
-		if (target != null)
-		{
-			normalSkillObject.OnSkillStart(this, target.unitAnimation.CenterPivot.position, AttackPower);
-		}
+		return true;
 	}
-	public override void DefaultAttack(float time)
+
+
+	public virtual void ChangeCostume()
+	{ }
+
+	public virtual void NormalAttack()
 	{
-		if (target != null)
-		{
-
-		}
-		normalSkillObject.UpdateFromOutSide(time);
+		unitAnimation.SetParameter("attackIndex", UnityEngine.Random.Range(0, 3));
+		unitAnimation.SetParameter("attackSpeed", AttackSpeed);
+		currentMode?.OnAttackNormal();
 	}
 
-	public void ChangeState(StateType stateType)
+	public virtual void ChangeState(StateType stateType, bool force = false)
 	{
 		if (currentState == StateType.DEATH)
 		{
 			return;
 		}
 
-		if (currentState == stateType)
+		if (stateType == StateType.DEATH && isRewardable)
 		{
-			return;
+			isRewardable = false;
+			//StageManager.it.CheckKillRewards(UnitType, transform);
 		}
-
-		if (conditionModule.HasCondition(UnitCondition.Knockback))
-		{
-			// 넉백은 Move, Attack상태 이동 불가
-			if (stateType == StateType.MOVE || stateType == StateType.ATTACK)
-			{
-				return;
-			}
-		}
-
-		if (conditionModule.HasCondition(UnitCondition.Stun))
-		{
-			// 스턴은 Move, Attack상태 이동 불가
-			if (stateType == StateType.MOVE || stateType == StateType.ATTACK)
-			{
-				return;
-			}
-		}
-
-
-		VLog.AILog($"{NameAndId} StateChange {currentState} -> {stateType}");
-		OnChangeState(stateType);
-
-
-	}
-	protected virtual void OnChangeState(StateType stateType)
-	{
-		if (currentState == stateType)
-		{
-			return;
-		}
-
 		currentState = stateType;
-		currentfsm?.OnExit();
-		switch (stateType)
-		{
-			case StateType.IDLE:
-				currentfsm = idleState;
-				break;
-			case StateType.MOVE:
-				currentfsm = moveState;
-				break;
-			case StateType.ATTACK:
-				currentfsm = attackState;
-				break;
-			case StateType.DEATH:
-				currentfsm = deadStaet;
-				break;
-		}
-		currentfsm?.OnEnter();
+		VLog.AILog($"{NameAndId} StateChange {currentState} -> {stateType}");
+		fsmModule?.ChangeState(stateType, force);
 	}
+	public virtual void ActiveHyperEffect()
+	{ }
 
-
-
-	public abstract void Spawn(UnitData data, int _level = 1);
-
+	public virtual void InactiveHyperEffect()
+	{
+	}
 	public override void Hit(HitInfo _hitInfo)
 	{
-		//base.Hit(_hitInfo);
-
 		if (Hp > 0)
 		{
-			if (_hitInfo.ShakeCamera)
-			{
-				if (SceneCameraV2.it != null)
-				{
-					SceneCameraV2.it.ShakeCamera();
-				}
-				else
-				{
-					SceneCamera.it.ShakeCamera();
-				}
-			}
-			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower.ToString(), _hitInfo.fontColor, unitAnimation.CenterPivot.position, _hitInfo.criticalType, isPlayer: _hitInfo.IsPlayerAttack == false);
+			//if (_hitInfo.ShakeCamera)
+			//{
+			//	SceneCamera.it.ShakeCamera();
+			//}
+			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, _hitInfo.criticalType);
 			ShakeUnit();
 		}
 		Hp -= _hitInfo.TotalAttackPower;
 
-		VGameManager.it.battleRecord.RecordAttackPower(_hitInfo);
+		GameManager.it.battleRecord.RecordAttackPower(_hitInfo);
 		if (_hitInfo.hitSound.IsNullOrWhiteSpace() == false)
 		{
 			VSoundManager.it.PlayEffect(_hitInfo.hitSound);
@@ -251,8 +294,8 @@ public abstract class Unit : UnitBase
 
 			IdleNumber addHP = newHP - Hp;
 			Hp += addHP;
-			VGameManager.it.battleRecord.RecordHeal(_healInfo, addHP);
-			GameUIManager.it.ShowFloatingText(_healInfo.healRecovery.ToString(), _healInfo.color, unitAnimation.CenterPivot.position, CriticalType.Normal, isPlayer: _healInfo.IsPlayerHeal == false);
+			GameManager.it.battleRecord.RecordHeal(_healInfo, addHP);
+			GameUIManager.it.ShowFloatingText(_healInfo.healRecovery, CenterPosition, CenterPosition, CriticalType.Normal);
 		}
 	}
 
@@ -267,88 +310,58 @@ public abstract class Unit : UnitBase
 		Hp = (IdleNumber)0;
 	}
 
+
 	// Update is called once per frame
 	protected virtual void Update()
 	{
-		if (VGameManager.it.currentState != GameState.BATTLE
-			&& VGameManager.it.currentState != GameState.REWARD
-			&& VGameManager.it.currentState != GameState.BOSSBATTLE)
+		if (GameManager.GameStop)
 		{
 			return;
 		}
 
 		float delta = Time.deltaTime;
 
-		// idle상태이면 move로 이동 시도
-		if (currentState == StateType.IDLE)
+
+		//unitBehavior?.OnPreUpdate(this, delta);
+		//unitBehavior?.OnUpdate(this, delta);
+		//unitBehavior?.OnPostUpdate(this, delta);
+
+		for (int i = 0; i < neutralizeMoves.Count; i++)
 		{
-			ChangeState(StateType.MOVE);
+			neutralizeMoves[i].OnUpdate(delta);
+			if (neutralizeMoves[i].IsEnd())
+			{
+				neutralizeMoves.RemoveAt(i);
+			}
 		}
 
-		skillModule.Update(delta);
-		conditionModule.Update(delta);
+		for (int i = 0; i < additionalDamageModules.Count; i++)
+		{
+			additionalDamageModules[i].OnUpdate(delta);
+			if (additionalDamageModules[i].isEnd())
+			{
+				additionalDamageModules[i].RemoveParticle();
+				additionalDamageModules.RemoveAt(i);
+			}
+		}
 
-		currentfsm?.OnUpdate(delta);
+		fsmModule?.OnUpdate(delta);
+	}
+	protected void FixedUpdate()
+	{
+		fsmModule?.OnFixedUpdate(Time.fixedDeltaTime);
 	}
 
 	protected virtual void LateUpdate()
 	{
+		CheckDeathState();
+	}
+
+	public virtual void CheckDeathState()
+	{
 		if (Hp <= 0)
 		{
 			ChangeState(StateType.DEATH);
-		}
-	}
-
-	protected virtual void InitSkill(SkillModule _skillModule)
-	{
-		OnInitSkill(_skillModule);
-	}
-	public virtual void OnInitSkill(SkillModule _skillModule)
-	{
-		if (SkillTid != 0)
-		{
-			if (DataManager.SkillMeta.dic.ContainsKey(SkillTid) == false)
-			{
-				VLog.SkillLogError($"스킬 타입이 테이블에 없음. tid: {SkillTid}");
-				return;
-			}
-
-			SkillBaseData skillBaseData = DataManager.SkillMeta.dic[SkillTid];
-
-			string id = skillBaseData.skillPreset;
-			id = id.Substring(0, id.Length - 4); // 끝에 'Data' 텍스트를 지우기 위함
-			var type = System.Type.GetType(id);
-
-			if (type == null)
-			{
-				VLog.SkillLogError($"스킬 타입 정의 안됨. Skill ID: {id}");
-				return;
-			}
-
-			// 스킬 생성
-			SkillBase skill;
-			try
-			{
-				object classObject = System.Activator.CreateInstance(type, new object[] { skillBaseData });
-
-				skill = classObject as SkillBase;
-			}
-			catch (System.Exception e)
-			{
-				VLog.SkillLogError($"스킬 생성실패. SKill ID : {id}\n{e}");
-				return;
-			}
-
-			_skillModule.AddSkill(skill);
-			_skillModule.RegistMainSkill(skill);
-		}
-	}
-
-	public void ReleaseSkillEffectObject()
-	{
-		if (normalSkillObject != null)
-		{
-			normalSkillObject.Release();
 		}
 	}
 
@@ -368,12 +381,8 @@ public abstract class Unit : UnitBase
 		// 애니메이션 종료
 	}
 
-	public virtual bool ConditionApplicable(ConditionBase _condition)
-	{
-		return true;
-	}
 
-	public virtual void Debuff(List<StatInfo> debufflist)
+	public virtual void OnCrowdControl()
 	{
 
 	}

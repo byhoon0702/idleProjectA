@@ -23,15 +23,18 @@ public enum ClassType
 	WALL,
 }
 
+[System.Flags]
 public enum StateType
 {
-	NONE,
-	IDLE = 1,
-	MOVE,
-	ATTACK,
-	HIT,
-	SKILL,
-	DEATH,
+	NONE = 0,
+	IDLE = 1 << 1,
+	MOVE = 1 << 2,
+	ATTACK = 1 << 3,
+	HIT = 1 << 4,
+	SKILL = 1 << 5,
+	DEATH = 1 << 6,
+	NEUTRALIZE = 1 << 7,
+	DASH = 1 << 8,
 }
 
 public enum ControlSide

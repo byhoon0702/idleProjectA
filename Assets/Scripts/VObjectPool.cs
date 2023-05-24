@@ -8,60 +8,143 @@ public abstract class VObjectPool<T> : MonoBehaviour where T : Object
 	protected Dictionary<string, T> resourceDictionary = new Dictionary<string, T>();
 	protected Dictionary<string, IObjectPool<T>> poolDictionary = new Dictionary<string, IObjectPool<T>>();
 
-	public T Get(string _name = "default")
+	private Dictionary<int, bool> releaseCheck = new Dictionary<int, bool>();
+
+	//public void Ready(string _name, int count)
+	//{
+	//	var pool = GetPool(_name);
+	//	List<T> itemList = new List<T>();
+
+	//	for (int i = 0; i < count; i++)
+	//	{
+	//		T item = pool.Get();
+	//		itemList.Add(item);
+	//	}
+
+	//	for (int i = 0; i < count; i++)
+	//	{
+	//		T item = itemList[i];
+	//		pool.Release(item);
+	//	}
+	//}
+
+	public T Get(string _path, string _name)
 	{
-		IObjectPool<T> pool = GetPool(_name);
+		IObjectPool<T> pool = GetPool(_path, _name);
 		T t = pool.Get();
 		SetObject(t, pool);
+		SetRelease(t, false);
+		return t;
+	}
+	public T Get(GameObject _obj)
+	{
+		if (_obj == null)
+		{
+			return null;
+		}
+		IObjectPool<T> pool = GetPool(_obj);
+		T t = pool.Get();
+		SetObject(t, pool);
+		SetRelease(t, false);
 		return t;
 	}
 
-	protected IObjectPool<T> GetPool(string _name)
+	public bool IsReleased(T _t)
+	{
+		return releaseCheck.ContainsKey(_t.GetInstanceID()) && releaseCheck[_t.GetInstanceID()] == true;
+	}
+
+	protected IObjectPool<T> GetPool(string _path, string _name)
 	{
 		IObjectPool<T> pool;
 
 		if (poolDictionary.TryGetValue(_name, out pool) == false)
 		{
-			pool = new ObjectPool<T>(() => { return OnCreateObject(_name); }, OnGetObject, OnReleaseObject, OnDestroyObject);
+			pool = new ObjectPool<T>(() =>
+			{
+				return OnCreateObject(_path, _name);
+			}, OnGetObject, OnReleaseObject, OnDestroyObject);
 			poolDictionary.Add(_name, pool);
 		}
 
 		return pool;
 	}
-
-	protected virtual T GetResource(string _name)
+	protected IObjectPool<T> GetPool(GameObject _object)
 	{
-		GameObject resource;
+		IObjectPool<T> pool;
+
+		if (poolDictionary.TryGetValue(_object.name, out pool) == false)
+		{
+			pool = new ObjectPool<T>(() =>
+			{
+				return OnCreateObject(_object);
+			}, OnGetObject, OnReleaseObject, OnDestroyObject);
+			poolDictionary.Add(_object.name, pool);
+		}
+
+		return pool;
+	}
+
+	protected virtual T GetResource(string _path, string _name)
+	{
+		if (_name.IsNullOrEmpty())
+		{
+			Debug.LogError("Name is Null");
+			return null;
+		}
+		GameObject prefabResource;
 		T result;
 
 		if (resourceDictionary.TryGetValue(_name, out result) == false)
 		{
-			string path = GetPath(_name);
-			if (Resources.Load(path) == null)
+			string path = GetPath(_path, _name);
+			var resource = Resources.Load(path);
+			if (resource == null)
 			{
 				return null;
 			}
 
-			resource = Instantiate(Resources.Load(path), transform) as GameObject;
-			resource.name = _name;
-			resource.SetActive(false);
-			result = resource.GetComponent<T>();
+			prefabResource = Instantiate(resource, transform) as GameObject;
+			prefabResource.name = _name;
+			prefabResource.SetActive(false);
+			result = prefabResource.GetComponent<T>();
 			resourceDictionary.Add(_name, result);
 		}
 
 		return result;
 	}
 
-	/// <summary>
-	/// 오브젝트 Get() 전의 처리과정. managedPool 등록 등.
-	/// </summary>
-	/// <param name="_object"></param>
-	/// <param name="_pool"></param>
+	protected void SetRelease(T _t, bool _isRelease)
+	{
+		if (_t == null)
+		{
+			return;
+		}
+		if (releaseCheck.ContainsKey(_t.GetInstanceID()) == false)
+		{
+			releaseCheck.Add(_t.GetInstanceID(), _isRelease);
+		}
+		else
+		{
+			releaseCheck[_t.GetInstanceID()] = _isRelease;
+		}
+	}
+
 	protected abstract void SetObject(T _object, IObjectPool<T> _pool);
-	protected abstract string GetPath(string _name);
-	protected abstract T OnCreateObject(string _name);
-	protected abstract void OnGetObject(T _object);
-	protected abstract void OnReleaseObject(T _object);
+	protected abstract string GetPath(string _path, string _name);
+	protected abstract T OnCreateObject(string _path, string _name);
+	protected virtual T OnCreateObject(GameObject _object)
+	{
+		return null;
+	}
+	protected virtual void OnGetObject(T _object)
+	{
+		SetRelease(_object, false);
+	}
+	protected virtual void OnReleaseObject(T _object)
+	{
+		SetRelease(_object, true);
+	}
 	protected abstract void OnDestroyObject(T _object);
 
 	public void ClearPool()

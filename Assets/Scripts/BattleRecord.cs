@@ -10,16 +10,18 @@ public class BattleRecord
 	public DPSInfo petDPS = new DPSInfo();
 	public DPSInfo enemyDPS = new DPSInfo();
 	public DPSInfo unknownDPS = new DPSInfo();
+	public int killCount;
+	public int bossKillCount;
 
 
 
 	public void RecordAttackPower(HitInfo _hitInfo)
 	{
-		DPSInfo info = FinddDPSInfo(_hitInfo.attackerType);
+		//DPSInfo info = FinddDPSInfo(_hitInfo.attackerType);
 
-		info.attackPower += _hitInfo.TotalAttackPower;
-		info.criticalCount += _hitInfo.criticalType == CriticalType.Critical ? 1 : 0;
-		info.hyperAttackCount += _hitInfo.criticalType == CriticalType.CriticalX2 ? 1 : 0;
+		//info.attackPower += _hitInfo.TotalAttackPower;
+		//info.criticalCount += _hitInfo.criticalType == CriticalType.Critical ? 1 : 0;
+		//info.hyperAttackCount += _hitInfo.criticalType == CriticalType.CriticalX2 ? 1 : 0;
 	}
 
 	/// <summary>
@@ -28,7 +30,7 @@ public class BattleRecord
 	public void RecordHeal(HealInfo _heal, IdleNumber _healValue)
 	{
 		DPSInfo info = FinddDPSInfo(_heal.healer);
-		
+
 		info.hpRecovery += _healValue;
 	}
 
@@ -84,7 +86,7 @@ public class RecordData
 
 	public IdleNumber TotalDamage()
 	{
-		IdleNumber totalDamage = new IdleNumber(0, 0);
+		IdleNumber totalDamage = new IdleNumber(0);
 		for (int i = 0; i < attackPowers.Count; i++)
 		{
 			var attackPower = attackPowers[i];
@@ -138,7 +140,7 @@ public class DPSInfo
 	public override string ToString()
 	{
 		string outString = $"AttackPower: {attackPower.ToString()}, Cri: {criticalCount}, hyp: {hyperAttackCount}\n HP Recovery: {hpRecovery.ToString()}\n";
-		foreach(var v in skillData)
+		foreach (var v in skillData)
 		{
 			outString += $"[{v.skillTid}] {v.skillValue}\n";
 		}

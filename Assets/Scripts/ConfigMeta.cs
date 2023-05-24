@@ -4,26 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
+[CreateAssetMenu(fileName = "Config", menuName = "ScriptableObject/Data/Config", order = 1)]
 public class ConfigMeta : ScriptableObject
 {
-	private static ConfigMeta instance;
-	public static ConfigMeta it
-	{
-		get
-		{
-			if (Application.isPlaying == false)
-			{
-				return null;
-			}
-
-			if(instance == null)
-			{
-				instance = ScriptableObject.CreateInstance<ConfigMeta>();
-			}
-
-			return instance;
-		}
-	}
 
 	public static string filePath
 	{
@@ -85,7 +68,7 @@ public class ConfigMeta : ScriptableObject
 	/// <summary>
 	/// 스턴시간
 	/// </summary>
-	[Tooltip("넉백시간")]
+	[Tooltip("스턴시간")]
 	[SerializeField] public float STUN_DURATION = 3;
 
 	/// <summary>
@@ -282,4 +265,95 @@ public class ConfigMeta : ScriptableObject
 	[Tooltip("유닛 레벨업 경험치증가량")]
 	[SerializeField] public int UNIT_LEVELUP_EXP = 15;
 
+	/// <summary>
+	/// 유저 최대 레벨
+	/// </summary>
+	[Tooltip("유저 최대 레벨")]
+	[SerializeField] public long USEREXP_MAX_LEVEL = 500;
+
+	/// <summary>
+	/// 유저경험치 기본값
+	/// </summary>
+	[Tooltip("유저경험치 기본값")]
+	[SerializeField] public long USEREXP_DEFAULT = 500;
+
+	/// <summary>
+	/// 유저경험치 증가량
+	/// </summary>
+	[Tooltip("유저경험치 증가량")]
+	[SerializeField] public long USEREXP_INC = 50;
+
+	/// <summary>
+	/// 유저경험치 1차가중치
+	/// </summary>
+	[Tooltip("유저경험치 1차가중치")]
+	[SerializeField] public double USEREXP_WEIGHT_1 = 0.2d;
+
+	/// <summary>
+	/// 유저경험치 2차가중치
+	/// </summary>
+	[Tooltip("유저경험치 2차가중치")]
+	[SerializeField] public double USEREXP_WEIGHT_2 = 0.05d;
+
+	/// <summary>
+	/// 유저레벨당 프로퍼티 포인트
+	/// </summary>
+	[Tooltip("유저레벨당 프로퍼티 포인트")]
+	[SerializeField] public int PROPERTY_POINT_PER_LEVEL = 3;
+
+	/// <summary>
+	/// State 가중치 1
+	/// </summary>
+	[Tooltip("State 가중치 1")]
+	[SerializeField] public float UNIT_STATE_WEIGHT_1 = 1.85f;
+
+	/// <summary>
+	/// State 가중치 2
+	/// </summary>
+	[Tooltip("State 가중치 2")]
+	[SerializeField] public float UNIT_STATE_WEIGHT_2 = 0.2f;
+
+	/// <summary>
+	/// State 가중치 3
+	/// </summary>
+	[Tooltip("State 가중치 3")]
+	[SerializeField] public float UNIT_STATE_WEIGHT_3 = 2;
+
+	/// <summary>
+	/// State AttackPower 가중치
+	/// </summary>
+	[Tooltip("State AttackPower 가중치")]
+	[SerializeField] public float UNIT_STATE_ATTACK_POWER_WEIGHT = 1.05f;
+
+	/// <summary>
+	/// State HP 가중치
+	/// </summary>
+	[Tooltip("State HP 가중치")]
+	[SerializeField] public float UNIT_STATE_HP_WEIGHT = 1.35f;
+
+
+	/// <summary>
+	/// 스테이지 보상 일반 적 보상배율
+	/// </summary>
+	[Tooltip("스테이지 보상 일반 적 보상배율")]
+	[SerializeField] public float STAGE_REWARD_NORMAL_ENEMY_MUL = 1;
+
+	/// <summary>
+	/// 스테이지 보상 보스 적 보상배율
+	/// </summary>
+	[Tooltip("스테이지 보상 보스 적 보상배율")]
+	[SerializeField] public float STAGE_REWARD_BOSS_ENEMY_MUL = 2;
+
+	/// <summary>
+	/// 스테이지 보상 보물상자 보상배율
+	/// </summary>
+	[Tooltip("스테이지 보상 보물상자 보상배율")]
+	[SerializeField] public float STAGE_REWARD_TREASURE_BOX_MUL = 6;
+
+
+
 }
+
+
+
+

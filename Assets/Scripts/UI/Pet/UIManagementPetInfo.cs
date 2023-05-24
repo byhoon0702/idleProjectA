@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-public class UIManagementPetInfo : MonoBehaviour
+public class UIManagementPetInfo : UIManagementBaseInfo<RuntimeData.PetInfo>
 {
 	[SerializeField] private UIPetSlot petSlot;
 	[SerializeField] private TextMeshProUGUI nameLabelText;
@@ -14,68 +14,85 @@ public class UIManagementPetInfo : MonoBehaviour
 
 	[SerializeField] private UIItemOptionText[] itemOptions;
 
+	[SerializeField] private GameObject toggleDisableEquip;
+	[SerializeField] private TextMeshProUGUI disableEquipText;
 	[SerializeField] private GameObject toggleEquip;
 	[SerializeField] private TextMeshProUGUI equipText;
 	[SerializeField] private GameObject toggleUnEquip;
 	[SerializeField] private TextMeshProUGUI unequipText;
 
+	[SerializeField] private Button buttonEquip;
 	[SerializeField] private Button btnLevelUp;
+	[SerializeField] private Button buttonEvolution;
 	[SerializeField] private TextMeshProUGUI levelUpText;
-	[SerializeField] private Button btnChangeOption;
-	[SerializeField] private TextMeshProUGUI changeOptionText;
 
-	private UIManagementPet parent;
+
+	private UIManagementEquip parent;
 	private bool isEquipped;
+	private RuntimeData.PetInfo petInfo;
+	private void Awake()
+	{
+
+		buttonEquip.onClick.RemoveAllListeners();
+		buttonEquip.onClick.AddListener(OnEquip);
+		btnLevelUp.onClick.RemoveAllListeners();
+		btnLevelUp.onClick.AddListener(OnClickShowLevelUp);
+
+		buttonEvolution.onClick.RemoveAllListeners();
+		buttonEvolution.onClick.AddListener(OnClickShowUpgrade);
+
+	}
 	public void OnEquip()
 	{
 		if (petSlot.isEquipped)
 		{
-			parent.UnEquipPet();
+			parent.UnEquipPet(petInfo);
 		}
 		else
 		{
-			parent.EquipPet();
+			parent.EquipPet(petInfo);
 		}
 	}
 
-	public void OnUpdate(UIManagementPet _parent, RuntimeData.PetInfo info)
+	public override void OnUpdate(UIManagementEquip _parent, RuntimeData.PetInfo info)
 	{
 		parent = _parent;
+		petInfo = info;
 		petSlot.OnUpdate(parent, info);
-		petSlot.ShowSlider(true);
-		toggleEquip.SetActive(petSlot.isEquipped == false);
-		toggleUnEquip.SetActive(petSlot.isEquipped);
+		toggleEquip.SetActive(petSlot.isEquipped == false && info.unlock);
+		toggleUnEquip.SetActive(petSlot.isEquipped && info.unlock);
+		toggleDisableEquip.SetActive(info.unlock == false);
 		nameValueText.text = info.ItemName;
 
-		if (info.OwnedAbilities.Length == 0)
+		if (info.ownedAbilities.Count == 0)
 		{
 			ownedBuffValueText.text = "";
 		}
 		else
 		{
-			for (int i = 0; i < info.OwnedAbilities.Length; i++)
+			for (int i = 0; i < info.ownedAbilities.Count; i++)
 			{
-				var ability = info.OwnedAbilities[i];
-				string tail = "";
-				if (ability.rawData.isPercentage)
-				{
-					tail = "%";
-				}
-				string desc = $"{ability.rawData.description} +{ability.GetValue(info.level).ToString("{0:0.##}")} {tail}";
+				var ability = info.ownedAbilities[i];
+				string desc = $"{ability.Description()} +{ability.GetValue(info.level).ToString("{0:0.##}")} {ability.tailChar}";
+
 				ownedBuffValueText.text = desc;
 			}
 		}
 
-
-		for (int i = 0; i < itemOptions.Length; i++)
-		{
-			if (i >= info.options.Count - 1)
-			{
-				itemOptions[i].gameObject.SetActive(false);
-				continue;
-			}
-			itemOptions[i].gameObject.SetActive(true);
-			itemOptions[i].OnUpdate(info.options[i].grade, info.options[i].ability.GetValue(1).ToString());
-		}
 	}
+	public void OnClickShowLevelUp()
+	{
+		parent.UiPopupPetLevelup.OnUpdate(parent, petInfo);
+
+	}
+
+	public void OnClickShowUpgrade()
+	{
+		parent.UiPopupPetEvolution.OnUpdate(parent, petInfo);
+	}
+	private void OnUpgradeAllButtonClick()
+	{
+
+	}
+
 }

@@ -4,13 +4,22 @@ using UnityEngine;
 
 public class EnterGameState : RootState
 {
-	public override void OnEnter()
+	public override void Init()
+	{
+
+	}
+	public override FSM OnEnter()
 	{
 		elapsedTime = 0;
+		return this;
 	}
 
 	public override void OnExit()
 	{
+	}
+	public override FSM RunNextState(float time)
+	{
+		return this;
 	}
 
 	public override void OnUpdate(float time)
@@ -18,16 +27,7 @@ public class EnterGameState : RootState
 		elapsedTime += time;
 		if (elapsedTime > 0.1f)
 		{
-			string sceneName = PlayerPrefs.GetString("GameSceneName");
-			if (sceneName.HasStringValue())
-			{
-				UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
-			}
-			else
-			{
-				UnityEngine.SceneManagement.SceneManager.LoadScene("Oldman");
-			}
-			//VGameManager.it.ChangeState(GameState.LOADING);
+			UnityEngine.SceneManagement.SceneManager.LoadScene("Oldman");
 		}
 	}
 }

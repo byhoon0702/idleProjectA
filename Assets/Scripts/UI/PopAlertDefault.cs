@@ -120,11 +120,11 @@ public class PopAlertDefault : MonoBehaviour
 		{
 			if (result.data.alertType == PopAlertType.ERROR)
 			{
-				titleText.text = ConfigMeta.it.RESULT_CODE_ERROR_TITLE_TEXT;
+				titleText.text = GameManager.Config.RESULT_CODE_ERROR_TITLE_TEXT;
 			}
 			else
 			{
-				titleText.text = ConfigMeta.it.RESULT_CODE_DEFAULT_TITLE_TEXT;
+				titleText.text = GameManager.Config.RESULT_CODE_DEFAULT_TITLE_TEXT;
 			}
 		}
 		else
@@ -155,7 +155,7 @@ public class PopAlertDefault : MonoBehaviour
 		// 버튼
 		if (string.IsNullOrEmpty(result.data.okText))
 		{
-			okButtonText.text = ConfigMeta.it.RESULT_CODE_DEFAULT_OK_TEXT;
+			okButtonText.text = GameManager.Config.RESULT_CODE_DEFAULT_OK_TEXT;
 		}
 		else
 		{
@@ -164,7 +164,7 @@ public class PopAlertDefault : MonoBehaviour
 
 		if (string.IsNullOrEmpty(result.data.cancelText))
 		{
-			cancelButtonText.text = ConfigMeta.it.RESULT_CODE_DEFAULT_CANCEL_TEXT;
+			cancelButtonText.text = GameManager.Config.RESULT_CODE_DEFAULT_CANCEL_TEXT;
 		}
 		else
 		{

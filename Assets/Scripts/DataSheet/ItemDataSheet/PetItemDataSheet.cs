@@ -7,11 +7,11 @@ using UnityEngine;
 public class PetItemData : ItemData
 {
 	public long petTid;
-	public List<StatsValue> ownValues;
+	public List<ItemStats> ownValues;
 
 	public PetItemData()
 	{
-		itemType = ItemType.Pet;
+
 	}
 
 
@@ -26,7 +26,7 @@ public class PetItemDataSheet : DataSheetBase<PetItemData>
 	{
 		List<PetItemData> outData = new List<PetItemData>();
 
-		for (int i = 0 ; i < infos.Count ; i++)
+		for (int i = 0; i < infos.Count; i++)
 		{
 			if (infos[i].itemGrade == _grade)
 			{

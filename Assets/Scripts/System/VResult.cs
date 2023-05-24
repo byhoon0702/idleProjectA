@@ -31,11 +31,11 @@ public class VResult
 
 	public string ContentsText
 	{
-		get 
+		get
 		{
 			string[] stringParams = GetStringParams();
 
-			if(stringParams.Length > 0)
+			if (stringParams.Length > 0)
 			{
 				try
 				{
@@ -94,31 +94,31 @@ public class VResult
 			string[] stringParams = new string[tidParams.Length];
 
 			// 아이템 테이블에 있는지 검색
-			var itemDataSheet = DataManager.Get<ItemDataSheet>();
+			//var itemDataSheet = DataManager.Get<ItemDataSheet>();
 
-			if (itemDataSheet == null)
-			{
-				// 필요 데이터가 초기화전에 불린경우 예외처리 필요
-				for (int i = 0 ; i < stringParams.Length ; i++)
-				{
-					stringParams[i] = String.Empty;
-				}
-			}
-			else
-			{
-				for (Int32 i = 0 ; i < tidParams.Length ; i++)
-				{
-					var itemData = itemDataSheet.Get(tidParams[i]);
-					if (itemData != null)
-					{
-						stringParams[i] = itemData.name;
-					}
-					else
-					{
-						stringParams[i] = "";
-					}
-				}
-			}
+			//if (itemDataSheet == null)
+			//{
+			//	// 필요 데이터가 초기화전에 불린경우 예외처리 필요
+			//	for (int i = 0; i < stringParams.Length; i++)
+			//	{
+			//		stringParams[i] = String.Empty;
+			//	}
+			//}
+			//else
+			//{
+			//	for (Int32 i = 0; i < tidParams.Length; i++)
+			//	{
+			//		var itemData = itemDataSheet.Get(tidParams[i]);
+			//		if (itemData != null)
+			//		{
+			//			stringParams[i] = itemData.name;
+			//		}
+			//		else
+			//		{
+			//			stringParams[i] = "";
+			//		}
+			//	}
+			//}
 
 			return stringParams;
 		}

@@ -3,28 +3,32 @@
 
 public class PetMoveState : UnitFSM
 {
-	private Pet owner;
+	private new Pet owner;
 
 	public void Init(Pet _owner)
 	{
 		owner = _owner;
 	}
-	public void OnEnter()
+
+	public override FSM OnEnter()
 	{
-		owner.PlayAnimation(StateType.MOVE);
 		owner.unitAnimation.PlayParticle();
+		return this;
 	}
 
-	public void OnExit()
+
+
+
+	public override void OnExit()
 	{
-		owner.PlayAnimation(StateType.IDLE);
+		//owner.PlayAnimation(StateType.IDLE);
 		owner.unitAnimation.StopParticle();
 	}
 
-	public void OnUpdate(float time)
+	public override void OnUpdate(float time)
 	{
 
-		owner.Move(time);
+		//owner.Move(time);
 		//if (owner.IsTargetAlive() == false)
 		//{
 		//	owner.targetingBehavior.OnTarget(owner, owner.targeting);
@@ -44,12 +48,16 @@ public class PetMoveState : UnitFSM
 		//	}
 		//}
 	}
+	public override void OnFixedUpdate(float fixedTime)
+	{
+
+	}
 }
 
 public class PetAttackState : UnitFSM
 {
-	private Pet owner;
-	private SkillModule skillModule => owner.skillModule;
+	private new Pet owner;
+	//private SkillModule skillModule => owner.skillModule;
 
 
 
@@ -57,18 +65,18 @@ public class PetAttackState : UnitFSM
 	{
 		owner = _owner;
 	}
+	public override FSM OnEnter()
+	{
+		return this;
+	}
 
-	public void OnEnter()
+
+	public override void OnExit()
 	{
 
 	}
 
-	public void OnExit()
-	{
-
-	}
-
-	public void OnUpdate(float time)
+	public override void OnUpdate(float time)
 	{
 		bool isAttacking = owner.unitAnimation.IsAttacking();
 		if (isAttacking)
@@ -76,50 +84,38 @@ public class PetAttackState : UnitFSM
 			return;
 		}
 
-		owner.FindTarget(time, false);
-
-		if (owner.IsTargetAlive() == false)
-		{
-			owner.FindTarget(time, true);
-			if (owner.IsTargetAlive() == false)
-			{
-				owner.ChangeState(StateType.MOVE);
-				return;
-			}
-		}
-
-		//if (skillModule.skillAttack != null && skillModule.skillAttack.Usable())
-		//{
-		//	// 스킬을 사용할 수 있으면 무조건 스킬우선사용
-		//	owner.AttackStart(skillModule.skillAttack);
 		//}
-		//else if (skillModule.defaultAttack != null && skillModule.defaultAttack.Usable())
-		//{
-		//	// 기본공격
-		owner.AttackStart();
-		//}
+	}
+	public override void OnFixedUpdate(float fixedTime)
+	{
+
 	}
 }
 public class PetIdleState : UnitFSM
 {
-	private Pet owner;
+	private new Pet owner;
 
 
 	public void Init(Pet _owner)
 	{
 		owner = _owner;
 	}
-	public void OnEnter()
+	public override FSM OnEnter()
 	{
-		owner.PlayAnimation(StateType.IDLE);
-	}
-
-	public void OnExit()
-	{
+		return this;
 
 	}
 
-	public void OnUpdate(float time)
+	public override void OnExit()
+	{
+
+	}
+
+	public override void OnUpdate(float time)
+	{
+
+	}
+	public override void OnFixedUpdate(float fixedTime)
 	{
 
 	}

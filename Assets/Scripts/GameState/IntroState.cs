@@ -4,15 +4,34 @@ using UnityEngine;
 
 public class IntroState : RootState
 {
+	[SerializeField] private DataLoadingState dataLoadingState;
+	public override void Init()
+	{
 
-	public override void OnEnter()
+	}
+	public override FSM OnEnter()
 	{
 		elapsedTime = 0;
 		Intro.it.SetActiveProgressBar(false);
+		return this;
 	}
 
 	public override void OnExit()
 	{
+	}
+	public override FSM RunNextState(float time)
+	{
+		elapsedTime += time;
+
+		if (elapsedTime > 0.1f)
+		{
+			return dataLoadingState;
+		}
+		else
+		{
+			return this;
+		}
+
 	}
 
 	public override void OnUpdate(float time)

@@ -2,36 +2,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 [CreateAssetMenu(fileName = "SkillItem", menuName = "ScriptableObject/SkillItem", order = 1)]
 public class SkillItemObject : ItemObject
 {
-	[SerializeField] private Grade itemGrade;
-	[SerializeField] private int starLv;
 
-	[SerializeField] private AbilityInfo[] equipAbilities;
-	public AbilityInfo[] EquipAbilities => equipAbilities;
+	[SerializeField] private bool hideInUI;
+	public bool HideInUI => hideInUI;
 
-	[SerializeField] private AbilityInfo[] ownedAbilities;
-	public AbilityInfo[] OwnedAbilities => ownedAbilities;
+	[SerializeField] private Grade grade;
+	public Grade Grade => grade;
+	/// <summary>
+	/// 무조건 Instantiate 해서 쓸것
+	/// </summary>
+	[SerializeField] private NewSkill skill;
+	public NewSkill Skill => skill;
+	public float cooldownTime;
 
-	public void SetBasicData(long tid, string name, string description, Grade grade, int starLv)
+	public AbilityInfo skillUseAbility;
+
+	public void SetBasicData(long tid, string name, string description, float cooltime)
 	{
 		this.tid = tid;
 		itemName = name;
 		this.description = description;
-		this.itemGrade = grade;
-		this.starLv = starLv;
-
+		cooldownTime = cooltime;
 	}
 
-	public void SetEquipAbilities(AbilityInfo[] infos)
+	public void SetUseAbility(ItemStats buff)
 	{
-		equipAbilities = infos;
+		AbilityInfo info = new AbilityInfo(buff);
+		skillUseAbility = info;
 	}
 
-	public void SetOwnedAbilities(AbilityInfo[] infos)
+	public void Trigger(Unit caster, Unit target, RuntimeData.SkillInfo skillInfo, AffectedInfo affectedInfo)
 	{
-		ownedAbilities = infos;
+		skillUseAbility = skillInfo.skillAbility.Clone();
+		target.Hit(affectedInfo as HitInfo);
 	}
 }

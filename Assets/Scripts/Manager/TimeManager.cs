@@ -39,7 +39,7 @@ public class TimeManager : MonoBehaviour
 	private void Update()
 	{
 		long currTicks = m_now.Ticks;
-		UserInfo.PlayTicks += (currTicks - prevPlayTicks);
+		//UserInfo.PlayTicks += (currTicks - prevPlayTicks);
 		prevPlayTicks = currTicks;
 	}
 

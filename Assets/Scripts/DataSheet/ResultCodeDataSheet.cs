@@ -31,21 +31,10 @@ public class ResultCodeData : BaseData
 [Serializable]
 public class ResultCodeDataSheet : DataSheetBase<ResultCodeData>
 {
-	public ResultCodeData Get(long tid)
-	{
-		for (int i = 0; i < infos.Count; i++)
-		{
-			if (infos[i].tid == tid)
-			{
-				return infos[i];
-			}
-		}
-		return null;
-	}
 
 	public ResultCodeData Get(string _key)
 	{
-		for (int i = 0 ; i < infos.Count ; i++)
+		for (int i = 0; i < infos.Count; i++)
 		{
 			if (infos[i].key == _key)
 			{

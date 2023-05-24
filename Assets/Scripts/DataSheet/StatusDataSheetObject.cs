@@ -1,13 +1,12 @@
 ﻿//========AUTO GENERATED CODE======//
 using UnityEngine;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEditor;
 using Unity.VisualScripting;
-using UnityEditor.Hardware;
 
+#if UNITY_EDITOR
 [Serializable]
 public class StatusDataSheetObject : BaseDataSheetObject
 {
@@ -61,3 +60,4 @@ public class StatusDataSheetObject : BaseDataSheetObject
 		AssetDatabase.Refresh();
 	}
 }
+#endif

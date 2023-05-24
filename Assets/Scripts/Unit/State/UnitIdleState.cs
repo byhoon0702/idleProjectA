@@ -5,20 +5,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Unit Idle State", menuName = "Unit State/Idle", order = 1)]
 public class UnitIdleState : UnitFSM
 {
-
-
-	public void Init(Unit _owner)
-	{
-		owner = _owner;
-	}
-	public override void OnEnter()
-	{
-
-	}
-	public override void OnEnter<T>(T data = default)
+	public override FSM OnEnter()
 	{
 		owner.PlayAnimation(StateType.IDLE);
+
+		return this;
 	}
+
 
 	public override void OnExit()
 	{
@@ -27,6 +20,7 @@ public class UnitIdleState : UnitFSM
 
 	public override void OnUpdate(float time)
 	{
+
 		owner.FindTarget(time, false);
 
 		if (owner.IsTargetAlive() == false)
@@ -35,22 +29,25 @@ public class UnitIdleState : UnitFSM
 
 			if (owner.IsTargetAlive() == false)
 			{
-				owner.ChangeState(StateType.MOVE);
+
 				return;
 			}
-
 		}
 
-		float distance = Mathf.Abs(owner.target.transform.position.x - owner.transform.position.x);
+		float distance = Mathf.Abs((owner.target.transform.position - owner.transform.position).magnitude);
 
-		if (distance > owner.SearchRange)
+		if (distance > 1)
 		{
 			owner.ChangeState(StateType.MOVE);
-
 		}
 		else
 		{
 			owner.ChangeState(StateType.ATTACK);
 		}
+	}
+
+	public override void OnFixedUpdate(float fixedTime)
+	{
+
 	}
 }

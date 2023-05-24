@@ -16,23 +16,13 @@ public class UserMasteryData : BaseData
 [Serializable]
 public class UserMasteryDataSheet : DataSheetBase<UserMasteryData>
 {
-	public UserMasteryData Get(long tid)
-	{
-		for (int i = 0 ; i < infos.Count ; i++)
-		{
-			if (infos[i].tid == tid)
-			{
-				return infos[i];
-			}
-		}
-		return null;
-	}
+
 
 	public List<UserMasteryData> GetByStep(int _step)
 	{
 		List<UserMasteryData> outMastery = new List<UserMasteryData>();
 
-		for (int i = 0 ; i < infos.Count ; i++)
+		for (int i = 0; i < infos.Count; i++)
 		{
 			if (infos[i].step == _step)
 			{
@@ -51,7 +41,7 @@ public class UserMasteryDataSheet : DataSheetBase<UserMasteryData>
 	{
 		int maxStep = 0;
 
-		for (int i = 0 ; i < infos.Count ; i++)
+		for (int i = 0; i < infos.Count; i++)
 		{
 			maxStep = Mathf.Max(maxStep, infos[i].step);
 		}

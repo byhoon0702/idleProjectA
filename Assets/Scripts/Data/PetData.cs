@@ -2,38 +2,57 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class PetData : BaseData
+public class ItemData : BaseData
 {
 	public string name;
-	public string resource;
-	public long skillEffectTidNormal;
-	public long skillTid;
-	public Grade grade;
-	public int starlevel;
-	public long attackPower;
-	public float attackSpeed;
-	public string attackSound;
-	public float moveSpeed;
-	public string projectileResource;
-	public PetCategory category;
+	public Grade itemGrade;
+	public string hashTag;
+}
 
+[System.Serializable]
+public class PetData : ItemData
+{
+
+	public int starlevel;
+
+	public PetCategory category;
+	public List<ItemStats> equipValues;
+	public List<ItemStats> ownValues;
 
 	public PetData Clone()
 	{
 		PetData data = new PetData();
 		data.name = name;
-		data.resource = resource;
-		data.skillTid = skillTid;
-		data.grade = grade;
+		data.itemGrade = itemGrade;
 		data.starlevel = starlevel;
-		data.attackPower = attackPower;
-		data.attackSpeed = attackSpeed;
-		data.attackSound = attackSound;
-		data.projectileResource = projectileResource;
-		data.moveSpeed = moveSpeed;
-		data.skillEffectTidNormal = skillEffectTidNormal;
+		//data.projectileResource = projectileResource;
+		//data.moveSpeed = moveSpeed;
 		return data;
 
 	}
+	//public override List<AbilityInfo> EquipAbilityInfos()
+	//{
+	//	List<AbilityInfo> abilityInfo = new List<AbilityInfo>();
+	//	for (int i = 0; i < equipValues.Count; i++)
+	//	{
+	//		var equip = equipValues[i];
+	//		AbilityInfo info = new AbilityInfo(equip.type, (IdleNumber)equip.value, (IdleNumber)equip.perLevel, equip.isMultiply);
+	//		abilityInfo.Add(info);
+	//	}
+
+	//	return abilityInfo;
+	//}
+
+	//public override List<AbilityInfo> OwnAbilityInfos()
+	//{
+	//	List<AbilityInfo> abilityInfo = new List<AbilityInfo>();
+	//	for (int i = 0; i < ownValues.Count; i++)
+	//	{
+	//		var equip = ownValues[i];
+	//		AbilityInfo info = new AbilityInfo(equip.type, (IdleNumber)equip.value, (IdleNumber)equip.perLevel, equip.isMultiply);
+	//		abilityInfo.Add(info);
+	//	}
+
+	//	return abilityInfo;
+	//}
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Text.RegularExpressions;
-using Unity.VisualScripting;
+
 
 [Serializable]
 public struct IdleNumber
@@ -117,17 +117,39 @@ public struct IdleNumber
 	{
 		return (long)GetValue();
 	}
+	public string ToFloatingString()
+	{
+		IdleNumber a = new IdleNumber(this);
+		a.NormalizeSelf();
+
+		double turncateValue = a.Exp > 2 ? a.Value : Mathf.Floor((float)a.Value);
+		string unit = a.GetUnit_ABC();
+
+		if (turncateValue >= 100)
+		{
+			return $"{Math.Floor(turncateValue)}{unit}";
+		}
+		else if (turncateValue >= 10)
+		{
+			return $"{Math.Floor(turncateValue * 10) / 10:0.#}{unit}";
+		}
+		else
+		{
+			return $"{Math.Floor(turncateValue * 100) / 100:0.##}{unit}";
+		}
+	}
 
 	public string ToString(string format = "")
 	{
 		IdleNumber a = new IdleNumber(this);
 		a.NormalizeSelf();
+
 		double turncateValue = a.Value;
 		string unit = a.GetUnit_ABC();
 
 		if (format.IsNullOrEmpty() == false)
 		{
-			return $"{string.Format(format, Math.Floor(turncateValue))}{unit}";
+			return $"{string.Format(format, turncateValue)}{unit}";
 		}
 		if (turncateValue >= 100)
 		{

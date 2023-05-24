@@ -4,7 +4,7 @@ using System;
 [Serializable]
 public class AbilityInfoData : BaseData
 {
-	public Stats ability;
+	public Ability ability;
 }
 
 [Serializable]
@@ -22,7 +22,7 @@ public class AbilityInfoDataSheet : DataSheetBase<AbilityInfoData>
 		return null;
 	}
 
-	public AbilityInfoData Get(Stats _ability)
+	public AbilityInfoData Get(Ability _ability)
 	{
 		for (int i = 0; i < infos.Count; i++)
 		{
@@ -34,7 +34,7 @@ public class AbilityInfoDataSheet : DataSheetBase<AbilityInfoData>
 		return null;
 	}
 
-	public Int64 GetTid(Stats _ability)
+	public Int64 GetTid(Ability _ability)
 	{
 		for (int i = 0; i < infos.Count; i++)
 		{

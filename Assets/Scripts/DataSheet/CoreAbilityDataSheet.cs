@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [Serializable]
 public class CoreAbilityData : BaseData
 {
-	public Stats abilityType;
+	public Ability abilityType;
 	public double min;
 	public double max;
 }
@@ -12,7 +12,7 @@ public class CoreAbilityData : BaseData
 [Serializable]
 public class CoreAbilityDataSheet : DataSheetBase<CoreAbilityData>
 {
-	private List<Stats> abilities;
+	private List<Ability> abilities;
 
 
 	public CoreAbilityData Get(long tid)
@@ -28,7 +28,7 @@ public class CoreAbilityDataSheet : DataSheetBase<CoreAbilityData>
 		return null;
 	}
 
-	public CoreAbilityData GetByAbilityType(Stats _ability)
+	public CoreAbilityData GetByAbilityType(Ability _ability)
 	{
 		for (int i = 0 ; i < infos.Count ; i++)
 		{
@@ -41,11 +41,11 @@ public class CoreAbilityDataSheet : DataSheetBase<CoreAbilityData>
 		return null;
 	}
 
-	public List<Stats> GetAbilityTypes()
+	public List<Ability> GetAbilityTypes()
 	{
 		if (abilities == null || abilities.Count == 0)
 		{
-			abilities = new List<Stats>();
+			abilities = new List<Ability>();
 
 			for (int i = 0 ; i < infos.Count ; i++)
 			{

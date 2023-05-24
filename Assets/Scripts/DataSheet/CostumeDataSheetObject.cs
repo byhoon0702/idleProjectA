@@ -36,11 +36,11 @@ public class CostumeDataSheetObject : BaseDataSheetObject
 		{
 			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas/Costumes", $"{typename}s");
 		}
-		else
-		{
-			AssetDatabase.DeleteAsset(path);
-			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas/Costumes", $"{typename}s");
-		}
+		//else
+		//{
+		//	AssetDatabase.DeleteAsset(path);
+		//	AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas/Costumes", $"{typename}s");
+		//}
 
 		for (int i = 0; i < dataSheet.infos.Count; i++)
 		{
@@ -48,14 +48,20 @@ public class CostumeDataSheetObject : BaseDataSheetObject
 			string name = $"{data.tid}_{data.name}";
 			string assetPath = $"{path}/{name}.asset";
 
-			var scriptable = ScriptableObject.CreateInstance<CostumeItemObject>();
-			scriptable.SetBasicData(data.tid, data.name, data.description, data.costumeType, data.itemGrade, data.starLv);
-			scriptable.SetEquipAbilities(data.EquipAbilityInfos().ToArray());
-			scriptable.SetOwnedAbilities(data.OwnAbilityInfos().ToArray());
+			var scriptable = (CostumeItemObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(CostumeItemObject));
+			if (scriptable == null)
+			{
+				scriptable = ScriptableObject.CreateInstance<CostumeItemObject>();
+				AssetDatabase.CreateAsset(scriptable, assetPath);
+			}
 
-			AssetDatabase.CreateAsset(scriptable, assetPath);
-			AssetDatabase.SaveAssets();
+			scriptable.SetBasicData(data.tid, data.name, data.description, data.costumeType, data.itemGrade, data.starLevel);
+			scriptable.FindIconResource();
+			scriptable.FindObject();
+
+			EditorUtility.SetDirty(scriptable);
 		}
+		AssetDatabase.SaveAssets();
 #endif
 
 	}

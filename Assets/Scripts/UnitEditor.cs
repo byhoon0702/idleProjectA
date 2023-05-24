@@ -24,11 +24,11 @@ public class UnitEditor : MonoBehaviour
 	}
 	private List<DummyUnit> dummies = new List<DummyUnit>();
 
-	public SkillObject editedProjectile
-	{
-		get;
-		private set;
-	}
+	//public SkillObject editedProjectile
+	//{
+	//	get;
+	//	private set;
+	//}
 
 	private float animationSpeed;
 	private float attackTime;
@@ -36,7 +36,7 @@ public class UnitEditor : MonoBehaviour
 
 	public string projectileName;
 	private bool isDummyShow = false;
-	private Dictionary<string, List<SkillObject>> projectilePool = new Dictionary<string, List<SkillObject>>();
+	//private Dictionary<string, List<SkillObject>> projectilePool = new Dictionary<string, List<SkillObject>>();
 
 
 	private Vector3 defaultPos = new Vector3(0, 3f, -10);
@@ -143,11 +143,11 @@ public class UnitEditor : MonoBehaviour
 		editorToolUI.SetUnit(player, editorAnimatorController);
 	}
 
-	public void SetProjectile(SkillObject _projectile)
-	{
-		projectileName = _projectile.name;
-		editedProjectile = _projectile;
-	}
+	//public void SetProjectile(SkillObject _projectile)
+	//{
+	//	projectileName = _projectile.name;
+	//	editedProjectile = _projectile;
+	//}
 
 	public void OnClickPlayAnimation(string animationName)
 	{
@@ -176,28 +176,19 @@ public class UnitEditor : MonoBehaviour
 		//}
 	}
 
-	public void OverrideAnimation(string name)
+	public void OverrideAnimation(AnimatorOverrideController overrideController)
 	{
-		if (name.IsNullOrEmpty())
+		if (overrideController == null)
 		{
 			viewPlayer.ResetAnimator();
 			return;
 		}
-		viewPlayer.OverrideAnimator(name);
+		viewPlayer.OverrideAnimator(overrideController);
 	}
 
 	public void PlayerAnimation(int layerIndex, string statename)
 	{
-		if (statename == "skill")
-		{
-			viewPlayer.AttackSkill(null);
-		}
-		else
-		{
-			viewPlayer.AttackStart(null);
-		}
-		//viewPlayer.unitAnimation.animator.SetFloat("attackIndex", Random.Range(0, 3));
-		//viewPlayer.unitAnimation.animator.Play(statename, layerIndex);
+
 	}
 
 	public void SetAttackAnimationLoop(bool isLoop)

@@ -11,22 +11,10 @@ public class SoundEffectData : BaseData
 [Serializable]
 public class SoundEffectDataSheet : DataSheetBase<SoundEffectData>
 {
-	public SoundEffectData Get(long _tid)
-	{
-		for (int i = 0 ; i < infos.Count ; i++)
-		{
-			if (infos[i].tid == _tid)
-			{
-				return infos[i];
-			}
-		}
-
-		return null;
-	}
 
 	public SoundEffectData Get(string _key)
 	{
-		for (int i = 0 ; i < infos.Count ; i++)
+		for (int i = 0; i < infos.Count; i++)
 		{
 			if (infos[i].key == _key)
 			{

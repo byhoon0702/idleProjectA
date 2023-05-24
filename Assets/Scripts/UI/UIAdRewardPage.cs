@@ -44,16 +44,16 @@ public class UIAdRewardPage : MonoBehaviour
 	{
 		gameObject.SetActive(true);
 
-		ItemData rewardItemData = DataManager.Get<ItemDataSheet>().Get(_rewardTid);
+		ItemData rewardItemData = DataManager.GetFromAll<ItemData>(_rewardTid);
 		count = _count;
 
 		itemCount.text = count.ToString();
 
-		bool isGold = rewardItemData.tid == Inventory.it.GoldTid;
-		bool isDia = rewardItemData.tid == Inventory.it.DiaTid;
+		//bool isGold = rewardItemData.tid == Inventory.it.GoldTid;
+		//bool isDia = rewardItemData.tid == Inventory.it.DiaTid;
 
-		goldIcon.SetActive(isGold);
-		diaIcon.SetActive(isDia);
+		//goldIcon.SetActive(isGold);
+		//diaIcon.SetActive(isDia);
 
 		ShowFreeReward();
 	}

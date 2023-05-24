@@ -7,12 +7,19 @@ public class UIBottomMenu : MonoBehaviour
 {
 	[SerializeField] private Toggle managementToggle;
 	[SerializeField] private Toggle equipmentToggle;
+	[SerializeField] private Toggle juvenescenceToggle;
 	[SerializeField] private Toggle skillToggle;
-	[SerializeField] private Toggle petToggle;
-	[SerializeField] private Toggle dungeonListToggle;
-	[SerializeField] private Toggle gachaToggle;
+	[SerializeField] private Toggle dungeonToggle;
+
 
 	[SerializeField] private Toggle[] toggles;
+
+	public Toggle ManagementToggle => managementToggle;
+	public Toggle EquipmentToggle => equipmentToggle;
+	public Toggle ShopToggle => juvenescenceToggle;
+	public Toggle DungeonToggle => dungeonToggle;
+	public Toggle SkillToggle => skillToggle;
+
 
 	private void Awake()
 	{
@@ -25,6 +32,7 @@ public class UIBottomMenu : MonoBehaviour
 		{
 			if (_isOn == true)
 			{
+				GameUIManager.it.OnClose();
 				UIController.it.ToggleManagement();
 			}
 			else
@@ -37,6 +45,7 @@ public class UIBottomMenu : MonoBehaviour
 		{
 			if (_isOn == true)
 			{
+				GameUIManager.it.OnClose();
 				UIController.it.ToggleEquipment();
 			}
 			else
@@ -45,52 +54,44 @@ public class UIBottomMenu : MonoBehaviour
 			}
 		});
 
+		juvenescenceToggle.onValueChanged.AddListener((_isOn) =>
+		{
+			if (_isOn == true)
+			{
+				GameUIManager.it.OnClose();
+				UIController.it.ToggleJuvenescence();
+			}
+			else
+			{
+				UIController.it.InactiveAllMainUI();
+			}
+		});
+
+
+		dungeonToggle.onValueChanged.AddListener((_isOn) =>
+		{
+			if (_isOn == true)
+			{
+				GameUIManager.it.OnClose();
+				UIController.it.ShowDungeonList();
+			}
+			else
+			{
+				UIController.it.InactiveAllMainUI();
+			}
+		});
+
+
 		skillToggle.onValueChanged.AddListener((_isOn) =>
 		{
 			if (_isOn == true)
 			{
+				GameUIManager.it.OnClose();
 				UIController.it.ToggleSkill();
 			}
 			else
 			{
-				UIController.it.InactiveAllMainUI();
-			}
-		});
-
-
-		petToggle.onValueChanged.AddListener((_isOn) =>
-		{
-			if (_isOn == true)
-			{
-				UIController.it.TogglePet();
-			}
-			else
-			{
-				UIController.it.InactiveAllMainUI();
-			}
-		});
-
-		dungeonListToggle.onValueChanged.AddListener((_isOn) =>
-		{
-			if (_isOn == true)
-			{
-				UIController.it.ToggleDungeonList();
-			}
-			else
-			{
-				UIController.it.InactiveAllMainUI();
-			}
-		});
-
-
-		gachaToggle.onValueChanged.AddListener((_isOn) =>
-		{
-			if (_isOn == true)
-			{
-				UIController.it.ToggleGacha();
-			}
-			else
-			{
+				GameUIManager.it.OnClose();
 				UIController.it.InactiveAllMainUI();
 			}
 		});

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Mono.Cecil;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
@@ -7,29 +8,30 @@ public class SpawnManager : MonoBehaviour
 	private static SpawnManager instance;
 	public static SpawnManager it => instance;
 
-	[Header("Prototype")]
-	//사용안함
-	//public CharacterDataSheet characterDataSheet;
+
+	[Header("Prefab")]
+	[SerializeField] private PlayerUnit playerUnitPrefab;
+	[SerializeField] private EnemyUnit enemyUnitPrefab;
+	[SerializeField] private ImmortalUnit immotalUnitPrefab;
+	[SerializeField] private TreasureBox treasureBoxPrefab;
+	[SerializeField] private Pet petPrefab;
 
 	[Header("==========")]
-	public Transform playerRoot;
-	public Transform enemyRoot;
+	[SerializeField] private Transform playerRoot;
+	[SerializeField] private Transform enemyRoot;
 
-	public PlayerUnit playerUnitPrefab;
-	public Pet petPrefab;
-	public EnemyUnit enemyUnitPrefab;
-	public ChasingDungeonBossUnit chasingDungeonBossUnitPrefab;
+	[SerializeField] private Rect spawnArea;
 
-	public Rect spawnArea;
+	private PlayerUnit playerUnit = null;
+	private List<Unit> enemyList = new List<Unit>();
+	public List<Pet> petList { get; private set; } = new List<Pet>();
+	private HittableUnit lastUnit = null;
 
-	public PlayerUnit playerUnit = null;
-	public List<Unit> enemyList = new List<Unit>();
-	public List<Pet> petList = new List<Pet>();
-	public Unit bossUnit = null;
+	[SerializeField] private int gridSize = 4;
 
-	public int gridSize = 4;
-	public float lineDiff = 0.5f;
-	float offset = 1.5f;
+	public HittableUnit LastUnit => lastUnit;
+
+
 	public bool IsAllEnemyDead
 	{
 		get
@@ -41,7 +43,7 @@ public class SpawnManager : MonoBehaviour
 
 			bool isEnemyDead = true;
 
-			for (int i = 0 ; i < enemyList.Count ; i++)
+			for (int i = 0; i < enemyList.Count; i++)
 			{
 				var enemy = enemyList[i];
 
@@ -55,7 +57,7 @@ public class SpawnManager : MonoBehaviour
 		}
 	}
 
-	public bool IsAllPlayerDead
+	public bool PlayerDead
 	{
 		get
 		{
@@ -67,16 +69,18 @@ public class SpawnManager : MonoBehaviour
 		}
 	}
 
-	public bool IsBossClear
+	// 처치조건 이걸로 하면 안됨. by myoung1 2023/03/06.
+	// Spawn에 문제가 있어서 실패하면 게임 클리어된걸로 처리될 수 있음
+	public bool IsKillLastUnit
 	{
 		get
 		{
-			// 아얘 생성된 상태가 아니면 클리어할 수 없음
-			if (bossUnit == null)
+			if (lastUnit == null)
 			{
-				return false;
+				return true;
 			}
-			return bossUnit.IsAlive() == false;
+
+			return lastUnit.IsAlive() == false;
 		}
 	}
 
@@ -84,11 +88,11 @@ public class SpawnManager : MonoBehaviour
 	{
 		get
 		{
-			if (bossUnit == null)
+			if (lastUnit == null)
 			{
 				return true;
 			}
-			return bossUnit.IsAlive() == false;
+			return lastUnit.IsAlive() == false;
 		}
 	}
 
@@ -104,132 +108,233 @@ public class SpawnManager : MonoBehaviour
 
 	public IEnumerator SpawnPlayers(System.Action onComplete)
 	{
-		var edge = SceneCamera.it.GetCameraEdgePosition(new Vector2(0f, 0.5f));
-		float spawnX = edge.x + spawnArea.x;
-		float spawnHeight = Mathf.Abs(spawnArea.height);
-		float spawnY = spawnArea.y - spawnHeight;
+		Vector3 posCenter = Vector3.zero;
+		// 유닛정보
+		//var unitItemData = DataManager.Get<UnitItemDataSheet>().Get(UserInfo.equip.EquipUnitItemTid);
+		UnitData mainUnit = DataManager.Get<UnitDataSheet>().GetData(2600000002);
 
-		float cellX = spawnArea.width / gridSize;
-		float cellY = spawnArea.height / gridSize;
-
-
-
-		var unitItemData = DataManager.Get<ItemDataSheet>().Get(UserInfo.EquipUnitItemTid);
-		UnitData mainUnit = DataManager.Get<UnitDataSheet>().GetData(unitItemData.unitTid);
-
-		List<PetData> userPartyDataList = new List<PetData>();
-		foreach (var petTid in UserInfo.pets)
+		// 플레이어 생성
+		playerUnit = MakePlayer(mainUnit, Vector3.zero, out var playerSpawnResult);
+		if (playerSpawnResult.Fail())
 		{
-			if (petTid == 0)
-			{
-				continue;
-			}
-
-			var petItemData = DataManager.Get<ItemDataSheet>().Get(petTid);
-
-			if (petItemData == null)
-			{
-				VLog.ScheduleLogError($"PetItemData is null. ItemDataSheet. itemTid: {petTid}");
-				continue;
-			}
-
-			var petData = DataManager.Get<PetDataSheet>().GetData(petItemData.petTid);
-			if (petData == null)
-			{
-				VLog.ScheduleLogError($"PetData is null. PetDataSheet. petTid: {petItemData.petTid}");
-				continue;
-			}
-
-			userPartyDataList.Add(petData);
-		}
-
-		Vector3 posCenter = new Vector3(edge.x + (spawnArea.width / 2), 0, spawnY + (spawnHeight / 2));
-
-		//Vector3[] pos = new Vector3[6]
-		//{
-		//	posCenter ,
-		//	new Vector3(posCenter.x, posCenter.y, posCenter.z + offset ), // 캐릭터 위
-		//	new Vector3(posCenter.x, posCenter.y, posCenter.z - offset ), // 캐릭터 아래 
-		//	new Vector3(posCenter.x - offset , posCenter.y, posCenter.z + offset ), // 캐릭터 뒤쪽 위
-		//	new Vector3(posCenter.x - offset , posCenter.y, posCenter.z), // 캐릭터 뒤쪽 
-		//	new Vector3(posCenter.x - offset  , posCenter.y, posCenter.z - offset ), // 캐릭터 뒤쪽 아래
-		//};
-
-		PlayerUnit player = MakePlayer(mainUnit, UnitManager.it.GetPartyPos(0, posCenter));
-		if (player == null)
-		{
-			// 오류는 생성함수에서 표시
+			PopAlert.Create(playerSpawnResult);
 			yield break;
 		}
 
-		player.gameObject.SetActive(true);
+		playerUnit.gameObject.SetActive(true);
 		yield return new WaitForSeconds(0.1f);
 
-		for (int i = 0 ; i < (userPartyDataList.Count > 5 ? 5 : userPartyDataList.Count) ; i++)
+		SpawnPet();
+
+		SceneCamera.it.FindPlayers();
+		onComplete?.Invoke();
+	}
+
+	public void SpawnPet()
+	{
+		var petslot = GameManager.UserDB.petContainer.PetSlots;
+		// 펫 생성
+
+		foreach (var unit in petList)
 		{
-			Pet pet = MakePet(userPartyDataList[i], UnitManager.it.GetPartyPos(i + 1, posCenter), i + 1);
+			if (unit == null)
+			{
+				continue;
+			}
+			Destroy(unit.gameObject);
+		}
+		petList.Clear();
+		int index = 0;
+		for (int i = 0; i < petslot.Length; i++)
+		{
+			if (petslot[i].item == null || petslot[i].item.itemObject == null)
+			{
+				continue;
+			}
+			Pet pet = MakePet(petslot[i], index + 1, playerUnit, out var petSpawnResult);
 			if (pet == null)
 			{
-				// 오류는 생성함수에서 표시
-				yield break;
+				return;
 			}
 
 			pet.gameObject.SetActive(true);
 
-			yield return new WaitForSeconds(0.1f);
+			petList.Add(pet);
+			pet.transform.SetParent(playerRoot);
+			index++;
 		}
-
-		SceneCamera.it.FindPlayers();
-		onComplete?.Invoke();
-
 	}
 
-	private PlayerUnit MakePlayer(UnitData _unitData, Vector3 _pos)
+	public void AddPet(int index)
 	{
-		PlayerUnit player;
+		if (playerUnit == null)
+		{
+			return;
+		}
+		var petslot = GameManager.UserDB.petContainer.PetSlots;
+		Pet pet = MakePet(petslot[index], index + 1, playerUnit, out var petSpawnResult);
+		if (pet == null)
+		{
+			return;
+		}
 
-		player = Instantiate(playerUnitPrefab);
-		playerUnit = player;
+		pet.gameObject.SetActive(true);
+
+		petList[index] = pet;
+		pet.transform.SetParent(playerRoot);
+	}
+
+	public void RemovePet(int index)
+	{
+		Destroy(petList[index].gameObject);
+	}
+
+	public void ChangePet(int index)
+	{
+		var petslot = GameManager.UserDB.petContainer.PetSlots;
+		Vector3 pos = petList[index].transform.position;
+		Destroy(petList[index].gameObject);
+
+		if (playerUnit == null)
+		{
+			return;
+		}
+		Pet pet = MakePet(petslot[index], index + 1, playerUnit, out var petSpawnResult);
+		if (pet == null)
+		{
+			return;
+		}
+
+		pet.gameObject.SetActive(true);
+
+		petList[index] = pet;
+		pet.transform.SetParent(playerRoot);
+		pet.transform.position = pos;
+	}
+
+
+	private List<PetData> GetEquipPetData()
+	{
+		List<PetData> outData = new List<PetData>();
+
+		//foreach (var petTid in UserInfo.equip.pets)
+		//{
+		//	if (petTid == 0)
+		//	{
+		//		continue;
+		//	}
+
+		//	var petItemData = DataManager.Get<PetItemDataSheet>().Get(petTid);
+
+		//	if (petItemData == null)
+		//	{
+		//		VLog.ScheduleLogError($"PetItemData is null. ItemDataSheet. itemTid(equipPetTid) {petTid}");
+		//		continue;
+		//	}
+
+		//	var petData = DataManager.Get<PetDataSheet>().GetData(petItemData.petTid);
+		//	if (petData == null)
+		//	{
+		//		VLog.ScheduleLogError($"PetData is null. PetDataSheet. petTid: {petItemData.petTid}");
+		//		continue;
+		//	}
+
+		//	outData.Add(petData);
+		//}
+
+		return outData;
+	}
+
+	public Vector3 GetPartyPos(int index, Vector3 _centerPos = default)
+	{
+		Vector3 centerPos = _centerPos;
+		if (UnitManager.it.Player != null)
+		{
+			centerPos = UnitManager.it.Player.position;
+		}
+		float zPos = 0;
+
+		if (index == 0)
+		{
+			zPos = 0;
+		}
+		else
+		{
+			if (index % 2 == 0)
+			{
+				zPos = 1;
+			}
+			else
+			{
+				zPos = -1;
+			}
+		}
+
+		return new Vector3(centerPos.x + (-1 * index), 0, zPos);
+	}
+
+	private PlayerUnit MakePlayer(UnitData _unitData, Vector3 _pos, out VResult outResult)
+	{
+		outResult = new VResult();
+		var player = Instantiate(playerUnitPrefab);
 
 		if (player == null)
 		{
-			VLog.LogError($"PlayerUnit Spawn Fail. Can not find Resource");
+			outResult.SetFail(VResultCode.MAKE_FAIL, "Spawn Fail. SpawnManager.playerUnitPrefab");
 			return null;
 		}
+
 		player.transform.SetParent(playerRoot);
 		player.transform.position = _pos;
 		player.Spawn(_unitData);
 
+		outResult.SetOk();
 		return player;
 	}
-	private Pet MakePet(PetData _petData, Vector3 _pos, int index)
-	{
-		Pet pet;
 
-		pet = Instantiate(petPrefab);
+	private Pet MakePet(PetSlot _petSlot, int _index, PlayerUnit _follow, out VResult outResult)
+	{
+		outResult = new VResult();
+
+		if (_petSlot == null)
+		{
+			return null;
+		}
+		if (_follow == null)
+		{
+			return null;
+		}
+
+		Pet pet = Instantiate(petPrefab);
 
 		if (pet == null)
 		{
-			VLog.LogError($"PlayerUnit Spawn Fail. Can not find Resource");
+			outResult.SetFail(VResultCode.MAKE_FAIL, "Spawn Fail. SpawnManager.petPrefab");
 			return null;
 		}
-		pet.transform.SetParent(playerRoot);
-		pet.transform.position = _pos;
-		pet.Spawn(_petData, index);
 
-		petList.Add(pet);
+		pet.Spawn(_petSlot, _index, _follow);
 
+		outResult.SetOk();
 		return pet;
 	}
 
-	public bool SpawnEnemies()
+	public bool SpawnEnemies(float minDistance, float maxDistance)
 	{
-		var edge = SceneCamera.it.GetCameraEdgePosition(new Vector2(1f, 0.5f));
-		float spawnX = edge.x + spawnArea.x;
-		float spawnY = spawnArea.y;
+		int waveUnitCount = StageManager.it.CurrentStage.DisplayUnitCount;
+		var enemyInfoList = StageManager.it.CurrentStage.spawnEnemyInfos;
 
-		int waveUnitCount = StageManager.it.CurrentNormalStageInfo.waveUnitCount;
-		var enemyInfoList = StageManager.it.CurrentNormalStageInfo.enemyInfos;
+		int totalSpawnCount = StageManager.it.CurrentStage.totalSpawnCount;
+
+		int countLimit = StageManager.it.CurrentStage.CountLimit;
+		int perWaveCount = Mathf.Min(4, waveUnitCount - UnitManager.it.GetEnemies().Count);
+
+		if (countLimit > 0)
+		{
+			int leftCount = countLimit - totalSpawnCount;
+			perWaveCount = Mathf.Min(leftCount, perWaveCount);
+		}
+
 
 		if (enemyInfoList.Count == 0)
 		{
@@ -237,92 +342,177 @@ public class SpawnManager : MonoBehaviour
 			return false;
 		}
 
-		List<EnemyInfo> randomInfoList = new List<EnemyInfo>();
-		for (int i = 0 ; i < waveUnitCount ; i++)
+		for (int i = 0; i < perWaveCount; i++)
 		{
-			int index = Random.Range(0, enemyInfoList.Count);
-			randomInfoList.Add(enemyInfoList[index]);
-		}
+			int index = UnityEngine.Random.Range(0, enemyInfoList.Count);
+			var info = enemyInfoList[index];
 
-		MakeEnemy(randomInfoList, new Rect(spawnX, spawnY, spawnArea.width, spawnArea.height));
+			Vector3 random = UnityEngine.Random.insideUnitSphere;
+			int minusX = (random.x < 0) ? -1 : 1;
+			int minusZ = (random.z < 0) ? -1 : 1;
+			Vector2 pos = new Vector2(UnityEngine.Random.Range(minDistance, maxDistance) + Mathf.Abs(random.x), UnityEngine.Random.Range(minDistance, maxDistance) + Mathf.Abs(random.z));
 
-		return true;
-	}
-
-	public bool SpawnBoss()
-	{
-		var edge = SceneCamera.it.GetCameraEdgePosition(new Vector2(1f, 0.5f));
-		float spawnX = edge.x + spawnArea.x;
-		float spawnY = spawnArea.y;
-
-		EnemyInfo bossInfo = new EnemyInfo();
-		bossInfo.tid = StageManager.it.CurrentStageInfo.bossTid;
-		bossInfo.level = StageManager.it.CurrentStageInfo.bossLevel;
-
-		MakeBoss(bossInfo, new Rect(spawnX, spawnY, spawnArea.width, spawnArea.height));
-
-		return true;
-	}
-
-	private void MakeEnemy(List<EnemyInfo> _infoList, Rect _rect)
-	{
-		for (int i = 0 ; i < _infoList.Count ; i++)
-		{
-			EnemyInfo _info = _infoList[i];
-
-			UnitData data = DataManager.Get<UnitDataSheet>().GetData(_info.tid);
-
-			EnemyUnit enemyUnit;
-
-			Vector3 pos = new Vector3(Random.Range(_rect.x, _rect.x + _rect.width), 0, Random.Range(_rect.y, _rect.y + _rect.height));
-
-			enemyUnit = Instantiate(enemyUnitPrefab);
-			enemyList.Add(enemyUnit);
-
-			if (enemyUnit == null)
+			var enemyUnit = MakeEnemy(info, new Vector3(pos.x * minusX, pos.y * minusZ, 0), out VResult enemySpawnResult);
+			if (enemySpawnResult.Fail())
 			{
-				VLog.LogError($"EnemyUnit Spawn Fail. Can not find Resource");
-				continue;
+				// 적 스폰에 실패한경우엔 스테이지에 문제가 있으니 클리어가 되게 하지 않기 위해 다시 시작필요
+				PopAlert.Create(enemySpawnResult);
+				StageManager.it.RetryStage();
+				return false;
 			}
-			enemyUnit.name = data.name;
-			enemyUnit.transform.SetParent(enemyRoot);
-			enemyUnit.transform.position = pos;
-			enemyUnit.Spawn(data, _info.level);
-
-			enemyUnit.gameObject.SetActive(true);
+			enemyList.Add(enemyUnit);
+			StageManager.it.CurrentStage.totalSpawnCount++;
 		}
+
+
+		return true;
 	}
 
-	private void MakeBoss(EnemyInfo _bossInfo, Rect _rect)
+	public bool SpawnLast(UnitData _spawnInfo, float _distance)
 	{
-		Unit bossUnit = null;
-		UnitData bossData = DataManager.Get<UnitDataSheet>().GetData(_bossInfo.tid);
+		float xPosition = UnitManager.it.Player.position.x + _distance;
 
-		Vector3 pos = new Vector3(Random.Range(_rect.x, _rect.x + _rect.width), 0, Random.Range(_rect.y, _rect.y + _rect.height));
-
-		switch (StageManager.it.CurrentStageType)
+		if (_spawnInfo.type == UnitType.TreasureBox)
 		{
-			case StageType.NORMAL:
-				bossUnit = Instantiate(enemyUnitPrefab);
-				break;
-			case StageType.CHASING:
-				bossUnit = Instantiate(chasingDungeonBossUnitPrefab);
-				break;
+			MakeTreasureBox(_spawnInfo, xPosition, out var result);
+			if (result.Fail())
+			{
+				PopAlert.Create(result);
+				StageManager.it.RetryStage();
+				return false;
+			}
 		}
-		this.bossUnit = bossUnit;
+		else
+		{
+			MakeBoss(_spawnInfo, out var result);
+			if (result.Fail())
+			{
+				PopAlert.Create(result);
+				StageManager.it.RetryStage();
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public bool SpawnImmotal(UnitData _spawnInfo, float _distance)
+	{
+		float xPosition = UnitManager.it.Player.position.x + _distance;
+		MakeImmotal(_spawnInfo, xPosition);
+
+		return true;
+	}
+
+	private EnemyUnit MakeEnemy(UnitData _spawnInfo, Vector3 _pos, out VResult _outResult)
+	{
+		_outResult = new VResult();
+		EnemyUnit enemyUnit = Instantiate(enemyUnitPrefab);
+
+		if (enemyUnit == null)
+		{
+			_outResult.SetFail(VResultCode.MAKE_FAIL, "EnemyUnit Spawn Fail. SpawnManager.enemyUnitPrefab");
+			return null;
+		}
+
+		enemyUnit.name = _spawnInfo.name;
+		enemyUnit.transform.SetParent(enemyRoot);
+		enemyUnit.transform.position = _pos;
+		enemyUnit.Spawn(_spawnInfo);
+
+		enemyUnit.gameObject.SetActive(true);
+
+		_outResult.SetOk();
+		return enemyUnit;
+	}
+
+	private TreasureBox MakeTreasureBox(UnitData _spawnInfo, float _xPosition, out VResult _outResult)
+	{
+		_outResult = new VResult();
+		TreasureBox treasureBox = Instantiate(treasureBoxPrefab);
+		Vector3 pos = new Vector3(UnityEngine.Random.Range(2, 6), UnityEngine.Random.Range(2, 6), 0);
+
+		lastUnit = treasureBox;
+
+		if (treasureBox == null)
+		{
+			_outResult.SetFail(VResultCode.MAKE_FAIL, "TreasureBox Spawn Fail. SpawnManager.treasureBoxPrefab");
+			return null;
+		}
+
+		treasureBox.name = _spawnInfo.name;
+		treasureBox.transform.SetParent(enemyRoot);
+		treasureBox.transform.position = pos;
+		treasureBox.Spawn(_spawnInfo, StageManager.it.CurrentStage);
+
+		treasureBox.gameObject.SetActive(true);
+
+		_outResult.SetOk();
+		return treasureBox;
+	}
+
+	public EnemyUnit MakeBoss(UnitData _bossInfo, out VResult _outResult)
+	{
+		_outResult = new VResult();
+		EnemyUnit bossUnit = Instantiate(enemyUnitPrefab);
+		Vector3 pos = new Vector3(0, 3f, 0);
+
+		lastUnit = bossUnit;
+
+		if (bossUnit == null)
+		{
+			_outResult.SetFail(VResultCode.MAKE_FAIL, "EnemyUnit Spawn Fail.. SpawnManager.treasureBoxPrefab");
+			return null;
+		}
+
+		bossUnit.name = _bossInfo.name;
+		bossUnit.transform.SetParent(enemyRoot);
+		bossUnit.transform.position = pos;
+		bossUnit.isBoss = true;
+		bossUnit.Spawn(_bossInfo);
+
+
+		bossUnit.gameObject.SetActive(true);
+
+		StageManager.it.CurrentStage.totalBossSpawnCount++;
+		_outResult.SetOk();
+		return bossUnit;
+	}
+
+	public EnemyUnit MakeImmotal(UnitData _bossInfo, float _xPosition)
+	{
+		EnemyUnit bossUnit = Instantiate(immotalUnitPrefab);
+		Vector3 pos = new Vector3(0, 3f, 0);
+
+		lastUnit = bossUnit;
 
 		if (bossUnit == null)
 		{
 			VLog.LogError($"EnemyUnit Spawn Fail. Can not find Resource");
-			return;
+			return null;
 		}
-		bossUnit.name = bossData.name;
+		bossUnit.name = _bossInfo.name;
 		bossUnit.transform.SetParent(enemyRoot);
 		bossUnit.transform.position = pos;
-		bossUnit.Spawn(bossData, _bossInfo.level);
 		bossUnit.isBoss = true;
+		bossUnit.Spawn(_bossInfo);
+
 
 		bossUnit.gameObject.SetActive(true);
+		return bossUnit;
+	}
+
+	public void ClearEnemies()
+	{
+		foreach (var unit in enemyList)
+		{
+			if (unit == null)
+			{
+				continue;
+			}
+			Destroy(unit.gameObject);
+		}
+		enemyList.Clear();
 	}
 
 	public void ClearUnits()
@@ -333,10 +523,10 @@ public class SpawnManager : MonoBehaviour
 			playerUnit = null;
 		}
 
-		if (bossUnit != null)
+		if (lastUnit != null)
 		{
-			Destroy(bossUnit.gameObject);
-			bossUnit = null;
+			Destroy(lastUnit.gameObject);
+			lastUnit = null;
 		}
 
 		foreach (var unit in enemyList)
@@ -384,7 +574,7 @@ public class SpawnManager : MonoBehaviour
 	// 보스전 진행용 메소드. 보상지급은 제외
 	public void KillAllEnemy()
 	{
-		for (int i = 0 ; i < enemyList.Count ; i++)
+		for (int i = 0; i < enemyList.Count; i++)
 		{
 			var enemy = enemyList[i];
 			enemy.Kill();
@@ -398,27 +588,7 @@ public class SpawnManager : MonoBehaviour
 
 	public void ResetPlayer()
 	{
-		ProjectileManager.it.ClearPool();
+
 		playerUnit.ResetUnit();
-	}
-
-	private void OnDrawGizmosSelected()
-	{
-		if (Application.isPlaying == false)
-		{
-			return;
-		}
-		var edge = SceneCamera.it.GetCameraEdgePosition(new Vector2(1f, 0.5f));
-		Gizmos.color = Color.red;
-		float startX = edge.x + spawnArea.x;
-
-		var left_top = new Vector3(startX, 0, spawnArea.y);
-		var right_top = new Vector3(startX + spawnArea.width, 0, spawnArea.y);
-		var left_bottom = new Vector3(startX, 0, spawnArea.height);
-		var right_bottom = new Vector3(startX + spawnArea.width, 0, spawnArea.height);
-		Gizmos.DrawLine(left_top, right_top);
-		Gizmos.DrawLine(right_top, right_bottom);
-		Gizmos.DrawLine(right_bottom, left_bottom);
-		Gizmos.DrawLine(left_bottom, left_top);
 	}
 }

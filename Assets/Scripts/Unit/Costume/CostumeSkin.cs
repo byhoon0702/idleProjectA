@@ -4,15 +4,19 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.U2D.Animation;
-using static UnityEngine.Rendering.DebugUI;
+
 
 public class CostumeSkin : MonoBehaviour
 {
 	[SerializeField] private SpriteSkin[] skins;
 	[SerializeField] private SpriteRenderer[] renderers;
+	[SerializeField] private AnimatorOverrideController overrideController;
+	public AnimatorOverrideController OverrideController => overrideController;
+
 
 	MaterialPropertyBlock tintPropertyBlock;
 	MaterialPropertyBlock maskPropertyBlock;
+	MaterialPropertyBlock dissolvePropertyBlock;
 	public void Init()
 	{
 		skins = transform.GetComponentsInChildren<SpriteSkin>();
@@ -32,14 +36,29 @@ public class CostumeSkin : MonoBehaviour
 		{
 			maskPropertyBlock = new MaterialPropertyBlock();
 		}
+
+		if (dissolvePropertyBlock == null)
+		{
+			dissolvePropertyBlock = new MaterialPropertyBlock();
+		}
 	}
 
 	public void SetRootBone(Transform rootBone)
 	{
-		System.Type type = typeof(SpriteSkin);
+		//System.Type type = typeof(SpriteSkin);
 		for (int i = 0; i < skins.Length; i++)
 		{
-			FindBone(rootBone, skins[i].GetComponent<SpriteRenderer>().sprite, skins[i]);
+			if (skins[i] == null)
+			{
+				continue;
+			}
+			SpriteRenderer skinRenderer = skins[i].GetComponent<SpriteRenderer>();
+			if (skinRenderer == null)
+			{
+				continue;
+			}
+
+			FindBone(rootBone, skinRenderer.sprite, skins[i]);
 		}
 	}
 	private void FindBone(Transform rootBone, Sprite sprite, SpriteSkin skin)
@@ -54,13 +73,27 @@ public class CostumeSkin : MonoBehaviour
 				boneTransforms.Add(bone);
 			}
 		}
+
 		System.Type type = typeof(SpriteSkin);
 		BindingFlags flags = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
 
+		var spriteRenderer = type.GetField("m_SpriteRenderer", flags).GetValue(skin);
+		if (spriteRenderer == null)
+		{
+			return;
+		}
 		var set_rootbone = type.GetProperty("rootBone", flags);
 
 
-		set_rootbone.SetValue(skin, rootBone);
+		try
+		{
+			set_rootbone.SetValue(skin, rootBone);
+		}
+		catch (System.Exception e)
+		{
+			Debug.LogError(e);
+		}
+
 
 		System.Reflection.FieldInfo field = type.GetField("m_BoneTransforms", flags);
 		var flag = type.GetMethod("CacheValidFlag", flags);
@@ -82,11 +115,28 @@ public class CostumeSkin : MonoBehaviour
 				continue;
 			}
 			renderers[i].GetPropertyBlock(tintPropertyBlock);
-			tintPropertyBlock.SetFloat("_TintValue", value);
+			tintPropertyBlock.SetFloat("_TintAmount", value);
 			renderers[i].SetPropertyBlock(tintPropertyBlock);
 		}
 	}
-	public void SetMaterialMask(Color color)
+	public void SetMaterialDissolve(float value)
+	{
+		if (dissolvePropertyBlock == null)
+		{
+			dissolvePropertyBlock = new MaterialPropertyBlock();
+		}
+		for (int i = 0; i < renderers.Length; i++)
+		{
+			if (renderers[i] == null)
+			{
+				continue;
+			}
+			renderers[i].GetPropertyBlock(dissolvePropertyBlock);
+			dissolvePropertyBlock.SetFloat("_DissolveAmount", value);
+			renderers[i].SetPropertyBlock(dissolvePropertyBlock);
+		}
+	}
+	public void SetMaterialMask(bool isGray)
 	{
 		if (maskPropertyBlock == null)
 		{
@@ -99,7 +149,7 @@ public class CostumeSkin : MonoBehaviour
 				continue;
 			}
 			renderers[i].GetPropertyBlock(maskPropertyBlock);
-			maskPropertyBlock.SetColor("_MaskColor", color);
+			maskPropertyBlock.SetFloat("_Grayscale", isGray ? 1 : 0);
 			renderers[i].SetPropertyBlock(maskPropertyBlock);
 		}
 	}

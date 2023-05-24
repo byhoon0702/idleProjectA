@@ -8,8 +8,8 @@ public abstract class HittableUnit : UnitBase
 	public abstract IdleNumber MaxHp { get; }
 
 
-	public float knockbackPower = 0;
-	public float airbornePower = 0;
+
+	public GameObject hitEffect;
 
 
 	public virtual bool IsAlive()

@@ -23,7 +23,7 @@ public class ImmortalUnit : EnemyUnit
 			SceneCamera.it.ShakeCamera();
 		}
 
-		GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower.ToString(), _hitInfo.fontColor, CenterPosition, _hitInfo.criticalType, isPlayer: _hitInfo.IsPlayerCast == false);
+		GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, _hitInfo.criticalType);
 		ShakeUnit();
 
 
@@ -33,17 +33,17 @@ public class ImmortalUnit : EnemyUnit
 		{
 			attackPower = attackPower - Hp;
 			var unitData = info.data;
-			var unitLv = info.unitLevel + 1;
+			info.unitLevel = info.unitLevel + 1;
 
 			info = new EnemyUnitInfo(this, unitData, StageManager.it.CurrentStage);
-			UIController.it.UiStageInfo.SetBossName(unitData.name, unitLv);
+
 		}
 		Hp -= attackPower;
 
-		UIController.it.UiStageInfo.SetHpGauge(Mathf.Clamp01((float)(Hp / MaxHp)));
+		UIController.it.UiStageInfo.SetBossHpGauge(Mathf.Clamp01((float)(Hp / MaxHp)));
 
 
-		VGameManager.it.battleRecord.RecordAttackPower(_hitInfo);
+		GameManager.it.battleRecord.RecordAttackPower(_hitInfo);
 		if (ControlSide == ControlSide.ENEMY)
 		{
 			UIController.it.UiStageInfo.RefreshDPSCount();

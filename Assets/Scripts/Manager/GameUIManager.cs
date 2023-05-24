@@ -7,6 +7,8 @@ using TMPro;
 using UnityEngine.Pool;
 using DG.Tweening;
 
+public delegate void OnClose();
+
 public class GameUIManager : MonoBehaviour
 {
 	private static GameUIManager instance;
@@ -23,6 +25,10 @@ public class GameUIManager : MonoBehaviour
 
 	public IObjectPool<FloatingText> floatingTextPool;
 	public IObjectPool<UnitStatusUI> unitStatusPool;
+	public List<Sprite> spriteGradeList = new List<Sprite>();
+	public UIController uiController;
+
+	public event OnClose onClose;
 
 	private void Awake()
 	{
@@ -72,7 +78,7 @@ public class GameUIManager : MonoBehaviour
 
 	private UnitStatusUI CreateUnitStatusUI()
 	{
-		UnitStatusUI tmp = Instantiate(Resources.Load<UnitStatusUI>("UnitStatusBar"));
+		UnitStatusUI tmp = Instantiate(Resources.Load<UnitStatusUI>("UnitUiHpBar"));
 		tmp.gameObject.SetActive(false);
 		tmp.transform.SetParent(statusUIGroup.transform);
 		tmp.SetManagedPool(unitStatusPool);
@@ -103,56 +109,77 @@ public class GameUIManager : MonoBehaviour
 
 	}
 
-
-	public void FadeCurtain(bool fadeIn)
+	public void ShowAdRewardBox(bool show)
 	{
+		uiController.ShowAdRewardChest(show);
+
+	}
+
+	public void FadeCurtain(bool fadeIn, bool instant = false)
+	{
+
 		if (fadeIn)
 		{
-			fadeCurtain.DOFade(1, 0.5f);
+			if (instant)
+			{
+				fadeCurtain.DOFade(1, 0);
+			}
+			else
+			{
+				fadeCurtain.DOFade(1, 0.5f);
+			}
+
 		}
 		else
 		{
-			fadeCurtain.DOFade(0, 0.5f);
+			if (instant)
+			{
+				fadeCurtain.DOFade(0, 0);
+			}
+			else
+			{
+				fadeCurtain.DOFade(0, 0.5f);
+			}
 		}
 	}
 
 	public Vector2 ToUIPosition(Vector3 worldPosition)
 	{
-		Vector2 uipos;
+		Vector2 uiPos;
 
-		Vector2 screenPosition;
-		if (SceneCameraV2.it != null)
-		{
-			screenPosition = SceneCameraV2.it.WorldToScreenPoint(worldPosition);
-		}
-		else
-		{
-			screenPosition = SceneCamera.it.WorldToScreenPoint(worldPosition);
-		}
-		RectTransformUtility.ScreenPointToLocalPointInRectangle(mainCanvas.transform as RectTransform, screenPosition, null, out uipos);
+		Vector2 screenPosition = SceneCamera.it.WorldToScreenPoint(worldPosition);
+		//uiPos = mainCanvas.worldCamera.ScreenToWorldPoint(screenPosition);
+		//uiPos.x -= ((mainCanvas.transform) as RectTransform).sizeDelta.x / 2;
+		//uiPos.y -= ((mainCanvas.transform) as RectTransform).sizeDelta.y / 2;
+		RectTransformUtility.ScreenPointToLocalPointInRectangle(statusUIGroup, screenPosition, mainCanvas.worldCamera, out uiPos);
 
 
-		return uipos;
+		return uiPos;
 	}
-	public void ShowUnitGauge(Unit _unit)
+	public void ShowUnitGauge(HittableUnit _unit)
 	{
 		// UI초기화
 		UnitStatusUI statusUI = unitStatusPool.Get();
 		statusUI.gameObject.SetActive(false);
 		statusUI.transform.SetParent(statusUIGroup.transform, false);
 		statusUI.Init(_unit);
-
 	}
-	public void ShowFloatingText(string text, Color color, Vector3 position, CriticalType _criticalType, bool isPlayer = false)
-	{
-		//Vector2 uipos = ToUIPosition(position);
 
+
+
+	public void ShowFloatingText(IdleNumber value, /*Color color,*/ Vector3 position, Vector3 endPosition, CriticalType _criticalType)
+	{
 		var floatingtext = floatingTextPool.Get();
-		floatingtext.Show(text, color, position, _criticalType, isPlayer);
+		floatingtext.Show(value, position, endPosition, _criticalType);
 	}
 
 	private void ShowLevelupPopup(Int32 _beforeLv, Int32 _afterLv)
 	{
 		ToastUI.it.Create($"Levelup! {_beforeLv} -> {_afterLv}");
+	}
+
+	public void OnClose()
+	{
+		onClose?.Invoke();
 	}
 }

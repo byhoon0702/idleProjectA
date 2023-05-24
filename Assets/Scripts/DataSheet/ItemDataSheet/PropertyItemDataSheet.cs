@@ -7,7 +7,7 @@ using UnityEngine;
 public class VeterancyItemData : ItemData
 {
 	public long userPropertyTid;
-	public List<StatsValue> ownValues;
+	public List<ItemStats> ownValues;
 }
 
 [Serializable]

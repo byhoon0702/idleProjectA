@@ -1,32 +1,17 @@
-﻿public class RootState : FiniteStateMachine
+﻿using UnityEngine;
+
+public abstract class RootState : FSM
 {
 	protected float elapsedTime = 0;
 
-	public virtual void Init()
-	{
+	public abstract void Init();
 
-	}
-	public virtual void OnEnter()
-	{
-		elapsedTime = 0;
-		//FadeIn
-		//Clear Object 
-	}
+	public abstract FSM OnEnter();
+	public abstract void OnExit();
 
-	public virtual void OnExit()
-	{
+	public abstract void OnUpdate(float time);
 
-	}
-
-	public virtual void OnUpdate(float time)
-	{
-		elapsedTime += time;
-		if (elapsedTime > 1)
-		{
-			VGameManager.it.ChangeState(GameState.BGLOADING);
-
-		}
-	}
+	public abstract FSM RunNextState(float time);
 }
 
 

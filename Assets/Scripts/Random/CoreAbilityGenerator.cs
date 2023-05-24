@@ -29,12 +29,12 @@ public class CoreAbilityGenerator
 	public AbilityInfo GenerateAbility()
 	{
 		Grade grade = RandomGrade();
-		Stats resultAbility = RandomAbility();
+		StatsType resultAbility = RandomAbility();
 
-		GetAbilityValueRange(grade, resultAbility, out var minValue, out var maxValue);
-		IdleNumber resultValue = RandomAbilityValue(minValue, maxValue);
+		//	GetAbilityValueRange(grade, resultAbility, out var minValue, out var maxValue);
+		//IdleNumber resultValue = RandomAbilityValue(minValue, maxValue);
 
-		return new AbilityInfo(resultAbility, resultValue);
+		return new AbilityInfo(resultAbility, (IdleNumber)0);
 	}
 
 	/// <summary>
@@ -46,7 +46,7 @@ public class CoreAbilityGenerator
 
 		double value = gradeSeed.NextDouble();
 		double accum = 0;
-		for (int i = probabilitySheet.infos.Count - 1 ; i >= 0 ; i--)
+		for (int i = probabilitySheet.infos.Count - 1; i >= 0; i--)
 		{
 			accum += probabilitySheet.infos[i].probability;
 			if (accum >= value)
@@ -61,14 +61,14 @@ public class CoreAbilityGenerator
 	/// <summary>
 	/// 랜덤 어빌리티
 	/// </summary>
-	public Stats RandomAbility()
+	public StatsType RandomAbility()
 	{
 		var abilitySheet = DataManager.Get<CoreAbilityDataSheet>();
-		var abilityTypes = abilitySheet.GetAbilityTypes();
+		//var abilityTypes = abilitySheet.GetAbilityTypes();
 
-		Stats result = abilityTypes[abilitySeed.Next(0, abilityTypes.Count)];
+		//StatsType result = abilityTypes[abilitySeed.Next(0, abilityTypes.Count)];
 
-		return result;
+		return StatsType.Atk_Buff;
 	}
 
 	/// <summary>
@@ -87,7 +87,7 @@ public class CoreAbilityGenerator
 		return resultValue;
 	}
 
-	public void GetAbilityValueRange(Grade _grade, Stats _ability, out IdleNumber _minValue, out IdleNumber _maxValue)
+	public void GetAbilityValueRange(Grade _grade, Ability _ability, out IdleNumber _minValue, out IdleNumber _maxValue)
 	{
 		var abilityInfo = DataManager.Get<CoreAbilityDataSheet>().GetByAbilityType(_ability);
 		var probabilitySheet = DataManager.Get<CoreAbilityProbabilityDataSheet>();

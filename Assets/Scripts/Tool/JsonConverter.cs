@@ -21,13 +21,14 @@ public static class JsonConverter
 
 	}
 
+#if UNITY_EDITOR
 	public static void FromData(object data, string path)
 	{
 		string json = JsonUtility.ToJson(data, true);
 		File.WriteAllText(path, json);
 		AssetDatabase.Refresh();
 	}
-
+#endif
 	public static string ToCsv()
 	{
 
@@ -68,7 +69,7 @@ public static class JsonConverter
 		catch
 		{
 			string jsonstring = File.ReadAllText(filePath);
-			Dictionary<string, object> jb = (Dictionary<string, object>)Json.Deserialize(jsonstring);
+			Dictionary<string, object> jb = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonstring);
 			if (jb.ContainsKey("typeName"))
 			{
 				typeName = (string)jb["typeName"];

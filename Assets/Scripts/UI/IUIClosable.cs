@@ -4,6 +4,9 @@ using UnityEngine;
 
 public interface IUIClosable
 {
+	void AddCloseListener();
+	void RemoveCloseListener();
+
 	bool Closable();
 	void Close();
 }

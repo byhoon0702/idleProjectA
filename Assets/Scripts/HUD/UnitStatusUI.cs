@@ -5,11 +5,11 @@ using UnityEngine.UI;
 public class UnitStatusUI : MonoBehaviour
 {
 	[SerializeField] private Slider hpSlider = null;
-	[SerializeField] private Slider skillGaugeSlider = null;
+	//[SerializeField] private Slider skillGaugeSlider = null;
 
 
 	private RectTransform rectTransform;
-	private Unit observingUnit;
+	private HittableUnit observingUnit;
 
 
 	private IObjectPool<UnitStatusUI> managedPool;
@@ -19,18 +19,27 @@ public class UnitStatusUI : MonoBehaviour
 	{
 		managedPool = pool;
 	}
-	public void Init(Unit _observingUnit)
+
+	public void Init(HittableUnit _observingUnit)
 	{
 		rectTransform = transform as RectTransform;
 		observingUnit = _observingUnit;
-		skillGaugeSlider.gameObject.SetActive(observingUnit.skillModule.mainSkill != null);
+		if (_observingUnit is Unit)
+		{
+			//skillModule = (_observingUnit as Unit).skillModule;
+			//skillGaugeSlider.gameObject.SetActive(skillModule.mainSkill != null);
+		}
+		else
+		{
+			//skillGaugeSlider.gameObject.SetActive(false);
+		}
 
 		rectTransform.anchorMin = Vector2.one * 0.5f;
 		rectTransform.anchorMax = Vector2.one * 0.5f;
 		rectTransform.localScale = Vector3.one;
 
-		Vector2 uipos = GameUIManager.it.ToUIPosition(observingUnit.transform.position);
-		rectTransform.sizeDelta = new Vector2(70, 60);
+		Vector2 uipos = GameUIManager.it.ToUIPosition(observingUnit.HeadPosition);
+		//rectTransform.sizeDelta = new Vector2(70, 60);
 		rectTransform.anchoredPosition = uipos;
 		gameObject.SetActive(true);
 
@@ -81,15 +90,15 @@ public class UnitStatusUI : MonoBehaviour
 			hpSlider.value = Mathf.Clamp01((float)gauge.Value);
 		}
 
-		// 스킬게이지 관련 처리
-		if (skillGaugeSlider != null && observingUnit.skillModule.mainSkill != null)
-		{
-			skillGaugeSlider.value = Mathf.Clamp01(observingUnit.skillModule.mainSkill.uiSkillGauge);
-		}
+		//// 스킬게이지 관련 처리
+		//if (skillGaugeSlider != null && skillModule != null && skillModule.mainSkill != null)
+		//{
+		//	skillGaugeSlider.value = Mathf.Clamp01(skillModule.mainSkill.uiSkillGauge);
+		//}
 
-		Vector2 uipos = GameUIManager.it.ToUIPosition(observingUnit.transform.position);
+		Vector2 uipos = GameUIManager.it.ToUIPosition(observingUnit.HeadPosition);
 
-		rectTransform.anchoredPosition = uipos;
+		rectTransform.anchoredPosition3D = uipos;
 		// 컨디션 관련 처리
 		//for (int i = 0 ; i < this.conditionElements.Count ; i++)
 		//	this.conditionElements[i].UpdateUI();

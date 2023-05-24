@@ -2,51 +2,57 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using UnityEngine.Analytics;
 
-public class UIManagement : MonoBehaviour, IUIClosable
+public class UIManagement : MonoBehaviour
 {
 	public enum ViewType
 	{
-		Main,
+		Training,
 		Skill,
-		Relic,
-		Drive,
-		Property,
+		Veterancy,
+		Advancement,
+		Muscle,
+		//Relic,
+		//Costume,
 	}
 
+	[SerializeField] private UITraining trainingUI;
 
-	[SerializeField] private UIManagementMain mainUI;
-	[SerializeField] private UIManagementSkill skillUI;
-	[SerializeField] private UIManagementRelic relicUI;
-	[SerializeField] private UIManagementDrive driveUi;
-	[SerializeField] private UIManagementProperty propertyUI;
+	//[SerializeField] private UIManagementSkill skillUI;
+	[SerializeField] private UITraining muscleUI;
+	//[SerializeField] private UIManagementRelic relicUI;
+	[SerializeField] private UIManagementAdvancement advancementUI;
+	[SerializeField] private UIManagementVeterancy veterancyUI;
+	//[SerializeField] private UICostumeManagement costumeUI;
 
 	[Header("Button")]
-	[SerializeField] private Button closeButton;
-
-	[SerializeField] private Button mainButton;
+	[SerializeField] private Button trainingButton;
 	[SerializeField] private Button skillButton;
-	[SerializeField] private Button relicButton;
-	[SerializeField] private Button driveButton;
-	[SerializeField] private Button propertyButton;
+	[SerializeField] private Button veterancyButton;
+	[SerializeField] private Button youthButton;
+	[SerializeField] private Button muscleButton;
 
+
+	[SerializeField] private RectTransform uiRectTransform;
 
 
 	private void Awake()
 	{
-		closeButton.onClick.RemoveAllListeners();
-		closeButton.onClick.AddListener(Close);
+		//closeButton.onClick.RemoveAllListeners();
+		//closeButton.onClick.AddListener(Close);
 
-		mainButton.onClick.RemoveAllListeners();
-		mainButton.onClick.AddListener(() => ChangeView(ViewType.Main));
-		skillButton.onClick.RemoveAllListeners();
-		skillButton.onClick.AddListener(() => ChangeView(ViewType.Skill));
-		relicButton.onClick.RemoveAllListeners();
-		relicButton.onClick.AddListener(() => ChangeView(ViewType.Relic));
-		driveButton.onClick.RemoveAllListeners();
-		driveButton.onClick.AddListener(() => ChangeView(ViewType.Drive));
-		propertyButton.onClick.RemoveAllListeners();
-		propertyButton.onClick.AddListener(() => ChangeView(ViewType.Property));
+		veterancyButton.onClick.RemoveAllListeners();
+		veterancyButton.onClick.AddListener(() => ChangeView(ViewType.Veterancy));
+		//skillButton.onClick.RemoveAllListeners();
+		//skillButton.onClick.AddListener(() => ChangeView(ViewType.Skill));
+		youthButton.onClick.RemoveAllListeners();
+		youthButton.onClick.AddListener(() => ChangeView(ViewType.Advancement));
+		muscleButton.onClick.RemoveAllListeners();
+		muscleButton.onClick.AddListener(() => ChangeView(ViewType.Muscle));
+		trainingButton.onClick.RemoveAllListeners();
+		trainingButton.onClick.AddListener(() => ChangeView(ViewType.Training));
 	}
 
 
@@ -58,46 +64,47 @@ public class UIManagement : MonoBehaviour, IUIClosable
 	private void OnDisable()
 	{
 		UIController.it.SetCoinEffectActivate(true);
-		UserInfo.SaveUserData();
 	}
 
 	public void OnUpdate()
 	{
-		ChangeView(ViewType.Main);
+		ChangeView(ViewType.Training);
 	}
 
 	public void ChangeView(ViewType _viewType)
 	{
-		mainUI.gameObject.SetActive(false);
-		skillUI.gameObject.SetActive(false);
-		relicUI.gameObject.SetActive(false);
-		driveUi.gameObject.SetActive(false);
-		propertyUI.gameObject.SetActive(false);
-
+		trainingUI.gameObject.SetActive(false);
+		//skillUI.gameObject.SetActive(false);
+		//muscleUI.gameObject.SetActive(false);
+		advancementUI.gameObject.SetActive(false);
+		veterancyUI.gameObject.SetActive(false);
+		uiRectTransform.offsetMax = new Vector2(0, -130);
+		RectTransform root = (transform as RectTransform);
 		switch (_viewType)
 		{
-			case ViewType.Main:
-				mainUI.gameObject.SetActive(true);
-				mainUI.OnUpdate();
+			case ViewType.Training:
+				uiRectTransform.offsetMax = new Vector2(0, -root.sizeDelta.y / 2.5f);
+				trainingUI.gameObject.SetActive(true);
+				trainingUI.OnUpdate(false);
 				break;
-			case ViewType.Skill:
-				skillUI.gameObject.SetActive(true);
-				skillUI.OnUpdate(false);
+			case ViewType.Advancement:
+				advancementUI.gameObject.SetActive(true);
+				advancementUI.OnUpdate();
 				break;
-
-			case ViewType.Relic:
-				relicUI.gameObject.SetActive(true);
-				relicUI.OnUpdate(false);
+			case ViewType.Veterancy:
+				veterancyUI.gameObject.SetActive(true);
+				veterancyUI.OnUpdate();
 				break;
-
-			case ViewType.Drive:
-				driveUi.gameObject.SetActive(true);
-				driveUi.OnUpdate();
+			case ViewType.Muscle:
 				break;
 
-			case ViewType.Property:
-				propertyUI.gameObject.SetActive(true);
-				propertyUI.OnUpdate(false);
+			//case ViewType.Skill:
+			//	skillUI.gameObject.SetActive(true);
+			//	skillUI.OnUpdate(0, false);
+			//	break;
+			default:
+				trainingUI.gameObject.SetActive(true);
+				trainingUI.OnUpdate(false);
 				break;
 		}
 	}
@@ -109,6 +116,7 @@ public class UIManagement : MonoBehaviour, IUIClosable
 
 	public void Close()
 	{
+		UIController.it.InactivateAllBottomToggle();
 		gameObject.SetActive(false);
 	}
 }

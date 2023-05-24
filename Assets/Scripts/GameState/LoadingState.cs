@@ -1,53 +1,47 @@
 ﻿using UnityEngine;
-
-public class LoadingState : RootState
+[CreateAssetMenu(fileName = "Loading State", menuName = "ScriptableObject/Stage/State/Loading", order = 1)]
+public class LoadingState : StageFSM
 {
-	public override void OnEnter()
+	public override FSM OnEnter()
 	{
-		UnitGlobal.it.skillModule.InitSkill(UserInfo.skills);
-		UIController.it.SkillGlobal.OnUpdate();
+		GameUIManager.it.FadeCurtain(true, GameManager.it.firstEnter);
 
-		Inventory.it.Initialize(UserInfo.InstantItems);
+		GameManager.it.firstEnter = false;
+		UIController.it.SkillGlobal.OnUpdate();
 		UIController.it.Init();
 
-		VGameManager.it.mapController.Reset();
 		GameUIManager.it.mainUIObject.SetActive(true);
 		GameUIManager.it.ReleaseAllPool();
-		if (SpawnManagerV2.it != null)
-		{
-			SpawnManagerV2.it.ClearUnits();
-		}
-		else
-		{
-			SpawnManager.it.ClearUnits();
-		}
-		ProjectileManager.it.ClearPool();
+		SpawnManager.it.ClearUnits();
+
 		elapsedTime = 0;
 
-
-		if (SceneCameraV2.it != null)
-		{
-			SceneCameraV2.it.ResetToStart();
-		}
-		else
-		{
-			SceneCamera.it.ResetToStart();
-		}
+		SceneCamera.it.ResetToStart();
+		return this;
 	}
-
-	public override void OnExit()
-	{
-		VSoundManager.it.PlayBgm("main_bgm");
-	}
-
-	public override void OnUpdate(float time)
+	public override FSM RunNextState(float time)
 	{
 		elapsedTime += time;
 		if (elapsedTime > 1)
 		{
-			VGameManager.it.ChangeState(GameState.BGLOADING);
-
+			return nextState != null ? nextState.OnEnter() : this;
 		}
+		return this;
+	}
+
+	public override void OnExit()
+	{
+
+	}
+
+	public override void OnUpdate(float time)
+	{
+		//elapsedTime += time;
+		//if (elapsedTime > 1)
+		//{
+		//	VGameManager.it.ChangeState(GameState.BGLOADING);
+
+		//}
 	}
 }
 

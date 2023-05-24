@@ -55,16 +55,5 @@ public class GachaEntryProbabilityInfo
 [Serializable]
 public class GachaEntryDataSheet : DataSheetBase<GachaEntryData>
 {
-	public GachaEntryData Get(long tid)
-	{
-		for (int i = 0 ; i < infos.Count ; i++)
-		{
-			if (infos[i].tid == tid)
-			{
-				return infos[i];
-			}
-		}
 
-		return null;
-	}
 }

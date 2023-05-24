@@ -14,4 +14,10 @@ public class UIStatsInfoCell : MonoBehaviour
 		textmeshValue.text = value;
 	}
 
+	public void OnUpdate(StatsType label, string value)
+	{
+		textmeshLabel.text = label.ToUIString();
+		textmeshValue.text = value;
+	}
+
 }

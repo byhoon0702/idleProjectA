@@ -4,20 +4,48 @@ using UnityEngine;
 
 public class Testss : MonoBehaviour
 {
+	public new Rigidbody rigidbody;
+	public float power;
+	public FieldItem fieldItem;
 	//public string a;
 	//public string b;
 
-	public Transform a;
-	public Transform b;
-	// Start is called before the first frame update
+	public UITalkBubble talkbuble;
+	//// Start is called before the first frame update
 	void Start()
 	{
+		//talkbuble.Show("alsjdflkajsdlfgjalsjdflahgalsjdfljalsdjflalsjdflkajsdlfgjalsjdflahgalsjdfljalsdjflaalsjdflkajsdlfgjalsjdflahgalsjdfljalsdjflalsjdflkajsdlfgjalsjdflahgalsjdfljalsdjflaaa");
+		//float time = 0;
+		//string a = "1 - ( 2.2 + 3 )";
+		//string b = "1-(2.2+ 3)";
+
+		//time = Time.realtimeSinceStartup;
+		//double d = FourArithmeticCalculator.CalculateFourArithmetics(b);
+		//Debug.Log($"{b}={d}, {Time.realtimeSinceStartup - time}");
+
+		//time = Time.realtimeSinceStartup;
+		//double c = FourArithmeticCalculator.CalculateFourArithmetic(a);
+
+		//Debug.Log($"{a}={c}, {Time.realtimeSinceStartup - time}");
+
 
 	}
 
 	private void Update()
 	{
-		Debug.Log(Vector3.Distance(a.position, b.position));
+		//if (Input.GetKeyDown(KeyCode.A))
+		//{
+		//	rigidbody.AddForce(Vector3.left * power);
+		//}
+		//if (Input.GetKeyDown(KeyCode.D))
+		//{
+		//	rigidbody.AddForce(Vector3.right * power);
+		//}
+		if (Input.GetKeyDown(KeyCode.D))
+		{
+			var field = Instantiate(fieldItem);
+			field.Appear(0, Vector3.zero, null);
+		}
 	}
 
 	//private void OnGUI()

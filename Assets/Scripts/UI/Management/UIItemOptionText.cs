@@ -10,7 +10,7 @@ public class UIItemOptionText : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI optionText;
 	public void OnUpdate(Grade grade, string text)
 	{
-		gameObject.SetActive(grade != Grade.END);
+		gameObject.SetActive(grade != Grade._END);
 		//gradeObject.SetActive(grade != Grade.END);
 		optionText.text = text;
 	}

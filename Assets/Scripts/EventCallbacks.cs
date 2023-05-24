@@ -26,6 +26,7 @@ public static class EventCallbacks
 	public static event LevelupChanged onLevelupChanged;
 	public static void CallLevelupChanged(int _beforeLv, int _afterLv)
 	{
+		VLog.Log($"[레벨 변경] {_beforeLv} -> {_afterLv}");
 		onLevelupChanged?.Invoke(_beforeLv, _afterLv);
 	}
 
@@ -36,6 +37,7 @@ public static class EventCallbacks
 	public static event TotalCombatChanged onTotalCombatChanged;
 	public static void CallTotalCombatChanged(IdleNumber _beforeCombat, IdleNumber _afterCombat)
 	{
+		VLog.Log($"[전투력 변경] {_beforeCombat.ToString()} -> {_afterCombat.ToString()}");
 		onTotalCombatChanged?.Invoke(_beforeCombat, _afterCombat);
 	}
 }

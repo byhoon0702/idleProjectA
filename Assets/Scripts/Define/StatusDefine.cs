@@ -1,5 +1,6 @@
 ﻿//========AUTO GENERATED CODE======//
-public enum Stats
+
+public enum Ability
 {
 	_NONE,
 	/// <summary>
@@ -82,4 +83,54 @@ public enum Stats
 	/// 최종 데미지
 	/// </summary>
 	TotalDamage = 111000020,
+
+	/// <summary>
+	/// 스킬레벨
+	/// </summary>
+	SkillLevel = 111900002,
+
+	/// <summary>
+	/// 스킬자체 값
+	/// </summary>
+	SkillValue = 111900003,
+
+	/// <summary>
+	/// 유저 레벨
+	/// </summary>
+	UserLevel = 111900004,
+
+	/// <summary>
+	/// 하이퍼 공격력
+	/// </summary>
+	HyperDamage = 111901001,
+	/// <summary>
+	/// 하이퍼 체력
+	/// </summary>
+	HyperHP = 111901002,
+	/// <summary>
+	/// 하이퍼 공격속도
+	/// </summary>
+	HyperAttackSpeed = 111901003,
+	/// <summary>
+	/// 하이퍼 이동속도
+	/// </summary>
+	HyperMoveSpeed = 111901004,
+	/// <summary>
+	/// 하이퍼 지속시간 버프
+	/// </summary>
+	HyperDurationBuff = 111901005,
+
+	/// <summary>
+	/// 광고 공격력 버프
+	/// </summary>
+	AdAttackPowerBuff = 111905001,
+
+	/// <summary>
+	/// 광고 체력 버프
+	/// </summary>
+	AdHPBuff = 111905002,
+
+	AdAttackGoldBuff = 111905003,
+
+	AdExpBuff = 111905004,
 }

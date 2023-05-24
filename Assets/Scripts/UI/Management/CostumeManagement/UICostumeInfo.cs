@@ -28,14 +28,28 @@ public class UICostumeInfo : MonoBehaviour
 		equipButton.onClick.RemoveAllListeners();
 		equipButton.onClick.AddListener(() =>
 		{
-			VGameManager.it.userDB.costumeContainer.Equip(parentUI.selectedItemTid, parentUI.costumeType);
+			if (costumeInfo.unlock == false)
+			{
+				return;
+			}
+			GameManager.UserDB.costumeContainer.Equip(parentUI.selectedItemTid, parentUI.costumeType);
 			if (UnitManager.it.Player != null)
 			{
 				UnitManager.it.Player.ChangeCostume();
 			}
+			parentUI.OnUpdate(false);
+
+		});
+
+		upgradeButton.onClick.RemoveAllListeners();
+		upgradeButton.onClick.AddListener(() =>
+		{
+			costumeInfo.unlock = true;
+			parentUI.OnUpdate(false);
 
 		});
 	}
+
 	public void OnUpdate(RuntimeData.CostumeInfo info)
 	{
 		costumeInfo = info;
@@ -43,7 +57,7 @@ public class UICostumeInfo : MonoBehaviour
 
 		for (int i = 0; i < cells.Length; i++)
 		{
-			if (i >= costumeInfo.ownedAbilities.Length - 1)
+			if (i >= costumeInfo.ownedAbilities.Count - 1)
 			{
 				cells[i].gameObject.SetActive(false);
 				continue;
@@ -53,14 +67,18 @@ public class UICostumeInfo : MonoBehaviour
 			cells[i].gameObject.SetActive(true);
 
 			string value = ability.GetValue(costumeInfo.level).ToString();
-			if (ability.rawData.isPercentage)
+			if (ability.modeType != StatModeType.Flat)
 			{
 				value = $"+ {value} %";
 			}
-			cells[i].OnUpdate(ability.rawData.description, value);
+			cells[i].OnUpdate(ability.Description(), value);
 		}
 
-		upgradeButtonCost.text = "";
+		upgradeButtonCost.text = "무료";
+
+		equipButton.interactable = costumeInfo.unlock;
+		equipButton.gameObject.SetActive(costumeInfo.unlock);
+		upgradeButton.gameObject.SetActive(costumeInfo.unlock == false);
 
 	}
 }

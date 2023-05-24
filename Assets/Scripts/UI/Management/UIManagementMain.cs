@@ -1,142 +1,186 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Rendering;
 
-public class UIManagementMain : MonoBehaviour
+public class UIManagementMain : MonoBehaviour, IUIClosable
 {
-	[SerializeField] private UIUnitChange uiUnitChange;
-	[SerializeField] private UIEquipChange uiequipChange;
 
+	[SerializeField] private UIManagementEquip uiequipChange;
 
 	[Header("캐릭터")]
 	[SerializeField] private Image icon;
 	[SerializeField] private TextMeshProUGUI nameText;
-	[SerializeField] private TextMeshProUGUI gradeText;
-	[SerializeField] private TextMeshProUGUI toOwnText;
 	[SerializeField] private TextMeshProUGUI levelText;
 
+	[SerializeField] private RectTransform characterStand;
+
 	[Header("장비")]
-	[SerializeField] private EquipSlot weaponSlot;
-	[SerializeField] private EquipSlot armorSlot;
-	[SerializeField] private EquipSlot accSlot;
+	[SerializeField] private UIEquipSlot weaponSlot;
+	[SerializeField] private UIEquipSlot armorSlot;
+	[SerializeField] private UIEquipSlot ringSlot;
+	[SerializeField] private UIEquipSlot neckSlot;
 
-	[Header("스킬")]
-	[SerializeField] private UImanagementUnitSkillInfo unitSkill;
-	[SerializeField] private UImanagementUnitSkillInfo finalSkill;
+	[SerializeField] private Transform statsInfoGrid;
+	[SerializeField] private UIStatsInfoCell cellPrefab;
 
-	[Header("ETC")]
-	[SerializeField] private Button editCharButton;
-
-
-	private ItemData itemData;
+	private UnitItemData itemData;
 	private UnitData unitData;
-	private SkillData unitSkillData;
-	private SkillData finalSkillData;
+
+	[SerializeField] private TextMeshProUGUI totalpowerLabel;
+	[SerializeField] private TextMeshProUGUI totalpowerValue;
+
+	private UnitAnimation uiUnit;
 
 
-
-	private void Awake()
-	{
-		editCharButton.onClick.RemoveAllListeners();
-		editCharButton.onClick.AddListener(OnEditUnit);
-	}
 
 	public void OnUpdate()
 	{
 		VResult vResult = InitData();
-		if(vResult.Fail())
+		if (vResult.Fail())
 		{
-			PopAlert.it.Create(vResult);
+			PopAlert.Create(vResult);
 			gameObject.SetActive(false);
 			return;
 		}
 
+		gameObject.SetActive(true);
 		UpdateUnitInfo();
 		UpdateEquipSlot();
-		UpdateSkill();
+
+		UpdateStatsInfo();
 	}
 
 	private VResult InitData()
 	{
 		VResult result = new VResult();
 
-		itemData = DataManager.Get<ItemDataSheet>().Get(UserInfo.EquipUnitItemTid);
-		if(itemData == null)
-		{
-			return result.SetFail(VResultCode.NO_META_DATA, $"ItemDataSheet. selectedUnitTid: {UserInfo.EquipUnitItemTid}");
-		}
+		//itemData = DataManager.Get<UnitItemDataSheet>().Get(UserInfo.equip.EquipUnitItemTid);
+		//if (itemData == null)
+		//{
+		//	return result.SetFail(VResultCode.NO_META_DATA, $"ItemDataSheet. selectedUnitTid: {UserInfo.equip.EquipUnitItemTid}");
+		//}
 
-		unitData = DataManager.Get<UnitDataSheet>().GetData(itemData.unitTid);
-		if(unitData == null)
-		{
-			return result.SetFail(VResultCode.NO_META_DATA, $"UnitDataSheet. itemData.unitTid: {itemData.unitTid}");
-		}
+		//unitData = DataManager.Get<UnitDataSheet>().GetData(itemData.unitTid);
+		//if (unitData == null)
+		//{
+		//	return result.SetFail(VResultCode.NO_META_DATA, $"UnitDataSheet. itemData.unitTid: {itemData.unitTid}");
+		//}
 
-		unitSkillData = DataManager.Get<SkillDataSheet>().Get(unitData.skillTid);
-		if(unitSkillData == null)
-		{
-			return result.SetFail(VResultCode.NO_META_DATA, $"SkillDataSheet. skillTid: {unitData.skillTid}");
-		}
-
-		finalSkillData = DataManager.Get<SkillDataSheet>().Get(unitData.finalSkillTid);
-		if (finalSkillData == null)
-		{
-			return result.SetFail(VResultCode.NO_META_DATA, $"SkillDataSheet. finalSkillTid: {unitData.finalSkillTid}");
-		}
 
 		return result.SetOk();
 	}
 
 	public void UpdateUnitInfo()
 	{
-		var item = Inventory.it.FindItemByTid(itemData.tid);
 
-		nameText.text = item.ItemName;
-		gradeText.text = itemData.itemGrade.ToString();
-		toOwnText.text = itemData.ToOwnAbilityInfo.ToString();
-		levelText.text = $"Lv. {item.Level}";
-
-		icon.sprite = Resources.Load<Sprite>($"Icon/{itemData.Icon}");
+		CreateUnitForUI();
 	}
 
+	public void CreateUnitForUI()
+	{
+		if (UnitManager.it.Player == null)
+		{
+			return;
+		}
+
+		if (uiUnit != null)
+		{
+			Destroy(uiUnit.gameObject);
+			uiUnit = null;
+		}
+
+
+		GameObject obj = Instantiate(UnitManager.it.Player.unitAnimation.gameObject);
+
+		obj.transform.SetParent(characterStand);
+		obj.transform.localPosition = Vector3.zero;
+		obj.transform.localScale = Vector3.one;
+		obj.transform.localRotation = Quaternion.identity;
+
+
+		uiUnit = obj.GetComponent<UnitAnimation>();
+		SortingGroup sortingGroup = obj.GetComponent<SortingGroup>();
+		sortingGroup.sortingLayerName = "UI";
+		sortingGroup.sortingOrder = 1;
+	}
+	public void UpdateStatsInfo()
+	{
+		//totalpowerValue.text = UserInfo.totalCombatPower.ToString();
+
+		//int makeCount = GameManager.UserDB.abilityinfos.Count - statsInfoGrid.childCount;
+
+		//for (int i = 0; i < makeCount; i++)
+		//{
+		//	GameObject go = Instantiate(cellPrefab.gameObject, statsInfoGrid);
+		//}
+
+		//int index = 0;
+		//foreach (var info in GameManager.UserDB.abilityinfos)
+		//{
+		//	Transform child = statsInfoGrid.GetChild(index);
+		//	UIStatsInfoCell cell = child.GetComponent<UIStatsInfoCell>();
+		//	var ability = info.Value;
+
+		//	string tail = "";
+		//	if (ability.rawData.isPercentage)
+		//	{
+		//		tail = "%";
+		//	}
+		//	ability.UpdateValue();
+		//	cell.OnUpdate(ability.rawData.description, $"{ability.GetValue().ToString("{0:0.##}")} {tail}");
+		//	index++;
+		//}
+	}
 	public void UpdateEquipSlot()
 	{
-		weaponSlot.OnUpdate(this, ItemType.Weapon, UserInfo.EquipWeaponTid);
-		armorSlot.OnUpdate(this, ItemType.Armor, UserInfo.EquipArmorTid);
-		accSlot.OnUpdate(this, ItemType.Accessory, UserInfo.EquipAccessoryTid);
+		weaponSlot.OnUpdate(null, GameManager.UserDB.equipContainer.GetSlot(EquipType.WEAPON).item, () => { ShowEquipUi(EquipType.WEAPON); });
+		armorSlot.OnUpdate(null, GameManager.UserDB.equipContainer.GetSlot(EquipType.ARMOR).item, () => { ShowEquipUi(EquipType.ARMOR); });
+		ringSlot.OnUpdate(null, GameManager.UserDB.equipContainer.GetSlot(EquipType.RING).item, () => { ShowEquipUi(EquipType.RING); });
+		neckSlot.OnUpdate(null, GameManager.UserDB.equipContainer.GetSlot(EquipType.NECKLACE).item, () => { ShowEquipUi(EquipType.NECKLACE); });
 	}
 
-	public void UpdateSkill()
+
+	public void ShowEquipUi(EquipType _itemType)
 	{
-		unitSkill.OnUpdate(unitSkillData);
-		finalSkill.OnUpdate(finalSkillData);
+		Close();
+
+		UIController.it.BottomMenu.EquipmentToggle.isOn = true;
+
+		long tid = GameManager.UserDB.equipContainer.GetSlot(_itemType).itemTid;
+
+		UIController.it.Equipment.OnUpdate((EquipTabType)_itemType, tid);
+
 	}
 
-	private void OnEditUnit()
+	void OnEnable()
 	{
-		var itemData = DataManager.Get<ItemDataSheet>().Get(UserInfo.EquipUnitItemTid);
-		uiUnitChange.gameObject.SetActive(true);
-		uiUnitChange.OnUpdate(itemData.tid, false);
+		AddCloseListener();
+	}
+	void OnDisable()
+	{
+		RemoveCloseListener();
+	}
+	public void AddCloseListener()
+	{
+		GameUIManager.it.onClose += Close;
 	}
 
-	public void ShowEquipUi(ItemType _itemType)
+	public void RemoveCloseListener()
 	{
-		switch (_itemType)
-		{
-			case ItemType.Weapon:
-				uiequipChange.gameObject.SetActive(true);
-				uiequipChange.OnUpdate(ItemType.Weapon, UserInfo.EquipWeaponTid, false);
-				break;
-			case ItemType.Armor:
-				uiequipChange.gameObject.SetActive(true);
-				uiequipChange.OnUpdate(ItemType.Armor, UserInfo.EquipArmorTid, false);
-				break;
-			case ItemType.Accessory:
-				uiequipChange.gameObject.SetActive(true);
-				uiequipChange.OnUpdate(ItemType.Accessory, UserInfo.EquipAccessoryTid, false);
-				break;
-		}
+		GameUIManager.it.onClose -= Close;
+	}
+
+	public bool Closable()
+	{
+		return true;
+	}
+
+	public void Close()
+	{
+		gameObject.SetActive(false);
 	}
 }

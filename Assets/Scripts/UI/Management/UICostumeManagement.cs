@@ -6,11 +6,10 @@ using TMPro;
 using VIVID;
 using UnityEngine.Rendering;
 
-public class UICostumeManagement : MonoBehaviour, IUIClosable
+public class UICostumeManagement : MonoBehaviour, IUIClosable, ISelectListener
 {
-	[SerializeField] private UIManagement parentUI;
+	//[SerializeField] private UIManagement parentUI;
 	[SerializeField] private Button closeButton;
-
 
 	[Header("메인 탭")]
 	[SerializeField] private Button weaponTab;
@@ -21,17 +20,19 @@ public class UICostumeManagement : MonoBehaviour, IUIClosable
 	[SerializeField] private UICostumeInfo uiCostumeInfo;
 
 	[Header("리스트")]
-	[SerializeField] private UIItemCostumeChange itemPrefab;
+	[SerializeField] private UICostumeSlot itemPrefab;
 	[SerializeField] private RectTransform itemRoot;
 
 
 	public long selectedItemTid { get; private set; }
+	private RuntimeData.CostumeInfo selectedInfo;
 	public CostumeType costumeType { get; private set; }
 
 
 	private CostumeData itemData;
 
-	private UnitCostume unitCostume;
+	private NormalUnitCostume unitCostume;
+
 
 
 	private void Awake()
@@ -46,8 +47,8 @@ public class UICostumeManagement : MonoBehaviour, IUIClosable
 			{
 				return;
 			}
-			unitCostume.ChangeCostume();
-			OnUpdate(CostumeType.WEAPON, VGameManager.it.userDB.costumeContainer[CostumeType.WEAPON].itemTid, false);
+			unitCostume?.ChangeCostume();
+			OnUpdate(CostumeType.WEAPON, GameManager.UserDB.costumeContainer[CostumeType.WEAPON].itemTid, false);
 		});
 		helmetTab.onClick.RemoveAllListeners();
 		helmetTab.onClick.AddListener(() =>
@@ -56,8 +57,8 @@ public class UICostumeManagement : MonoBehaviour, IUIClosable
 			{
 				return;
 			}
-			unitCostume.ChangeCostume();
-			OnUpdate(CostumeType.HEAD, VGameManager.it.userDB.costumeContainer[CostumeType.HEAD].itemTid, false);
+			unitCostume?.ChangeCostume();
+			OnUpdate(CostumeType.HEAD, GameManager.UserDB.costumeContainer[CostumeType.HEAD].itemTid, false);
 		});
 		clothTab.onClick.RemoveAllListeners();
 		clothTab.onClick.AddListener(() =>
@@ -66,8 +67,8 @@ public class UICostumeManagement : MonoBehaviour, IUIClosable
 			{
 				return;
 			}
-			unitCostume.ChangeCostume();
-			OnUpdate(CostumeType.BODY, VGameManager.it.userDB.costumeContainer[CostumeType.BODY].itemTid, false);
+			unitCostume?.ChangeCostume();
+			OnUpdate(CostumeType.BODY, GameManager.UserDB.costumeContainer[CostumeType.BODY].itemTid, false);
 		});
 
 	}
@@ -85,8 +86,7 @@ public class UICostumeManagement : MonoBehaviour, IUIClosable
 			unitCostume = null;
 		}
 
-
-		GameObject obj = Instantiate(UnitManager.it.Player.unitAnimation.gameObject);
+		var obj = UnitModelPoolManager.it.Get("B/Player/", "player_01_old");
 
 		obj.transform.SetParent(characterStand);
 		obj.transform.localPosition = Vector3.zero;
@@ -94,25 +94,46 @@ public class UICostumeManagement : MonoBehaviour, IUIClosable
 		obj.transform.localRotation = Quaternion.identity;
 
 
-		unitCostume = obj.GetComponent<UnitCostume>();
+		unitCostume = obj.GetComponent<NormalUnitCostume>();
 		unitCostume.Init();
+		unitCostume.ChangeCostume();
+
+		UnitFacial unitFacial = obj.GetComponent<UnitFacial>();
+		unitFacial.ChangeFacial(GameManager.UserDB.advancementContainer.Info.CostumeIndex);
+
 		SortingGroup sortingGroup = obj.GetComponent<SortingGroup>();
 		sortingGroup.sortingLayerName = "UI";
 		sortingGroup.sortingOrder = 1;
 	}
-
-	private void OnEnable()
+	void OnEnable()
 	{
 		CreateUnitForUI();
+		AddCloseListener();
 	}
-	private void OnDisable()
+	void OnDisable()
 	{
+		RemoveCloseListener();
 		if (unitCostume != null)
 		{
 			Destroy(unitCostume.gameObject);
 			unitCostume = null;
 		}
+	}
+	public void AddCloseListener()
+	{
+		GameUIManager.it.onClose += Close;
+	}
 
+	public void RemoveCloseListener()
+	{
+		GameUIManager.it.onClose -= Close;
+	}
+
+	public void OnUpdate(bool _refreshGrid)
+	{
+
+		//OnUpdate(costumeType, selectedItemTid, _refreshGrid);
+		ChangeCurrentItem(selectedItemTid);
 	}
 	public void OnUpdate(CostumeType _itemType, long _selectedItemTid, bool _refreshGrid)
 	{
@@ -137,7 +158,7 @@ public class UICostumeManagement : MonoBehaviour, IUIClosable
 		UpdateItems(_refreshGrid);
 
 
-		var info = VGameManager.it.userDB.inventory.FindCostumeItem(selectedItemTid, costumeType);
+		var info = GameManager.UserDB.costumeContainer.FindCostumeItem(selectedItemTid, costumeType);
 		uiCostumeInfo.OnUpdate(info);
 
 	}
@@ -158,32 +179,39 @@ public class UICostumeManagement : MonoBehaviour, IUIClosable
 
 	public void UpdateItems(bool _refresh)
 	{
+		var list = GameManager.UserDB.costumeContainer.GetList(costumeType);
+		int countForMake = list.Count - itemRoot.childCount;
 
-		if (_refresh == false)
+		if (countForMake > 0)
 		{
-			foreach (var v in itemRoot.GetComponentsInChildren<UIItemCostumeChange>())
-			{
-				Destroy(v.gameObject);
-			}
-
-			var list = DataManager.Get<CostumeDataSheet>().GetByItemType(costumeType);
-			for (int i = 0; i < list.Count; i++)
-			{
-				//var item = Instantiate(itemPrefab, itemRoot);
-				//item.OnUpdate(this, list[i]);
-			}
-
-			foreach (var v in VGameManager.it.userDB.inventory[costumeType])
+			for (int i = 0; i < countForMake; i++)
 			{
 				var item = Instantiate(itemPrefab, itemRoot);
-				item.OnUpdate(this, v);
 			}
 		}
 
-		foreach (var v in itemRoot.GetComponentsInChildren<UIItemCostumeChange>())
+		for (int i = 0; i < itemRoot.childCount; i++)
 		{
-			v.SetSelect(v.UIData.tid == selectedItemTid);
-			v.SetEquipped(v.UIData.tid == VGameManager.it.userDB.costumeContainer[costumeType].itemTid);
+
+			var child = itemRoot.GetChild(i);
+			if (i > list.Count - 1)
+			{
+				child.gameObject.SetActive(false);
+				continue;
+			}
+
+			child.gameObject.SetActive(true);
+			UICostumeSlot slot = child.GetComponent<UICostumeSlot>();
+
+			var info = list[i];
+			slot.OnUpdate(this, info, () =>
+			{
+				selectedItemTid = info.tid;
+				selectedInfo = GameManager.UserDB.costumeContainer.GetList(costumeType).Find(x => x.tid == selectedItemTid);
+				ChangeCurrentItem(selectedItemTid);
+				//UpdateInfo();
+			});
+			//slot.ShowSlider(true);
 		}
 	}
 
@@ -197,8 +225,8 @@ public class UICostumeManagement : MonoBehaviour, IUIClosable
 		OnUpdate(costumeType, _itemTid, true);
 
 
-		var info = VGameManager.it.userDB.inventory.FindCostumeItem(selectedItemTid, costumeType);
-		unitCostume.ChangeCostume(_itemTid, costumeType, info.count == 0);
+		var info = GameManager.UserDB.costumeContainer.FindCostumeItem(selectedItemTid, costumeType);
+		unitCostume.ChangeCostume(_itemTid, costumeType, info.unlock == false);
 	}
 
 	public bool Closable()
@@ -208,6 +236,21 @@ public class UICostumeManagement : MonoBehaviour, IUIClosable
 
 	public void Close()
 	{
-		parentUI.ChangeView(UIManagement.ViewType.Main);
+		gameObject.SetActive(false);
+	}
+
+	public void SetSelectedTid(long tid)
+	{
+		selectedItemTid = tid;
+	}
+
+	public void AddSelectListener(OnSelect callback)
+	{
+
+	}
+
+	public void RemoveSelectListener(OnSelect callback)
+	{
+
 	}
 }

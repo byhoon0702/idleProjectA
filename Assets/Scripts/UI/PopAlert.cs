@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class PopAlert : MonoBehaviour
 {
-	public static PopAlert it { get; private set; }
-	[NonSerialized] public PopAlertDefault current;
+	private static PopAlert it;
+	private static PopAlertDefault current;
 
 
 	private void Awake()
@@ -14,7 +14,7 @@ public class PopAlert : MonoBehaviour
 		it = this;
 	}
 
-	public void Create(VResult _resultCode, Action _okCallback = null, Action _cancelCallback = null)
+	public static void Create(VResult _resultCode, Action _okCallback = null, Action _cancelCallback = null)
 	{
 		if (current != null)
 		{
@@ -29,8 +29,12 @@ public class PopAlert : MonoBehaviour
 			current = null;
 		}
 
-		current = Instantiate(Resources.Load<PopAlertDefault>("PopAlertDefault"), transform);
+		current = Instantiate(Resources.Load<PopAlertDefault>("PopAlertDefault"), it.transform);
 		current.Init(_resultCode.Clone(), _okCallback, _cancelCallback);
+	}
+
+	public static void CreateException(Exception _e, string _msg)
+	{
 	}
 }
 

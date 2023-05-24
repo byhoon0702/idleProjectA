@@ -16,8 +16,8 @@ public class UIAdRewardChest : MonoBehaviour
 	private int goldBoxCount = 0;
 	private int diaBoxCount = 0;
 
-	private bool isGoldBoxRewardable => goldBoxCount < ConfigMeta.it.DAILY_GOLD_BOX_LIMIT;
-	private bool isDiaBoxRewardable => diaBoxCount < ConfigMeta.it.DAILY_DIA_BOX_LIMIT;
+	private bool isGoldBoxRewardable => goldBoxCount < GameManager.Config.DAILY_GOLD_BOX_LIMIT;
+	private bool isDiaBoxRewardable => diaBoxCount < GameManager.Config.DAILY_DIA_BOX_LIMIT;
 
 	private bool isInitialized = false;
 
@@ -32,25 +32,33 @@ public class UIAdRewardChest : MonoBehaviour
 		SetDiaBoxFrequency();
 	}
 
+	public void Switch(bool isOn)
+	{
+		ResetFrequency();
+		gameObject.SetActive(isOn);
+	}
+
 	public void SetGoldBoxFrequency()
 	{
-		goldBoxFrequency = UnityEngine.Random.Range(ConfigMeta.it.MINIMUM_GOLD_AD_FREQUENCY, ConfigMeta.it.MAXIMUM_GOLD_AD_FREQUENCY);
+		//테스트
+		goldBoxFrequency = 10;// UnityEngine.Random.Range(VGameManager.Config.MINIMUM_GOLD_AD_FREQUENCY, VGameManager.Config.MAXIMUM_GOLD_AD_FREQUENCY);
 	}
 
 	public void SetDiaBoxFrequency()
-	{
-		diaBoxFrequency = UnityEngine.Random.Range(ConfigMeta.it.MINIMUM_DIA_AD_FREQUENCY, ConfigMeta.it.MAXIMUM_DIA_AD_FREQUENCY);
+	{//테스트
+		diaBoxFrequency = 15;// UnityEngine.Random.Range(VGameManager.Config.MINIMUM_DIA_AD_FREQUENCY, VGameManager.Config.MAXIMUM_DIA_AD_FREQUENCY);
 	}
 
 	public void ResetFrequency()
 	{
+		isShow = false;
 		if (goldBoxFrequency <= 0)
 		{
-			goldBoxFrequency = UnityEngine.Random.Range(ConfigMeta.it.MINIMUM_GOLD_AD_FREQUENCY, ConfigMeta.it.MAXIMUM_GOLD_AD_FREQUENCY);
+			goldBoxFrequency = UnityEngine.Random.Range(GameManager.Config.MINIMUM_GOLD_AD_FREQUENCY, GameManager.Config.MAXIMUM_GOLD_AD_FREQUENCY);
 		}
 		if (diaBoxFrequency <= 0)
 		{
-			diaBoxFrequency = UnityEngine.Random.Range(ConfigMeta.it.MINIMUM_DIA_AD_FREQUENCY, ConfigMeta.it.MAXIMUM_DIA_AD_FREQUENCY);
+			diaBoxFrequency = UnityEngine.Random.Range(GameManager.Config.MINIMUM_DIA_AD_FREQUENCY, GameManager.Config.MAXIMUM_DIA_AD_FREQUENCY);
 		}
 	}
 
@@ -59,9 +67,15 @@ public class UIAdRewardChest : MonoBehaviour
 		rewardPage.ShowPage(_rewardTid, _count);
 	}
 
+	bool isShow = false;
+
 	private void Update()
 	{
 		if (isInitialized == false)
+		{
+			return;
+		}
+		if (isShow)
 		{
 			return;
 		}
@@ -73,6 +87,7 @@ public class UIAdRewardChest : MonoBehaviour
 		{
 			if (goldChest.IsActivated == false && isGoldBoxRewardable)
 			{
+				isShow = true;
 				goldChest.Show();
 			}
 		}
@@ -81,6 +96,7 @@ public class UIAdRewardChest : MonoBehaviour
 		{
 			if (diaChest.IsActivated == false && isDiaBoxRewardable)
 			{
+				isShow = true;
 				diaChest.Show();
 			}
 		}

@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-
 public enum IntroState_e
 {
 	None,
@@ -14,7 +13,6 @@ public enum IntroState_e
 	ENTERGAME
 }
 
-
 public class Intro : MonoBehaviour
 {
 	public static Intro it { get; private set; }
@@ -23,9 +21,13 @@ public class Intro : MonoBehaviour
 	public DataLoadingState dataLoadingState;
 	public LoginState loginState;
 	public EnterGameState enterGameState;
+	public UserInfoContainer userinfoContainer;
+
+	public UserDB userDB;
+	public UIPopupLogin uiPopupLogin;
 
 	public IntroState_e currentState { get; private set; }
-	public FiniteStateMachine currentFSM;
+	public FSM currentFSM;
 
 	[SerializeField] private Button button;
 	[SerializeField] private TextMeshProUGUI progressText;
@@ -38,6 +40,8 @@ public class Intro : MonoBehaviour
 	private int touchToStartAlphaToggle = -1;
 
 
+
+
 	private void Awake()
 	{
 		it = this;
@@ -45,7 +49,7 @@ public class Intro : MonoBehaviour
 		button.onClick.RemoveAllListeners();
 		button.onClick.AddListener(OnClickStartGame);
 
-		debugObject.SetActive(UnityEnv.HouseMode); 
+		debugObject.SetActive(UnityEnv.HouseMode);
 		SetActiveTabToStart(false);
 	}
 
@@ -61,7 +65,7 @@ public class Intro : MonoBehaviour
 
 	public void ChangeState(IntroState_e state)
 	{
-		if(currentState == state)
+		if (currentState == state)
 		{
 			return;
 		}
@@ -89,15 +93,21 @@ public class Intro : MonoBehaviour
 		currentState = state;
 	}
 
+
+
 	private void Update()
 	{
 		currentFSM?.OnUpdate(Time.deltaTime);
-		if(UnityEnv.HouseMode)
+		//if (next != null)
+		//{
+		//	currentFSM = next;
+		//}
+		if (UnityEnv.HouseMode)
 		{
 			string text = "";
 
 			text += $"State: {currentState}\n";
-			text += $"uid: {UserInfo.UserName}({UserInfo.UID})";
+			//text += $"uid: {UserInfo.UserName}({UserInfo.UID})";
 
 			debugText.text = text;
 		}
@@ -109,7 +119,7 @@ public class Intro : MonoBehaviour
 			alpha = Mathf.Clamp01(alpha);
 			touchToStartText.alpha = alpha;
 
-			if(alpha <= 0)
+			if (alpha <= 0)
 			{
 				touchToStartAlphaToggle = 1;
 			}

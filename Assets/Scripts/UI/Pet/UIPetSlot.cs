@@ -10,15 +10,10 @@ public class UIPetSlot : MonoBehaviour
 	[SerializeField] private ItemUIPet itemUI;
 	[SerializeField] private Button slotButton;
 
-	[SerializeField] protected GameObject expSliderObject;
-	[SerializeField] protected Slider expSlider;
-	[SerializeField] protected TextMeshProUGUI expText;
-
-
 	[SerializeField] private GameObject equippedMark;
 	[SerializeField] private GameObject lockedMark;
 
-	private UIManagementPet parent;
+	private ISelectListener parent;
 	private RuntimeData.PetInfo petInfo;
 	public bool isEquipped { get; private set; }
 	Action action;
@@ -35,28 +30,28 @@ public class UIPetSlot : MonoBehaviour
 		}
 	}
 
-	public void OnUpdate(UIManagementPet _parent, RuntimeData.PetInfo _petInfo, Action _action = null)
+	public void OnUpdate(ISelectListener _parent, RuntimeData.PetInfo _petInfo, Action _action = null)
 	{
 		parent = _parent;
 		petInfo = _petInfo;
 		action = _action;
 
-		parent.AddSelectListener(OnSelect);
+		parent?.AddSelectListener(OnSelect);
 
-		slotButton.interactable = action != null;
+		slotButton.enabled = action != null;
 		itemUI.OnUpdate(petInfo);
 
 		lockedMark.SetActive(false);
 		equippedMark.SetActive(false);
-		ShowSlider(false);
+
 		if (petInfo == null)
 		{
 			return;
 		}
 
-		lockedMark.SetActive(petInfo.count == 0);
+		lockedMark.SetActive(petInfo.unlock == false);
 
-		var data = VGameManager.UserDB.petContainer.petSlot;
+		var data = GameManager.UserDB.petContainer.PetSlots;
 		isEquipped = false;
 		for (int i = 0; i < data.Length; i++)
 		{
@@ -67,16 +62,14 @@ public class UIPetSlot : MonoBehaviour
 				break;
 			}
 		}
-		//OnRefresh();
-	}
-
-	public void ShowSlider(bool show)
-	{
-		expSliderObject.SetActive(show);
 	}
 
 	public void OnSelect(long tid)
 	{
+		if (petInfo == null)
+		{
+			return;
+		}
 		if (tid == petInfo.tid)
 		{
 
@@ -90,7 +83,7 @@ public class UIPetSlot : MonoBehaviour
 
 	public void OnClickSelect()
 	{
-		parent.selectedItemTid = petInfo.tid;
+		parent.SetSelectedTid(petInfo.tid);
 		action?.Invoke();
 	}
 }

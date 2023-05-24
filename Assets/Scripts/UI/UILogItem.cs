@@ -8,20 +8,16 @@ using DG.Tweening;
 public class UILogItem : MonoBehaviour
 {
 	[SerializeField] private Image iconImage;
-	[SerializeField] private TextMeshProUGUI itemName;
 	[SerializeField] private TextMeshProUGUI countText;
 	[SerializeField] CanvasGroup canvasGroup;
 
 	public void ShowLog(int _tid, IdleNumber _count)
 	{
-		ItemData itemData = DataManager.Get<ItemDataSheet>().Get(_tid);
+		ItemData itemData = DataManager.GetFromAll<ItemData>(_tid);
 
-		itemName.text = itemData.name;
+		countText.text = $"{itemData.name} {_count.ToString()}";
 
-		itemName.text = itemData.name;
-		countText.text = _count.ToString();
-
-		SetItemIcon(itemData.Icon);
+		//SetItemIcon(itemData.Icon);
 
 		DOTween.Kill(this);
 		canvasGroup.alpha = 0f;

@@ -1,167 +1,222 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 
-public class UIManagementSkill : MonoBehaviour
+
+public class UIManagementSkill : MonoBehaviour, ISelectListener
 {
-	[SerializeField] private UISkillInfoPopup skillInfoPopup;
+
+	[SerializeField] private UIManagementSkillInfo uiManagementSkillInfo;
+	[SerializeField] private UIPopupSkillTree uiPopupSkillTree;
 
 	[Header("장착스킬")]
-	[SerializeField] private UIItemSkillSlot[] skillSlots;
-	
-	
+	[SerializeField] private GameObject objSkillSlotRoot;
+	[SerializeField] private GameObject[] uiSkillSlotHighlights;
+	[SerializeField] private UISkillSlot[] uiSkillSlots;
+
 	[Header("아이템리스트")]
-	[SerializeField] private UIItemSkillSlot itemPrefab;
+	[SerializeField] private UISkillSlot itemPrefab;
 	[SerializeField] private RectTransform itemRoot;
 
-	[Header("Button")]
-	[SerializeField] private Button summonButton;
-	[SerializeField] private Button upgradeButton;
 
-
-
-	public void OnUpdate(bool _refreshGrid)
+	public event OnSelect onSelect;
+	public long selectedItemTid { get; private set; }
+	private RuntimeData.SkillInfo selectedInfo;
+	private bool exchangeSlot;
+	private List<RuntimeData.SkillInfo> filtered;
+	public void OnUpdate(long tid)
 	{
+		objSkillSlotRoot.SetActive(false);
+		filtered = new List<RuntimeData.SkillInfo>();
+		var list = GameManager.UserDB.skillContainer.skillList;
+
+		for (int i = 0; i < list.Count; i++)
+		{
+			if (list[i].HideInUI)
+			{
+				continue;
+			}
+
+			filtered.Add(list[i]);
+		}
+
+		selectedItemTid = tid;
+		if (selectedItemTid == 0)
+		{
+			selectedItemTid = DefaultSelectTid();
+		}
+
+		UpdateInfo();
 		UpdateEquipItem();
-		UpdateItem(_refreshGrid);
+		UpdateItem();
 		UpdateButton();
+
+	}
+	private long DefaultSelectTid()
+	{
+		long tid = filtered[0].tid;
+		return tid;
+	}
+
+	public void ShowHighlight(bool onoff)
+	{
+		for (int i = 0; i < uiSkillSlotHighlights.Length; i++)
+		{
+			uiSkillSlotHighlights[i].SetActive(onoff);
+		}
+
 	}
 
 	public void UpdateEquipItem()
 	{
-		for(int i=0 ; i<UserInfo.skills.Length ; i++)
-		{
-			long itemTid = UserInfo.skills[i];
-			if(itemTid == 0)
-			{
-				skillSlots[i].gameObject.SetActive(false);
-			}
-			else
-			{
-				UISkillData uiData = new UISkillData();
-				VResult result = uiData.Setup(itemTid);
-				if(result.Fail())
-				{
-					VLog.LogError(result.ToString());
-					continue;
-				}
 
-				skillSlots[i].gameObject.SetActive(true);
-				skillSlots[i].OnUpdate(this, uiData);
-			}
+		var skillContainer = GameManager.UserDB.skillContainer;
+		for (int i = 0; i < skillContainer.skillSlot.Length; i++)
+		{
+			var slot = uiSkillSlots[i];
+			var slotData = skillContainer[i];
+			slot.gameObject.SetActive(true);
+			slot.OnUpdate(null, slotData.item, () =>
+			{
+				ExchangeSkill(slotData);
+				UpdateInfo();
+				objSkillSlotRoot.SetActive(false);
+			});
 		}
 	}
 
-	public void UpdateItem(bool _refresh)
+	public void UpdateItem()
 	{
-		if (_refresh == false)
+
+		int countForMake = filtered.Count - itemRoot.childCount;
+
+		if (countForMake > 0)
 		{
-			foreach (var v in itemRoot.GetComponentsInChildren<UIItemSkillSlot>())
+			for (int i = 0; i < countForMake; i++)
 			{
-				Destroy(v.gameObject);
-			}
-
-			foreach (var v in DataManager.Get<ItemDataSheet>().GetByItemType(ItemType.Skill))
-			{
-				UISkillData uiData = new UISkillData();
-				VResult result = uiData.Setup(v);
-				if (result.Fail())
-				{
-					VLog.LogError(result.ToString());
-					continue;
-				}
-
-				if (uiData.IsHyperSkill)
-				{
-					continue;
-				}
-
 				var item = Instantiate(itemPrefab, itemRoot);
-				item.OnUpdate(this, uiData);
 			}
 		}
 
-		foreach (var v in itemRoot.GetComponentsInChildren<UIItemSkillSlot>())
+		for (int i = 0; i < itemRoot.childCount; i++)
 		{
-			v.OnRefresh();
+
+			var child = itemRoot.GetChild(i);
+			if (i > filtered.Count - 1)
+			{
+				child.gameObject.SetActive(false);
+				continue;
+			}
+
+			child.gameObject.SetActive(true);
+			UISkillSlot slot = child.GetComponent<UISkillSlot>();
+
+			var info = filtered[i];
+
+			slot.OnUpdate(this, info, () =>
+			{
+				selectedItemTid = info.tid;
+
+				UpdateInfo();
+			});
+			slot.ShowSlider(false);
 		}
 	}
 
 	private void UpdateButton()
 	{
-		summonButton.interactable = false;
-		upgradeButton.interactable = false;
+		//summonButton.interactable = false;
+		//upgradeButton.interactable = false;
 	}
 
-	public void ShowItemInfo(UISkillData _uiData)
+	public void UpdateInfo()
 	{
-		skillInfoPopup.gameObject.SetActive(true);
-		skillInfoPopup.OnUpdate(this, _uiData);
+		exchangeSlot = false;
+		ShowHighlight(false);
+		selectedInfo = filtered.Find(x => x.tid == selectedItemTid);
+		uiManagementSkillInfo.OnUpdate(this, selectedInfo);
+		onSelect?.Invoke(selectedItemTid);
 	}
 
-	private int GetEmptySlot()
+	public void ExchangeSkill(SkillSlot slotData)
 	{
-		for (int i = 0 ; i < UserInfo.skills.Length ; i++)
+		slotData.Unequip();
+		slotData.Equip(UnitManager.it.Player, selectedItemTid);
+
+		UpdateInfo();
+		UpdateEquipItem();
+		UpdateItem();
+		UpdateButton();
+		UIController.it.SkillGlobal.OnUpdate();
+	}
+
+
+	public void EquipSkill()
+	{
+		objSkillSlotRoot.SetActive(true);
+		exchangeSlot = true;
+		//int emptySlotIndex = GetEmptySlot();
+
+		//if (emptySlotIndex == -1)
+		//{
+		//	exchangeSlot = true;
+		//	ShowHighlight(true);
+		//	return;
+		//}
+
+		//VGameManager.UserDB.skillContainer.Equip(UnitManager.it.Player, selectedItemTid);
+		//UpdateEquipItem();
+		//UpdateItem();
+		//UpdateButton();
+		//UpdateInfo();
+
+		//UnitGlobal.it.playerSkillModule.InitSkill(UserInfo.equip.skills);
+		//UnitGlobal.it.playerSkillModule.SetUnit(UnitManager.it.Player);
+		//UIController.it.SkillGlobal.OnUpdate();
+	}
+
+	public void UnEquipSkill()
+	{
+
+		GameManager.UserDB.skillContainer.UnEquip(selectedItemTid);
+
+		UpdateEquipItem();
+		UpdateItem();
+		UpdateButton();
+		UpdateInfo();
+		UIController.it.SkillGlobal.OnUpdate();
+	}
+
+	public void SetSelectedTid(long tid)
+	{
+		if (exchangeSlot)
 		{
-			if (UserInfo.skills[i] == 0)
-			{
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
-
-	public void EquipSkill(long _itemTid)
-	{
-		int emptySlotIndex = GetEmptySlot();
-
-		if (emptySlotIndex == -1)
-		{
-			ToastUI.it.Create("비어있는 슬롯이 엄슴");
 			return;
 		}
-
-		UserInfo.EquipSkill(emptySlotIndex, _itemTid);
-
-		UpdateEquipItem();
-		UpdateItem(true);
-
-		UnitGlobal.it.skillModule.InitSkill(UserInfo.skills);
-		UnitGlobal.it.skillModule.SetUnit(UnitManager.it.Player);
-		UIController.it.SkillGlobal.OnUpdate();
+		selectedItemTid = tid;
 	}
 
-	public void UnEquipSkill(long _itemTid)
+	public void AddSelectListener(OnSelect listener)
 	{
-		//스킬 사용중일땐 빼기 불가
-		SkillBase skillBase = UnitGlobal.it.skillModule.FindSkillBase(_itemTid);
-		if (skillBase != null)
+		if (onSelect.IsRegistered(listener) == false)
 		{
-			if (skillBase.skillUseRemainTime > 0)
-			{
-				ToastUI.it.Create("스킬 사용중일땐 못뺌");
-				return;
-			}
+			onSelect += listener;
 		}
+	}
 
-		for (int i = 0 ; i < UserInfo.skills.Length ; i++)
+	public void RemoveSelectListener(OnSelect listener)
+	{
+		if (onSelect.IsRegistered(listener))
 		{
-			if (UserInfo.skills[i] == _itemTid)
-			{
-				UserInfo.EquipSkill(i, 0);
-			}
+			onSelect -= listener;
 		}
+	}
 
-		UpdateEquipItem();
-		UpdateItem(true);
-
-		UnitGlobal.it.skillModule.InitSkill(UserInfo.skills);
-		UnitGlobal.it.skillModule.SetUnit(UnitManager.it.Player);
-		UIController.it.SkillGlobal.OnUpdate();
+	public void OnClickShowTree()
+	{
+		uiPopupSkillTree.OnUpdate(selectedInfo);
 	}
 }

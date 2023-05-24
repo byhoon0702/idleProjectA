@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEditor;
 
 public class UIItemDungeonList : MonoBehaviour
 {
@@ -13,8 +14,8 @@ public class UIItemDungeonList : MonoBehaviour
 	[SerializeField] private Button enterButton;
 	[SerializeField] private TextMeshProUGUI dungeonName;
 
-	private UIDungeonList owner;
-	private DungeonInfoData dungeonInfo;
+	private UIDungeonList parent;
+	private DungeonData dungeonInfo;
 
 
 
@@ -25,18 +26,17 @@ public class UIItemDungeonList : MonoBehaviour
 		enterButton.onClick.AddListener(OnEnterButtonClick);
 	}
 
-	public void SetData(UIDungeonList _owner, DungeonInfoData _data)
+	public void SetData(UIDungeonList _owner, DungeonData _data)
 	{
-		owner = _owner;
+		parent = _owner;
 		dungeonInfo = _data;
 
-		if (_data.itemTidNeed != 0)
+		if (_data.dungeonItemTid != 0)
 		{
 			consumeObj.SetActive(true);
-			var itemInfo = DataManager.GetFromAll<ItemData>(_data.itemTidNeed);
+			var itemInfo = DataManager.GetFromAll<ItemData>(_data.dungeonItemTid);
 
-			itemIconImage.sprite = Resources.Load<Sprite>($"Icon/{itemInfo.Icon}");
-			itemCount.text = $"X{_data.itemCount}";
+
 		}
 		else
 		{
@@ -45,22 +45,7 @@ public class UIItemDungeonList : MonoBehaviour
 
 		dungeonName.text = _data.name;
 
-		var keyItem = Inventory.it.FindItemByTid(_data.itemTidNeed);
 
-		if (keyItem == null)
-		{
-			// disableButton;
-			return;
-		}
-
-		if (Inventory.it.FindItemByTid(_data.itemTidNeed).Count > _data.itemCount)
-		{
-			// enable Button
-		}
-		else
-		{
-			// disable Button
-		}
 	}
 
 	public void OnRefresh()
@@ -70,6 +55,10 @@ public class UIItemDungeonList : MonoBehaviour
 
 	private void OnEnterButtonClick()
 	{
-		owner.ShowDetail(dungeonInfo.waveType);
+		//var stage = StageManager.it.metaGameStage.GetStages(dungeonInfo.stageType);
+
+		var stageList = GameManager.UserDB.stageContainer.GetStages(dungeonInfo.stageType, StageDifficulty.NONE);
+		StageManager.it.PlayStage(stageList[0]);
+		parent.Close();
 	}
 }

@@ -26,6 +26,8 @@ public class HitEffect : MonoBehaviour
 		{
 			VLog.LogError("FxSpriteEffectAuto not found");
 		}
+
+		_fxSpriteEffectAuto.CopyMaterial();
 	}
 
 	public void Play()

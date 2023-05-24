@@ -30,22 +30,45 @@ public class UIAdRewardChestItem : MonoBehaviour
 		openAdButton.onClick.RemoveAllListeners();
 		openAdButton.onClick.AddListener(OnClickOpenAd);
 	}
-
+	Vector2 endPos;
+	Vector2 startpos;
 	public void Show()
 	{
 		gameObject.SetActive(true);
 		isActivated = true;
 
 		rectTransform = GetComponent<RectTransform>();
+		Vector2 parentSize = (rectTransform.parent as RectTransform).sizeDelta;
+		endPos = new Vector2(-200, 0);
+		startpos = new Vector2(parentSize.x + 200, 0);
 
-		Vector2 endPos = new Vector2(parentRect.rect.width / 2, Random.Range(-parentRect.rect.height / 2, parentRect.rect.height / 2));
+		rectTransform.anchoredPosition = startpos;
+		//rectTransform.anchoredPosition = new Vector2(parentRect.rect.width, endPos.y);
+		//rectTransform.DOAnchorPosX(endPos.x, appearDuration).OnComplete(() =>
+		//{
+		//	rectTransform.DOAnchorPosX(-parentRect.rect.width, disappearDuration).SetDelay(stayDuration)
+		//		.OnComplete(() => EndShow());
+		//});
+		elapsedTime = 0;
+	}
 
-		rectTransform.anchoredPosition = new Vector2(parentRect.rect.width, endPos.y);
-		rectTransform.DOAnchorPosX(endPos.x, appearDuration).OnComplete(() =>
+	float elapsedTime = 0;
+	void Update()
+	{
+		if (isActivated)
 		{
-			rectTransform.DOAnchorPosX(-parentRect.rect.width, disappearDuration).SetDelay(stayDuration)
-				.OnComplete(() => EndShow());
-		});
+			Vector2 pos = rectTransform.anchoredPosition;
+			pos.y = pos.y + (Mathf.Sin(elapsedTime * 10f) * 10f);
+			pos.x = pos.x - (Mathf.Sqrt(12f) * Time.deltaTime);
+			rectTransform.anchoredPosition = pos;
+			elapsedTime += Time.deltaTime;
+
+			if (rectTransform.anchoredPosition.x > endPos.x)
+			{
+				EndShow();
+
+			}
+		}
 	}
 
 	private void EndShow()
@@ -54,13 +77,13 @@ public class UIAdRewardChestItem : MonoBehaviour
 
 		gameObject.SetActive(false);
 		isActivated = false;
-	} 
+	}
 
 	private void OnClickOpenAd()
 	{
 		owner.OpenAdReward(rewardTid, (IdleNumber)rewardCount);
 		owner.ResetFrequency();
-		DOTween.Kill(this);
+		//DOTween.Kill(this);
 		gameObject.SetActive(false);
 		isActivated = false;
 	}

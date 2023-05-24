@@ -27,14 +27,14 @@ public class UIBottomToggle : UIBehaviour
 			{
 				selectObject.gameObject.SetActive(true);
 
-				DOTween.To(() => layoutElement.preferredWidth, x => layoutElement.preferredWidth = x, 230, 0.3f);
+				DOTween.To(() => layoutElement.preferredWidth, x => layoutElement.preferredWidth = x, 250f, 0.3f);
 				//layoutElement.preferredWidth = 230;
 			}
 		}
 		else
 		{
 			selectObject.gameObject.SetActive(false);
-			DOTween.To(() => layoutElement.preferredWidth, x => layoutElement.preferredWidth = x, 175, 0.3f);
+			DOTween.To(() => layoutElement.preferredWidth, x => layoutElement.preferredWidth = x, 210f, 0.3f);
 			//layoutElement.preferredWidth = 175;
 		}
 	}

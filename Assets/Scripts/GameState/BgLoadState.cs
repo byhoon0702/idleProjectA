@@ -1,20 +1,33 @@
-﻿public class BGLoadState : RootState
+﻿using UnityEngine;
+
+[CreateAssetMenu(fileName = "Bg Load State", menuName = "ScriptableObject/Stage/State/Bg Load", order = 1)]
+public class BgLoadState : StageFSM
 {
-	public override void OnEnter()
+
+	public override FSM OnEnter()
 	{
-		//Loading BG
-		//WhenLoading Finish 
-		//FadeOut and Change State To Spawn
 		GameUIManager.it.FadeCurtain(false);
-		UIController.it.RefreshUI();
 		elapsedTime = 0;
+		long tid = StageManager.it.CurrentStage.dungeonData.tid;
+		StageType type = StageManager.it.CurrentStage.dungeonData.stageType;
+		var data = GameManager.UserDB.stageContainer.GetStageMap(type, tid);
+		StageManager.it.ChangeMap(data.mapPrefab);
 
-		var stageInfo = StageManager.it.CurrentNormalStageInfo;
 
-		var bgData = DataManager.Get<BgDataSheet>().Get(stageInfo.bgTid);
 
-		VGameManager.it.mapController.SetBG(bgData.bgCloseName, bgData.bgMiddleName, bgData.bgFarName);
+		return this;
 	}
+	public override FSM RunNextState(float time)
+	{
+		elapsedTime += time;
+		if (elapsedTime > 1)
+		{
+			return nextState != null ? nextState.OnEnter() : this;
+
+		}
+		return this;
+	}
+
 
 	public override void OnExit()
 	{
@@ -23,12 +36,12 @@
 
 	public override void OnUpdate(float time)
 	{
-		elapsedTime += time;
-		if (elapsedTime > 1)
-		{
-			VGameManager.it.ChangeState(GameState.PLAYERSPAWN);
+		//elapsedTime += time;
+		//if (elapsedTime > 1)
+		//{
+		//	VGameManager.it.ChangeState(GameState.PLAYERSPAWN);
 
-		}
+		//}
 	}
 }
 

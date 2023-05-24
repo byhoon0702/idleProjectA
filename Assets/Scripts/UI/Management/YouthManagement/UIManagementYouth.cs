@@ -6,80 +6,82 @@ using TMPro;
 
 public class UIManagementYouth : MonoBehaviour
 {
-	[SerializeField] private UIManagementMastery masteryUI;
-	[SerializeField] private UIManagementCore coreUI;
-	[SerializeField] private UIManagementCoreAbility coreAbilUI;
+	[SerializeField] private UIPopupYouthOption uiPopupYouthOption;
+	//[SerializeField] private UIPopupYouth uiPopupYouth;
 
-	[SerializeField] private Button masteryButton;
-	[SerializeField] private Button coreButton;
-	[SerializeField] private Button coreAbilityButton;
+	[SerializeField] private Transform contentRoot;
+	[SerializeField] private GameObject itemPrefab;
+	[SerializeField] private TextMeshProUGUI textCurrentGrade;
+
+	[SerializeField] private Button buttonOption;
+	[SerializeField] private Button buttonYouth;
 
 
 	private void Awake()
 	{
-		masteryButton.onClick.RemoveAllListeners();
-		masteryButton.onClick.AddListener(OnMasteryButtonClick);
+		buttonOption.onClick.RemoveAllListeners();
+		buttonOption.onClick.AddListener(OnClickShowPopupYouthOption);
+		buttonYouth.onClick.RemoveAllListeners();
+		buttonYouth.onClick.AddListener(OnClickShowPopupYouth);
 
-		coreButton.onClick.RemoveAllListeners();
-		coreButton.onClick.AddListener(OnCoreButtonClick);
+	}
 
-		coreAbilityButton.onClick.RemoveAllListeners();
-		coreAbilityButton.onClick.AddListener(OnCoreAbilityButtonClick);
+	private void OnDisable()
+	{
+		uiPopupYouthOption.Close();
 	}
 
 	public void OnUpdate()
 	{
-		if (masteryUI.gameObject.activeInHierarchy == false &&
-			coreUI.gameObject.activeInHierarchy == false &&
-			coreAbilUI.gameObject.activeInHierarchy == false)
+		textCurrentGrade.text = GameManager.UserDB.youthContainer.currentGrade.ToString();
+		UpdateItem();
+	}
+
+	public void UpdateItem()
+	{
+		var list = GameManager.UserDB.youthContainer.info;
+		int countForMake = list.Count - contentRoot.childCount;
+
+		if (countForMake > 0)
 		{
-			OnMasteryButtonClick();
-		}
-		else
-		{
-			if (masteryUI.gameObject.activeInHierarchy)
+			for (int i = 0; i < countForMake; i++)
 			{
-				masteryUI.OnUpdate(false);
-			}
-			else if (coreUI.gameObject.activeInHierarchy)
-			{
-				coreUI.OnUpdate(false);
-			}
-			else if (coreAbilUI.gameObject.activeInHierarchy)
-			{
-				coreAbilUI.OnUpdate();
+				var item = Instantiate(itemPrefab, contentRoot);
 			}
 		}
+
+		//list.Sort((a, b) => { return b.isOpen.CompareTo(a.isOpen); });
+
+		for (int i = 0; i < contentRoot.childCount; i++)
+		{
+
+			var child = contentRoot.GetChild(i);
+			if (i > list.Count - 1)
+			{
+				child.gameObject.SetActive(false);
+				continue;
+			}
+
+			child.gameObject.SetActive(true);
+			UIItemYouth slot = child.GetComponent<UIItemYouth>();
+			var info = list[i];
+			slot.OnUpdate(this, info);
+
+			//slot.OnUpdate(this, info);
+		}
 	}
 
-	private void OnMasteryButtonClick()
+	public void OnClickShowPopupYouthOption()
 	{
-		InactiveAll();
-
-		masteryUI.gameObject.SetActive(true);
-		masteryUI.OnUpdate(false);
+		uiPopupYouthOption.gameObject.SetActive(true);
+		uiPopupYouthOption.OnUpdate(this);
 	}
-
-	private void OnCoreButtonClick()
+	public void OnClickShowPopupYouth()
 	{
-		InactiveAll();
-
-		coreUI.gameObject.SetActive(true);
-		coreUI.OnUpdate(false);
-	}
-
-	private void OnCoreAbilityButtonClick()
-	{
-		InactiveAll();
-
-		coreAbilUI.gameObject.SetActive(true);
-		coreAbilUI.OnUpdate();
-	}
-
-	private void InactiveAll()
-	{
-		masteryUI.gameObject.SetActive(false);
-		coreUI.gameObject.SetActive(false);
-		coreAbilUI.gameObject.SetActive(false);
+		if (GameManager.UserDB.youthContainer.UpdateGrade() == false)
+		{
+			return;
+		}
+		OnUpdate();
 	}
 }

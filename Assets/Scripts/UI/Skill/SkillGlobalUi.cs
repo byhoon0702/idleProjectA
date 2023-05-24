@@ -21,39 +21,19 @@ public class SkillGlobalUi : MonoBehaviour
 			icon.OnUpdate(null);
 		}
 
-		button.onClick.RemoveAllListeners();
-		button.onClick.AddListener(() => { UnitGlobal.it.skillModule.auto = !UnitGlobal.it.skillModule.auto; });
+
 	}
 
 	public void OnUpdate()
 	{
-		for (int i = 0; i < UserInfo.skills.Length; i++)
+		for (int i = 0; i < GameManager.UserDB.skillContainer.skillSlot.Length; i++)
 		{
-			long itemTid = UserInfo.skills[i];
-			if (itemTid == 0)
-			{
-				uiSkillIcons[i].OnUpdate(null);
-			}
-			else
-			{
-				ItemData itemData = DataManager.Get<ItemDataSheet>().Get(itemTid);
-				SkillBase skillBase = UnitGlobal.it.skillModule.FindSkillBase(itemData.skillTid);
-
-				if (skillBase == null)
-				{
-					VLog.SkillLogError($"스킬모듈에 등록되지 않는 스킬정보를 초기화하려고 시도. skilltid:{itemData.skillTid}");
-					uiSkillIcons[i].OnUpdate(null);
-				}
-				else
-				{
-					uiSkillIcons[i].OnUpdate(skillBase);
-				}
-			}
+			uiSkillIcons[i].OnUpdate(GameManager.UserDB.skillContainer.skillSlot[i]);
 		}
 	}
 
 	private void Update()
 	{
-		buttonText.text = $"auto: {UnitGlobal.it.skillModule.auto}";
+
 	}
 }
