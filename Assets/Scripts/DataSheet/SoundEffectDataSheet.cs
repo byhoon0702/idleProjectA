@@ -12,16 +12,5 @@ public class SoundEffectData : BaseData
 public class SoundEffectDataSheet : DataSheetBase<SoundEffectData>
 {
 
-	public SoundEffectData Get(string _key)
-	{
-		for (int i = 0; i < infos.Count; i++)
-		{
-			if (infos[i].key == _key)
-			{
-				return infos[i];
-			}
-		}
 
-		return null;
-	}
 }

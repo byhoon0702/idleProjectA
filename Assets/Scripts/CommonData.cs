@@ -42,4 +42,6 @@ public class CommonData : ScriptableObject
 
 	public List<PetDismentleData> PetDismentleDataList;
 
+
+
 }

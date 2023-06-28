@@ -5,35 +5,16 @@ using UnityEngine.UI;
 using UnityEngine.Rendering;
 
 
-public class UIManagementAdvancement : MonoBehaviour
+public class UIManagementAdvancement : UIBase
 {
-	[SerializeField] private Transform pivot;
+
 	[SerializeField] private GameObject itemPrefab;
 	[SerializeField] private Transform itemRoot;
-
-	[SerializeField] private Button buttonAdvancement;
-	[SerializeField] private Button buttonCostumeChange;
-
 
 	private UnitAdvancementInfo currentInfo;
 	private UIManagement parent;
 	private UnitCostume unitCostume;
 
-	//private void OnEnable()
-	//{
-	//	//EventCallbacks.onItemChanged += OnItemChanged;
-
-	//	SceneCamera.it.ChangeViewPort(true);
-	//}
-
-	//private void OnDisable()
-	//{
-	//	//EventCallbacks.onItemChanged -= OnItemChanged;
-	//	if (SceneCamera.it != null)
-	//	{
-	//		SceneCamera.it.ChangeViewPort(false);
-	//	}
-	//}
 
 	public void Init(UIManagement _parent)
 	{
@@ -47,33 +28,6 @@ public class UIManagementAdvancement : MonoBehaviour
 
 	}
 
-	public void CreateUnitForUI(string resource)
-	{
-		if (resource.IsNullOrEmpty())
-		{
-			return;
-		}
-
-		if (unitCostume != null)
-		{
-			Destroy(unitCostume.gameObject);
-			unitCostume = null;
-		}
-		var obj = UnitModelPoolManager.it.Get("B/Player", resource);
-
-		obj.transform.SetParent(pivot);
-		obj.transform.localPosition = Vector3.zero;
-		obj.transform.localScale = Vector3.one;
-		obj.transform.localRotation = Quaternion.identity;
-
-
-		unitCostume = obj.GetComponent<UnitCostume>();
-		unitCostume.Init();
-		unitCostume.ChangeCostume();
-		SortingGroup sortingGroup = obj.GetComponent<SortingGroup>();
-		sortingGroup.sortingLayerName = "UI";
-		sortingGroup.sortingOrder = 1;
-	}
 
 	public void Refresh()
 	{
@@ -127,4 +81,5 @@ public class UIManagementAdvancement : MonoBehaviour
 			slot.OnUpdate(this, info);
 		}
 	}
+
 }

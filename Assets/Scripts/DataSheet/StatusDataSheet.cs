@@ -7,7 +7,7 @@ using UnityEngine;
 public class StatusData : BaseData
 {
 	public string name;
-	public Ability type;
+	public StatsType type;
 	public string uiName;
 
 	[SerializeField] private string minValue;
@@ -17,7 +17,7 @@ public class StatusData : BaseData
 
 	public StatusData()
 	{
-		type = Ability._NONE;
+		type = StatsType.None;
 		minValue = "1";
 		maxValue = "999ZZ";
 		isPercentage = false;
@@ -65,9 +65,9 @@ public class StatusDataSheet : DataSheetBase<StatusData>
 		}
 		return null;
 	}
-	public StatusData GetData(Ability _type)
+	public StatusData GetData(StatsType _type)
 	{
-		if (_type == Ability._NONE)
+		if (_type == StatsType.None)
 		{
 			return null;
 		}

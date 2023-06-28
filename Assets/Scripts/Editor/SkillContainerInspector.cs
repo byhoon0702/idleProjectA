@@ -50,16 +50,16 @@ public class SkillContainerInspector : Editor
 
 			RuntimeData.SkillInfo info = new RuntimeData.SkillInfo();
 
-			NewSkill skillitemObject = (NewSkill)AssetDatabase.LoadAssetAtPath(assetpath, typeof(NewSkill));
-			info.level = 0;
-			info.count = 0;
-			info.tid = skillitemObject.Tid;
+			//	SkillCore skillitemObject = (SkillCore)AssetDatabase.LoadAssetAtPath(assetpath, typeof(SkillCore));
+			//	info.level = 0;
+			//	info.count = 0;
+			//	info.tid = skillitemObject.Tid;
 
 
-			infoList.Add(info);
+			//	infoList.Add(info);
 		}
 
-		infoList.Sort((x, y) => { return x.tid.CompareTo(y.tid); });
+		//infoList.Sort((x, y) => { return x.tid.CompareTo(y.tid); });
 		skillContainer.SetList(infoList);
 		EditorUtility.SetDirty(target);
 		AssetDatabase.SaveAssetIfDirty(target);

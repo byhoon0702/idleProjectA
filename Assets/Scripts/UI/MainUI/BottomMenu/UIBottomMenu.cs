@@ -5,20 +5,22 @@ using UnityEngine.UI;
 
 public class UIBottomMenu : MonoBehaviour
 {
-	[SerializeField] private Toggle managementToggle;
-	[SerializeField] private Toggle equipmentToggle;
-	[SerializeField] private Toggle juvenescenceToggle;
-	[SerializeField] private Toggle skillToggle;
-	[SerializeField] private Toggle dungeonToggle;
+	[SerializeField] private Toggle toggleHero;
+	[SerializeField] private Toggle toggleEquipment;
+	[SerializeField] private Toggle toggleRelic;
+	[SerializeField] private Toggle togglePet;
 
+	[SerializeField] private Toggle toggleShop;
+	[SerializeField] private Toggle toggleGacha;
+	[SerializeField] private Toggle toggleDungeon;
 
 	[SerializeField] private Toggle[] toggles;
 
-	public Toggle ManagementToggle => managementToggle;
-	public Toggle EquipmentToggle => equipmentToggle;
-	public Toggle ShopToggle => juvenescenceToggle;
-	public Toggle DungeonToggle => dungeonToggle;
-	public Toggle SkillToggle => skillToggle;
+	public Toggle ToggleHero => toggleHero;
+	public Toggle ToggleEquipment => toggleEquipment;
+	public Toggle ShopToggle => toggleShop;
+	public Toggle DungeonToggle => toggleDungeon;
+	public Toggle SkillToggle => togglePet;
 
 
 	private void Awake()
@@ -28,7 +30,7 @@ public class UIBottomMenu : MonoBehaviour
 
 	private void SetToggle()
 	{
-		managementToggle.onValueChanged.AddListener((_isOn) =>
+		toggleHero.onValueChanged.AddListener((_isOn) =>
 		{
 			if (_isOn == true)
 			{
@@ -41,7 +43,7 @@ public class UIBottomMenu : MonoBehaviour
 			}
 		});
 
-		equipmentToggle.onValueChanged.AddListener((_isOn) =>
+		toggleEquipment.onValueChanged.AddListener((_isOn) =>
 		{
 			if (_isOn == true)
 			{
@@ -54,12 +56,12 @@ public class UIBottomMenu : MonoBehaviour
 			}
 		});
 
-		juvenescenceToggle.onValueChanged.AddListener((_isOn) =>
+		toggleRelic.onValueChanged.AddListener((_isOn) =>
 		{
 			if (_isOn == true)
 			{
 				GameUIManager.it.OnClose();
-				UIController.it.ToggleJuvenescence();
+				UIController.it.ToggleRelic();
 			}
 			else
 			{
@@ -68,7 +70,7 @@ public class UIBottomMenu : MonoBehaviour
 		});
 
 
-		dungeonToggle.onValueChanged.AddListener((_isOn) =>
+		toggleDungeon.onValueChanged.AddListener((_isOn) =>
 		{
 			if (_isOn == true)
 			{
@@ -82,16 +84,43 @@ public class UIBottomMenu : MonoBehaviour
 		});
 
 
-		skillToggle.onValueChanged.AddListener((_isOn) =>
+		togglePet.onValueChanged.AddListener((_isOn) =>
 		{
 			if (_isOn == true)
 			{
 				GameUIManager.it.OnClose();
-				UIController.it.ToggleSkill();
+				UIController.it.TogglePet();
 			}
 			else
 			{
+				UIController.it.InactiveAllMainUI();
+			}
+		});
+
+		toggleGacha.onValueChanged.AddListener((_isOn) =>
+		{
+			if (_isOn == true)
+			{
 				GameUIManager.it.OnClose();
+				UIController.it.ToggleGacha();
+			}
+			else
+			{
+				UIController.it.InactiveAllMainUI();
+			}
+		});
+		toggleShop.onValueChanged.AddListener((_isOn) =>
+		{
+			if (_isOn == true)
+			{
+				GameUIManager.it.OnClose();
+				UIController.it.InactiveAllMainUI();
+				ToastUI.it.Enqueue("현재 개발중입니다.");
+				//UIController.it.ToggleShop();
+				toggleShop.isOn = false;
+			}
+			else
+			{
 				UIController.it.InactiveAllMainUI();
 			}
 		});

@@ -14,64 +14,52 @@ public interface ISelectListener
 }
 
 
-public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
+public class UIManagementPet : UIBase, ISelectListener
 {
 	[SerializeField] private UIManagementPetInfo petInfoUI;
-	[SerializeField] private TextMeshProUGUI toOwnText;
+	[SerializeField] private GameObject equipList;
 
 	[Header("장착동료")]
 	[SerializeField] private GameObject[] petSlotHighlights;
 	[SerializeField] private UIPetSlot[] petSlots;
 
 	[Header("아이템리스트")]
-	[SerializeField] private UIPetSlot itemPrefab;
-	[SerializeField] private RectTransform itemRoot;
+	[SerializeField] private UIPetGrid uiPetGrid;
+	[SerializeField] private UIPopupLevelupPetItem uIPopupLevelupPetItem;
+	public UIPopupLevelupPetItem UiPopupPetLevelup => uIPopupLevelupPetItem;
+	[SerializeField] private UIPopupPetEvolution uIPopupPetEvolution;
+	public UIPopupPetEvolution UiPopupPetEvolution => uIPopupPetEvolution;
 
 	[Header("Button")]
 	[SerializeField] private Button closeButton;
 	[SerializeField] private Button upgradeAllButton;
 
+	public long selectedItemTid { get; private set; }
 	public event OnSelect onSelect;
 
-	void OnEnable()
+	private bool exchangeSlot;
+
+	protected override void OnEnable()
 	{
-		AddCloseListener();
-	}
-	void OnDisable()
-	{
-		RemoveCloseListener();
-	}
-	public void AddCloseListener()
-	{
-		GameUIManager.it.onClose += Close;
+		base.OnEnable();
+		equipList.gameObject.SetActive(false);
+
 	}
 
-	public void RemoveCloseListener()
+	protected override void OnDisable()
 	{
-		GameUIManager.it.onClose -= Close;
+		base.OnDisable();
 	}
+
 	private void Awake()
 	{
-		//closeButton.onClick.RemoveAllListeners();
-		//closeButton.onClick.AddListener(Close);
 	}
-	//private void OnEnable()
-	//{
-	//	UIController.it.SetCoinEffectActivate(false);
-	//}
-
-	//private void OnDisable()
-	//{
-	//	UIController.it.SetCoinEffectActivate(true);
-	//}
 
 
 	public void OnUpdate(bool _refreshGrid)
 	{
-		UpdateToOwn();
 		UpdateEquipItem();
 		UpdateItemList(_refreshGrid);
-		UpdateButton();
 		UpdateInfo();
 	}
 	public void AddSelectListener(OnSelect listener)
@@ -120,52 +108,13 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 		}
 	}
 
-	public long selectedItemTid
-	{ get; private set; }
+
 	public void UpdateItemList(bool _refresh)
 	{
-
-		int countForMake = GameManager.UserDB.petContainer.petList.Count - itemRoot.childCount;
-
-		if (countForMake > 0)
-		{
-			for (int i = 0; i < countForMake; i++)
-			{
-				var item = Instantiate(itemPrefab, itemRoot);
-			}
-		}
+		uiPetGrid.Init(this);
+		uiPetGrid.OnUpdate(GameManager.UserDB.petContainer.petList);
 
 
-		if (_refresh == false)
-		{
-
-			for (int i = 0; i < itemRoot.childCount; i++)
-			{
-
-				var child = itemRoot.GetChild(i);
-				if (i >= GameManager.UserDB.petContainer.petList.Count - 1)
-				{
-					child.gameObject.SetActive(false);
-					continue;
-				}
-
-				child.gameObject.SetActive(true);
-				UIPetSlot slot = child.GetComponent<UIPetSlot>();
-
-				var info = GameManager.UserDB.petContainer.petList[i];
-				slot.OnUpdate(this, info, () =>
-				{
-					selectedItemTid = info.tid;
-					UpdateInfo();
-				});
-			}
-			return;
-		}
-
-		//foreach (var v in itemRoot.GetComponentsInChildren<UIPetSlot>())
-		//{
-		//	v.OnRefresh();
-		//}
 	}
 
 	public void UpdateInfo()
@@ -176,34 +125,23 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 			petSlotHighlights[i].SetActive(false);
 		}
 		RuntimeData.PetInfo info = null;
-		info = GameManager.UserDB.petContainer.petList.Find(x => x.tid == selectedItemTid);
+		info = GameManager.UserDB.petContainer.petList.Find(x => x.Tid == selectedItemTid);
 		if (info == null)
 		{
 			info = GameManager.UserDB.petContainer.petList[0];
-			selectedItemTid = info.tid;
+			selectedItemTid = info.Tid;
 		}
 
-		// petInfoUI.OnUpdate(this, info);
+		petInfoUI.OnUpdate(this, info);
 
 		onSelect?.Invoke(selectedItemTid);
 	}
 
-	private void UpdateButton()
-	{
-		//upgradeAllButton.interactable = false;
-	}
 
-	private void UpdateToOwn()
-	{
-		//toOwnText.text = "보유효과: ??";
-	}
-
-
-
-	public bool exchangeSlot;
 
 	public void ExchangePet(PetSlot slot)
 	{
+		equipList.gameObject.SetActive(true);
 		GameManager.UserDB.petContainer.Unequip(slot.itemTid);
 		GameManager.UserDB.petContainer.Equip(selectedItemTid);
 
@@ -213,15 +151,13 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 		}
 		exchangeSlot = false;
 
-		UpdateToOwn();
 		UpdateEquipItem();
 		UpdateItemList(false);
-		UpdateButton();
 		UpdateInfo();
 
 		SpawnManager.it.ChangePet(GameManager.UserDB.petContainer.GetIndex(selectedItemTid));
-		//StageManager.it.RetryStage();
 	}
+
 	public void EquipPet()
 	{
 		bool equipped = GameManager.UserDB.petContainer.Equip(selectedItemTid);
@@ -237,10 +173,8 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 		}
 
 		SpawnManager.it.AddPet(GameManager.UserDB.petContainer.GetIndex(selectedItemTid));
-		UpdateToOwn();
 		UpdateEquipItem();
 		UpdateItemList(false);
-		UpdateButton();
 		UpdateInfo();
 
 
@@ -251,22 +185,18 @@ public class UIManagementPet : MonoBehaviour, IUIClosable, ISelectListener
 		SpawnManager.it.RemovePet(GameManager.UserDB.petContainer.GetIndex(selectedItemTid));
 		GameManager.UserDB.petContainer.Unequip(selectedItemTid);
 
-		UpdateToOwn();
 		UpdateEquipItem();
 		UpdateItemList(false);
-		UpdateButton();
 		UpdateInfo();
 
 	}
 
-	public bool Closable()
-	{
-		return true;
-	}
 
-	public void Close()
+
+	public override void Close()
 	{
 		UIController.it.InactivateAllBottomToggle();
 		gameObject.SetActive(false);
+		equipList.gameObject.SetActive(false);
 	}
 }

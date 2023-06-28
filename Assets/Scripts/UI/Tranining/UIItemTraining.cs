@@ -109,16 +109,26 @@ public class UIItemTraining : MonoBehaviour
 
 	private void UpdateButton()
 	{
-		//bool levelupable = uiData.Levelupable();
-		//upgradeButton.SetInteractable(levelupable);
+		bool check = GameManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD).Check(trainingInfo.cost);
+
+		if (check)
+		{
+			textPrice.color = Color.white;
+		}
+		else
+		{
+			textPrice.color = Color.red;
+		}
+
 	}
 
 	private void AbilityLevelUp()
 	{
-		//if (GameManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD).Pay(trainingInfo.cost) == false)
-		//{
-		//	return;
-		//}
+		if (GameManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD).Pay(trainingInfo.cost) == false)
+		{
+			ToastUI.it.Enqueue("골드가 부족합니다.");
+			return;
+		}
 
 		trainingInfo.ClickLevelup();
 
@@ -127,6 +137,7 @@ public class UIItemTraining : MonoBehaviour
 			UnitManager.it.Player.PlayLevelupEffect(trainingInfo.type);
 		}
 
-
+		UpdateButton();
+		parent.Refresh();
 	}
 }

@@ -43,7 +43,7 @@ public class UIStageInfo : MonoBehaviour
 
 	public void OnClickStageChange()
 	{
-
+		ToastUI.it.Enqueue("현재 개발중 입니다.");
 	}
 
 	public void SwitchBossMode(bool isTrue)
@@ -138,7 +138,7 @@ public class UIStageInfo : MonoBehaviour
 
 	public void RefreshDPSCount()
 	{
-		var totalDamage = GameManager.it.battleRecord.playerDPS.attackPower + GameManager.it.battleRecord.petDPS.attackPower;
+		var totalDamage = StageManager.it.cumulativeDamage;
 		textHpSlider.text = $"누적딜량\n{totalDamage.ToString()}";
 	}
 
@@ -154,16 +154,14 @@ public class UIStageInfo : MonoBehaviour
 	{
 		// 현재레벨의 보스 스테이지 찾기
 		//var bossStageInfo = StageManager.it.metaGameStage.GetStage(StageType.Normal, StageManager.it.CurrentStage.StageLv);
-		var bossStageInfo = GameManager.UserDB.stageContainer.GetStage(StageType.Normal, StageManager.it.CurrentStage.StageNumber, StageManager.it.CurrentStage.Difficulty);
+		var bossStageInfo = GameManager.UserDB.stageContainer.GetStage(StageType.Normal, StageManager.it.CurrentStage.AreaNumber, StageManager.it.CurrentStage.StageNumber, StageManager.it.CurrentStage.Difficulty);
 		StageManager.it.OnClickBoss(bossStageInfo);
 
 	}
 
 	public void OnClickExit()
 	{
-		var lastStageRecord = GameManager.UserDB.stageContainer.GetLastStage(StageType.Normal);
-		var playStage = GameManager.UserDB.stageContainer.GetStage(StageType.Normal, lastStageRecord.stageNumber, lastStageRecord.stageDifficulty);
-		StageManager.it.PlayStage(playStage);
+		StageManager.it.ReturnNormalStage();
 		//SwitchContentExitButton(false);
 	}
 }

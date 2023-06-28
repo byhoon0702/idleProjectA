@@ -14,13 +14,13 @@ public class UnitLevelDataSheet : DataSheetBase<UnitLevelData>
 	private int maxLevel;
 	public int MaxLv
 	{
-		get 
+		get
 		{
-			if(maxLevel == 0)
+			if (maxLevel == 0)
 			{
-				foreach(var lvData in infos)
+				foreach (var lvData in infos)
 				{
-					maxLevel =  UnityEngine.Mathf.Max(maxLevel, lvData.level);
+					maxLevel = UnityEngine.Mathf.Max(maxLevel, lvData.level);
 				}
 			}
 
@@ -28,22 +28,11 @@ public class UnitLevelDataSheet : DataSheetBase<UnitLevelData>
 		}
 	}
 
-	public UnitLevelData Get(long tid)
-	{
-		for (int i = 0 ; i < infos.Count ; i++)
-		{
-			if (infos[i].tid == tid)
-			{
-				return infos[i];
-			}
-		}
 
-		return null;
-	}
 
 	public UnitLevelData GetByLevel(Int32 _level)
 	{
-		for (int i = 0 ; i < infos.Count ; i++)
+		for (int i = 0; i < infos.Count; i++)
 		{
 			if (infos[i].level == _level)
 			{

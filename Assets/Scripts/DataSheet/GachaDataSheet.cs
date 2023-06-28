@@ -1,11 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 
-[Serializable]
-public class GachaData : BaseData
+public enum GachaType
 {
-	public GachaType gachaType;
-	public GachaDataSummonInfo[] summonInfos;
+	Equip = 1,
+	Skill = 2,
+	Pet = 3,
+	Relic = 4,
+}
+
+public enum GachaButtonType
+{
+	Gacha10,
+	Gacha30,
+	Ads
+}
+[Serializable]
+public class GachaItem
+{
+	public RewardCategory category;
+	public long tid;
+	public int chance;
+}
+
+[Serializable]
+public class GachaChanceInfo
+{
+	public Grade grade;
+	public List<int> chances;
+
+}
+
+[Serializable]
+public class GachaLevelInfo
+{
+	public int level;
+	public int exp;
+
+	public Reward reward;
 }
 
 [Serializable]
@@ -21,7 +53,7 @@ public class GachaDataSummonInfo
 	/// </summary>
 	public int defaultCount;
 	/// <summary>
-	/// 소환 증가값(광고는 11회 ~ 35회까지 증가한다)
+	/// 소환 증가값
 	/// </summary>
 	public int addCount;
 	/// <summary>
@@ -32,7 +64,7 @@ public class GachaDataSummonInfo
 	/// <summary>
 	/// 소환에 필요한 재화
 	/// </summary>
-	public long itemTidSummon;
+	public long itemTid;
 
 	/// <summary>
 	/// 소환비용
@@ -43,34 +75,29 @@ public class GachaDataSummonInfo
 	/// 소환 최대 횟수
 	/// </summary>
 	public int summonMaxCount;
-
 	/// <summary>
 	/// 쿨타임
 	/// </summary>
 	public float cooltime;
+}
 
-	public long gachaEntryTid;
+[Serializable]
+public class GachaData : BaseData
+{
+	public string name;
+	public GachaType gachaType;
+	public GachaDataSummonInfo[] summonInfos;
+	public List<GachaLevelInfo> gachaLevelInfos;
+
+	public List<GachaChanceInfo> chances;
 }
 
 [Serializable]
 public class GachaDataSheet : DataSheetBase<GachaData>
 {
-	public GachaData Get(long tid)
-	{
-		for (int i = 0 ; i < infos.Count ; i++)
-		{
-			if (infos[i].tid == tid)
-			{
-				return infos[i];
-			}
-		}
-
-		return null;
-	}
-
 	public GachaData GetByType(GachaType _type)
 	{
-		for (int i = 0 ; i < infos.Count ; i++)
+		for (int i = 0; i < infos.Count; i++)
 		{
 			if (infos[i].gachaType == _type)
 			{
@@ -80,18 +107,10 @@ public class GachaDataSheet : DataSheetBase<GachaData>
 
 		return null;
 	}
+
+	public List<GachaData> GetDataByType(GachaType type)
+	{
+		return infos.FindAll(x => x.gachaType == type);
+	}
 }
 
-public enum GachaType
-{
-	Equip,
-	Skill,
-	Pet,
-	Relic,
-}
-public enum GachaButtonType
-{
-	Gacha11,
-	Gacha35,
-	Ads
-}

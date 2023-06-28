@@ -20,6 +20,7 @@ public class HitInfo : AffectedInfo
 	public string hitSound = string.Empty;
 	public bool IsPlayerCast;
 
+
 	public bool ShakeCamera
 	{
 		get
@@ -37,13 +38,11 @@ public class HitInfo : AffectedInfo
 
 	public HitInfo(IdleNumber _attackPower, CriticalType criticalType = CriticalType.Normal)
 	{
-
 		attackPower = _attackPower;
 		this.criticalType = criticalType;
 
 		TotalAttackPower = attackPower * criticalChanceMul * CriticalX2ChanceMul;
 	}
-
 
 	public HitInfo(UnitBase caster, IdleNumber _attackPower, bool _isSkill = false)
 	{
@@ -72,7 +71,6 @@ public class HitInfo : AffectedInfo
 		isSkill = _isSkill;
 	}
 }
-
 public enum AttackerType
 {
 	Unknown,
@@ -95,11 +93,4 @@ public enum CriticalType
 	/// 크리티컬두배
 	/// </summary>
 	CriticalX2
-}
-
-public enum PlayerAttackType
-{
-	Attack,
-	DoubleAttack,
-	TripleAttack,
 }

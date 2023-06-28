@@ -1,19 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Testss : MonoBehaviour
 {
-	public new Rigidbody rigidbody;
+	public new Rigidbody2D rigidbody;
 	public float power;
 	public FieldItem fieldItem;
 	//public string a;
 	//public string b;
 
+	public string valueA;
+	public string valueB;
 	public UITalkBubble talkbuble;
 	//// Start is called before the first frame update
 	void Start()
 	{
+
+		//GetComponent<Image>().sprite = Resources.Load<Sprite>("ExpIcon");
 		//talkbuble.Show("alsjdflkajsdlfgjalsjdflahgalsjdfljalsdjflalsjdflkajsdlfgjalsjdflahgalsjdfljalsdjflaalsjdflkajsdlfgjalsjdflahgalsjdfljalsdjflalsjdflkajsdlfgjalsjdflahgalsjdfljalsdjflaaa");
 		//float time = 0;
 		//string a = "1 - ( 2.2 + 3 )";
@@ -43,9 +48,14 @@ public class Testss : MonoBehaviour
 		//}
 		if (Input.GetKeyDown(KeyCode.D))
 		{
-			var field = Instantiate(fieldItem);
-			field.Appear(0, Vector3.zero, null);
+			rigidbody.AddForce(Vector2.right * power, ForceMode2D.Impulse);
 		}
+		if (Input.GetKeyDown(KeyCode.A))
+		{
+			rigidbody.totalForce = Vector2.zero;
+			rigidbody.transform.position = Vector3.zero;
+		}
+
 	}
 
 	//private void OnGUI()

@@ -8,6 +8,7 @@ public abstract class UnitModeBase : MonoBehaviour
 	[SerializeField] protected GameObject spawnEffect;
 
 	protected UnitAnimation modelAnimation;
+	public UnitAnimation ModelAnimation => modelAnimation;
 
 	//protected SkillEffectObject skillObject;
 	protected Unit unit;
@@ -54,6 +55,7 @@ public abstract class UnitModeBase : MonoBehaviour
 		modelAnimation.Init();
 		unit.unitAnimation = modelAnimation;
 		unit.unitFacial = modelAnimation.GetComponent<UnitFacial>();
+		modelAnimation.animationEventReceiver.Init(unit);
 	}
 
 	public abstract void OnModeEnter(StateType state);

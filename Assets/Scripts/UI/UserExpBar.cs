@@ -14,23 +14,31 @@ public class UserExpBar : MonoBehaviour
 	{
 		if (GameManager.UserDB != null)
 		{
-			GameManager.UserDB.userInfoContainer.onExpEarned += OnSlider;
+
 		}
 		OnSlider((float)GameManager.UserDB.userInfoContainer.userInfo.CurrentExp / (float)GameManager.UserDB.userInfoContainer.userInfo.ExpForLevelUP);
-
+	}
+	private void OnEnable()
+	{
+		UserInfoContainer.OnExpEarned += OnSlider;
+	}
+	private void OnDisable()
+	{
+		UserInfoContainer.OnExpEarned -= OnSlider;
 	}
 	private void OnDestroy()
 	{
-		if (GameManager.UserDB != null)
-		{
-			GameManager.UserDB.userInfoContainer.onExpEarned -= OnSlider;
-		}
+
+
+
 	}
 
 	public void OnSlider(float ratio)
 	{
 		expSlider.value = ratio;
 		textLevel.text = $"LV. {GameManager.UserDB.userInfoContainer.userInfo.UserLevel}";
-		textExp.text = $"<color=green>EXP {GameManager.UserDB.userInfoContainer.userInfo.CurrentExp} / {GameManager.UserDB.userInfoContainer.userInfo.ExpForLevelUP} ({(ratio * 100f).ToString("F2")}%)";
+		IdleNumber need = (IdleNumber)GameManager.UserDB.userInfoContainer.userInfo.ExpForLevelUP;
+		need.Turncate();
+		textExp.text = $"<color=green>EXP {GameManager.UserDB.userInfoContainer.userInfo.CurrentExp.ToString()} / {need.ToString()} ({(ratio * 100f).ToString("F2")}%)";
 	}
 }

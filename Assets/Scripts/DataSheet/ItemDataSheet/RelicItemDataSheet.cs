@@ -6,21 +6,9 @@ using UnityEngine;
 [System.Serializable]
 public class RelicItemData : ItemData
 {
+	public int maxLevel;
 	public ItemStats ownValue;
-	//[NonSerialized] private AbilityInfo ownAbilityInfo;
-	//public override AbilityInfo OwnAbilityInfo
-	//{
-	//	get
-	//	{
-	//		if (ownAbilityInfo == null)
-	//		{
-	//			ownAbilityInfo = new AbilityInfo(ownValue.type, (IdleNumber)ownValue.value, (IdleNumber)ownValue.perLevel, ownValue.isMultiply);
 
-	//		}
-
-	//		return ownAbilityInfo;
-	//	}
-	//}
 }
 
 

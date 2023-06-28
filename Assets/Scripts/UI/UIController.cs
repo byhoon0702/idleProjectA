@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
+using RuntimeData;
 
 public class UIController : MonoBehaviour
 {
@@ -22,13 +23,18 @@ public class UIController : MonoBehaviour
 
 	[SerializeField] private UIStageInfo uiStageInfo;
 
+	[SerializeField] private UIQuestTracker[] questTracks;
+
 	[Header("Bottoms")]
 	[SerializeField] private UIManagement management;
 	[SerializeField] private UIManagementEquip equipment;
-	[SerializeField] private UIManagementSkill skill;
-	[SerializeField] private UIManagementJuvenescence juvenescence;
-	//[SerializeField] private UIManagementPet pet;
+	//[SerializeField] private UIManagementSkill skill;
+
+	[SerializeField] private UIManagementPet pet;
+	[SerializeField] private UIManagementShop shop;
+	[SerializeField] private UIManagementGacha gacha;
 	[SerializeField] private UIDungeonList dungeonList;
+	[SerializeField] private UIManagementRelic relic;
 
 
 	[Header("-------------------------")]
@@ -42,7 +48,8 @@ public class UIController : MonoBehaviour
 
 	[SerializeField] private UIBottomMenu bottomMenu;
 
-
+	[SerializeField] private UIPublicPopupRewardDisplay uiPopupRewardDisplay;
+	[SerializeField] private UIPublicToastRewardDisplay uiToastRewardDisplay;
 	public UIBottomMenu BottomMenu => bottomMenu;
 	public UIManagement Management => management;
 	public UIManagementEquip Equipment => equipment;
@@ -64,6 +71,8 @@ public class UIController : MonoBehaviour
 	{
 		instance = this;
 	}
+
+
 
 	private void Update()
 	{
@@ -87,12 +96,15 @@ public class UIController : MonoBehaviour
 		topMoney.Init();
 		adRewardChest.Init();
 
+		for (int i = 0; i < questTracks.Length; i++)
+		{
+			questTracks[i].OnUpdate();
+		}
+
 	}
 	public void ShowAdRewardChest(bool isShow)
 	{
-
 		adRewardChest.Switch(isShow);
-
 	}
 
 
@@ -116,9 +128,9 @@ public class UIController : MonoBehaviour
 
 
 
-	public void ShowItemLog(int _tid, IdleNumber _count)
+	public void ShowItemLog(RewardInfo reward, IdleNumber _count)
 	{
-		uiRewardLog.ShowLog(_tid, _count);
+		uiRewardLog.ShowLog(reward, _count);
 	}
 
 	public void SetCoinEffectActivate(bool _isActive)
@@ -150,51 +162,51 @@ public class UIController : MonoBehaviour
 		equipment.OnUpdate(type, tid);
 	}
 
-	public void ToggleJuvenescence()
-	{
-		InactiveAllMainUI();
-		if (juvenescence.gameObject.activeInHierarchy)
-		{
-			return;
-		}
+	//public void ToggleJuvenescence()
+	//{
+	//	InactiveAllMainUI();
+	//	if (juvenescence.gameObject.activeInHierarchy)
+	//	{
+	//		return;
+	//	}
 
-		juvenescence.gameObject.SetActive(true);
-		juvenescence.SetPage(JuvenescencePage.Juvenescence);
-	}
+	//	juvenescence.gameObject.SetActive(true);
+	//	juvenescence.SetPage(JuvenescencePage.Juvenescence);
+	//}
 
-	public void ToggleSkill()
-	{
-		InactiveAllMainUI();
-		if (skill.gameObject.activeInHierarchy)
-		{
-			return;
-		}
+	//public void ToggleSkill()
+	//{
+	//	InactiveAllMainUI();
+	//	if (skill.gameObject.activeInHierarchy)
+	//	{
+	//		return;
+	//	}
 
-		skill.gameObject.SetActive(true);
-		skill.OnUpdate(0);
-	}
+	//	skill.gameObject.SetActive(true);
+	//	skill.OnUpdate(0);
+	//}
 	public void TogglePet()
 	{
-		//InactiveAllMainUI();
-		//if (pet.gameObject.activeInHierarchy)
-		//{
-		//	return;
-		//}
+		InactiveAllMainUI();
+		if (pet.gameObject.activeInHierarchy)
+		{
+			return;
+		}
 
-		//pet.gameObject.SetActive(true);
-		//pet.OnUpdate(false);
+		pet.gameObject.SetActive(true);
+		pet.OnUpdate(false);
 	}
 
 	public void ToggleShop()
 	{
-		//InactiveAllMainUI();
-		//if (dungeonList.gameObject.activeInHierarchy)
-		//{
-		//	return;
-		//}
+		InactiveAllMainUI();
+		if (shop.gameObject.activeInHierarchy)
+		{
+			return;
+		}
 
-		//dungeonList.gameObject.SetActive(true);
-		//dungeonList.OnUpdate();
+		shop.gameObject.SetActive(true);
+		shop.OnUpdate();
 	}
 	public void ShowDungeonList()
 	{
@@ -208,14 +220,28 @@ public class UIController : MonoBehaviour
 		dungeonList.OnUpdate();
 	}
 
-	public void ToggleMemory()
+	public void ToggleRelic()
 	{
+		InactiveAllMainUI();
+		if (relic.gameObject.activeInHierarchy)
+		{
+			return;
+		}
 
+		relic.gameObject.SetActive(true);
+		relic.OnUpdate();
 	}
 
 	public void ToggleGacha()
 	{
+		InactiveAllMainUI();
+		if (gacha.gameObject.activeInHierarchy)
+		{
+			return;
+		}
 
+		gacha.gameObject.SetActive(true);
+		gacha.OnUpdate();
 	}
 
 	public void InactiveAllMainUI()
@@ -223,9 +249,11 @@ public class UIController : MonoBehaviour
 		management.gameObject.SetActive(false);
 		equipment.gameObject.SetActive(false);
 
-		skill.gameObject.SetActive(false);
-		juvenescence.gameObject.SetActive(false);
+		gacha.gameObject.SetActive(false);
+		shop.gameObject.SetActive(false);
+		pet.gameObject.SetActive(false);
 		dungeonList.gameObject.SetActive(false);
+		relic.gameObject.SetActive(false);
 	}
 
 	public void InactivateAllBottomToggle()
@@ -241,5 +269,15 @@ public class UIController : MonoBehaviour
 	public void ShowBuffPage()
 	{
 
+	}
+
+	public void ShowRewardPopup(List<AddItemInfo> rewardInfo)
+	{
+		uiPopupRewardDisplay.Show(rewardInfo);
+	}
+
+	public void ShowRewardToast(List<AddItemInfo> rewardInfo)
+	{
+		uiToastRewardDisplay.Show(rewardInfo);
 	}
 }

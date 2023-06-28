@@ -10,24 +10,6 @@ public abstract class VObjectPool<T> : MonoBehaviour where T : Object
 
 	private Dictionary<int, bool> releaseCheck = new Dictionary<int, bool>();
 
-	//public void Ready(string _name, int count)
-	//{
-	//	var pool = GetPool(_name);
-	//	List<T> itemList = new List<T>();
-
-	//	for (int i = 0; i < count; i++)
-	//	{
-	//		T item = pool.Get();
-	//		itemList.Add(item);
-	//	}
-
-	//	for (int i = 0; i < count; i++)
-	//	{
-	//		T item = itemList[i];
-	//		pool.Release(item);
-	//	}
-	//}
-
 	public T Get(string _path, string _name)
 	{
 		IObjectPool<T> pool = GetPool(_path, _name);

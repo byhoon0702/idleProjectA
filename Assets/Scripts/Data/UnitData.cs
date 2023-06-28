@@ -41,6 +41,7 @@ public class UnitAdvancementInfo
 	public string resource;
 	public List<StatsStringInfo> stats;
 	public Int64 skillTid = 0;
+
 	public Int64 finalSkillTid = 0;
 
 	public AdvancementRequire requirement;
@@ -59,6 +60,7 @@ public class UnitData : BaseData
 	public string resource;
 
 	public Int64 skillTid = 0;
+	public List<long> skillTidList;
 	public List<UnitAdvancementInfo> upgradeInfoList;
 
 

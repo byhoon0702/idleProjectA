@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using RuntimeData;
 
 public class UILogItem : MonoBehaviour
 {
@@ -11,13 +12,11 @@ public class UILogItem : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI countText;
 	[SerializeField] CanvasGroup canvasGroup;
 
-	public void ShowLog(int _tid, IdleNumber _count)
+	public void ShowLog(RewardInfo info, IdleNumber _count)
 	{
-		ItemData itemData = DataManager.GetFromAll<ItemData>(_tid);
+		countText.text = $"{info.name} +{_count.ToString()}";
 
-		countText.text = $"{itemData.name} {_count.ToString()}";
-
-		//SetItemIcon(itemData.Icon);
+		iconImage.sprite = info.iconImage;
 
 		DOTween.Kill(this);
 		canvasGroup.alpha = 0f;
@@ -36,10 +35,7 @@ public class UILogItem : MonoBehaviour
 			});
 	}
 
-	private void SetItemIcon(string _iconName)
-	{
-		iconImage.sprite = Resources.Load<Sprite>($"Icon/{_iconName}");
-	}
+
 
 	private void OnDestroy()
 	{

@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(UnitAnimation))]
 public class HyperUnitCostume : UnitCostume
 {
-	private CostumeItemObject face;
+	private GameObject face;
 
 	[SerializeField] private Transform bodyRoot;
 	[SerializeField] private CostumeSkin faceCostume;
@@ -17,37 +17,42 @@ public class HyperUnitCostume : UnitCostume
 	}
 	public override void ChangeCostume()
 	{
-		var unit = unitAnimation.GetComponentInParent<PlayerUnit>();
-		face = GameManager.UserDB.costumeContainer.GetHyperFace(unit.hyperPhase);
+		//var unit = unitAnimation.GetComponentInParent<PlayerUnit>();
+		////face = GameManager.UserDB.costumeContainer.GetHyperFace(unit.hyperPhase);
+		//int index = unit.hyperPhase - 1;
+		//if (index < 0)
+		//{
+		//	index = 0;
+		//}
 
-		ChangeCostume(face);
+		//var head = GameManager.UserDB.awakeningContainer.selectedInfo.hyperClassObject.HyperHeads[index];
+		//ChangeCostume(head);
 	}
 
 	public override void ChangeCostume(long tid, CostumeType type, bool isMasked = false)
 	{
-		var info = GameManager.UserDB.costumeContainer.FindCostumeItem(tid, type);
+		//var info = GameManager.UserDB.costumeContainer.FindCostumeItem(tid, type);
 
-		if (info == null)
-		{
-			return;
-		}
+		//if (info == null)
+		//{
+		//	return;
+		//}
 
-		switch (type)
-		{
-			//case CostumeType.WHOLEBODY:
-			//	body = info.itemObject;
-			//	ChangeBody(isMasked);
-			//	break;
-			case CostumeType.WHOLEFACE:
-				face = info.itemObject;
-				ChangeFace(isMasked);
-				break;
-		}
-		SyncAnimation();
+		//switch (type)
+		//{
+		//	//case CostumeType.WHOLEBODY:
+		//	//	body = info.itemObject;
+		//	//	ChangeBody(isMasked);
+		//	//	break;
+		//	case CostumeType.WHOLEFACE:
+		//		face = info.itemObject;
+		//		ChangeFace(isMasked);
+		//		break;
+		//}
+		//SyncAnimation();
 	}
 
-
-	public void ChangeCostume(CostumeItemObject _face)
+	public void ChangeCostume(GameObject _face)
 	{
 		//body = _body;
 		face = _face;
@@ -55,12 +60,20 @@ public class HyperUnitCostume : UnitCostume
 		ChangeFace();
 		SyncAnimation();
 	}
+	public void ChangeCostume(CostumeItemObject _face)
+	{
+		//body = _body;
+		//face = _face;
+		//ChangeBody();
+		ChangeFace();
+		SyncAnimation();
+	}
 	public void ChangeCostume(RuntimeData.CostumeInfo _face)
 	{
-		face = _face != null ? _face.itemObject : null;
+		//face = _face != null ? _face.itemObject : null;
 		//body = _body != null ? _body.itemObject : null;
 
-		ChangeCostume(face);
+		//ChangeCostume(face);
 	}
 
 
@@ -104,21 +117,21 @@ public class HyperUnitCostume : UnitCostume
 		}
 		if (faceCostume != null)
 		{
-			if (face.CostumeObject != null && faceCostume.name == face.CostumeObject.name)
+			if (face != null && faceCostume.name == face.name)
 			{
 				faceCostume.SetMaterialMask(isMasked);
 				return;
 			}
 			DestroyObject(faceCostume.gameObject);
 		}
-		if (face.CostumeObject == null)
+		if (face == null)
 		{
 			return;
 		}
-		GameObject costume = Instantiate(face.CostumeObject, bodyRoot);
+		GameObject costume = Instantiate(face, bodyRoot);
 
 		faceCostume = costume.GetComponent<CostumeSkin>();
-		faceCostume.name = faceCostume.name.Replace("(Clone)", "");
+		faceCostume.name = "face";
 		faceCostume.transform.localPosition = Vector3.zero;
 		faceCostume.transform.localScale = Vector3.one;
 		faceCostume.transform.localRotation = Quaternion.identity;
@@ -142,5 +155,8 @@ public class HyperUnitCostume : UnitCostume
 	public override void SyncAnimation()
 	{
 		faceCostume?.SetRootBone(rootBone);
+
+		unitAnimation.animator.Rebind();
+		//unitAnimation.animator.enabled = true;
 	}
 }

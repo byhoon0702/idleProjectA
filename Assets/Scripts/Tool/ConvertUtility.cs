@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO.Enumeration;
-using Mono.Cecil;
-using UnityEngine;
-
+﻿
 public static class ConvertUtility
 {
 	public static System.Type ConvertStringToType(string name)

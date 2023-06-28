@@ -17,6 +17,7 @@ public class StageManager : MonoBehaviour
 	private static StageManager instance;
 	public static StageManager it => instance;
 
+	public static event Action<StageInfo> OnStageClearEvent;
 
 	private StageInfo currentStage = null;
 
@@ -26,15 +27,15 @@ public class StageManager : MonoBehaviour
 	public Transform mapRoot;
 	public int currentKillCount;
 	public int bossKillCount;
+	public IdleNumber cumulativeDamage;
 	public StageInfo CurrentStage => currentStage;
 
 	public StageRuleDictionary rules = new StageRuleDictionary();
 	public StageRule currentRule;
 
-	public PlayableDirector playableDirector;
-
 	public bool continueBossChallenge = false;
 	public MapObject map { get; private set; }
+
 
 	private void Awake()
 	{
@@ -44,7 +45,8 @@ public class StageManager : MonoBehaviour
 
 	private void Start()
 	{
-		currentStage = GameManager.UserDB.stageContainer.LastPlayedStage();
+		currentStage = GameManager.UserDB.stageContainer.LastPlayedNormalStage();
+		currentStage.SetReward();
 		currentRule = rules[(StageType)currentStage.stageType];
 		currentRule.Begin();
 		//GameManager.UserDB.stageContainer.GetNextNormalStage(currentStage);
@@ -75,8 +77,10 @@ public class StageManager : MonoBehaviour
 	public void PlayStage(StageInfo _stageInfo)
 	{
 		bossSpawn = false;
+		GameManager.GameStop = false;
 
 		SetCurrentStage(_stageInfo);
+		currentStage.SetReward();
 		currentRule = rules[(StageType)currentStage.stageType];
 		currentRule.Begin();
 	}
@@ -101,9 +105,8 @@ public class StageManager : MonoBehaviour
 	{
 		continueBossChallenge = false;
 
-		//var lastStageRecord = GameManager.UserDB.stageContainer.GetLastStage(StageType.Normal);
-		//var stage = GameManager.UserDB.stageContainer.GetStage(StageType.Normal, lastStageRecord.stageNumber, lastStageRecord.stageDifficulty);
-		//SetCurrentStage(stage);
+		var lastStage = GameManager.UserDB.stageContainer.LastPlayedNormalStage();
+		SetCurrentStage(lastStage);
 		PlayStage(currentStage);
 	}
 
@@ -116,7 +119,7 @@ public class StageManager : MonoBehaviour
 		//	return;
 		//}
 		var lastStageRecord = GameManager.UserDB.stageContainer.GetLastStage(StageType.Normal);
-		var stage = GameManager.UserDB.stageContainer.GetStage(StageType.Normal, lastStageRecord.stageNumber + 1, lastStageRecord.stageDifficulty);
+		var stage = GameManager.UserDB.stageContainer.GetNextStage(currentStage);
 		SetCurrentStage(stage);
 
 		PlayStage(currentStage);
@@ -136,9 +139,8 @@ public class StageManager : MonoBehaviour
 
 	public void PauseTimeline()
 	{
-		playableDirector.Pause();
+		SceneCamera.PlayableDirector.Pause();
 	}
-
 
 	/// <summary>
 	/// 처치보상 처리
@@ -175,25 +177,25 @@ public class StageManager : MonoBehaviour
 		var bossData = CurrentStage.spawnBoss[UnityEngine.Random.Range(0, CurrentStage.spawnBoss.Count)];
 
 		EnemyUnit boss = null;
-
+		Vector3 pos = map.bossSpawnPos != null ? map.bossSpawnPos.position : new Vector3(2, 0, 0);
 		if (CurrentStage.stageType == StageType.Immortal)
 		{
 			boss = SpawnManager.it.MakeImmotal(bossData, 0);
 		}
 		else
 		{
-			boss = SpawnManager.it.MakeBoss(bossData, out VResult result);
+			boss = SpawnManager.it.MakeBoss(bossData, pos, out VResult result);
 		}
 
 
-		TimelineAsset ta = playableDirector.playableAsset as TimelineAsset;
+		TimelineAsset ta = SceneCamera.PlayableDirector.playableAsset as TimelineAsset;
 
 		var tracks = ta.GetOutputTracks();
 		foreach (var track in tracks)
 		{
 			if (track is UnitDissolveTrack)
 			{
-				playableDirector.SetGenericBinding(track, boss.unitAnimation);
+				SceneCamera.PlayableDirector.SetGenericBinding(track, boss.unitAnimation);
 				break;
 			}
 		}
@@ -201,5 +203,12 @@ public class StageManager : MonoBehaviour
 		UnitManager.it.Boss = boss;
 		//bossSpawn = true;
 		boss.unitAnimation.PlayDissolve(1.5f);
+		//boss.position =
+
+	}
+
+	public void OnStageClear()
+	{
+		OnStageClearEvent?.Invoke(CurrentStage);
 	}
 }

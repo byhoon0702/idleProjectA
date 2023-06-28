@@ -66,6 +66,6 @@ public class UIItemCostumeChange : MonoBehaviour
 
 	private void OnClick()
 	{
-		parent.ChangeCurrentItem(UIData.tid);
+		parent.ChangeCurrentItem(UIData.Tid);
 	}
 }

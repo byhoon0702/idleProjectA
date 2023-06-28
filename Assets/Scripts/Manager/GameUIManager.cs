@@ -28,6 +28,11 @@ public class GameUIManager : MonoBehaviour
 	public List<Sprite> spriteGradeList = new List<Sprite>();
 	public UIController uiController;
 
+
+	[SerializeField] private UIStageClear uiStageClear;
+	[SerializeField] private UIStageStart uiStageStart;
+
+
 	public event OnClose onClose;
 
 	private void Awake()
@@ -78,7 +83,7 @@ public class GameUIManager : MonoBehaviour
 
 	private UnitStatusUI CreateUnitStatusUI()
 	{
-		UnitStatusUI tmp = Instantiate(Resources.Load<UnitStatusUI>("UnitUiHpBar"));
+		UnitStatusUI tmp = Instantiate(Resources.Load<UnitStatusUI>("UnitHealthBar"));
 		tmp.gameObject.SetActive(false);
 		tmp.transform.SetParent(statusUIGroup.transform);
 		tmp.SetManagedPool(unitStatusPool);
@@ -166,16 +171,30 @@ public class GameUIManager : MonoBehaviour
 	}
 
 
+	public void ShowStageStart()
+	{
+		uiStageStart.Activate();
+	}
 
-	public void ShowFloatingText(IdleNumber value, /*Color color,*/ Vector3 position, Vector3 endPosition, CriticalType _criticalType)
+	public void ShowStageResult(StageRule rule)
+	{
+		uiStageClear.gameObject.SetActive(true);
+		uiStageClear.ShowResult(rule);
+	}
+	public void HideStageResult()
+	{
+		uiStageClear.gameObject.SetActive(false);
+	}
+
+	public void ShowFloatingText(IdleNumber value, /*Color color,*/ Vector3 position, Vector3 endPosition, TextType _textType)
 	{
 		var floatingtext = floatingTextPool.Get();
-		floatingtext.Show(value, position, endPosition, _criticalType);
+		floatingtext.Show(value, position, endPosition, _textType);
 	}
 
 	private void ShowLevelupPopup(Int32 _beforeLv, Int32 _afterLv)
 	{
-		ToastUI.it.Create($"Levelup! {_beforeLv} -> {_afterLv}");
+		ToastUI.it.Enqueue($"Levelup! {_beforeLv} -> {_afterLv}");
 	}
 
 	public void OnClose()

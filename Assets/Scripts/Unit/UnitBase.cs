@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 //public class UnitStats
 //{
@@ -84,7 +85,9 @@ public abstract class UnitBase : MonoBehaviour
 	public virtual string defaultAttackSoundPath => "";
 	public abstract UnitType UnitType { get; }
 	public abstract ControlSide ControlSide { get; }
-	public virtual float SearchRange { get; } = 1;
+	public virtual float SearchRange { get; } = 10;
+	public virtual float AttackRange { get; } = 1;
+	public virtual float PursuitRange { get; } = 1;
 	public abstract IdleNumber AttackPower { get; }
 	public abstract HitInfo HitInfo { get; }
 	public abstract float AttackSpeed { get; }
@@ -131,37 +134,45 @@ public abstract class UnitBase : MonoBehaviour
 	{
 		unitAnimation.PlayAnimation(type);
 	}
-	public virtual void HeadingToTarget()
+	public virtual Vector3 HeadingToTarget()
 	{
 
 		if (target != null)
 		{
 			Vector3 normal = (target.transform.position - transform.position).normalized;
-			headingDirection = normal;
-			if (normal.x < 0)
-			{
-				if (currentDir != -1)
-				{
-					currentDir = -1;
-					Vector3 scale = unitAnimation.transform.localScale;
-					scale.x = Mathf.Abs(scale.x) * currentDir;
-					unitAnimation.transform.localScale = scale;
-				}
-			}
-			else if (normal.x > 0)
-			{
-				if (currentDir != 1)
-				{
-					currentDir = 1;
-					Vector3 scale = unitAnimation.transform.localScale;
-					scale.x = Mathf.Abs(scale.x);
-					unitAnimation.transform.localScale = scale;
-				}
+			ChangeDirection(normal);
+			return normal;
+		}
+		return Vector3.right;
+	}
 
+	public void ChangeDirection(Vector3 normal)
+	{
+		headingDirection = normal;
+		if (headingDirection.x < 0)
+		{
+			if (currentDir != -1)
+			{
+				currentDir = -1;
+				Vector3 scale = unitAnimation.transform.localScale;
+				scale.x = Mathf.Abs(scale.x) * currentDir;
+				unitAnimation.transform.localScale = scale;
 			}
 		}
+		else if (headingDirection.x > 0)
+		{
+			if (currentDir != 1)
+			{
+				currentDir = 1;
+				Vector3 scale = unitAnimation.transform.localScale;
+				scale.x = Mathf.Abs(scale.x);
+				unitAnimation.transform.localScale = scale;
+			}
 
+		}
 	}
+
+
 	protected virtual bool TargetRemovable()
 	{
 		if (target != null)
@@ -181,6 +192,17 @@ public abstract class UnitBase : MonoBehaviour
 
 		return false;
 	}
+	public bool IsTargetInPursuitRange()
+	{
+		if (target == null)
+		{
+			return false;
+		}
+
+		float distance = (target.position - position).magnitude;
+
+		return distance <= PursuitRange;
+	}
 
 	public bool IsTargetAlive()
 	{
@@ -192,17 +214,61 @@ public abstract class UnitBase : MonoBehaviour
 		return target.IsAlive();
 	}
 
+	public HittableUnit FindNewTarget(List<HittableUnit> _searchTargets, float range)
+	{
+		var array = targetPriorityBehavior.FilterObject(transform.position, _searchTargets);
+		if (array != null && array.Count > 0)
+		{
+
+			for (int i = 0; i < array.Count; i++)
+			{
+				HittableUnit enemy = array[i];
+				if (enemy == null || enemy.IsAlive() == false)
+				{
+					continue;
+				}
+				float distance = (enemy.position - transform.position).magnitude;
+				if (distance <= range)
+				{
+					return enemy;
+				}
+
+			}
+		}
+		return null;
+	}
+
 	protected virtual HittableUnit FindNewTarget(List<HittableUnit> _searchTargets)
 	{
-		HittableUnit newTarget = null;
 		var array = targetPriorityBehavior.FilterObject(transform.position, _searchTargets);
 
 		if (array != null && array.Count > 0)
 		{
-			newTarget = array[0];
+
+			for (int i = 0; i < array.Count; i++)
+			{
+				HittableUnit enemy = array[i];
+				if (enemy == null || enemy.IsAlive() == false)
+				{
+					continue;
+				}
+				float distance = (enemy.position - transform.position).magnitude;
+				if (distance <= AttackRange)
+				{
+					return enemy;
+				}
+				if (distance <= PursuitRange)
+				{
+					return enemy;
+				}
+				if (distance <= SearchRange)
+				{
+					return enemy;
+				}
+			}
 		}
 
-		return newTarget;
+		return null;
 	}
 
 
@@ -233,7 +299,38 @@ public abstract class UnitBase : MonoBehaviour
 		return false;
 	}
 
+	public virtual bool TargetInRange()
+	{
+		if (IsTargetAlive() == false)
+		{
+			return false;
+		}
+		float distance = Mathf.Abs((target.transform.position - transform.position).magnitude);
+
+		return distance <= AttackRange;
+	}
 	public virtual void FindTarget(float _time, bool _ignoreSearchDelay)
+	{
+		searchInterval += _time;
+
+		// 타겟을 비워주는 조건 체크
+		if (TargetRemovable())
+		{
+			SetTarget(null);
+		}
+	}
+	public virtual void FindTarget(float _time, bool _ignoreSearchDelay, float range)
+	{
+		searchInterval += _time;
+
+		// 타겟을 비워주는 조건 체크
+		if (TargetRemovable())
+		{
+			SetTarget(null);
+		}
+	}
+
+	public virtual void RandomTarget(float _time, bool _ignoreSearchDelay)
 	{
 		searchInterval += _time;
 
@@ -249,6 +346,7 @@ public abstract class UnitBase : MonoBehaviour
 	{
 		target = _target;
 	}
+
 
 
 	public void DisposeModel()

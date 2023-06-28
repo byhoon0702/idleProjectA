@@ -104,16 +104,16 @@ public class InventoryContainerInspector : Editor
 
 			RuntimeData.PetInfo info = new RuntimeData.PetInfo();
 
-			PetItemObject petitemObject = (PetItemObject)AssetDatabase.LoadAssetAtPath(assetpath, typeof(PetItemObject));
-			info.level = 1;
-			info.count = 0;
-			info.tid = petitemObject.Tid;
+			//PetItemObject petitemObject = (PetItemObject)AssetDatabase.LoadAssetAtPath(assetpath, typeof(PetItemObject));
+			//info.level = 1;
+			//info.count = 0;
+			//info.tid = petitemObject.Tid;
 
 
-			infoList.Add(info);
+			//infoList.Add(info);
 		}
 
-		infoList.Sort((x, y) => { return x.tid.CompareTo(y.tid); });
+		//	infoList.Sort((x, y) => { return x.Tid.CompareTo(y.Tid); });
 		EditorUtility.SetDirty(target);
 	}
 	private void UpdateCurrencyList(List<RuntimeData.CurrencyInfo> infoList, string path)
@@ -127,14 +127,14 @@ public class InventoryContainerInspector : Editor
 
 			RuntimeData.CurrencyInfo info = new RuntimeData.CurrencyInfo();
 
-			CurrencyItemObject currencyitemObject = (CurrencyItemObject)AssetDatabase.LoadAssetAtPath(assetpath, typeof(CurrencyItemObject));
-			info.level = 0;
-			info.count = 0;
-			info.tid = currencyitemObject.Tid;
-			infoList.Add(info);
+			//CurrencyItemObject currencyitemObject = (CurrencyItemObject)AssetDatabase.LoadAssetAtPath(assetpath, typeof(CurrencyItemObject));
+			//info.level = 0;
+			//info.count = 0;
+			//info.tid = currencyitemObject.Tid;
+			//infoList.Add(info);
 		}
 
-		infoList.Sort((x, y) => { return x.tid.CompareTo(y.tid); });
+		infoList.Sort((x, y) => { return x.Tid.CompareTo(y.Tid); });
 		EditorUtility.SetDirty(target);
 	}
 	//private void UpdateSkillList(List<RuntimeData.SkillInfo> infoList, string path)

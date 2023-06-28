@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UIManagementVeterancy : MonoBehaviour
+public class UIManagementVeterancy : UIBase
 {
 	[SerializeField] private TextMeshProUGUI propertyPointText;
 	[SerializeField] private UIItemVeterancy itemPrefab;
@@ -17,10 +17,22 @@ public class UIManagementVeterancy : MonoBehaviour
 		resetButton.onClick.AddListener(OnResetButtonClick);
 	}
 
+	protected override void OnEnable()
+	{
+		base.OnEnable();
+		VeterancyContainer.OnGetPoints += OnUpdate;
+	}
+	protected override void OnDisable()
+	{
+		base.OnDisable();
+		VeterancyContainer.OnGetPoints -= OnUpdate;
+	}
+
 	public void OnUpdate()
 	{
 		UpdateItem();
 		UpdateMoney();
+		time = 0;
 	}
 
 	public void UpdateItem()
@@ -59,7 +71,15 @@ public class UIManagementVeterancy : MonoBehaviour
 
 	public void UpdateMoney()
 	{
-		//propertyPointText.text = UserInfo.info.RemainPropertyPoint.ToString("N0");
+		propertyPointText.text = GameManager.UserDB.veterancyContainer.VeterancyPoint.ToString();
+	}
+	private float time = 0;
+	void Update()
+	{
+		if (time > 0.3f)
+		{
+			OnUpdate();
+		}
 	}
 
 	public void OnResetButtonClick()

@@ -10,7 +10,7 @@ public class StageNormal : StageRule
 
 	public override void Begin()
 	{
-		StageManager.it.playableDirector.playableAsset = timelineCutScene;
+		SceneCamera.PlayableDirector.playableAsset = timelineCutScene;
 		base.Begin();
 		spawnTime = 0;
 		GameManager.it.battleRecord.bossKillCount = 0;
@@ -49,6 +49,10 @@ public class StageNormal : StageRule
 
 	public override void OnLogicUpdate(float deltaTime)
 	{
+		if (GameManager.GameStop)
+		{
+			return;
+		}
 		if (isEnd)
 		{
 			return;
@@ -64,7 +68,7 @@ public class StageNormal : StageRule
 		elapsedTime += deltaTime;
 	}
 
-	internal void SpawnUpdate(float time)
+	private void SpawnUpdate(float time)
 	{
 		if (StageManager.it.bossSpawn)
 		{

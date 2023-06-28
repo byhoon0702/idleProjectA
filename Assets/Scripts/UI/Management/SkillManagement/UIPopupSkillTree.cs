@@ -38,12 +38,12 @@ public class UIPopupSkillTree : MonoBehaviour, ISelectListener
 	{
 		gameObject.SetActive(true);
 		info = _info;
-		skillTreeData = DataManager.Get<SkillTreeDataSheet>().GetSkillTreeData(info.rawData.rootSkillTid);
+		//skillTreeData = DataManager.Get<SkillTreeDataSheet>().GetSkillTreeData(info.rawData.detailData.rootSkillTid);
 
-		if (skillTreeData == null)
-		{
-			skillTreeData = DataManager.Get<SkillTreeDataSheet>().GetSkillTreeData(info.tid);
-		}
+		//if (skillTreeData == null)
+		//{
+		//	skillTreeData = DataManager.Get<SkillTreeDataSheet>().GetSkillTreeData(info.Tid);
+		//}
 
 
 		OnUpdateSelectedSkill();

@@ -10,7 +10,7 @@ using static UnityEngine.Rendering.DebugUI;
 [Serializable]
 public class StatInfo
 {
-	public Ability type { get; private set; }
+	public StatsType type { get; private set; }
 
 	public IdleNumber value;
 
@@ -25,7 +25,7 @@ public class StatInfo
 		type = rawData.type;
 	}
 
-	public StatInfo(Ability _type, IdleNumber _value)
+	public StatInfo(StatsType _type, IdleNumber _value)
 	{
 		type = _type;
 		value = _value;
@@ -39,7 +39,7 @@ public class UnitInfo
 	public UnitData data;
 	public UnitData rawData;
 
-	public SerializableDictionary<Ability, StatInfo> rawStatus = new SerializableDictionary<Ability, StatInfo>();
+	public SerializableDictionary<StatsType, StatInfo> rawStatus = new SerializableDictionary<StatsType, StatInfo>();
 	public UnitStats stats;
 
 	public IdleNumber hp;
@@ -83,6 +83,7 @@ public class UnitInfo
 			return upgradeInfo.resource;
 		}
 	}
+	public virtual bool HyperAvailable { get; protected set; }
 
 	public UnitInfo()
 	{

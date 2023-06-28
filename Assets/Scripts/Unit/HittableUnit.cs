@@ -11,6 +11,8 @@ public abstract class HittableUnit : UnitBase
 
 	public GameObject hitEffect;
 
+	public GameObject hitEffectObject;
+	public GameObject attackEffectObject;
 
 	public virtual bool IsAlive()
 	{

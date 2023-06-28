@@ -9,30 +9,27 @@ using UnityEngine.UI;
 public class UIProfile : MonoBehaviour
 {
 	[SerializeField] private TextMeshProUGUI textUserName;
-	//[SerializeField] private TextMeshProUGUI textUserLevel;
 
 	[SerializeField] private TextMeshProUGUI combatPower;
 
-	//[SerializeField] private Button buffButton;
-	[SerializeField]
-	private UIManagementMain uiMain;
+	[SerializeField] private UIPopupProfile uiMain;
 
+	private float time = 0;
 	private void Update()
 	{
-		textUserName.text = $"{GameManager.UserDB.userInfoContainer.userInfo.UserName}";
-		//textUserLevel.text = $"{UserInfo.info.UserLv}";
-		//combatPower.text = $"{VGameManager.UserDB.ToString()}";
+		time += Time.deltaTime;
+		if (time >= 0.5f)
+		{
+			OnupdateAttackPower();
+			textUserName.text = $"{GameManager.UserDB.userInfoContainer.userInfo.UserName}";
+			time = 0;
+		}
 	}
 
-	private void OnEnable()
+	public void OnupdateAttackPower()
 	{
-		//buffButton.onClick.RemoveAllListeners();
-		//buffButton.onClick.AddListener(OpenBuffPage);
-	}
-
-	private void OpenBuffPage()
-	{
-		UIController.it.ShowBuffPage();
+		IdleNumber total = GameManager.UserDB.UserStats.GetTotalPower();
+		combatPower.text = total.ToString();
 	}
 
 	public void OnClickMain()

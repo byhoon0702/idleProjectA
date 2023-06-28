@@ -181,10 +181,11 @@ public class NormalUnitCostume : UnitCostume
 
 	public void ChangeWeapon(bool isMasked = false)
 	{
-		if (weapon == null)
-		{
-			return;
-		}
+		if (unitAnimation)
+			if (weapon == null)
+			{
+				return;
+			}
 		if (weaponCostume != null)
 		{
 			if (weapon.CostumeObject != null && weaponCostume.name == weapon.CostumeObject.name)

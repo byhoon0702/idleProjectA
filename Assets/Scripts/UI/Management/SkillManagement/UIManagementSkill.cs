@@ -6,11 +6,11 @@ using UnityEngine.UI;
 
 
 
-public class UIManagementSkill : MonoBehaviour, ISelectListener
+public class UIManagementSkill : UIBase, ISelectListener
 {
 
 	[SerializeField] private UIManagementSkillInfo uiManagementSkillInfo;
-	[SerializeField] private UIPopupSkillTree uiPopupSkillTree;
+
 
 	[Header("장착스킬")]
 	[SerializeField] private GameObject objSkillSlotRoot;
@@ -57,7 +57,7 @@ public class UIManagementSkill : MonoBehaviour, ISelectListener
 	}
 	private long DefaultSelectTid()
 	{
-		long tid = filtered[0].tid;
+		long tid = filtered[0].Tid;
 		return tid;
 	}
 
@@ -118,7 +118,7 @@ public class UIManagementSkill : MonoBehaviour, ISelectListener
 
 			slot.OnUpdate(this, info, () =>
 			{
-				selectedItemTid = info.tid;
+				selectedItemTid = info.Tid;
 
 				UpdateInfo();
 			});
@@ -136,7 +136,7 @@ public class UIManagementSkill : MonoBehaviour, ISelectListener
 	{
 		exchangeSlot = false;
 		ShowHighlight(false);
-		selectedInfo = filtered.Find(x => x.tid == selectedItemTid);
+		selectedInfo = filtered.Find(x => x.Tid == selectedItemTid);
 		uiManagementSkillInfo.OnUpdate(this, selectedInfo);
 		onSelect?.Invoke(selectedItemTid);
 	}
@@ -217,6 +217,6 @@ public class UIManagementSkill : MonoBehaviour, ISelectListener
 
 	public void OnClickShowTree()
 	{
-		uiPopupSkillTree.OnUpdate(selectedInfo);
+
 	}
 }

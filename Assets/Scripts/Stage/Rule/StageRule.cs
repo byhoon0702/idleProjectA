@@ -37,31 +37,31 @@ public enum StageType
 	/// <summary>
 	/// 활력
 	/// </summary>
-	Vitality,
+	Vitality = 102,
 	/// <summary>
 	/// 냉기의 수호자
 	/// </summary>
-	Guardian_Frost,
+	Guardian_Frost = 103,
 	/// <summary>
 	/// 화염의 수호자
 	/// </summary>
-	Guardian_Flame,
+	Guardian_Flame = 104,
 	/// <summary>
 	/// 바위의 수호자
 	/// </summary>
-	Guardian_Stone,
+	Guardian_Stone = 105,
 	/// <summary>
 	/// 어둠의 수호자
 	/// </summary>
-	Guardian_Dark,
+	Guardian_Dark = 106,
 	/// <summary>
 	/// 부서진 배의 수호자
 	/// </summary>
-	Guardian_Shipwreck,
+	Guardian_Shipwreck = 107,
 	/// <summary>
 	/// 화산의 수호자
 	/// </summary>
-	Guardian_Volcano,
+	Guardian_Volcano = 108,
 
 }
 
@@ -84,7 +84,6 @@ public abstract class StageRule : ScriptableObject
 	public StageFailCondition[] failConditions;
 
 	[SerializeField] protected TimelineAsset timelineCutScene;
-
 	public bool isCutsceneExist => timelineCutScene != null;
 	protected float elapsedTime;
 
@@ -102,6 +101,9 @@ public abstract class StageRule : ScriptableObject
 		isEnd = false;
 		StageManager.it.currentKillCount = 0;
 		StageManager.it.bossKillCount = 0;
+		StageManager.it.cumulativeDamage = (IdleNumber)0;
+		//GameManager.it.battleRecord.totalDamage = (IdleNumber)0;
+
 		foreach (var state in stateSerializableDictionary)
 		{
 			if (state.Value.current == null)
@@ -198,6 +200,11 @@ public abstract class StageRule : ScriptableObject
 		return false;
 	}
 
+	public virtual void AddReward()
+	{
+		StageManager.it.CurrentStage.SetStageReward((IdleNumber)StageManager.it.CurrentStage.StageNumber);
+		GameManager.UserDB.AddStageRewards(StageManager.it.CurrentStage.StageClearReward, false);
+	}
 	public bool CheckEnd()
 	{
 		if (CheckLose())
@@ -208,9 +215,10 @@ public abstract class StageRule : ScriptableObject
 		}
 		if (CheckWin())
 		{
+			StageManager.it.OnStageClear();
 			StageManager.it.CurrentStage.isClear = true;
-
-			GameManager.UserDB.stageContainer.SavePlayStage(StageManager.it.CurrentStage);
+			AddReward();
+			GameManager.UserDB.stageContainer.SavePlayStage(StageManager.it.CurrentStage, StageManager.it.cumulativeDamage, StageManager.it.currentKillCount);
 			isWin = true;
 			isEnd = true;
 			return true;

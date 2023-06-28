@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEngine;
 
 using System.Collections;
+using Unity.VisualScripting;
 
 [Serializable]
 public class ContainedData
@@ -113,6 +114,8 @@ public partial class DataTableEditor : EditorWindow
 	private const string prefixMinusDescription = "해당 프리픽스 만큼 현재 TID 에서 뺌";
 	public const long minTidPrefix = 1000000;
 
+
+	public event Action OnSave;
 	[MenuItem("Custom Menu/DataEditor/DataTableEditor", false, 0)]
 	public static void Init()
 	{
@@ -120,12 +123,24 @@ public partial class DataTableEditor : EditorWindow
 		window.minSize = new Vector2(330f, 360f);
 
 		window.Show();
+		window.SetEvent();
 
+	}
+
+	public void SetEvent()
+	{
+		OnSave += () =>
+		{
+			ToJson();
+			LoadAllDataPath("Json");
+			Repaint();
+		};
 	}
 
 
 	private void OnDestroy()
 	{
+		OnSave = null;
 		if (datalistforDataListPage != null)
 		{
 			datalistforDataListPage.Clear();
@@ -294,8 +309,6 @@ public partial class DataTableEditor : EditorWindow
 
 	private bool LoadFromCSV(string file)
 	{
-
-
 		string name = System.IO.Path.GetFileNameWithoutExtension(file);
 
 		System.Type t = name.GetAssemblyType();
@@ -315,6 +328,46 @@ public partial class DataTableEditor : EditorWindow
 		}
 		return true;
 	}
+
+	private void UpdateKeyInput()
+	{
+		var e = Event.current;
+		if (e?.isKey == true)
+		{
+			if (e.CtrlOrCmd())
+			{
+				switch (e.type)
+				{
+					case EventType.KeyDown:
+						{
+							if (e.keyCode == KeyCode.S)
+							{
+								if (save == false)
+								{
+									Debug.Log("Save");
+									ToJson();
+									LoadAllDataPath("Json");
+									Repaint();
+
+									EditorUtility.SetDirty(scriptableObject);
+									serializedObject.ApplyModifiedProperties();
+
+									save = true;
+								}
+							}
+						}
+						break;
+
+					case EventType.KeyUp:
+						{
+							save = false;
+						}
+						break;
+				}
+			}
+		}
+	}
+
 
 	void OnGUI()
 	{
@@ -341,10 +394,11 @@ public partial class DataTableEditor : EditorWindow
 			DrawTidList();
 		}
 		EditorUtility.SetDirty(this);
+
+		UpdateKeyInput();
 	}
 
-
-
+	private bool save;
 
 	bool TypeExist()
 	{
@@ -404,7 +458,6 @@ public partial class DataTableEditor : EditorWindow
 		return false;
 	}
 
-
 	void ToJson()
 	{
 		var targetObje = serializedObject.FindProperty("dataSheet").serializedObject.targetObject;
@@ -441,7 +494,6 @@ public partial class DataTableEditor : EditorWindow
 
 		JsonConverter.FromData(sd, path);
 		//string json = JsonUtility.ToJson(sd, true);
-
 		//File.WriteAllText(path, json);
 
 		currentJsonFileName = Path.GetFileName(path);

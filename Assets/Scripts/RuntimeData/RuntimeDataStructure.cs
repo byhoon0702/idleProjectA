@@ -4,15 +4,36 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System;
 using Newtonsoft.Json;
+using RuntimeData;
 
-public class ModifyInfo
+public class BaseInfo : IDataInfo
+{
+	[SerializeField][ReadOnly(false)] protected long tid;
+	public long Tid => tid;
+
+	public virtual void UpdateData()
+	{
+
+	}
+	public virtual void Load<T>(T info) where T : BaseInfo
+	{
+
+	}
+
+	public virtual void SetRawData<T>(T data) where T : BaseData
+	{
+
+	}
+}
+
+public class ModifyInfo : BaseInfo
 {
 	protected bool isDirty;
 
 
 	protected IdleNumber _value;
 	protected IdleNumber lastBaseValue;
-	[JsonIgnore]
+
 	public virtual IdleNumber Value
 	{
 		get
@@ -27,10 +48,10 @@ public class ModifyInfo
 			return _value;
 		}
 	}
-	[JsonIgnore] public virtual IdleNumber BaseValue { get; protected set; } = (IdleNumber)0;
+	public virtual IdleNumber BaseValue { get; protected set; } = (IdleNumber)0;
 
-	[JsonIgnore] protected readonly List<StatsModifier> modifiers;
-	[JsonIgnore] public readonly ReadOnlyCollection<StatsModifier> Modifiers;
+	protected readonly List<StatsModifier> modifiers;
+	public readonly ReadOnlyCollection<StatsModifier> Modifiers;
 
 	public ModifyInfo()
 	{
@@ -46,7 +67,6 @@ public class ModifyInfo
 		isDirty = true;
 		modifiers.Add(modifier);
 		modifiers.Sort((a, b) => { return a.Order.CompareTo(b.Order); });
-
 	}
 
 	public virtual void UpdateModifiers(StatsModifier modifier)
@@ -154,27 +174,43 @@ namespace RuntimeData
 {
 	public interface IDataInfo
 	{
-		void SetRawData<T>(T data) where T : class;
-
+		void SetRawData<T>(T data) where T : BaseData;
+		void Load<T>(T info) where T : BaseInfo;
+		void UpdateData();
 	}
-	public abstract class ItemInfo : ModifyInfo, IDataInfo
+
+	public class ItemInfo : ModifyInfo
 	{
-		public long tid;
 		public bool unlock;
 		public int level;
+		/// <summary>
+		/// 재화를 재외한 아이템의 개수, 재화의 경우 Value 를 사용할 것
+		/// </summary>
 		public int count;
 
-		public virtual void SetRawData<T>(T data) where T : class
+		public override void Load<T>(T info)
 		{
-
-		}
-
-		public virtual void Load(ItemInfo info)
-		{
-			tid = info.tid;
-			unlock = info.unlock;
-			level = info.level;
-			count = info.count;
+#if SALES
+			unlock = true;
+			level = 1;
+			count = 1;
+			return;
+#endif
+			if (info == null)
+			{
+				return;
+			}
+			ItemInfo itemInfo = info as ItemInfo;
+			unlock = itemInfo.unlock;
+			level = itemInfo.level;
+			count = itemInfo.count;
+			if (unlock)
+			{
+				if (level == 0)
+				{
+					level = 1;
+				}
+			}
 		}
 	}
 
@@ -197,6 +233,7 @@ namespace RuntimeData
 	{
 		public EquipType type => rawData.equipType;
 
+		public int star => rawData.starLevel;
 		public Grade grade => rawData.itemGrade;
 		public EquipItemData rawData { get; private set; }
 
@@ -214,7 +251,7 @@ namespace RuntimeData
 			UpdateAbilities();
 		}
 
-		public override void Load(ItemInfo info)
+		public override void Load<T>(T info)
 		{
 			base.Load(info);
 			SetDirty();
@@ -245,6 +282,7 @@ namespace RuntimeData
 		{
 			level++;
 			UpdateAbilities();
+			GameManager.UserDB.questContainer.ProgressAdd(QuestGoalType.REINFORCE_WEAPON, tid, (IdleNumber)1);
 		}
 		public void SetLevel(int _level)
 		{
@@ -258,26 +296,24 @@ namespace RuntimeData
 			return level < 100;
 		}
 
-		public int LevelUpNeedCount()
+		public IdleNumber LevelUpNeedCount()
 		{
-			//var requirement = VGameManager.UserDB.commonData.LEVELUP_REQUIREMENT.Find(x => x.level <= level);
-
+			var requirement = GameManager.UserDB.commonData.LevelUpConsumeDataList.Find(x => x.grade == grade);
+			var first = (requirement.basicConsume + ((star - 1) * requirement.starWeight));
+			var second = ((level - 1) * requirement.increaseRange) * (1 + (level * requirement.gradeWeight));
 			//return requirement.requirement;
-			return 0;
+			return (IdleNumber)(first + second);
 		}
 	}
 
 	[System.Serializable]
 	public class CostumeInfo : ItemInfo
 	{
-		[JsonIgnore] public CostumeType Type => rawData.costumeType;
+		public CostumeType Type => rawData.costumeType;
 
-		[JsonIgnore] public CostumeItemObject itemObject { get; private set; }
-		[JsonIgnore] public CostumeData rawData { get; private set; }
-		[JsonIgnore] public string ItemName => itemObject != null ? itemObject.ItemName : "No Data";
-
-		[JsonIgnore] public List<AbilityInfo> equipAbilities { get; private set; } = new List<AbilityInfo>();
-		[JsonIgnore] public List<AbilityInfo> ownedAbilities { get; private set; } = new List<AbilityInfo>();
+		public CostumeItemObject itemObject { get; private set; }
+		public CostumeData rawData { get; private set; }
+		public string ItemName => itemObject != null ? itemObject.ItemName : "No Data";
 
 		public bool CanLevelUp()
 		{
@@ -289,31 +325,8 @@ namespace RuntimeData
 			tid = rawData.tid;
 
 			itemObject = GameManager.UserDB.costumeContainer.GetScriptableObject<CostumeItemObject>(tid);
-			UpdateAbilities();
-
-		}
-
-		public void UpdateAbilities()
-		{
-			equipAbilities.Clear();
-			for (int i = 0; i < rawData.equipValues.Count; i++)
-			{
-				ItemStats buff = rawData.equipValues[i];
-				AbilityInfo info = new AbilityInfo(buff);
-				info.GetValue(level);
-				equipAbilities.Add(info);
-			}
-			ownedAbilities.Clear();
-			for (int i = 0; i < rawData.ownValues.Count; i++)
-			{
-				ItemStats buff = rawData.ownValues[i];
-				AbilityInfo info = new AbilityInfo(buff);
-				info.GetValue(level);
-				ownedAbilities.Add(info);
-			}
 		}
 	}
-
 
 	public struct ItemBuffOption
 	{
@@ -326,6 +339,7 @@ namespace RuntimeData
 	[System.Serializable]
 	public class PetInfo : ItemInfo
 	{
+
 		public int evolutionLevel;
 		public Grade grade => rawData.itemGrade;
 
@@ -362,7 +376,7 @@ namespace RuntimeData
 
 		public bool CanLevelUp()
 		{
-			return false;
+			return level < 100;
 		}
 		public override void SetRawData<T>(T data)
 		{
@@ -389,6 +403,14 @@ namespace RuntimeData
 			options[index] = option;
 		}
 
+		public IdleNumber LevelUpNeedCount()
+		{
+			var requirement = GameManager.UserDB.commonData.LevelUpConsumeDataList.Find(x => x.grade == grade);
+			var first = requirement.basicConsume;
+			var second = ((level - 1) * requirement.increaseRange) * (1 + (level * requirement.gradeWeight));
+			//return requirement.requirement;
+			return (IdleNumber)(first + second);
+		}
 		public void UpdateAbilities()
 		{
 			equipAbilities.Clear();
@@ -406,6 +428,37 @@ namespace RuntimeData
 				AbilityInfo info = new AbilityInfo(buff);
 				info.GetValue(level);
 				ownedAbilities.Add(info);
+			}
+
+			UpdateModifiers(GameManager.UserDB);
+			GameManager.UserDB.petContainer.UpdateData();
+		}
+		public void LevelUP()
+		{
+			level++;
+			UpdateAbilities();
+		}
+
+		public void UpdateModifiers(UserDB userDB)
+		{
+			for (int i = 0; i < ownedAbilities.Count; i++)
+			{
+				userDB.UpdateModifiers(false, ownedAbilities[i].type, new StatsModifier(ownedAbilities[i].Value, ownedAbilities[i].modeType, this));
+			}
+		}
+		public void AddModifiers(UserDB userDB)
+		{
+			for (int i = 0; i < ownedAbilities.Count; i++)
+			{
+				userDB.AddModifiers(false, ownedAbilities[i].type, new StatsModifier(ownedAbilities[i].Value, ownedAbilities[i].modeType, this));
+			}
+
+		}
+		public void RemoveModifiers(UserDB userDB)
+		{
+			for (int i = 0; i < ownedAbilities.Count; i++)
+			{
+				userDB.RemoveModifiers(false, ownedAbilities[i].type, this);
 			}
 		}
 	}
@@ -493,7 +546,7 @@ namespace RuntimeData
 			OnClickLevelup = null;
 		}
 
-		public override void Load(StatInfo info)
+		public override void Load<T>(T info)
 		{
 			base.Load(info);
 			SetLevel(level);
@@ -505,6 +558,7 @@ namespace RuntimeData
 			GetCost();
 			GetValue();
 			GetNextValue();
+
 		}
 
 		public IdleNumber GetCost()
@@ -570,16 +624,14 @@ namespace RuntimeData
 			{
 				OnClickLevelup();
 			}
-			//GameManager.UserDB.Save();
+			GameManager.UserDB.questContainer.ProgressOverwrite(QuestGoalType.ABILITY_LEVEL, rawData.tid, (IdleNumber)level);
+			GameManager.UserDB.questContainer.ProgressAdd(QuestGoalType.ABILITY_LEVELUP, rawData.tid, (IdleNumber)1);
+
 		}
-
-
 	}
-	public abstract class StatInfo : IDataInfo
-	{
-		[SerializeField] protected long tid;
-		public long Tid => tid;
 
+	public abstract class StatInfo : BaseInfo
+	{
 		[SerializeField] protected int level;
 		public int Level => level;
 		public IdleNumber cost
@@ -594,12 +646,13 @@ namespace RuntimeData
 		public abstract void AddModifier(UserDB userDB);
 		public abstract void UpdateModifier(UserDB userDB);
 		public abstract void RemoveModifier(UserDB userDB);
-		public abstract void SetRawData<T>(T data) where T : class;
 
-		public virtual void Load(StatInfo info)
+		public override void Load<T>(T info)
 		{
-			tid = info.tid;
-			level = info.level;
+			StatInfo stat = info as StatInfo;
+			tid = stat.tid;
+
+			level = stat.level;
 
 		}
 	}
@@ -648,7 +701,7 @@ namespace RuntimeData
 			SetLevel(level);
 		}
 
-		public override void Load(StatInfo info)
+		public override void Load<T>(T info)
 		{
 			base.Load(info);
 			SetLevel(level);
@@ -747,138 +800,130 @@ namespace RuntimeData
 			}
 			SetLevel(level);
 
-			//RemoveModifier(GameManager.UserDB);
-			//AddModifier(GameManager.UserDB);
+			UpdateModifier(GameManager.UserDB);
+			GameManager.UserDB.veterancyContainer.ConsumePoint(1);
 
 			if (OnClickLevelup != null)
 			{
 				OnClickLevelup();
 			}
 
-			//if (OnAbilityUpdate != null)
-			//{
-			//	OnAbilityUpdate(currentValue);
-			//}
+
 		}
-
-
 	}
-}
-
-
-
-
-[System.Serializable]
-public class AbilityInfo
-{
-	public StatsType type { get; private set; }
-	public StatusData rawData { get; private set; }
-
-	[SerializeField] private IdleNumber value;
-	[SerializeField] private IdleNumber inc;
-	public IdleNumber Value => modifiedValue;
-	public IdleNumber Inc => inc;
-
-	private IdleNumber modifiedValue;
-
-	public StatModeType modeType { get; private set; }
-
-	public bool isPercentage { get; private set; }
-	public bool isHyper { get; private set; }
-
-	public string tailChar
+	[System.Serializable]
+	public class AbilityInfo
 	{
-		get
+		public StatsType type { get; private set; }
+		public StatusData rawData { get; private set; }
+
+		[SerializeField] private IdleNumber value;
+		[SerializeField] private IdleNumber inc;
+		public IdleNumber Value => modifiedValue;
+		public IdleNumber Inc => inc;
+
+		private IdleNumber modifiedValue;
+
+		public StatModeType modeType { get; private set; }
+
+		public bool isPercentage { get; private set; }
+		public bool isHyper { get; private set; }
+
+		public string tailChar
 		{
-			if (isPercentage == false)
+			get
 			{
-				return "";
+				if (isPercentage == false)
+				{
+					return "";
+				}
+				return "%";
 			}
-			return "%";
 		}
-	}
-	public AbilityInfo Clone()
-	{
-		AbilityInfo info = new AbilityInfo();
-		info.type = type;
-		info.rawData = rawData;
-		info.value = value;
-		info.inc = inc;
-		info.modifiedValue = modifiedValue;
-		info.modeType = modeType;
-		info.isPercentage = isPercentage;
-		info.isHyper = isHyper;
-
-		return info;
-	}
-	public AbilityInfo()
-	{
-
-	}
-
-	public AbilityInfo(StatsType _type, IdleNumber _value) : this(_type, _value, (IdleNumber)0, StatModeType.Flat, false, false)
-	{
-
-	}
-	public AbilityInfo(StatsType _type, IdleNumber _value, IdleNumber _inc) : this(_type, _value, _inc, StatModeType.Flat, false, false)
-	{
-
-	}
-
-	public AbilityInfo(StatsType _type, IdleNumber _value, IdleNumber _inc, StatModeType _modeType, bool _isPercentage, bool isHyper)
-	{
-		type = _type;
-		value = _value;
-		inc = _inc;
-		modeType = _modeType;
-		isPercentage = _isPercentage;
-		this.isHyper = isHyper;
-		//rawData = DataManager.Get<StatusDataSheet>().GetData(type);
-	}
-
-	public AbilityInfo(ItemStats stats) : this(stats.type, (IdleNumber)stats.value, (IdleNumber)stats.perLevel, stats.modeType, stats.isPercentage, stats.isHyper)
-	{
-	}
-
-	public string Description()
-	{
-		//if (rawData == null)
-		//{
-		//	rawData = DataManager.Get<StatusDataSheet>().GetData(type);
-		//}
-		//return rawData.description;
-		return "";
-	}
-
-	public IdleNumber GetValue(int _level = 1)
-	{
-
-		int relative = _level - 1;
-		if (relative < 0)
+		public AbilityInfo Clone()
 		{
-			relative = 0;
+			AbilityInfo info = new AbilityInfo();
+			info.type = type;
+			info.rawData = rawData;
+			info.value = value;
+			info.inc = inc;
+			info.modifiedValue = modifiedValue;
+			info.modeType = modeType;
+			info.isPercentage = isPercentage;
+			info.isHyper = isHyper;
+
+			return info;
 		}
-		modifiedValue = value + (inc * relative);
-
-		return modifiedValue;
-	}
-
-	public IdleNumber GetNextValue(int _level = 1)
-	{
-		int relative = _level - 1;
-		if (relative < 0)
+		public AbilityInfo()
 		{
-			relative = 0;
+
 		}
-		IdleNumber nextValue = value + (inc * relative);
 
-		return nextValue;
+		public AbilityInfo(StatsType _type, IdleNumber _value) : this(_type, _value, (IdleNumber)0, StatModeType.Flat, false, false)
+		{
+
+		}
+		public AbilityInfo(StatsType _type, IdleNumber _value, IdleNumber _inc) : this(_type, _value, _inc, StatModeType.Flat, false, false)
+		{
+
+		}
+
+		public AbilityInfo(StatsType _type, IdleNumber _value, IdleNumber _inc, StatModeType _modeType, bool _isPercentage, bool isHyper)
+		{
+			type = _type;
+			value = _value;
+			inc = _inc;
+			modeType = _modeType;
+			isPercentage = _isPercentage;
+			this.isHyper = isHyper;
+			//rawData = DataManager.Get<StatusDataSheet>().GetData(type);
+		}
+
+		public AbilityInfo(ItemStats stats) : this(stats.type, (IdleNumber)stats.value, (IdleNumber)stats.perLevel, stats.modeType, stats.isPercentage, stats.isHyper)
+		{
+		}
+
+		public string Description()
+		{
+
+			return "";
+		}
+
+		public IdleNumber GetValue(int _level = 1)
+		{
+
+			int relative = _level - 1;
+			if (relative < 0)
+			{
+				relative = 0;
+			}
+			modifiedValue = value + (inc * relative);
+
+			return modifiedValue;
+		}
+
+		public IdleNumber GetNextValue(int _level = 1)
+		{
+			int relative = _level - 1;
+			if (relative < 0)
+			{
+				relative = 0;
+			}
+			IdleNumber nextValue = value + (inc * relative);
+
+			return nextValue;
+		}
+
+		public override string ToString()
+		{
+			return $"{type}. +{value.ToString()}";
+		}
+
+
 	}
-
-	public override string ToString()
-	{
-		return $"{type}. +{value.ToString()}";
-	}
-
-
 }
+
+
+
+
+

@@ -49,12 +49,10 @@ public class PlayerUnitInfo : UnitInfo
 	}
 
 	public int skillLevel = 5;
-	public float searchRange
+	public override bool HyperAvailable
 	{
-		get
-		{
-			return GameManager.Config.PLAYER_TARGET_RANGE_CLOSE;
-		}
+		get => GameManager.UserDB.awakeningContainer.HyperActivate;
+		protected set => base.HyperAvailable = value;
 	}
 
 	public PlayerUnitInfo(Unit _owner, UnitData _data) : base(_owner, _data)
@@ -101,7 +99,7 @@ public class PlayerUnitInfo : UnitInfo
 	public override float AttackSpeed()
 	{
 
-		float basicSpeed = stats.GetValue(StatsType.Atk_Speed);
+		float basicSpeed = stats.GetValue(StatsType.Atk_Speed) / 100f;
 
 		float total = basicSpeed;
 
@@ -158,7 +156,7 @@ public class PlayerUnitInfo : UnitInfo
 	/// <returns></returns>
 	public override float MoveSpeed()
 	{
-		float basicSpeed = stats.GetValue(StatsType.Move_Speed) * 3f;
+		float basicSpeed = stats.GetValue(StatsType.Move_Speed);
 		float total = basicSpeed;
 
 		return total;

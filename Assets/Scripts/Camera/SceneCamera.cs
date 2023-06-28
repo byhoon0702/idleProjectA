@@ -1,18 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
-using static UnityEngine.GraphicsBuffer;
 using Cinemachine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
 public class SceneCamera : MonoBehaviour
 {
 	private static SceneCamera instance;
 	public static SceneCamera it => instance;
 
+	[SerializeField] private TimelineAsset defaultBossTimeline;
+	[SerializeField] private PlayableDirector playableDirector;
 
+	public static PlayableDirector PlayableDirector => it.playableDirector;
+	[SerializeField] private SpriteRenderer blackOutCurtain;
+	public SpriteRenderer BlackOutCurtain => blackOutCurtain;
+	[SerializeField] private CinemachineVirtualCamera defaultVirtualCam;
+	public static CinemachineVirtualCamera DefaultVirtualCam => it.defaultVirtualCam;
+	[SerializeField] private CinemachineVirtualCamera virtualZoomCam;
 
-	[SerializeField] private CinemachineVirtualCamera virtualCam;
+	public static CinemachineVirtualCamera VirtualZoomCam => it.virtualZoomCam;
+
+	[SerializeField] private CinemachineVirtualCamera bossVirtualCam;
+	public static CinemachineVirtualCamera BossVirtualCam => it.bossVirtualCam;
+
+	[SerializeField] private CinemachineBrain cinemachineBrain;
+	public static CinemachineBrain CinemachineBrain => it.cinemachineBrain;
+
 	public Camera sceneCamera => m_camera;
 	[SerializeField] private Camera m_camera;
 
@@ -26,15 +41,12 @@ public class SceneCamera : MonoBehaviour
 	{
 		instance = this;
 		originPos = transform.position;
-	}
-
-	private void Start()
-	{
+		BlackOutCurtain.color = new Color(0, 0, 0, 0);
 	}
 
 	public void SetTarget(Transform target)
 	{
-		virtualCam.Follow = target;
+		CinemachineBrain.ActiveVirtualCamera.Follow = target;
 	}
 
 	public void ChangeViewPort(bool change)
@@ -47,6 +59,21 @@ public class SceneCamera : MonoBehaviour
 		{
 			m_camera.rect = new Rect(0, 0, 1, 1);
 		}
+	}
+	public void PlayBossEnter(TimelineAsset bossEnter)
+	{
+		TimelineAsset playAsset = bossEnter;
+		if (playAsset == null)
+		{
+			playAsset = defaultBossTimeline;
+		}
+		PlayableDirector.playableAsset = playAsset;
+		PlayableDirector.Play();
+	}
+
+	public void PlayTimeline()
+	{
+		PlayableDirector.Play();
 	}
 
 	private void LateUpdate()
@@ -116,5 +143,7 @@ public class SceneCamera : MonoBehaviour
 	{
 
 	}
+
+
 
 }

@@ -10,10 +10,10 @@ public class CurrencyItemObject : ItemObject
 	public void SetBasicData(CurrencyData data)
 	{
 		tid = data.tid;
-		name = data.name;
+		itemName = data.name;
 		description = data.description;
 		maxValue = (IdleNumber)data.maxValue;
-
+		currencyType = data.type;
 	}
 
 }

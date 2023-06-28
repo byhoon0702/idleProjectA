@@ -13,11 +13,11 @@ public class SoundBgmDataSheet : DataSheetBase<SoundBgmData>
 {
 
 
-	public SoundBgmData Get(string _key)
+	public override SoundBgmData Get(string key)
 	{
 		for (int i = 0; i < infos.Count; i++)
 		{
-			if (infos[i].key == _key)
+			if (infos[i].key == key)
 			{
 				return infos[i];
 			}

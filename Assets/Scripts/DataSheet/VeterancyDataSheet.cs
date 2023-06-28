@@ -5,14 +5,14 @@
 [System.Serializable]
 public class PreConditionData
 {
-	public Ability preconditionType;
+	public StatsType preconditionType;
 	public long preconditionLevel;
 	public bool isSum;
 }
 [System.Serializable]
 public class Cost
 {
-	public GameCurrency currency;
+	public CurrencyType currency;
 	public string cost;
 	public float costIncrease;
 	public float costWeight;

@@ -81,7 +81,19 @@ public class TreasureBox : HittableUnit
 			GameObject go = Instantiate(hitEffect);
 			go.transform.position = CenterPosition;
 			go.transform.localScale = Vector3.one;
-			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, _hitInfo.criticalType);
+
+			TextType textType = TextType.ENEMY_HIT;
+
+			if (_hitInfo.criticalType == CriticalType.CriticalX2)
+			{
+				textType = TextType.CRITICAL_X2;
+			}
+			else if (_hitInfo.criticalType == CriticalType.Critical)
+			{
+				textType = TextType.CRITICAL;
+			}
+
+			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, textType);
 			unitAnimation?.PlayDamageWhite();
 		}
 

@@ -16,10 +16,10 @@ public class ItemUISkill : ItemUIBase
 		onClick = _onClick;
 		button.enabled = onClick != null;
 		selectListener = _selectListener;
-		gameObject.SetActive(info != null && info.rawData != null);
+		gameObject.SetActive(info != null);
 
 
-		if (info == null || info.tid == 0)
+		if (info == null || info.Tid == 0)
 		{
 			return;
 		}
@@ -28,8 +28,9 @@ public class ItemUISkill : ItemUIBase
 			icon.sprite = info.itemObject.Icon;
 		}
 
-		levelText.text = "";
-		countText.text = $"{info.level}/{info.maxLevel}";
+
+		levelText.text = $"{info.grade}";
+		countText.text = $"LV.{info.level}";
 	}
 
 	public void OnSelect(long tid)

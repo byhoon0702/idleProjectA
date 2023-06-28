@@ -3,10 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Unit Dead State", menuName = "Unit State/Dead", order = 1)]
 public class UnitDeadState : UnitFSM
 {
-	public UnitDeadStateAction[] deadAction;
 	private float elapsedTime;
-
-
 	public override FSM OnEnter()
 	{
 		elapsedTime = 0f;
@@ -26,13 +23,8 @@ public class UnitDeadState : UnitFSM
 
 	public override void OnUpdate(float time)
 	{
-		elapsedTime += time;
+		owner.Death();
 
-		//if (elapsedTime > 1f)
-		{
-
-			owner.Death();
-		}
 	}
 
 	protected void Thrown()

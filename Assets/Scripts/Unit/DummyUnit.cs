@@ -86,7 +86,7 @@ public class DummyUnit : Unit
 			return;
 		}
 		unitMode.OnHit(_hitInfo);
-		GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, _hitInfo.criticalType);
+		//GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, _hitInfo.criticalType);
 	}
 
 
@@ -214,5 +214,15 @@ public class DummyUnit : Unit
 		AdditionalDamageModule module = new AdditionalDamageModule();
 		module.Set(this, info, hitinfo);
 		additionalDamageModules.Add(module);
+	}
+
+	public override void ActiveHyperEffect()
+	{
+		throw new System.NotImplementedException();
+	}
+
+	public override void InactiveHyperEffect()
+	{
+		throw new System.NotImplementedException();
 	}
 }

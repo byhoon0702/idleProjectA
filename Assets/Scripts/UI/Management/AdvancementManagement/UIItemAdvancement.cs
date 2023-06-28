@@ -76,7 +76,10 @@ public class UIItemAdvancement : MonoBehaviour
 			}
 		}
 		buttonActivate.gameObject.SetActive(isCleared && GameManager.UserDB.advancementContainer.Info.Level + 1 == info.level);
-		buttonCostume.gameObject.SetActive(isCleared && GameManager.UserDB.advancementContainer.Info.CostumeIndex != info.level);
+
+		int costumeIndex = GameManager.UserDB.advancementContainer.Info.CostumeIndex;
+		buttonCostume.gameObject.SetActive(isCleared && costumeIndex + 1 != info.level && buttonActivate.isActiveAndEnabled == false);
+
 		textCondition.text = message;
 	}
 

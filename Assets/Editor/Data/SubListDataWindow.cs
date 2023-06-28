@@ -32,13 +32,15 @@ public class SubListDataWindow : PopupWindowContent
 	}
 	public override Vector2 GetWindowSize()
 	{
-		return new Vector2(size.x == 0 ? 400 : size.x, size.y == 0 ? 300 : size.y);
+		//return new Vector2(size.x == 0 ? 400 : size.x, size.y == 0 ? 300 : size.y);
+		return new Vector2(650, 300);
 	}
 
 	public override void OnGUI(Rect rect)
 	{
 		so.Update();
 		EditorGUI.BeginChangeCheck();
+		Vector2 size = GetWindowSize();
 		EditorGUILayout.BeginVertical(GUILayout.Width(size.x));
 		scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
@@ -85,18 +87,6 @@ public class SubListDataWindow : PopupWindowContent
 		System.Type baseType = rawDataType;
 		System.Type check = rawDataType;
 
-
-		//while (baseType != null)
-		//{
-		//	if (baseType.Equals(typeof(System.ValueType)))
-		//	{
-		//		break;
-
-		//	}
-		//	check = baseType;
-		//	baseType = check.BaseType;
-		//}
-
 		bool isObjectType = check.IsClass || check.IsStruct();
 
 		FieldInfo[] fields = rawDataType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -108,6 +98,7 @@ public class SubListDataWindow : PopupWindowContent
 		{
 			tidField = rawDataType.GetField("tid");
 			descriptionField = rawDataType.GetField("description");
+
 			var linkedType = owner.linkedTypeContainer.Find(property.name);
 			if (linkedType == null)
 			{
@@ -144,7 +135,71 @@ public class SubListDataWindow : PopupWindowContent
 						}
 					}
 				}
+			}
+		}
+		else
+		{
+			LinkTypeInfo linkedType = null;
+			if (property.name.Contains("Tid", StringComparison.Ordinal))
+			{
+				string[] split = property.name.Split("Tid");
+				string typeName = $"{split[0]}DataSheet".FirstCharacterToUpper();
+				linkedType = owner.linkedTypeContainer.Find(property.name);
+			}
+			else
+			{
+				for (int i = 0; i < fields.Length; i++)
+				{
+					if (fields[i].Name.Contains("Tid", StringComparison.Ordinal))
+					{
+						string[] split = fields[i].Name.Split("Tid");
+						string typeName = $"{split[0]}DataSheet".FirstCharacterToUpper();
 
+						string typeString = ConvertUtility.GetAssemblyName(typeName);
+						System.Type type = System.Type.GetType(typeString);
+						if (type == null)
+						{
+							continue;
+						}
+						if (owner.linkedTypeContainer.Find(typeName) != null)
+						{
+							continue;
+						}
+						linkedType = owner.linkedTypeContainer.Find(property.name);
+					}
+				}
+			}
+
+			if (linkedType != null)
+			{
+				tidList = new List<long>();
+				nameList = new List<string>();
+				for (int i = 0; i < linkedType.type.Count; i++)
+				{
+					containedData = owner.dataContainer.FindAll(linkedType.type[i]);
+
+					for (int ii = 0; ii < containedData.Count; ii++)
+					{
+						isLinkedField = true;
+						System.Type type = containedData[ii].data.GetType();
+						var value = type.GetField("infos").GetValue(containedData[ii].data);
+						prefixID = (long)type.GetField("prefixID", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(containedData[ii].data);
+						IList datas = (IList)value;
+						System.Type cellType = datas[0].GetType();
+
+
+						for (int iii = 0; iii < datas.Count; iii++)
+						{
+							var data = datas[iii];
+							long tid = (long)cellType.GetField("tid").GetValue(data);
+							string desc = (string)cellType.GetField("description").GetValue(data);
+
+							long replacedTid = EditorHelper.ReplacePrefixTid(tid, prefixID);
+							nameList.Add($"{replacedTid}:{desc}");
+							tidList.Add(replacedTid);
+						}
+					}
+				}
 			}
 		}
 
@@ -323,12 +378,39 @@ public class SubListDataWindow : PopupWindowContent
 			}
 			else
 			{
+				//tidList
 				if (property.name.Contains("Tid", StringComparison.Ordinal))
 				{
 					string ss = property.name.Split("Tid")[0] + "DataSheet";
-				}
+					ss = ss.FirstCharacterToUpper();
 
-				EditorGUI.PropertyField(tempRect, info, GUIContent.none);
+					var sf = info;//.FindPropertyRelative(tidField.Name);
+					if (isLinkedField)
+					{
+
+						for (int i = 0; i < tidList.Count; i++)
+						{
+							if (sf.longValue == tidList[i])
+							{
+								selectedIndex = i;
+								break;
+							}
+						}
+
+						selectedIndex = EditorGUI.Popup(tempRect, selectedIndex, nameList.ToArray());
+						sf.longValue = tidList[selectedIndex];
+					}
+					else
+					{
+						EditorGUI.PropertyField(tempRect, sf, GUIContent.none);
+					}
+
+
+				}
+				else
+				{
+					EditorGUI.PropertyField(tempRect, info, GUIContent.none);
+				}
 
 				tempRect.x += tempRect.width + settings.rowSpace;
 			}

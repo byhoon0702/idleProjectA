@@ -141,6 +141,10 @@ public class Stat : ModifyInfo
 public class UnitStats : ScriptableObject
 {
 	public List<Stat> stats;
+	public void Load()
+	{
+
+	}
 
 	public IdleNumber GetValue(StatsType type)
 	{
@@ -163,8 +167,7 @@ public class UnitStats : ScriptableObject
 
 	public void AddModifier(StatsType type, StatsModifier modifier)
 	{
-
-
+		//Debug.Log($"{type} , {modifier.Value}");
 		GetStat(type)?.AddModifiers(modifier);
 	}
 
@@ -174,16 +177,17 @@ public class UnitStats : ScriptableObject
 		{
 			stats = new List<Stat>();
 		}
+
 		StatsType effectType = type;
 		if (type == StatsType.Atk_Buff)
 		{
 			effectType = StatsType.Atk;
 		}
+
 		if (type == StatsType.Hp_Buff)
 		{
 			effectType = StatsType.Hp;
 		}
-
 
 		Stat stat = stats.Find(x => x.type == effectType);
 		if (stat == null)
@@ -205,12 +209,9 @@ public class UnitStats : ScriptableObject
 
 	public void RemoveModifier(StatsType type, object source)
 	{
-
+		//Debug.Log($"Remove Modifier {type} , {source}");
 		GetStat(type)?.RemoveAllModifiersFromSource(source);
 	}
-
-
-
 	public void Generate()
 	{
 		StatsType[] types = (StatsType[])System.Enum.GetValues(typeof(StatsType));
@@ -231,7 +232,29 @@ public class UnitStats : ScriptableObject
 		for (int i = 0; i < stats.Count; i++)
 		{
 			stats[i].SetDirty();
-
 		}
+	}
+
+	public IdleNumber GetTotalPower()
+	{
+		IdleNumber totalPower = (IdleNumber)0;
+		IdleNumber atkPower = GetStat(StatsType.Atk).Value;
+		IdleNumber atkSpeed = GetStat(StatsType.Atk_Speed).Value / 100f;
+
+		IdleNumber averageAtk = atkPower / atkSpeed;
+
+		IdleNumber critChance = GetStat(StatsType.Crits_Chance).Value;
+		IdleNumber critDamage = GetStat(StatsType.Crits_Damage).Value / 100f;
+		IdleNumber superCritChance = GetStat(StatsType.Super_Crits_Chance).Value;
+		IdleNumber superCritDmg = GetStat(StatsType.Super_Crits_Damage).Value / 100f;
+
+		IdleNumber critResult = averageAtk * critChance * (critDamage);
+		IdleNumber superCritResult = critResult * superCritChance * superCritDmg;
+
+		critResult.Check();
+		superCritResult.Check();
+		totalPower = atkPower + averageAtk + critResult + superCritResult;
+		totalPower.Turncate();
+		return totalPower;
 	}
 }

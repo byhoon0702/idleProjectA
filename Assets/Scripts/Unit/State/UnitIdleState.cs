@@ -20,29 +20,25 @@ public class UnitIdleState : UnitFSM
 
 	public override void OnUpdate(float time)
 	{
+		if (GameManager.GameStop)
+		{
+			return;
+		}
 
 		owner.FindTarget(time, false);
-
 		if (owner.IsTargetAlive() == false)
 		{
 			owner.FindTarget(time, true);
-
 			if (owner.IsTargetAlive() == false)
 			{
-
 				return;
 			}
 		}
 
-		float distance = Mathf.Abs((owner.target.transform.position - owner.transform.position).magnitude);
 
-		if (distance > 1)
+		if (owner.IsTargetAlive())
 		{
 			owner.ChangeState(StateType.MOVE);
-		}
-		else
-		{
-			owner.ChangeState(StateType.ATTACK);
 		}
 	}
 

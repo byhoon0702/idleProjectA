@@ -58,7 +58,7 @@ public class UICostumeSlot : MonoBehaviour
 
 		var data = GameManager.UserDB.costumeContainer[costumeInfo.Type];
 		isEquipped = false;
-		if (data.itemTid == costumeInfo.tid)
+		if (data.itemTid == costumeInfo.Tid)
 		{
 			isEquipped = true;
 			equippedMark.SetActive(true);
@@ -81,7 +81,7 @@ public class UICostumeSlot : MonoBehaviour
 		{
 			return;
 		}
-		if (tid == costumeInfo.tid)
+		if (tid == costumeInfo.Tid)
 		{
 
 		}
@@ -94,7 +94,7 @@ public class UICostumeSlot : MonoBehaviour
 
 	public void OnClickSelect()
 	{
-		parent?.SetSelectedTid(costumeInfo.tid);
+		parent?.SetSelectedTid(costumeInfo.Tid);
 		action?.Invoke();
 	}
 

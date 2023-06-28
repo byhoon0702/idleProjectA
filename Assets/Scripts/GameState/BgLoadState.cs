@@ -14,7 +14,7 @@ public class BgLoadState : StageFSM
 		StageManager.it.ChangeMap(data.mapPrefab);
 
 
-
+		GameUIManager.it.ShowStageStart();
 		return this;
 	}
 	public override FSM RunNextState(float time)

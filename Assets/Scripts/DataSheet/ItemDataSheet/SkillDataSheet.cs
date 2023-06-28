@@ -64,6 +64,16 @@ public class SkillLevelSheet
 }
 
 
+public enum SkillType
+{
+	ATTACK,
+	HEAL,
+	BUFF,
+	DEBUFF
+
+
+}
+
 public enum SkillTreeType
 {
 	ATTACK,
@@ -78,7 +88,18 @@ public enum ValueModifyTarget
 	NONE,
 	CHARACTER,
 	SKILL,
+}
 
+[Serializable]
+public struct SkillDetailData
+{
+	public SkillCooldownType cooldownType;
+	public float cooldownValue;
+	public SkillActiveType activeType;
+
+	public int maxLevel;
+	public long rootSkillTid;
+	public List<SkillLevelSheet> levelSheet;
 }
 
 
@@ -87,17 +108,16 @@ public class SkillData : ItemData
 {
 	public string ui_Description;
 	public SkillTreeType type;
+	public SkillType skillType;
+
+	public string animation;
 
 	public ValueModifyTarget valueModifyTarget;
 	public ItemStats useValue;
-	public SkillCooldownType cooldownType;
-	public float cooldownValue;
-	public SkillActiveType activeType;
 
-	public int maxLevel;
-	public long rootSkillTid;
-	public List<SkillLevelSheet> levelSheet;
 
+
+	public SkillDetailData? detailData;
 	public bool hideInUI;
 	public SkillData()
 	{

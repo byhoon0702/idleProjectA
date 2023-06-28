@@ -7,8 +7,9 @@ using TMPro;
 public class HyperSkillUi : MonoBehaviour
 {
 
-	[SerializeField] GameObject[] objHyperPhase;
-	[SerializeField] private TextMeshProUGUI buttonText;
+	[SerializeField] GameObject objHyperPhase;
+	[SerializeField] private TextMeshProUGUI buttonAutoSkillText;
+	[SerializeField] private TextMeshProUGUI buttonAutoHyperText;
 	[SerializeField] private Image[] hyperModeGauge;
 	[SerializeField] private Image[] hyperBreakGauge;
 
@@ -33,10 +34,7 @@ public class HyperSkillUi : MonoBehaviour
 
 	private void Start()
 	{
-		for (int i = 0; i < objHyperPhase.Length; i++)
-		{
-			objHyperPhase[i].SetActive(false);
-		}
+		objHyperPhase.SetActive(false);
 		foreach (var v in hyperModeGauge)
 		{
 			v.fillAmount = 0;
@@ -79,10 +77,26 @@ public class HyperSkillUi : MonoBehaviour
 	public void OnClickAutoSkill(bool isTrue)
 	{
 		GameManager.UserDB.skillContainer.isAutoSkill = isTrue;
+		if (isTrue)
+		{
+			buttonAutoSkillText.color = Color.yellow;
+		}
+		else
+		{
+			buttonAutoSkillText.color = Color.white;
+		}
 	}
 	public void OnClickAutoHyper(bool isTrue)
 	{
 		GameManager.UserDB.skillContainer.isAutoHyper = isTrue;
+		if (isTrue)
+		{
+			buttonAutoHyperText.color = Color.yellow;
+		}
+		else
+		{
+			buttonAutoHyperText.color = Color.white;
+		}
 	}
 
 	public void SetProgressHyperMode(float _ratio, float _value)
@@ -104,10 +118,7 @@ public class HyperSkillUi : MonoBehaviour
 			}
 		}
 
-		for (int i = 0; i < objHyperPhase.Length; i++)
-		{
-			objHyperPhase[i].SetActive(!isHyper && phaseIndex - 1 >= i);
-		}
+		objHyperPhase.SetActive(!isHyper && phaseIndex == 1);
 	}
 
 	public void SetProgressHyperBreak(float _value)

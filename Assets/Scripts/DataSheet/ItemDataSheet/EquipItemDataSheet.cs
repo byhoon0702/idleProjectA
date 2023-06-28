@@ -18,6 +18,7 @@ public struct ItemStats
 public class EquipItemData : ItemData
 {
 	public int starLevel;
+
 	public EquipType equipType;
 	public List<ItemStats> equipValues;
 	public List<ItemStats> ownValues;

@@ -2,9 +2,30 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Pool;
+
+public abstract class PoolingObject<T> : MonoBehaviour where T : UnityEngine.Object
+{
+	public IObjectPool<T> pool;
+
+	public virtual void SetObjectPool(IObjectPool<T> _pool)
+	{
+		pool = _pool;
+	}
+	public virtual void Init()
+	{
+
+	}
+
+	public virtual void Release()
+	{
+		pool.Release(this as T);
+	}
+
+}
 
 
-public class FieldItem : MonoBehaviour
+public class FieldItem : PoolingObject<FieldItem>
 {
 	private enum FieldItemState
 	{
@@ -59,9 +80,14 @@ public class FieldItem : MonoBehaviour
 		move.y = velocity * Mathf.Sin(angle * Mathf.Deg2Rad);
 
 		duration = distance / (new Vector3(move.x, 0, move.z).magnitude);
+		stop = false;
 	}
 
-
+	public override void Release()
+	{
+		stop = true;
+		pool.Release(this);
+	}
 	public void Collect()
 	{
 		state = FieldItemState.COLLECT;
@@ -98,9 +124,7 @@ public class FieldItem : MonoBehaviour
 				{
 					if (target == null || transform == null)
 					{
-						gameObject.SetActive(false);
-						Destroy(gameObject);
-						stop = true;
+						Release();
 						return;
 					}
 					if (Vector3.Distance(target.position, transform.position) > 0.1f)
@@ -110,9 +134,7 @@ public class FieldItem : MonoBehaviour
 					}
 					else
 					{
-						stop = true;
-						gameObject.SetActive(false);
-						Destroy(gameObject);
+						Release();
 					}
 				}
 				break;

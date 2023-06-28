@@ -16,9 +16,14 @@ public class UIBottomToggle : UIBehaviour
 	[SerializeField] private RectTransform iconClose;
 	private RectTransform rectTransform => transform as RectTransform;
 
+	protected override void Awake()
+	{
+		toggle.onValueChanged.RemoveAllListeners();
+		toggle.onValueChanged.AddListener(OnValueChange);
+	}
 	public void OnValueChange(bool isOn)
 	{
-		bg.enabled = !isOn;
+		//bg.enabled = !isOn;
 		iconMenu.gameObject.SetActive(!isOn);
 		iconClose.gameObject.SetActive(isOn);
 		if (isOn)
@@ -27,14 +32,14 @@ public class UIBottomToggle : UIBehaviour
 			{
 				selectObject.gameObject.SetActive(true);
 
-				DOTween.To(() => layoutElement.preferredWidth, x => layoutElement.preferredWidth = x, 250f, 0.3f);
+				//DOTween.To(() => layoutElement.preferredWidth, x => layoutElement.preferredWidth = x, 250f, 0.3f);
 				//layoutElement.preferredWidth = 230;
 			}
 		}
 		else
 		{
 			selectObject.gameObject.SetActive(false);
-			DOTween.To(() => layoutElement.preferredWidth, x => layoutElement.preferredWidth = x, 210f, 0.3f);
+			//DOTween.To(() => layoutElement.preferredWidth, x => layoutElement.preferredWidth = x, 210f, 0.3f);
 			//layoutElement.preferredWidth = 175;
 		}
 	}

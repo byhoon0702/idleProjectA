@@ -47,7 +47,7 @@ public class ItemUICostume : ItemUIBase
 
 	public void OnSelect(long tid)
 	{
-		if (tid == info.tid)
+		if (tid == info.Tid)
 		{
 
 		}

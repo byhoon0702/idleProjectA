@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -10,25 +11,40 @@ public delegate void OnSkillCoolDown(float value);
 public class SkillModule : MonoBehaviour
 {
 	public SkillSlot defaultSkill;
+	public SkillSlot finishSkillSlot;
 	public Dictionary<SkillActiveType, List<SkillSlot>> skillDictionary;
 
 	public event OnSkillCoolDown onSkillCoolDown;
 	[SerializeField] private Unit caster;
 
+	private SkillSlot currentSlot;
+	private HitInfo info;
 	public void Init(Unit _caster, long defaultSkillTid)
 	{
+		caster = _caster;
 		skillDictionary = new Dictionary<SkillActiveType, List<SkillSlot>>();
 		skillDictionary.Add(SkillActiveType.PASSIVE, new List<SkillSlot>());
 		skillDictionary.Add(SkillActiveType.ACTIVE, new List<SkillSlot>());
 
 		defaultSkill = new SkillSlot();
 
-		if (defaultSkillTid == 0)
+		if (defaultSkillTid != 0)
 		{
-			return;
+			defaultSkill.item = GameManager.UserDB.skillContainer.skillList.Find(x => x.Tid == defaultSkillTid);
 		}
-		caster = _caster;
-		defaultSkill.item = GameManager.UserDB.skillContainer.skillList.Find(x => x.tid == defaultSkillTid);//new RuntimeData.SkillInfo(defaultSkillTid);
+	}
+
+	public void ChangeSkillSet(SkillSlot[] slots)
+	{
+		for (int i = 0; i < slots.Length; i++)
+		{
+			var slot = slots[i];
+			if (slot == null || slot.item == null || slot.item.Tid == 0)
+			{
+				continue;
+			}
+			AddSkill(slots[i]);
+		}
 	}
 
 	public void DefaultAttack(HitInfo hitinfo)
@@ -39,12 +55,23 @@ public class SkillModule : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		OnUpdateActiveSkill();
-		OnUpdatePassiveSkill();
+		if (caster == null)
+		{
+			return;
+		}
+		if (caster.hyperModule != null && caster.hyperModule.IsHyper)
+		{
+			return;
+		}
+
+		if (caster.IsAlive())
+		{
+			OnUpdateActiveSkill();
+			OnUpdatePassiveSkill();
+		}
 	}
 	public void ResetSkills()
 	{
-
 		foreach (var skills in skillDictionary)
 		{
 			for (int i = 0; i < skills.Value.Count; i++)
@@ -57,7 +84,7 @@ public class SkillModule : MonoBehaviour
 
 	public void AddSkill(SkillSlot slot)
 	{
-		if (slot.item.rawData.activeType == SkillActiveType.PASSIVE)
+		if (slot.item.activeType == SkillActiveType.PASSIVE)
 		{
 			var skill = skillDictionary[SkillActiveType.PASSIVE].Find(x => x.itemTid == slot.itemTid);
 			if (skill == null)
@@ -79,7 +106,7 @@ public class SkillModule : MonoBehaviour
 
 	public void RemoveSkill(SkillSlot info)
 	{
-		if (info.item.rawData.activeType == SkillActiveType.PASSIVE)
+		if (info.item.activeType == SkillActiveType.PASSIVE)
 		{
 			var skill = skillDictionary[SkillActiveType.PASSIVE].Find(x => x.itemTid == info.itemTid);
 			if (skill == null)
@@ -117,6 +144,7 @@ public class SkillModule : MonoBehaviour
 			if (skill.IsReady())
 			{
 				skill.Trigger(caster);
+				skill.Use();
 			}
 			else
 			{
@@ -128,8 +156,6 @@ public class SkillModule : MonoBehaviour
 
 	void OnUpdateActiveSkill()
 	{
-
-
 		var list = skillDictionary[SkillActiveType.ACTIVE];
 
 		for (int i = 0; i < list.Count; i++)
@@ -144,9 +170,12 @@ public class SkillModule : MonoBehaviour
 			{
 				if (caster is PlayerUnit && GameManager.UserDB.skillContainer.isAutoSkill)
 				{
-					caster.TriggerSkill(skill);
+					if (caster.IsTargetAlive())
+					{
+						caster.TriggerSkill(skill);
+						GameManager.UserDB.skillContainer.GlobalCooldown();
+					}
 				}
-
 			}
 			else
 			{
@@ -156,6 +185,24 @@ public class SkillModule : MonoBehaviour
 		}
 	}
 
+	Action onComplete;
+	public void RegisterUsingSkill(SkillSlot skillSlot, HitInfo hitInfo)
+	{
+		currentSlot = skillSlot;
+		info = hitInfo;
+
+	}
+	public void ActivateSkill()
+	{
+		if (currentSlot == null)
+		{
+			return;
+		}
+		currentSlot.Trigger(caster);
+		currentSlot = null;
+		//currentSlot.item.itemObject.Trigger(caster, )
+		//skill.Trigger(caster, currentSlot.item, info);
+	}
 	public void ActivateSkill(SkillSlot skillSlot, HitInfo hitInfo)
 	{
 		if (skillSlot == null || skillSlot.IsUsable() == false)
@@ -167,5 +214,7 @@ public class SkillModule : MonoBehaviour
 		{
 			skillSlot.Trigger(caster);
 		}
+
+		currentSlot = null;
 	}
 }

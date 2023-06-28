@@ -8,16 +8,23 @@ public class CutSceneState : StageFSM
 	{
 		elapsedTime = 0;
 		isCutsceneEnd = false;
+
 		if (stageRule.isCutsceneExist == false)
 		{
+
 			return nextState.OnEnter();
 		}
 
 		GameManager.GameStop = true;
 		UnitManager.it.Player.ChangeState(StateType.IDLE, true);
+		UnitManager.it.Player.position = StageManager.it.map.playerSpawnPos != null ? StageManager.it.map.playerSpawnPos.position : new Vector3(-2, 0, 0);
+		UnitManager.it.Player.ChangeDirection(Vector3.right);
+
 		DialogueManager.it.ChangeInkJson(Resources.Load("Story/StageCustscene") as TextAsset);
-		DialogueManager.it.EnterDialogueMode(() => { StageManager.it.playableDirector.Play(); });
-		StageManager.it.playableDirector.Play();
+		DialogueManager.it.EnterDialogueMode(() => { SceneCamera.PlayableDirector.Play(); });
+
+		//UnitManager.it.Player
+		SceneCamera.it.PlayBossEnter(null);
 
 		return this;
 	}

@@ -117,7 +117,13 @@ public class DialogueManager : MonoBehaviour
 		if (currentStory.canContinue)
 		{
 			var dialouge = currentStory.Continue();
+
 			HandleTag(currentStory.currentTags);
+			if (currentSpeaker == null)
+			{
+				ContinueStory();
+				return;
+			}
 			CreateTalkBox(dialouge, currentSpeaker);
 		}
 		else

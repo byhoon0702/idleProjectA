@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class UnitStatusUI : MonoBehaviour
 {
 	[SerializeField] private Slider hpSlider = null;
-	//[SerializeField] private Slider skillGaugeSlider = null;
+	[SerializeField] private Image imageFill;
 
 
 	private RectTransform rectTransform;
@@ -24,13 +24,13 @@ public class UnitStatusUI : MonoBehaviour
 	{
 		rectTransform = transform as RectTransform;
 		observingUnit = _observingUnit;
-		if (_observingUnit is Unit)
+		if (_observingUnit is PlayerUnit)
 		{
-			//skillModule = (_observingUnit as Unit).skillModule;
-			//skillGaugeSlider.gameObject.SetActive(skillModule.mainSkill != null);
+			imageFill.color = Color.green;
 		}
 		else
 		{
+			imageFill.color = Color.red;
 			//skillGaugeSlider.gameObject.SetActive(false);
 		}
 

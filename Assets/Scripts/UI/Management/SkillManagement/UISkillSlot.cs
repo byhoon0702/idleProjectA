@@ -106,18 +106,18 @@ public class UISkillSlot : MonoBehaviour
 		lockedMark.SetActive(false);
 		equippedMark.SetActive(false);
 		ShowSlider(false);
-		if (skillInfo == null || skillInfo.rawData == null)
+		if (skillInfo == null)
 		{
 			return;
 		}
 
-		skillRequirement = DataManager.Get<SkillTreeDataSheet>().GetSkillRequirement(skillInfo.rawData.rootSkillTid, skillInfo.tid);
+		//skillRequirement = DataManager.Get<SkillTreeDataSheet>().GetSkillRequirement(skillInfo.rawData.detailData.rootSkillTid, skillInfo.Tid);
 
 		for (int i = 0; i < GameManager.UserDB.skillContainer.skillSlot.Length; i++)
 		{
 			var data = GameManager.UserDB.skillContainer.skillSlot[i];
 			isEquipped = false;
-			if (data.itemTid == skillInfo.tid)
+			if (data.itemTid == skillInfo.Tid)
 			{
 				isEquipped = true;
 				equippedMark.SetActive(true);
@@ -141,14 +141,14 @@ public class UISkillSlot : MonoBehaviour
 		{
 			return;
 		}
-		if (tid == skillInfo.tid)
+		if (tid == skillInfo.Tid)
 		{
 
 		}
 	}
 	public void OnClickSelect()
 	{
-		parent?.SetSelectedTid(skillInfo.tid);
+		parent?.SetSelectedTid(skillInfo.Tid);
 		onAction?.Invoke();
 	}
 	public void ShowSlider(bool show)

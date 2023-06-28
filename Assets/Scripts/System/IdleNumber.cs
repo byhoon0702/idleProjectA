@@ -35,6 +35,7 @@ public struct IdleNumber
 		Value = idlenumber.Value;
 		Exp = idlenumber.Exp;
 	}
+
 	public IdleNumber(double value)
 	{
 		Value = value;
@@ -113,6 +114,24 @@ public struct IdleNumber
 		return (int)GetValue();
 	}
 
+	public void Check()
+	{
+		if (Value == 0)
+		{
+			Exp = 0;
+		}
+	}
+	public void Turncate()
+	{
+		if (Exp > 2)
+		{
+			return;
+		}
+
+		Exp = 0;
+		Value = Mathf.Floor((float)(Value * Mathf.Pow(10, Exp)));
+	}
+
 	public long GetValueToLong()
 	{
 		return (long)GetValue();
@@ -173,9 +192,9 @@ public struct IdleNumber
 		}
 		else if (Value < 1)
 		{
-			if (Exp >= 3)
+			if (Exp >= position)
 			{
-				Exp -= 3;
+				Exp -= position;
 				Value *= 1000;
 			}
 		}
@@ -184,7 +203,7 @@ public struct IdleNumber
 			while (Value >= tencubed)
 			{
 				Value /= tencubed;
-				Exp += 3;
+				Exp += position;
 			}
 		}
 	}
@@ -203,14 +222,14 @@ public struct IdleNumber
 			while (value >= tencubed)
 			{
 				value /= tencubed;
-				normalize.Exp += 3;
+				normalize.Exp += position;
 			}
 		}
 		normalize.Value = value;
 		return normalize;
 	}
 
-	private static int CompareTo(IdleNumber left, IdleNumber right)
+	public static int CompareTo(IdleNumber left, IdleNumber right)
 	{
 		var comparison = left.Exp.CompareTo(right.Exp);
 		if (comparison == 0)
@@ -275,6 +294,7 @@ public struct IdleNumber
 
 	}
 
+	#region operator
 	public static explicit operator IdleNumber(string value)
 	{
 		if (value.IsNullOrEmpty())
@@ -330,7 +350,7 @@ public struct IdleNumber
 			}
 
 			idleNumber.Value = parseValue;
-			idleNumber.Exp = sum * 3;
+			idleNumber.Exp = sum * position;
 		}
 		return idleNumber;
 	}
@@ -345,6 +365,11 @@ public struct IdleNumber
 		return number.GetValue();
 	}
 
+	//public static implicit operator IdleNumber(int value)
+	//{
+	//	IdleNumber idlenumber = new IdleNumber(value);
+	//	return idlenumber;
+	//}
 
 	public static explicit operator IdleNumber(int value)
 	{
@@ -368,58 +393,8 @@ public struct IdleNumber
 		IdleNumber idlenumber = new IdleNumber(value);
 		return idlenumber;
 	}
+	#endregion
 
-	private static IdleNumber Calculate(IdleNumber a, IdleNumber b, char operator_symbol)
-	{
-
-		IdleNumber left = new IdleNumber(a);
-		IdleNumber right = new IdleNumber(b);
-
-		IdleNumber result = AligningIdleNumber(ref left, ref right, out IdleNumber big, out IdleNumber small);
-
-		switch (operator_symbol)
-		{
-			case '+':
-				result.Value = left.Value + right.Value;
-				result.Exp = big.Exp;
-				break;
-			case '-':
-				result.Value = left.Value - right.Value;
-				result.Exp = big.Exp;
-				break;
-			case '*':
-				{
-					float diff = Mathf.Pow(ten, result.Exp);
-					//같은 승수를 가지거나 승수가 없을 경우
-					if (diff == 1)
-					{
-						//좌, 우의 승수를 더한다.
-						result.Exp = left.Exp + right.Exp;
-					}
-					//AligningIdleNumber 함수에서 낮은 승수의 값을 소수점으로 변경시키기 때문에 결과에 최종 승수 만큼 곱한다.
-					result.Value = (left.Value * right.Value) * diff;
-				}
-				break;
-			case '/':
-				{
-					result.Value = left.Value / right.Value;
-					result.Exp = 0;
-					result.NormalizeSelf();
-				}
-				break;
-		}
-		return result;
-	}
-
-	public static bool NullCheckAndThrow(IdleNumber _idleNumber)
-	{
-		if (_idleNumber.Equals(default))
-		{
-			return true;
-		}
-
-		return false;
-	}
 
 	#region operator double 
 	public static bool operator <=(IdleNumber a, double b)
@@ -539,6 +514,11 @@ public struct IdleNumber
 		return comparison != 0;
 	}
 
+	public static IdleNumber operator %(IdleNumber a, IdleNumber b)
+	{
+		IdleNumber result = Calculate(a, b, '%');
+		return result;
+	}
 	public static IdleNumber operator +(IdleNumber a, IdleNumber b)
 	{
 		IdleNumber result = Calculate(a, b, '+');
@@ -598,8 +578,166 @@ public struct IdleNumber
 	}
 
 
+
 	#endregion
+	private static IdleNumber Calculate(IdleNumber a, IdleNumber b, char operator_symbol)
+	{
+
+		IdleNumber left = new IdleNumber(a);
+		IdleNumber right = new IdleNumber(b);
+
+		IdleNumber result = AligningIdleNumber(ref left, ref right, out IdleNumber big, out IdleNumber small);
+
+		switch (operator_symbol)
+		{
+			case '+':
+				result.Value = left.Value + right.Value;
+				result.Exp = big.Exp;
+				break;
+			case '-':
+				result.Value = left.Value - right.Value;
+				result.Exp = big.Exp;
+				break;
+			case '*':
+				{
+					float diff = Mathf.Pow(ten, result.Exp);
+					//같은 승수를 가지거나 승수가 없을 경우
+					if (diff == 1)
+					{
+						//좌, 우의 승수를 더한다.
+						result.Exp = left.Exp + right.Exp;
+					}
+					//AligningIdleNumber 함수에서 낮은 승수의 값을 소수점으로 변경시키기 때문에 결과에 최종 승수 만큼 곱한다.
+					result.Value = (left.Value * right.Value) * diff;
+				}
+				break;
+			case '/':
+				{
+					result.Value = left.Value / right.Value;
+					result.Exp = 0;
+					result.NormalizeSelf();
+				}
+				break;
+			case '%':
+				{
+					result.Value = left.Value % right.Value;
+					result.Exp = 0;
+					result.NormalizeSelf();
+				}
+				break;
+		}
+		return result;
+	}
+
+	public static bool NullCheckAndThrow(IdleNumber _idleNumber)
+	{
+		if (_idleNumber.Equals(default))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	public static bool TryConvert(string value, out IdleNumber result)
+	{
+		result = (IdleNumber)0;
+		if (value.IsNullOrEmpty())
+		{
+			return false;
+		}
+
+		IdleNumber idleNumber = new IdleNumber();
+		double parseValue = 0;
+
+		int exp = 0;
+
+		if (value.Length > 7)
+		{
+			exp = value.Length - 7;
+			value = value.Remove(7);
+		}
+
+		if (double.TryParse(value, out parseValue))
+		{
+			idleNumber = idleNumber.Normalize(parseValue);
+			idleNumber.Exp += exp;
+		}
+		else
+		{
+			value = value.ToUpper();
+			string numbers = Regex.Replace(value, @"[A-Z]", "");
+			string unit = value.Replace(numbers, "");
+
+			if (double.TryParse(numbers, out parseValue) == false)
+			{
+				VLog.LogError("숫자가 없는 문자열");
+				return false;
+			}
+
+			int[] resultExponential = new int[unit.Length];
+
+			int converted = intChar - 1;
+			for (int i = 0; i < unit.Length; i++)
+			{
+				int diff = Convert.ToInt32(unit[i]) - converted;
+				resultExponential[i] = diff;
+			}
+			int sum = 1;
+
+			if (resultExponential.Length > 1)
+			{
+				sum = (resultExponential[0] * amountofletter) + resultExponential[1];
+			}
+			else
+			{
+				sum = resultExponential[0];
+			}
+
+			idleNumber.Value = parseValue;
+			idleNumber.Exp = sum * position;
+		}
+		result = idleNumber;
+		return false;
+	}
+
+	public override bool Equals(object obj)
+	{
+		return obj is IdleNumber number &&
+			   Value == number.Value &&
+			   Exp == number.Exp;
+	}
+
+	public override int GetHashCode()
+	{
+		return HashCode.Combine(Value, Exp);
+	}
+}
+
+public class IdleRandom
+{
+	public static IdleNumber Random(IdleNumber min, IdleNumber max)
+	{
+
+		if (min > max)
+		{
+			Debug.LogWarning("min bigger than max");
+			return min;
+		}
 
 
+		IdleNumber differ = max - min;
 
+		if (differ.Exp > 10)
+		{
+			Debug.LogWarning("Range is Too Big");
+			return min;
+		}
+
+		var randomValue = UnityEngine.Random.Range(0, differ.GetValueFloat());
+
+		IdleNumber value = new IdleNumber(min + randomValue);
+		value.Turncate();
+		return value;
+	}
 }

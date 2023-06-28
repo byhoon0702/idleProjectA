@@ -7,8 +7,9 @@ public class CostumeData : ItemData
 {
 	public int starLevel;
 	public CostumeType costumeType;
-	public List<ItemStats> equipValues;
-	public List<ItemStats> ownValues;
+	public int point;
+	//public List<ItemStats> equipValues;
+	//public List<ItemStats> ownValues;
 
 	//public override List<AbilityInfo> EquipAbilityInfos()
 	//{

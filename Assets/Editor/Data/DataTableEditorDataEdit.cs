@@ -236,19 +236,22 @@ public partial class DataTableEditor
 			{
 				if (GetScriptableObject(label) == false)
 				{
-					if (TypeExist())
+					if (label.Contains("_") == false)
 					{
-						if (GUILayout.Button("Create Scriptable Object"))
+						if (TypeExist())
 						{
-							scriptableObject = CreateScriptableAsset(label);
-							serializedObject = new SerializedObject(scriptableObject);
+							if (GUILayout.Button("Create Scriptable Object"))
+							{
+								scriptableObject = CreateScriptableAsset(label);
+								serializedObject = new SerializedObject(scriptableObject);
+							}
 						}
-					}
-					else
-					{
-						if (GUILayout.Button("Create CSharp File"))
+						else
 						{
-							CreateCSharpFile();
+							if (GUILayout.Button("Create CSharp File"))
+							{
+								CreateCSharpFile();
+							}
 						}
 					}
 					if (GUILayout.Button("Load Json"))

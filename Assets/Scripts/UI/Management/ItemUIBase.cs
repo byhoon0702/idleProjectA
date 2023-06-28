@@ -8,10 +8,11 @@ public abstract class ItemUIBase : MonoBehaviour
 {
 	[SerializeField] protected Image icon;
 	[SerializeField] protected Image bg;
+	[SerializeField] protected Image imageFrame;
 	[SerializeField] protected TextMeshProUGUI levelText;
 	[SerializeField] protected TextMeshProUGUI countText;
 
-	[SerializeField] protected GameObject frameObject;
+
 
 	[SerializeField] protected Button button;
 	protected Action onClick;

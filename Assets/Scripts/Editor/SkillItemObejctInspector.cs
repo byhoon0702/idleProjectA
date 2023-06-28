@@ -9,7 +9,6 @@ public class SkillItemObjectInspector : Editor
 {
 	private SkillDataSheet dataSheet;
 	SkillItemObject skill;
-	SkillObject currentObj;
 	private void OnEnable()
 	{
 		skill = target as SkillItemObject;
@@ -87,23 +86,22 @@ public class SkillItemObjectInspector : Editor
 	}
 	private void LoadData()
 	{
-
-
 		if (LoadDataSheet() == false)
 		{
 			return;
 		}
 
-
 		var data = dataSheet.Get(skill.Tid);
 		if (data != null)
 		{
-			skill.SetBasicData(data.tid, data.name, data.description, data.cooldownValue);
-			skill.SetUseAbility(data.useValue);
+			if (data.detailData.HasValue)
+			{
+				skill.SetBasicData(data.tid, data.name, data.description, data.detailData.Value.cooldownValue);
+				skill.SetUseAbility(data.useValue);
 
-			EditorUtility.SetDirty(skill);
+				EditorUtility.SetDirty(skill);
+			}
 		}
-
 	}
 
 	private void SaveData()

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RuntimeData
 {
 	[System.Serializable]
-	public struct AdvancementInfo : IDataInfo
+	public class AdvancementInfo : BaseInfo
 	{
 		[SerializeField] private int level;
 		public int Level => level;
@@ -26,12 +26,14 @@ namespace RuntimeData
 
 		public UnitAdvancementInfo advancementInfo { get; private set; }
 		public UnitData rawData { get; private set; }
-		public void Load(AdvancementInfo info)
+		public override void Load<T>(T info)
 		{
-			level = info.level;
-			costumeIndex = info.costumeIndex;
+			AdvancementInfo _info = info as AdvancementInfo;
+			level = _info.level;
+			costumeIndex = _info.costumeIndex;
+			UpdateInfo();
 		}
-		public void SetRawData<T>(T data) where T : class
+		public override void SetRawData<T>(T data) where T : class
 		{
 			rawData = data as UnitData;
 			UpdateInfo();
@@ -42,11 +44,9 @@ namespace RuntimeData
 			int level = this.level;
 			advancementInfo = rawData.upgradeInfoList.Find(x => x.level == level);
 
-			if (owner != null)
-			{
-				GameManager.UserDB.advancementContainer.RemoveModifiers(GameManager.UserDB.UserStats, owner);
-				GameManager.UserDB.advancementContainer.AddModifiers(GameManager.UserDB.UserStats, owner);
-			}
+
+			GameManager.UserDB.advancementContainer.RemoveModifiers(GameManager.UserDB.UserStats);
+			GameManager.UserDB.advancementContainer.AddModifiers(GameManager.UserDB.UserStats);
 		}
 
 		public void LevelUp(Unit owner, UnitAdvancementInfo _info)

@@ -12,6 +12,41 @@ public class HyperDataSheetObject : BaseDataSheetObject
 	public override void Call()
 	{
 #if UNITY_EDITOR
+
+		if (dataSheet.infos.Count == 0)
+		{
+			return;
+		}
+
+		var firstData = dataSheet.infos[0];
+
+		string path = $"Assets/Resources/RuntimeDatas/HyperClass";
+
+		if (AssetDatabase.IsValidFolder(path) == false)
+		{
+			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas", "HyperClass");
+		}
+
+		for (int i = 0; i < dataSheet.infos.Count; i++)
+		{
+			var data = dataSheet.infos[i];
+			string name = $"{data.tid}_{data.name}";
+			string assetPath = $"{path}/{name}.asset";
+
+			var scriptable = (HyperClassObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(HyperClassObject));
+			if (scriptable == null)
+			{
+				scriptable = ScriptableObject.CreateInstance<HyperClassObject>();
+				AssetDatabase.CreateAsset(scriptable, assetPath);
+			}
+			scriptable.SetBasicData(data.tid);
+			EditorUtility.SetDirty(scriptable);
+			AssetDatabase.SaveAssetIfDirty(scriptable);
+
+		}
+		AssetDatabase.SaveAssets();
+		AssetDatabase.Refresh();
+
 #endif
 	}
 }

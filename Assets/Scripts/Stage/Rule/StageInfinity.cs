@@ -19,6 +19,10 @@ public class StageInfinity : StageRule
 
 	public override void OnLogicUpdate(float deltaTime)
 	{
+		if (GameManager.GameStop)
+		{
+			return;
+		}
 		if (isEnd)
 		{
 			return;
@@ -33,7 +37,14 @@ public class StageInfinity : StageRule
 		SpawnUpdate(deltaTime);
 		elapsedTime += deltaTime;
 	}
-	internal void SpawnUpdate(float time)
+
+	public override void AddReward()
+	{
+		StageManager.it.CurrentStage.SetStageReward((IdleNumber)StageManager.it.currentKillCount);
+		GameManager.UserDB.AddStageRewards(StageManager.it.CurrentStage.StageClearReward, false);
+	}
+
+	private void SpawnUpdate(float time)
 	{
 		if (spawnTime == 0)
 		{

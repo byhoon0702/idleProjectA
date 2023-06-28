@@ -1,14 +1,12 @@
 ﻿
 using System.Threading.Tasks;
+using Ink.Parsed;
 using UnityEngine;
 
 
 //[CreateAssetMenu(fileName = "Unit Hyper Mode", menuName = "ScriptableObject/Unit Hyper Mode", order = 1)]
 public class UnitHyperMode : UnitModeBase
 {
-
-	public SkillObject hyperEnterAttack;
-	public SkillObject hyperAttack;
 	public GameObject hyperEffect;
 
 	private GameObject model;
@@ -31,13 +29,18 @@ public class UnitHyperMode : UnitModeBase
 
 		OnSpawnEffect(unit.position);
 
-		hyperEffect.SetActive(true);
-		if (hyperEnterAttack != null)
+		unit.skillModule.Init(unit, GameManager.UserDB.awakeningContainer.selectedInfo.hyperData.skillTid);
+		unit.skillModule.ChangeSkillSet(GameManager.UserDB.skillContainer.skillSlot);
+
+		GameManager.UserDB.HyperStats.stats.Clear();
+		var hyperStats = GameManager.UserDB.awakeningContainer.selectedInfo.abilityInfos;
+
+		for (int i = 0; i < hyperStats.Count; i++)
 		{
-			var attack = Instantiate(hyperEnterAttack).GetComponent<SkillObject>();
-			HitInfo hitinfo = new HitInfo(unit.AttackPower);
-			attack.Trigger(unit, unit.position, hitinfo, null);
+			var stat = hyperStats[i];
+			GameManager.UserDB.AddModifiers(false, stat.type, new StatsModifier(stat.Value, StatModeType.PercentAdd, unit.hyperModule));
 		}
+
 	}
 	public override void OnSpawn(string _path, string _resource)
 	{
@@ -45,10 +48,16 @@ public class UnitHyperMode : UnitModeBase
 		{
 			modelAnimation.Release();
 		}
-		//resource = _resource;
-		//modelAnimation = UnitModelPoolManager.it.Get(path, resource);
 
-		var gameObject = Instantiate(GameManager.UserDB.costumeContainer.GetHyperCostume().CostumeObject);
+		GameObject costume = null;// GameManager.UserDB.awakeningContainer.selectedInfo.hyperClassObject.HyperCostumes[0];
+		if (unit is PlayerUnit)
+		{
+			PlayerUnit player = unit as PlayerUnit;
+			player.hitEffectObject = GameManager.UserDB.awakeningContainer.selectedInfo.hyperClassObject.HitEffectObject;
+			player.attackEffectObject = GameManager.UserDB.awakeningContainer.selectedInfo.hyperClassObject.AttackEffectObject;
+		}
+
+		var gameObject = Instantiate(costume);
 		modelAnimation = gameObject.GetComponent<UnitAnimation>();
 		modelAnimation.transform.SetParent(unit.transform);
 		modelAnimation.transform.localPosition = Vector3.zero;
@@ -62,15 +71,14 @@ public class UnitHyperMode : UnitModeBase
 			Camera sceneCam = SceneCamera.it.sceneCamera;
 			modelAnimation.transform.LookAt(modelAnimation.transform.position + sceneCam.transform.rotation * Vector3.forward, sceneCam.transform.rotation * Vector3.up);
 		}
+
 		modelAnimation.Init();
 		unit.unitAnimation = modelAnimation;
 		unit.unitFacial = modelAnimation.GetComponent<UnitFacial>();
 		model = modelAnimation.gameObject;
-
-
-
+		modelAnimation.animationEventReceiver.Init(unit);
+		modelAnimation.PlayDissolve(1.5f);
 	}
-
 
 	public override void OnModeExit()
 	{
@@ -82,6 +90,11 @@ public class UnitHyperMode : UnitModeBase
 		{
 			hyperEffect.SetActive(false);
 		}
+		//for (int i = 0; i < GameManager.UserDB.HyperStats.stats.Count; i++)
+		//{
+		//	var stat = GameManager.UserDB.HyperStats.stats[i];
+		//	GameManager.UserDB.RemoveModifiers(false, stat.type, unit.hyperModule);
+		//}
 
 		if (model != null)
 		{

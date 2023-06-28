@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
 public class PlayerUnit : Unit
 {
@@ -11,17 +12,17 @@ public class PlayerUnit : Unit
 	}
 
 
+	[SerializeField] private PlayableDirector hyperDirector;
 	private float hpRecoveryRemainTime;
 	public override string CharName => info.data.name;
 	public override ControlSide ControlSide => ControlSide.PLAYER;
 	public override UnitType UnitType => UnitType.Player;
-	public override float SearchRange => info.searchRange;
-
 
 	public override HitInfo HitInfo
 	{
 		get
 		{
+
 			float chance = Random.Range(0.001f, 100f);
 			bool checkCritical = chance <= info.stats.GetValue(StatsType.Crits_Chance);
 			CriticalType criticalType = CriticalType.Normal;
@@ -39,8 +40,9 @@ public class PlayerUnit : Unit
 					damage = AttackPower * (info.stats.GetValue(StatsType.Crits_Damage) / 100f) * (info.stats.GetValue(StatsType.Super_Crits_Damage) / 100f);
 				}
 			}
+			HitInfo hit = new HitInfo(damage, criticalType);
 
-			return new HitInfo(damage, criticalType);
+			return hit;
 		}
 	}
 	public override IdleNumber AttackPower => info.AttackPower();
@@ -100,7 +102,7 @@ public class PlayerUnit : Unit
 	}
 
 
-	public void Attack()
+	public override void Attack()
 	{
 		if (target == null)
 		{
@@ -115,15 +117,64 @@ public class PlayerUnit : Unit
 
 	}
 
+	public void PlayHyperFinishTimeline(TimelineAsset timelineAsset)
+	{
+		if (timelineAsset == null)
+		{
+			return;
+		}
+
+		SceneCamera.VirtualZoomCam.Follow = UnitManager.it.Player.transform;
+
+		hyperDirector.playableAsset = timelineAsset;
+		var tracks = (hyperDirector.playableAsset as TimelineAsset).GetOutputTracks();
+		foreach (var track in tracks)
+		{
+			if (track.name.Equals("HyperCharacter"))
+			{
+				hyperDirector.SetGenericBinding(track, UnitManager.it.Player.unitAnimation.animator);
+			}
+			if (track.name.Equals("Cinemachine Zoom Track"))
+			{
+				hyperDirector.SetGenericBinding(track, SceneCamera.CinemachineBrain);
+				if (track.hasClips)
+				{
+					var clips = track.GetClips().GetEnumerator();
+					while (clips.MoveNext())
+					{
+						var current = clips.Current;
+						var cinemachineShot = (current.asset as CinemachineShot);
+						if (cinemachineShot == null)
+						{
+							continue;
+						}
+						if (current.displayName.Equals("CM vcam default"))
+						{
+							hyperDirector.SetReferenceValue(cinemachineShot.VirtualCamera.exposedName, SceneCamera.DefaultVirtualCam);
+
+						}
+						if (current.displayName.Equals("CM vcam zoom"))
+						{
+							hyperDirector.SetReferenceValue(cinemachineShot.VirtualCamera.exposedName, SceneCamera.VirtualZoomCam);
+
+						}
+					}
+				}
+			}
+			if (track.name.Equals("MapDark"))
+			{
+				hyperDirector.SetGenericBinding(track, SceneCamera.it.BlackOutCurtain.GetComponent<Animator>());
+			}
+		}
+
+
+		hyperDirector.Play();
+	}
+
 	public void ChangeNormalUnit(RuntimeData.AdvancementInfo _info)
 	{
 		if (unitMode is UnitNormalMode)
 		{
-			//unitMode?.OnSpawn("B/Player", _info.resource);
-			//unitMode?.OnModeEnter(currentState);
-
-			//unitAnimation.RemoveAttackEvent(Attack);
-			//unitAnimation.AddAttackEvent(Attack);
 
 			if (_info.Level == 0)
 			{
@@ -150,14 +201,7 @@ public class PlayerUnit : Unit
 
 		InitMode("B/Player", info);
 
-		//if (UnitGlobal.it.hyperModule.IsHyperMode)
-		//{
-		//	ActiveHyperEffect();
-		//}
-		//else
-		//{
 		InactiveHyperEffect();
-		//}
 
 		headingDirection = Vector3.right;
 
@@ -170,17 +214,8 @@ public class PlayerUnit : Unit
 	void InitSkills()
 	{
 		skillModule.Init(this, info.defaultSkillTid);
+		skillModule.ChangeSkillSet(GameManager.UserDB.skillContainer.skillSlot);
 
-		for (int i = 0; i < GameManager.UserDB.skillContainer.skillSlot.Length; i++)
-		{
-			var slot = GameManager.UserDB.skillContainer.skillSlot[i];
-			if (slot == null || slot.item == null || slot.item.tid == 0)
-			{
-				continue;
-			}
-			slot.Equip(this, slot.itemTid);
-			//skillModule.AddSkill(slot);
-		}
 		skillModule.ResetSkills();
 	}
 
@@ -194,8 +229,13 @@ public class PlayerUnit : Unit
 		}
 	}
 
-	public override bool TriggerSkill(SkillSlot skillSlot)
+	public bool TriggerHyperFinishSkill(SkillSlot skillSlot)
 	{
+		if (skillSlot == null)
+		{
+			Debug.LogError("스킬 슬롯이 비어있음");
+			return false;
+		}
 		if (target == null)
 		{
 			FindTarget(0, true);
@@ -211,17 +251,67 @@ public class PlayerUnit : Unit
 		HitInfo info = new HitInfo(AttackPower);
 		info = new HitInfo(totalAttackPower);
 
-		skillModule.ActivateSkill(skillSlot, info);
-		DialogueManager.it.CreateSkillBubble(skillSlot.item.Name, this);
+		skillModule.RegisterUsingSkill(skillSlot, info);
+		//skillSlot.Use();
+		//DialogueManager.it.CreateSkillBubble(skillSlot.item.Name, this);
+		//unitAnimation.PlayAnimation("skill1");
 		return true;
 	}
 
+	public override bool TriggerSkill(SkillSlot skillSlot)
+	{
+		if (target == null)
+		{
+			FindTarget(0, true);
+		}
 
+		IdleNumber totalAttackPower = AttackPower;
+		IdleNumber skillvalue = skillSlot.item.skillAbility.Value;
+		IdleNumber skillBuffvalue = GameManager.UserDB.GetValue(StatsType.Skill_Damage);
+
+		totalAttackPower = (totalAttackPower * (skillvalue + (skillvalue * skillBuffvalue))) / 100f;
+
+		HitInfo info = new HitInfo(AttackPower);
+		info = new HitInfo(totalAttackPower);
+
+		if (skillSlot.item.Instant)
+		{
+			skillModule.ActivateSkill(skillSlot, info);
+		}
+		else
+		{
+			skillModule.RegisterUsingSkill(skillSlot, info);
+		}
+
+		if (skillSlot.item.IsSkillState)
+		{
+			ChangeState(StateType.SKILL, true);
+		}
+
+		skillSlot.Use();
+		DialogueManager.it.CreateSkillBubble(skillSlot.item.Name, this);
+
+		unitAnimation.PlayAnimation(skillSlot.item.itemObject.animationClip);
+
+
+		return true;
+	}
+
+	public bool ignoreAnimationEndEvent = true;
+	public override void EndHyper()
+	{
+		hyperModule.EndHyper();
+	}
+
+	public override void UseSkill()
+	{
+		skillModule.ActivateSkill();
+	}
 
 	public void EquipWeapon()
 	{
 		var weaponSlot = GameManager.UserDB.equipContainer.GetSlot(EquipType.WEAPON);
-		if (weaponSlot.item == null || weaponSlot.item.tid == 0)
+		if (weaponSlot.item == null || weaponSlot.item.Tid == 0)
 		{
 			return;
 		}
@@ -232,11 +322,16 @@ public class PlayerUnit : Unit
 
 	public override void ChangeCostume()
 	{
+		if (currentMode is UnitHyperMode)
+		{
+			return;
+		}
 		var headInfo = GameManager.UserDB.costumeContainer[CostumeType.HEAD].item;
 		var bodyInfo = GameManager.UserDB.costumeContainer[CostumeType.BODY].item;
 		var weaponInfo = GameManager.UserDB.costumeContainer[CostumeType.WEAPON].item;
 
 		unitCostume.ChangeCostume(headInfo, bodyInfo, weaponInfo);
+
 
 		if (weaponInfo == null)
 		{
@@ -284,33 +379,60 @@ public class PlayerUnit : Unit
 	/// </summary>
 	public override void ActiveHyperEffect()
 	{
-		unitAnimation.RemoveAttackEvent(Attack);
-		unitHyperMode?.OnModeEnter(currentState);
-		unitMode?.OnModeExit();
-		currentMode = unitHyperMode;
-		unitAnimation.ActiveHyperEffect();
-		unitAnimation.AddAttackEvent(Attack);
 
-		for (int i = 0; i < GameManager.UserDB.HyperStats.stats.Count; i++)
+		ChangeState(StateType.IDLE, true);
+
+		unitHyperMode?.OnModeEnter(currentState);
+		currentMode = unitHyperMode;
+
+		hyperDirector.playableAsset = hyperModule.hyperChangeTimeline;
+		var tracks = (hyperDirector.playableAsset as TimelineAsset).GetOutputTracks();
+
+		foreach (var track in tracks)
 		{
-			var stat = GameManager.UserDB.HyperStats.stats[i];
-			GameManager.UserDB.AddModifiers(false, stat.type, new StatsModifier(stat.Value, StatModeType.PercentAdd, GameManager.UserDB.HyperStats));
+			if (track.name.Equals("NormalModeDissolve"))
+			{
+				hyperDirector.SetGenericBinding(track, unitMode.ModelAnimation);
+			}
+			if (track.name.Equals("HyperModeDissolve"))
+			{
+				hyperDirector.SetGenericBinding(track, unitHyperMode.ModelAnimation);
+			}
+			if (track.name.Equals("MapDark"))
+			{
+				hyperDirector.SetGenericBinding(track, SceneCamera.it.BlackOutCurtain.GetComponent<Animator>());
+			}
 		}
 
+		hyperDirector.Play();
+
+
+		GameManager.GameStop = true;
 		VLog.SkillLog($"[{NameAndId}] 하이퍼 모드 발동");
 	}
+
+	public void EnterHyperMode()
+	{
+		unitMode?.OnModeExit();
+		GameManager.GameStop = false;
+	}
+
+	public void ExitNormalMode()
+	{
+		unitMode?.OnModeExit();
+	}
+
 
 	protected override void Update()
 	{
 		base.Update();
-		//if (Input.GetKeyDown(KeyCode.A))
-		//{
-		//	ActiveHyperEffect();
-		//}
-		//if (Input.GetKeyDown(KeyCode.S))
-		//{
-		//	InactiveHyperEffect();
-		//}
+
+		if (IsAlive() == false)
+		{
+
+			hyperDirector.Stop();
+		}
+
 		HPRecoveryUpdate(Time.deltaTime);
 	}
 	/// <summary>
@@ -318,20 +440,19 @@ public class PlayerUnit : Unit
 	/// </summary>
 	public override void InactiveHyperEffect()
 	{
-		unitAnimation.RemoveAttackEvent(Attack);
 		unitMode?.OnModeEnter(currentState);
 		unitHyperMode?.OnModeExit();
 
 		currentMode = unitMode;
-		unitAnimation.InactiveHyperEffect();
-		//unitAnimation = model.GetComponent<UnitAnimation>();
-		unitAnimation.AddAttackEvent(Attack);
+		//unitAnimation.InactiveHyperEffect();
 
-		for (int i = 0; i < GameManager.UserDB.HyperStats.stats.Count; i++)
-		{
-			var stat = GameManager.UserDB.HyperStats.stats[i];
-			GameManager.UserDB.RemoveModifiers(false, stat.type, GameManager.UserDB.HyperStats);
-		}
+		attackEffectObject = null;
+		hitEffectObject = null;
+		skillModule.Init(this, info.defaultSkillTid);
+		skillModule.ChangeSkillSet(GameManager.UserDB.skillContainer.skillSlot);
+
+		UIController.it.HyperSkill.SetHyperMode(false);
+
 		VLog.SkillLog($"[{NameAndId}] 하이퍼 모드 발동종료");
 	}
 
@@ -384,7 +505,7 @@ public class PlayerUnit : Unit
 			reverse.x = HeadPosition.x + (0.7f * -currentDir);
 			reverse.y = HeadPosition.y + 0.6f;
 			reverse.z = HeadPosition.z;
-			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, HeadPosition, reverse, _hitInfo.criticalType);
+			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, HeadPosition, reverse, TextType.PLAYER_HIT);
 			ShakeUnit();
 		}
 		Hp -= _hitInfo.TotalAttackPower;
@@ -410,7 +531,7 @@ public class PlayerUnit : Unit
 	{
 		if (levelupTrans == null)
 		{
-			GameObject go = (GameObject)Instantiate(Resources.Load("MagicBuffYellow 1"), transform);
+			GameObject go = (GameObject)Instantiate(Resources.Load("LevelUpEffect"), transform);
 			go.transform.localPosition = Vector3.zero;
 
 			levelupTrans = go.transform;
@@ -431,6 +552,30 @@ public class PlayerUnit : Unit
 		info.UpdateMaxHP(this);
 	}
 
+	public override void RandomTarget(float _time, bool _ignoreSearchDelay)
+	{
+		base.RandomTarget(_time, _ignoreSearchDelay);
+
+		var list = UnitManager.it.GetEnemies();
+		int count = list.Count;
+
+		List<HittableUnit> unitlist = new List<HittableUnit>();
+		for (int i = 0; i < count; i++)
+		{
+			if (list[i].IsAlive())
+			{
+				unitlist.Add(list[i]);
+			}
+		}
+
+		int index = UnityEngine.Random.Range(0, unitlist.Count);
+		HittableUnit newTarget = unitlist[index];
+
+		if (TargetAddable(newTarget))
+		{
+			SetTarget(newTarget);
+		}
+	}
 
 	public override void FindTarget(float _time, bool _ignoreSearchDelay)
 	{
@@ -449,6 +594,26 @@ public class PlayerUnit : Unit
 		}
 	}
 
+
+	public override void FindTarget(float _time, bool _ignoreSearchDelay, float range)
+	{
+		base.FindTarget(_time, _ignoreSearchDelay, range);
+
+		if (searchInterval > GameManager.Config.TARGET_SEARCH_DELAY || _ignoreSearchDelay)
+		{
+			searchInterval = 0;
+
+			// 새로운 타겟을 찾음
+			HittableUnit newTarget = FindNewTarget(UnitManager.it.GetEnemies(), range);
+			if (TargetAddable(newTarget))
+			{
+				SetTarget(newTarget);
+			}
+		}
+	}
+
+
+
 	public void ResetUnit()
 	{
 		Hp = MaxHp;
@@ -458,51 +623,6 @@ public class PlayerUnit : Unit
 
 	public override void Debuff(List<StatInfo> debufflist)
 	{
-		foreach (var debuff in debufflist)
-		{
-			switch (debuff.type)
-			{
-				case Ability._NONE:
-					break;
-				case Ability.Attackpower:
-					break;
-				case Ability.Hp:
-					break;
-				case Ability.HpRecovery:
-					break;
-				case Ability.CriticalChance:
-					break;
-				case Ability.CriticalDamage:
-					break;
-				case Ability.SuperCriticalChance:
-					break;
-				case Ability.SuperCriticalDamage:
-					break;
-				case Ability.AttackSpeed:
-					break;
-				case Ability.AttackpowerIncrease:
-					break;
-				case Ability.HpIncrease:
-					break;
-				case Ability.SkillCooldown:
-					break;
-				case Ability.SkillDamage:
-					break;
-				case Ability.EnemyDamagePlus:
-					break;
-				case Ability.BossDamagePlus:
-					break;
-				case Ability.Evasion:
-					break;
-				case Ability.GainGold:
-					break;
-				case Ability.GainUserexp:
-					break;
-				case Ability.GainItem:
-					break;
-				case Ability.Movespeed:
-					break;
-			}
-		}
+
 	}
 }

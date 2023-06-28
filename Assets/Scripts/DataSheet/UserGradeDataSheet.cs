@@ -25,22 +25,10 @@ public class UserGradeDataSheet : DataSheetBase<UserGradeData>
 {
 	private List<Grade> grade;
 
-	public UserGradeData Get(long tid)
-	{
-		for (int i = 0 ; i < infos.Count ; i++)
-		{
-			if (infos[i].tid == tid)
-			{
-				return infos[i];
-			}
-		}
-
-		return null;
-	}
 
 	public UserGradeData Get(Grade _grade)
 	{
-		for (int i = 0 ; i < infos.Count ; i++)
+		for (int i = 0; i < infos.Count; i++)
 		{
 			if (infos[i].grade == _grade)
 			{
@@ -57,7 +45,7 @@ public class UserGradeDataSheet : DataSheetBase<UserGradeData>
 		{
 			grade = new List<Grade>();
 
-			for (int i = 0 ; i < infos.Count ; i++)
+			for (int i = 0; i < infos.Count; i++)
 			{
 				if (grade.Contains(infos[i].grade) == false)
 				{

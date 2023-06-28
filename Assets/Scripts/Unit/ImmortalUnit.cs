@@ -16,38 +16,98 @@ public class ImmortalUnit : EnemyUnit
 
 	public override void Hit(HitInfo _hitInfo)
 	{
-		//base.Hit(_hitInfo);
-
-		if (_hitInfo.ShakeCamera)
+		if (GameManager.GameStop)
 		{
-			SceneCamera.it.ShakeCamera();
+			return;
+		}
+		if (_hitInfo.TotalAttackPower == 0)
+		{
+			return;
+		}
+		if (Hp <= 0)
+		{
+			return;
 		}
 
-		GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, _hitInfo.criticalType);
-		ShakeUnit();
+		IdleNumber correctionDamage = _hitInfo.TotalAttackPower;
 
 
-		// HP가 0이 되면 다음레벨로 리스폰
-		IdleNumber attackPower = _hitInfo.TotalAttackPower;
-		while (Hp <= attackPower)
+		if (isBoss)
 		{
-			attackPower = attackPower - Hp;
+			IdleNumber value = GameManager.UserDB.GetValue(StatsType.Boss_Damage_Buff);
+
+			if (value != 0)
+			{
+				correctionDamage *= 1 + (value / 100f);
+			}
+		}
+		else
+		{
+			IdleNumber value = GameManager.UserDB.GetValue(StatsType.Mob_Damage_Buff);
+			if (value != 0)
+			{
+				correctionDamage *= 1 + (value / 100f);
+			}
+		}
+		if (Hp > 0)
+		{
+			Vector3 reverse = headingDirection;
+			reverse.x = HeadPosition.x + (0.7f * currentDir);
+			reverse.y = HeadPosition.y + 0.6f;
+			reverse.z = 0;
+
+
+			TextType textType = TextType.ENEMY_HIT;
+
+			if (_hitInfo.criticalType == CriticalType.CriticalX2)
+			{
+				textType = TextType.CRITICAL_X2;
+			}
+			else if (_hitInfo.criticalType == CriticalType.Critical)
+
+			{
+				textType = TextType.CRITICAL;
+			}
+
+			GameUIManager.it.ShowFloatingText(correctionDamage, HeadPosition, reverse, textType);
+			ShakeUnit();
+			StageManager.it.cumulativeDamage += correctionDamage;
+			currentMode?.OnHit(_hitInfo);
+			hitCount++;
+
+			GameObject otherHit = UnitManager.it.Player.hitEffectObject;
+			GameObject instancedHitEffect = null;
+			if (otherHit != null)
+			{
+				instancedHitEffect = Instantiate(hitEffect);
+			}
+			else
+			{
+				instancedHitEffect = Instantiate(hitEffect);
+				instancedHitEffect.GetComponent<UVAnimation>().Play(null);
+			}
+
+
+			instancedHitEffect.transform.position = position;
+			instancedHitEffect.transform.localScale = Vector3.one;
+			instancedHitEffect.transform.rotation = unitAnimation.transform.rotation;
+		}
+		while (Hp <= correctionDamage)
+		{
+			correctionDamage = correctionDamage - Hp;
 			var unitData = info.data;
 			info.unitLevel = info.unitLevel + 1;
-
 			info = new EnemyUnitInfo(this, unitData, StageManager.it.CurrentStage);
-
 		}
-		Hp -= attackPower;
-
+		Hp -= correctionDamage;
 		UIController.it.UiStageInfo.SetBossHpGauge(Mathf.Clamp01((float)(Hp / MaxHp)));
 
-
-		GameManager.it.battleRecord.RecordAttackPower(_hitInfo);
-		if (ControlSide == ControlSide.ENEMY)
+		if (Hp <= 0)
 		{
-			UIController.it.UiStageInfo.RefreshDPSCount();
+			//GameManager.UserDB.questContainer.ProgressAdd(QuestGoalType.MONSTER_HUNT, info.rawData.tid, (IdleNumber)1);
 		}
+
+
 		if (_hitInfo.hitSound.IsNullOrWhiteSpace() == false)
 		{
 			VSoundManager.it.PlayEffect(_hitInfo.hitSound);

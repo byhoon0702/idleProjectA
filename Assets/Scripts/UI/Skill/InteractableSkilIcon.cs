@@ -28,7 +28,7 @@ public class InteractableSkilIcon : MonoBehaviour
 		cooltimeIcon.SetActive(false);
 		skillIcon.SetActive(false);
 
-		if (_skillSlot == null || _skillSlot.item == null || _skillSlot.item.rawData == null)
+		if (_skillSlot == null || _skillSlot.item == null)
 		{
 			return;
 		}
@@ -62,10 +62,22 @@ public class InteractableSkilIcon : MonoBehaviour
 			{
 				return;
 			}
+			if (UnitManager.it.Player.IsTargetAlive() == false)
+			{
+				return;
+			}
+
+			if (UnitManager.it.Player.hyperModule.IsHyper)
+			{
+				return;
+			}
+
+
 			UnitManager.it.Player.TriggerSkill(skillSlot);
+			GameManager.UserDB.skillContainer.GlobalCooldown();
 			//if (skillSlot.item != null)
 			//{
-			//	GameManager.UserDB.skillContainer.GlobalCooldown();
+
 			//	skillSlot.Trigger(UnitManager.it.Player);
 			//}
 		});
@@ -93,6 +105,10 @@ public class InteractableSkilIcon : MonoBehaviour
 		}
 		else
 		{
+			if (globalCooltimeGauge.gameObject.activeSelf)
+			{
+				globalCooltimeGauge.gameObject.SetActive(false);
+			}
 			if (cooltimeGauge.gameObject.activeSelf)
 			{
 				cooltimeGauge.gameObject.SetActive(false);

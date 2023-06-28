@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 [System.Serializable]
 public class StageMonsterStatsInfo
@@ -28,35 +29,26 @@ public class DungeonMonsterData
 {
 	public long tid;
 	public bool isBoss;
-	public bool isEvent;
-	/// <summary>
+	/// <summary>	
 	/// 적 처치 보상
 	/// </summary>
-	public Reward[] killRewardList;
 	public DialougeInfo cutsceneDialogue;
 	public RandomDialougeInfo randomDialogue;
 }
 
 [System.Serializable]
-public class Reward
+public class StageReward
 {
-	/// <summary>
-	/// 아이템 Tid
-	/// </summary>
-	public long tid;
-	/// <summary>
-	/// 등장 스테이지 계산용
-	/// </summary>
-	public int appearStage;
-	/// <summary>
-	/// 확률
-	/// </summary>
-	public float probability;
-	/// <summary>
-	/// 수량
-	/// </summary>
-	public string count;
+	public List<Reward> itemRewards;
 }
+[System.Serializable]
+public class StageItemReward
+{
+	public float chance;
+	public long rewardBox;
+}
+
+
 
 [System.Serializable]
 public class StageData
@@ -76,6 +68,33 @@ public class StageData
 	/// </summary>
 	public List<DungeonMonsterData> overrideSpawnList;
 }
+[System.Serializable]
+public class DungeonEnemyInfo
+{
+
+	/// <summary>
+	/// 일반 몹 스폰 숫자
+	/// </summary>
+	public int enemyCountLimit;
+
+	/// <summary>
+	/// 보스 몹 스폰 숫자
+	/// </summary>
+	public int bossCountLimit;
+
+	/// <summary>
+	/// 시간 제한
+	/// </summary>
+	public float timelimit;
+
+	/// <summary>
+	/// 보스 포함 화면에 뿌려질 숫자
+	/// </summary>
+	public int enemyDisplayCount;
+
+	public int spawnPerWave;
+}
+
 
 
 [System.Serializable]
@@ -96,31 +115,17 @@ public class DungeonStageData : BaseData
 	/// </summary>
 	public StageDifficulty difficulty;
 
-	#region 스테이지 종료 조건
-	/// <summary>
-	/// 일반 몹 스폰 숫자
-	/// </summary>
-	public int enemyCountLimit;
 
-	/// <summary>
-	/// 보스 몹 스폰 숫자
-	/// </summary>
-	public int bossCountLimit;
-
-	/// <summary>
-	/// 시간 제한
-	/// </summary>
-	public float timelimit;
-	#endregion
-	/// <summary>
-	/// 보스 포함 화면에 뿌려질 숫자
-	/// </summary>
-	public int enemyDisplayCount;
-
+	public DungeonEnemyInfo enemyInfo;
 	/// <summary>
 	/// 스테이지 클리어 보상
 	/// </summary>
-	public Reward[] stageRewardList;
+	public List<Reward> stageReward;
+
+	/// <summary>
+	/// 스테이지 몬스터 보상
+	/// </summary>
+	public List<Reward> monsterReward;
 
 	/// <summary>
 	/// 스테이지 별 적 능력치 가중치

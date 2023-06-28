@@ -50,7 +50,7 @@ public class UIPopupEquipUpgrade : MonoBehaviour
 
 		nextItemInfo = GameManager.UserDB.equipContainer.FindNextEquipItem(itemInfo);
 
-		if (nextItemInfo == null || nextItemInfo.tid == itemInfo.tid)
+		if (nextItemInfo == null || nextItemInfo.Tid == itemInfo.Tid)
 		{
 			//다음 아이템이 없음
 			return;
@@ -84,7 +84,7 @@ public class UIPopupEquipUpgrade : MonoBehaviour
 		currentItemSlot.OnUpdate(null, itemInfo);
 		nextItemSlot.OnUpdate(null, nextItemInfo);
 
-		parent.OnUpdateEquip(itemInfo.type, itemInfo.tid);
+		parent.OnUpdateEquip(itemInfo.type, itemInfo.Tid);
 		OnClose();
 	}
 

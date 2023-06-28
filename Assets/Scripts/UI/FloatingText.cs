@@ -2,21 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
+
 using DG.Tweening;
 using UnityEngine.Pool;
+
+public enum TextType
+{
+	ENEMY_HIT,
+	PLAYER_HIT,
+	HEAL,
+	CRITICAL,
+	CRITICAL_X2,
+}
 
 
 public class FloatingText : MonoBehaviour
 {
-
 	public TextMeshPro floatingTextMesh;
-	public TextMeshPro floatingTextMeshForDamage;
-	public TextMeshPro floatingTextMeshForCritical;
-	public TextMeshPro floatingTextMeshForCriticalX2;
 
+	[SerializeField] private TMP_ColorGradient healColor;
+	[SerializeField] private TMP_ColorGradient playerHitColor;
+	[SerializeField] private TMP_ColorGradient enemyHitColor;
+	[SerializeField] private TMP_ColorGradient criticalColor;
 
-	private TextMeshPro currentTextMesh;
+	[SerializeField] private float healFontSize;
+	[SerializeField] private float playerHitFontSize;
+	[SerializeField] private float enemyHitFontSize;
+	[SerializeField] private float criticalFontSize;
+
 	private IObjectPool<FloatingText> managedPool;
 
 	public void SetManagedPool(IObjectPool<FloatingText> pool)
@@ -24,37 +37,49 @@ public class FloatingText : MonoBehaviour
 		managedPool = pool;
 	}
 
-	public void Show(IdleNumber value, Vector3 position, Vector3 endPosition, CriticalType _criticalType)
+	public void Show(IdleNumber value, Vector3 position, Vector3 endPosition, TextType _textType)
 	{
 		gameObject.SetActive(true);
-
 
 		transform.position = position;
 		Camera sceneCam = SceneCamera.it.sceneCamera;
 
-		if (currentTextMesh != null)
+		if (floatingTextMesh != null)
 		{
-			currentTextMesh.gameObject.SetActive(false);
+			floatingTextMesh.gameObject.SetActive(false);
 		}
-		if (_criticalType == CriticalType.CriticalX2)
+		floatingTextMesh.enableVertexGradient = true;
+		switch (_textType)
 		{
-			currentTextMesh = floatingTextMeshForCriticalX2;
+			case TextType.ENEMY_HIT:
+				floatingTextMesh.colorGradientPreset = enemyHitColor;
+				floatingTextMesh.fontSize = enemyHitFontSize;
+				break;
+			case TextType.PLAYER_HIT:
+				floatingTextMesh.colorGradientPreset = playerHitColor;
+				floatingTextMesh.fontSize = playerHitFontSize;
+				break;
+			case TextType.HEAL:
+				floatingTextMesh.colorGradientPreset = healColor;
+				floatingTextMesh.fontSize = healFontSize;
+				break;
+			case TextType.CRITICAL:
+				floatingTextMesh.colorGradientPreset = criticalColor;
+				floatingTextMesh.fontSize = criticalFontSize;
+				break;
+			case TextType.CRITICAL_X2:
+				floatingTextMesh.colorGradientPreset = criticalColor;
+				floatingTextMesh.fontSize = criticalFontSize;
+				break;
 		}
-		else if (_criticalType == CriticalType.Critical)
-		{
-			currentTextMesh = floatingTextMeshForCritical;
-		}
-		else
-		{
-			currentTextMesh = floatingTextMeshForDamage;
-		}
-		currentTextMesh.gameObject.SetActive(true);
-		currentTextMesh.alpha = 1;
-		currentTextMesh.text = value.ToFloatingString();
+
+		floatingTextMesh.gameObject.SetActive(true);
+		floatingTextMesh.alpha = 1;
+		floatingTextMesh.text = value.ToFloatingString();
 
 		void FadeFont()
 		{
-			currentTextMesh.DOFade(0, 0.4f).OnComplete(OnReturnPool);
+			floatingTextMesh.DOFade(0, 0.4f).OnComplete(OnReturnPool);
 		}
 
 		Vector2 endPos = endPosition;

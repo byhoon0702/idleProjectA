@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 [CreateAssetMenu(fileName = "Unit Move State", menuName = "Unit State/Move", order = 1)]
 public class UnitMoveState : UnitFSM
@@ -54,28 +53,28 @@ public class UnitMoveState : UnitFSM
 			owner.ChangeState(StateType.IDLE, true);
 			return;
 		}
-		if (SpawnManager.it != null && owner is EnemyUnit)
+
+		if (owner.IsTargetInPursuitRange() == false)
 		{
-			owner.unitAnimation.SetParameter("moveSpeed", Mathf.Min(owner.MoveSpeed, 2f));
-			owner.OnMove(fixedTime);
-		}
-		else
-		{
-			owner.unitAnimation.SetParameter("moveSpeed", Mathf.Min(owner.MoveSpeed, 2f));
-			if (owner.unitAnimation.animator.GetCurrentAnimatorStateInfo(0).IsName("run") == false)
-			{
-				owner.PlayAnimation(StateType.MOVE);
-				return;
-			}
-			owner.OnMove(fixedTime);
+			owner.FindTarget(fixedTime, true, owner.PursuitRange);
 		}
 
+		float distance = Vector3.Distance(owner.target.transform.position, owner.transform.position);
 
-		float distance = Mathf.Abs((owner.target.transform.position - owner.transform.position).magnitude);
-
-		if (distance <= 1)
+		if (distance <= owner.AttackRange)
 		{
 			owner.ChangeState(StateType.ATTACK);
+			return;
 		}
+
+		owner.unitAnimation.SetParameter("moveSpeed", Mathf.Min(owner.MoveSpeed, 2f));
+		if (owner.unitAnimation.animator.GetCurrentAnimatorStateInfo(0).IsName("run") == false)
+		{
+			owner.PlayAnimation(StateType.MOVE);
+			return;
+		}
+		owner.OnMove(fixedTime);
+
+
 	}
 }

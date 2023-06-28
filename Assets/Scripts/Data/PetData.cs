@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+
+
 public class ItemData : BaseData
 {
 	public string name;
 	public Grade itemGrade;
 	public string hashTag;
+
 }
 
 [System.Serializable]
@@ -15,7 +20,7 @@ public class PetData : ItemData
 
 	public int starlevel;
 
-	public PetCategory category;
+	//public PetCategory category;
 	public List<ItemStats> equipValues;
 	public List<ItemStats> ownValues;
 

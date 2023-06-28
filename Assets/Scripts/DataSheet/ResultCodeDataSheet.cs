@@ -32,7 +32,7 @@ public class ResultCodeData : BaseData
 public class ResultCodeDataSheet : DataSheetBase<ResultCodeData>
 {
 
-	public ResultCodeData Get(string _key)
+	public override ResultCodeData Get(string _key)
 	{
 		for (int i = 0; i < infos.Count; i++)
 		{

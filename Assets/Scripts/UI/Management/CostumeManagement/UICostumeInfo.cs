@@ -11,8 +11,10 @@ public class UICostumeInfo : MonoBehaviour
 	[SerializeField] private UICostumeManagement parentUI;
 
 	[SerializeField] private TextMeshProUGUI itemName;
-	[SerializeField] private TextMeshProUGUI upgradeItemOwnedCount;
-	[SerializeField] private EffectInfoCell[] cells;
+	[SerializeField] private TextMeshProUGUI textPoint;
+	[SerializeField] private TextMeshProUGUI textGetPlace;
+
+	[SerializeField] private TextMeshProUGUI textTotalPoints;
 
 	[SerializeField] private Button upgradeButton;
 	[SerializeField] private TextMeshProUGUI upgradeButtonLabel;
@@ -44,7 +46,7 @@ public class UICostumeInfo : MonoBehaviour
 		upgradeButton.onClick.RemoveAllListeners();
 		upgradeButton.onClick.AddListener(() =>
 		{
-			costumeInfo.unlock = true;
+			GameManager.UserDB.costumeContainer.Buy(costumeInfo.Tid);
 			parentUI.OnUpdate(false);
 
 		});
@@ -54,26 +56,8 @@ public class UICostumeInfo : MonoBehaviour
 	{
 		costumeInfo = info;
 		itemName.text = costumeInfo.ItemName;
-
-		for (int i = 0; i < cells.Length; i++)
-		{
-			if (i >= costumeInfo.ownedAbilities.Count - 1)
-			{
-				cells[i].gameObject.SetActive(false);
-				continue;
-			}
-
-			var ability = costumeInfo.ownedAbilities[i];
-			cells[i].gameObject.SetActive(true);
-
-			string value = ability.GetValue(costumeInfo.level).ToString();
-			if (ability.modeType != StatModeType.Flat)
-			{
-				value = $"+ {value} %";
-			}
-			cells[i].OnUpdate(ability.Description(), value);
-		}
-
+		textPoint.text = costumeInfo.rawData.point.ToString();
+		textTotalPoints.text = GameManager.UserDB.costumeContainer.TotalCostumePoints.ToString();
 		upgradeButtonCost.text = "무료";
 
 		equipButton.interactable = costumeInfo.unlock;

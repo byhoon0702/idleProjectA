@@ -1,10 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using System.Text;
 public class UIPopupLevelupEquipItem : UIPopupLevelupBaseItem<RuntimeData.EquipItemInfo>
 {
+
+	[SerializeField] private Image imageCost;
+	[SerializeField] private TextMeshProUGUI textMeshCost;
+
+	[SerializeField] private Image imageButtonCost;
+	[SerializeField] private TextMeshProUGUI textMeshButtonCost;
+
 	[SerializeField] private UIEquipSlot uiEquipSlot;
 
 
@@ -23,6 +31,22 @@ public class UIPopupLevelupEquipItem : UIPopupLevelupBaseItem<RuntimeData.EquipI
 	{
 		uiEquipSlot.OnUpdate(null, itemInfo, null);
 		UpdateItemLevelupInfo();
+		var currencyitem = GameManager.UserDB.inventory.FindCurrency(CurrencyType.UPGRADE_ITEM);
+		textMeshCost.text = currencyitem.Value.ToString();
+		imageCost.sprite = currencyitem.IconImage;
+		imageButtonCost.sprite = currencyitem.IconImage;
+
+		IdleNumber value = itemInfo.LevelUpNeedCount();
+		textMeshButtonCost.text = value.ToString();
+
+		if (value > currencyitem.Value)
+		{
+			textMeshButtonCost.color = Color.red;
+		}
+		else
+		{
+			textMeshButtonCost.color = Color.white;
+		}
 	}
 
 	public void UpdateItemLevelupInfo()
@@ -50,7 +74,7 @@ public class UIPopupLevelupEquipItem : UIPopupLevelupBaseItem<RuntimeData.EquipI
 			sb.Append('\n');
 		}
 		textOwnedBuff.text = sb.ToString();
-		//ownedBuffs[0].OnUpdate().text = $"{sb.ToString()}";
+
 	}
 	public override void OnClickLevelUp()
 	{
@@ -59,9 +83,17 @@ public class UIPopupLevelupEquipItem : UIPopupLevelupBaseItem<RuntimeData.EquipI
 			return;
 		}
 
+		var currencyitem = GameManager.UserDB.inventory.FindCurrency(CurrencyType.UPGRADE_ITEM);
+
+		if (currencyitem.Pay((IdleNumber)itemInfo.LevelUpNeedCount()) == false)
+		{
+			ToastUI.it.Enqueue("강화석이 부족합니다");
+			return;
+		}
+
 		GameManager.UserDB.equipContainer.LevelUpEquipItem(ref itemInfo);
 
-		parent.OnUpdateEquip(itemInfo.type, itemInfo.tid);
+		parent.OnUpdateEquip(itemInfo.type, itemInfo.Tid);
 		OnUpdateInfo();
 	}
 
@@ -73,20 +105,21 @@ public class UIPopupLevelupEquipItem : UIPopupLevelupBaseItem<RuntimeData.EquipI
 		}
 		if (itemInfo.CanLevelUp() == false)
 		{
+			ToastUI.it.Enqueue("최대 레벨입니다.");
 			return false;
 		}
-		//if (equipInfo == null && equipInfo.count == 0)
-		//{
-		//	return false;
-		//}
-		//if (equipInfo.CanLevelUp() == false)
-		//{
-		//	return false;
-		//}
-		//if (Inventory.it.CheckMoney(item.Tid, new IdleNumber(item.nextExp)).Fail())
-		//{
-		//	return false;
-		//}
+		var currencyitem = GameManager.UserDB.inventory.FindCurrency(CurrencyType.UPGRADE_ITEM);
+
+		if (currencyitem == null)
+		{
+			return false;
+		}
+
+		if (currencyitem.Check(itemInfo.LevelUpNeedCount()) == false)
+		{
+			ToastUI.it.Enqueue("강화석이 부족합니다");
+			return false;
+		}
 
 		return true;
 	}

@@ -20,10 +20,24 @@ public class UnitAttackState : UnitFSM
 
 	public override void OnUpdate(float time)
 	{
+
+		if (owner.IsTargetAlive() == false)
+		{
+			owner.ChangeState(StateType.IDLE, true);
+			return;
+		}
+		if (owner.TargetInRange() == false)
+		{
+			owner.ChangeState(StateType.MOVE, true);
+			return;
+		}
+
 		if (owner.unitAnimation.animator.GetCurrentAnimatorStateInfo(0).IsName("attack"))
 		{
 			if (owner.unitAnimation.animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f)
 			{
+
+
 				owner.NormalAttack();
 			}
 		}
@@ -32,11 +46,7 @@ public class UnitAttackState : UnitFSM
 			owner.NormalAttack();
 		}
 
-		if (owner.IsTargetAlive() == false)
-		{
-			owner.ChangeState(StateType.IDLE, true);
-			return;
-		}
+
 	}
 
 	public override void OnFixedUpdate(float fixedTime)

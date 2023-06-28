@@ -35,19 +35,21 @@ public class ItemUIPet : ItemUIBase
 		bg.sprite = GameUIManager.it.spriteGradeList[(int)info.grade];
 		selectListener?.AddSelectListener(OnSelect);
 
-		levelText.text = $"LV {info.level}";
-
+		countText.text = $"LV.{info.level}";
+		levelText.text = info.grade.ToString();
 		if (info.itemObject.Icon != null)
 		{
 			icon.sprite = info.itemObject.Icon;
 		}
-		countText.text = $"{info.count}";
+		//countText.text = $"{info.count}";
 		evoltionLevelText.text = $"{info.evolutionLevel}";
+		evoltionLevelObject.SetActive(info.evolutionLevel > 0);
+
 	}
 
 	public void OnSelect(long tid)
 	{
-		if (tid == info.tid)
+		if (tid == info.Tid)
 		{
 
 		}

@@ -15,6 +15,8 @@ public class UIEquipSlot : MonoBehaviour
 
 	[SerializeField] private GameObject equippedMark;
 	[SerializeField] private GameObject lockedMark;
+	[SerializeField] private Slider slider;
+	[SerializeField] private TextMeshProUGUI textSliderCount;
 
 	private ISelectListener parent;
 	private RuntimeData.EquipItemInfo equipInfo;
@@ -42,27 +44,42 @@ public class UIEquipSlot : MonoBehaviour
 		parent?.AddSelectListener(OnSelect);
 
 		slotButton.enabled = action != null;
-		itemUI.OnUpdate(equipInfo);
 
 		lockedMark.SetActive(false);
 		equippedMark.SetActive(false);
-		//ShowSlider(false);
+		ShowSlider(true);
+		itemUI.OnUpdate(equipInfo);
 		if (equipInfo == null)
 		{
 			return;
 		}
 
+
+		itemUI.ShowLevel(equipInfo.unlock);
+		itemUI.ShowStars(equipInfo.unlock);
 		lockedMark.SetActive(equipInfo.unlock == false);
 
 		var data = GameManager.UserDB.equipContainer.GetSlot(equipInfo.type);
 		isEquipped = false;
-		if (data.itemTid == equipInfo.tid)
+		if (data.itemTid == equipInfo.Tid)
 		{
 			isEquipped = true;
 			equippedMark.SetActive(true);
-
 		}
 
+		slider.value = (float)equipInfo.count / (float)EquipContainer.needCount;
+
+		textSliderCount.text = $"{equipInfo.count}/{EquipContainer.needCount}";
+
+	}
+	public void ShowEquipMark(bool isTrue)
+	{
+		equippedMark.SetActive(isTrue);
+	}
+
+	public void ShowSlider(bool isTrue)
+	{
+		slider.gameObject.SetActive(isTrue);
 	}
 
 	public void OnSelect(long tid)
@@ -71,7 +88,7 @@ public class UIEquipSlot : MonoBehaviour
 		{
 			return;
 		}
-		if (tid == equipInfo.tid)
+		if (tid == equipInfo.Tid)
 		{
 
 		}
@@ -84,7 +101,7 @@ public class UIEquipSlot : MonoBehaviour
 
 	public void OnClickSelect()
 	{
-		parent?.SetSelectedTid(equipInfo.tid);
+		parent?.SetSelectedTid(equipInfo.Tid);
 		action?.Invoke();
 	}
 

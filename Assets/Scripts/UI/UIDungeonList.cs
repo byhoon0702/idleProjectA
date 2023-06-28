@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIDungeonList : MonoBehaviour, IUIClosable
+[System.Serializable]
+public class DungeonImageDictionary : SerializableDictionary<StageType, Sprite>
+{ }
+
+
+public class UIDungeonList : UIBase
 {
 	[Space(10)]
 	[SerializeField] private Button closeButton;
@@ -19,29 +24,39 @@ public class UIDungeonList : MonoBehaviour, IUIClosable
 	[Space(10)]
 	[SerializeField] private GameObject challengeObj;
 	[SerializeField] private Transform challengeItemRoot;
+	[SerializeField] private UIDungeonStagePopup uiDungeonStagePopup;
+	[SerializeField] private UIDungeonPopup uiDungeonPopup;
+
+	[SerializeField] private DungeonImageDictionary dungeonImages;
 
 	private List<UIItemDungeonList> uiDungeonItems = new List<UIItemDungeonList>();
 	private List<UIItemDungeonList> uiChallengeItems = new List<UIItemDungeonList>();
 	private DungeonType showType;
 
 
-	void OnEnable()
+	protected override void OnEnable()
 	{
 		AddCloseListener();
+		uiDungeonStagePopup.Close();
+		uiDungeonPopup.Close();
 	}
-	void OnDisable()
+	protected override void OnDisable()
 	{
 		RemoveCloseListener();
-	}
-	public void AddCloseListener()
-	{
-		GameUIManager.it.onClose += Close;
+		uiDungeonStagePopup.Close();
+		uiDungeonPopup.Close();
 	}
 
-	public void RemoveCloseListener()
+	public Sprite GetDungeonImage(StageType _type)
 	{
-		GameUIManager.it.onClose -= Close;
+		if (dungeonImages.ContainsKey(_type) == false)
+		{
+			dungeonImages.Values.TryFirstOrDefault(out Sprite image);
+			return image;
+		}
+		return dungeonImages[_type];
 	}
+
 	private void Awake()
 	{
 		closeButton.onClick.RemoveAllListeners();
@@ -52,8 +67,17 @@ public class UIDungeonList : MonoBehaviour, IUIClosable
 
 		challengeButton.onClick.RemoveAllListeners();
 		challengeButton.onClick.AddListener(OnChallengeButtonClick);
+	}
 
-
+	public void ShowDungeonPopup(DungeonData data)
+	{
+		uiDungeonStagePopup.Close();
+		uiDungeonPopup.Init(this, data);
+	}
+	public void ShowDungeonStagePopup(DungeonData data)
+	{
+		uiDungeonStagePopup.Init(this, data);
+		uiDungeonPopup.Close();
 	}
 
 	public void OnUpdate()
@@ -77,13 +101,16 @@ public class UIDungeonList : MonoBehaviour, IUIClosable
 
 		if (uiDungeonItems.Count == 0)
 		{
-			var dungeonInfoList = DataManager.Get<DungeonDataSheet>().infos;
+			var dungeonInfoList = DataManager.Get<DungeonDataSheet>().GetInfosClone();
 
 			for (int i = 0; i < dungeonInfoList.Count; i++)
 			{
+
 				var dungeonInfo = dungeonInfoList[i];
-				if (dungeonInfo.type == DungeonType.Dungeon)
+
+				if (dungeonInfo.type == DungeonType.Dungeon && dungeonInfo.stageType != StageType.Youth)
 				{
+
 					UIItemDungeonList item = Instantiate(itemPrefab, dungeonItemRoot);
 					item.SetData(this, dungeonInfo);
 					uiDungeonItems.Add(item);
@@ -104,10 +131,10 @@ public class UIDungeonList : MonoBehaviour, IUIClosable
 		dungeonObj.SetActive(false);
 		challengeObj.SetActive(true);
 
+		var challengeInfoList = DataManager.Get<DungeonDataSheet>().GetInfosClone();
 		// 챌린지
 		if (uiChallengeItems.Count == 0)
 		{
-			var challengeInfoList = DataManager.Get<DungeonDataSheet>().infos;
 
 			for (int i = 0; i < challengeInfoList.Count; i++)
 			{
@@ -148,16 +175,11 @@ public class UIDungeonList : MonoBehaviour, IUIClosable
 	}
 
 
-	public void Close()
+	public override void Close()
 	{
 		UIController.it.InactivateAllBottomToggle();
 
 		gameObject.SetActive(false);
-	}
-
-	public bool Closable()
-	{
-		return true;
 	}
 }
 

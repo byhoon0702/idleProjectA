@@ -6,5 +6,7 @@ using UnityEngine;
 public abstract class DataSlot
 {
 
-
+	public abstract void AddModifiers(UserDB userDB);
+	public abstract void UpdateModifiers(UserDB userDB);
+	public abstract void RemoveModifiers(UserDB userDB);
 }

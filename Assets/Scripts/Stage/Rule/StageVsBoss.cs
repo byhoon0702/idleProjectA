@@ -46,14 +46,14 @@ public class StageVsBoss : StageRule
 
 	}
 
-	internal void SpawnBoss()
+	private void SpawnBoss()
 	{
 
 		int displayCount = StageManager.it.CurrentStage.DisplayUnitCount;
 		int bossSpawnCount = StageManager.it.CurrentStage.totalBossSpawnCount;
 
 		int countLimit = StageManager.it.CurrentStage.BossCountLimit;
-		int perWaveCount = Mathf.Min(4, Mathf.Min(displayCount - UnitManager.it.GetBosses().Count));
+		int perWaveCount = Mathf.Min(StageManager.it.CurrentStage.SpawnPerWave, Mathf.Min(displayCount - UnitManager.it.GetBosses().Count));
 
 		if (countLimit > 0)
 		{

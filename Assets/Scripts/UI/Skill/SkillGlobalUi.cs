@@ -20,8 +20,6 @@ public class SkillGlobalUi : MonoBehaviour
 		{
 			icon.OnUpdate(null);
 		}
-
-
 	}
 
 	public void OnUpdate()

@@ -15,14 +15,10 @@ public class UnitDissolveBehavior : PlayableBehaviour
 		{
 			return;
 		}
-		if (from > to)
-		{
-			unitAnimation.PlayDissolve(Mathf.Lerp(to, from, info.weight));
-		}
-		else
-		{
-			unitAnimation.PlayDissolve(Mathf.Lerp(from, to, info.weight));
-		}
 
+		double duration = playable.GetDuration();
+		double time = playable.GetTime();
+
+		unitAnimation.PlayDissolve(Mathf.Lerp(from, to, (float)(time / duration) * 1.5f));
 	}
 }

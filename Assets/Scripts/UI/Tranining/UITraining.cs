@@ -4,27 +4,29 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UITraining : MonoBehaviour
+public class UITraining : UIBase
 {
 	[SerializeField] private UIItemTraining itemPrefab;
 	[SerializeField] private Transform itemRoot;
 
 	private List<UIItemTraining> items = new List<UIItemTraining>();
 
-	private void OnEnable()
+	protected override void OnEnable()
 	{
+		base.OnEnable();
 		EventCallbacks.onItemChanged += OnItemChanged;
 
-		SceneCamera.it.ChangeViewPort(true);
+		//SceneCamera.it.ChangeViewPort(true);
 	}
 
-	private void OnDisable()
+	protected override void OnDisable()
 	{
+		base.OnDisable();
 		EventCallbacks.onItemChanged -= OnItemChanged;
-		if (SceneCamera.it != null)
-		{
-			SceneCamera.it.ChangeViewPort(false);
-		}
+		//if (SceneCamera.it != null)
+		//{
+		//	SceneCamera.it.ChangeViewPort(false);
+		//}
 	}
 
 	private void OnItemChanged(List<long> _changedItems)
@@ -67,6 +69,22 @@ public class UITraining : MonoBehaviour
 
 			var info = list[i];
 			slot.OnUpdate(this, info);
+		}
+	}
+
+	public void Refresh()
+	{
+		for (int i = 0; i < itemRoot.childCount; i++)
+		{
+
+			var child = itemRoot.GetChild(i);
+			if (child.gameObject.activeInHierarchy == false)
+			{
+				continue;
+			}
+
+			UIItemTraining slot = child.GetComponent<UIItemTraining>();
+			slot.OnRefresh();
 		}
 	}
 }

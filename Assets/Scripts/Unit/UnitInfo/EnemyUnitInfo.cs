@@ -64,7 +64,7 @@ public class EnemyUnitInfo : UnitInfo
 	public override float CriticalChanceRatio()
 	{
 
-		float total = rawStatus[Ability.CriticalChance].value.GetValueFloat();
+		float total = rawStatus[StatsType.Crits_Chance].value.GetValueFloat();
 
 
 		if (total > GameManager.Config.CRITICAL_CHANCE_MAX_RATIO)
@@ -80,7 +80,7 @@ public class EnemyUnitInfo : UnitInfo
 	/// </summary>
 	public override float CriticalDamageMultifly()
 	{
-		float total = 1 + rawStatus[Ability.CriticalDamage].value.GetValueFloat();
+		float total = 1 + rawStatus[StatsType.Crits_Damage].value.GetValueFloat();
 
 		return total;
 	}

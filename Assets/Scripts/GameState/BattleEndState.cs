@@ -10,6 +10,9 @@ public class BattleEndState : StageFSM
 		elapsedTime = 0f;
 
 		UnitGlobal.it.WaveFinish();
+
+
+		GameUIManager.it.ShowStageResult(stageRule);
 		return this;
 	}
 
@@ -31,14 +34,14 @@ public class BattleEndState : StageFSM
 
 	public override FSM RunNextState(float time)
 	{
-		elapsedTime += time;
-		if (elapsedTime > 1)
-		{
-			stageRule.End();
+		//elapsedTime += time;
+		//if (elapsedTime > 1)
+		//{
+		//	//stageRule.End();
 
-			return null;
+		//	return null;
 
-		}
+		//}
 		return this;
 	}
 }

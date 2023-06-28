@@ -116,64 +116,6 @@ public class EditorUnitInfo : UnitInfo
 
 
 
-	public PlayerAttackType GetAttackType()
-	{
-		if (TripleAttack())
-		{
-			return PlayerAttackType.TripleAttack;
-		}
-		else if (DoubleAttack())
-		{
-			return PlayerAttackType.DoubleAttack;
-		}
-		else
-		{
-			return PlayerAttackType.Attack;
-		}
-	}
-
-	private bool TripleAttack()
-	{
-		return false;
-
-	}
-
-	private bool DoubleAttack()
-	{
-		return false;
-
-	}
-
-	public override float CriticalChanceRatio()
-	{
-		return 1;
-
-	}
-
-	/// <summary>
-	/// 크리티컬 대미지 총 증가량(줄 대미지에 곱하면 됩니다)
-	/// </summary>
-	public override float CriticalDamageMultifly()
-	{
-		float total = 1;
-
-		return total;
-	}
-
-	/// <summary>
-	/// 이동속도
-	/// </summary>
-	/// <returns></returns>
-	public override float MoveSpeed()
-	{
-		return 1;
-
-	}
-
-	/// <summary>
-	/// true면 컨디션 적용 안됨
-	/// </summary>
-
 }
 public class EditorUnit : Unit
 {
@@ -285,7 +227,7 @@ public class EditorUnit : Unit
 
 	public override void Hit(HitInfo _hitInfo)
 	{
-		GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, _hitInfo.criticalType);
+		//GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, _hitInfo.criticalType);
 	}
 
 	public override void Heal(HealInfo _healInfo)
@@ -304,7 +246,7 @@ public class EditorUnit : Unit
 			IdleNumber addHP = newHP - Hp;
 			Hp += addHP;
 			//VGameManager.it.battleRecord.RecordHeal(_healInfo, addHP);
-			GameUIManager.it.ShowFloatingText(_healInfo.healRecovery, CenterPosition, CenterPosition, CriticalType.Normal);
+			//GameUIManager.it.ShowFloatingText(_healInfo.healRecovery, CenterPosition, CenterPosition, CriticalType.Normal);
 		}
 	}
 	public override void Debuff(List<StatInfo> debufflist)
@@ -337,5 +279,14 @@ public class EditorUnit : Unit
 		fsmModule?.ChangeState(stateType);
 	}
 
+	public override void ActiveHyperEffect()
+	{
+		throw new System.NotImplementedException();
+	}
+
+	public override void InactiveHyperEffect()
+	{
+		throw new System.NotImplementedException();
+	}
 }
 

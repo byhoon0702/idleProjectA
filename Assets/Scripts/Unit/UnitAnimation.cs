@@ -15,12 +15,15 @@ public class UnitAnimation : MonoBehaviour
 	[SerializeField] private Transform centerPivot;
 	[SerializeField] private Transform headPivot;
 
+	[SerializeField] private Transform hitPosition;
+	public Transform HitPosition => hitPosition;
+
 	[SerializeField] private GameObject hyperModeEffect;
 	[SerializeField] private GameObject shadowObject;
 
 	[SerializeField] private float m_attackedWhiteFlipTime = 0.1f;
 	[SerializeField] private ParticleSystem stepEffect;
-
+	[SerializeField] private SortingGroup sortingGroup;
 	public Transform CenterPivot => centerPivot;
 	public Transform HeadPivot => headPivot;
 
@@ -60,6 +63,15 @@ public class UnitAnimation : MonoBehaviour
 		}
 		SwitchShadow(true);
 
+		sortingGroup = GetComponent<SortingGroup>();
+
+
+	}
+
+	public void ChangeSortingLayer(string layerName, int order = 1)
+	{
+		sortingGroup.sortingLayerName = layerName;
+		sortingGroup.sortingOrder = order;
 	}
 	public void UpdateRenderer()
 	{
@@ -89,28 +101,6 @@ public class UnitAnimation : MonoBehaviour
 		isReleased = false;
 	}
 
-	public void AddAnimationEvent()
-	{
-		if (animationEventReceiver == null)
-		{
-			animationEventReceiver = animator.GetComponent<AnimationEventReceiver>();
-			if (animationEventReceiver == null)
-			{
-				animationEventReceiver = animator.gameObject.AddComponent<AnimationEventReceiver>();
-			}
-		}
-	}
-
-	public void AddAttackEvent(OnAttack attackEvent)
-	{
-		AddAnimationEvent();
-		animationEventReceiver.AddEvent(attackEvent);
-	}
-	public void RemoveAttackEvent(OnAttack attackEvent)
-	{
-		AddAnimationEvent();
-		animationEventReceiver.RemoveEvent(attackEvent);
-	}
 
 	public void OverrideAnimation(AnimatorOverrideController overrideController)
 	{
@@ -160,7 +150,7 @@ public class UnitAnimation : MonoBehaviour
 	}
 
 
-	public void PlayAnimation(string name, float normalizedTime = 1)
+	public void PlayAnimation(string name, float normalizedTime = 0)
 	{
 		animator.enabled = true;
 		animator.Play(name, -1, normalizedTime);
@@ -359,7 +349,7 @@ public class UnitAnimation : MonoBehaviour
 		if (unitCostume != null)
 		{
 			unitCostume.SetMaterialDissolve(value);
-			return;
+			//return;
 		}
 		for (int i = 0; i < renderers.Length; i++)
 		{

@@ -25,7 +25,7 @@ public class NeutralizeMove
 
 	protected float elapsedTime;
 	protected Transform transform;
-
+	protected Rigidbody2D rigidbody2D;
 
 	protected bool isLastHit = false;
 	public void Set(Transform _transform, NeutralizeType _type, float _power, Vector3 _dir, float _duration, bool _isLastHit = true)
@@ -34,8 +34,8 @@ public class NeutralizeMove
 		power = _power;
 		dir = _dir;
 		duration = _duration;
-
 		transform = _transform;
+		//transform = _transform;
 		isLastHit = _isLastHit;
 		elapsedTime = 0;
 	}
@@ -87,7 +87,8 @@ public class KnockbackMove : NeutralizeMove
 			power = 0;
 			return;
 		}
-		transform.Translate(dir * force * delta);
+
+		transform.Translate(dir * force);
 		elapsedTime += delta;
 	}
 }
@@ -166,7 +167,6 @@ public abstract class Unit : HittableUnit
 
 	protected bool isRewardable = true;
 
-	public UnitBehavior unitBehavior;
 
 	public int attackCount;
 	public int killCount;
@@ -175,6 +175,7 @@ public abstract class Unit : HittableUnit
 	public List<NeutralizeMove> neutralizeMoves = new List<NeutralizeMove>();
 	public List<AdditionalDamageModule> additionalDamageModules = new List<AdditionalDamageModule>();
 
+	public bool isDeath { get; protected set; } = false;
 	public void InitState()
 	{
 		fsmModule = GetComponent<UnitFsmModule>();
@@ -202,7 +203,24 @@ public abstract class Unit : HittableUnit
 
 		//boxCollider.isTrigger = true;
 	}
+	public virtual void Attack()
+	{
 
+	}
+
+	public virtual void EndHyper()
+	{
+
+	}
+	public void SetDefaultAttack(long tid)
+	{
+		skillModule.Init(this, tid);
+	}
+
+	public virtual void UseSkill()
+	{
+
+	}
 	public void InitMode(string path, UnitInfo info)
 	{
 		unitMode?.OnInit(this);
@@ -253,12 +271,12 @@ public abstract class Unit : HittableUnit
 		VLog.AILog($"{NameAndId} StateChange {currentState} -> {stateType}");
 		fsmModule?.ChangeState(stateType, force);
 	}
-	public virtual void ActiveHyperEffect()
-	{ }
+	public abstract void ActiveHyperEffect();
 
-	public virtual void InactiveHyperEffect()
-	{
-	}
+
+	public abstract void InactiveHyperEffect();
+
+
 	public override void Hit(HitInfo _hitInfo)
 	{
 		if (Hp > 0)
@@ -267,7 +285,19 @@ public abstract class Unit : HittableUnit
 			//{
 			//	SceneCamera.it.ShakeCamera();
 			//}
-			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, _hitInfo.criticalType);
+
+			TextType textType = TextType.ENEMY_HIT;
+
+			if (_hitInfo.criticalType == CriticalType.CriticalX2)
+			{
+				textType = TextType.CRITICAL_X2;
+			}
+			else if (_hitInfo.criticalType == CriticalType.Critical)
+			{
+				textType = TextType.CRITICAL;
+			}
+
+			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, textType);
 			ShakeUnit();
 		}
 		Hp -= _hitInfo.TotalAttackPower;
@@ -295,7 +325,7 @@ public abstract class Unit : HittableUnit
 			IdleNumber addHP = newHP - Hp;
 			Hp += addHP;
 			GameManager.it.battleRecord.RecordHeal(_healInfo, addHP);
-			GameUIManager.it.ShowFloatingText(_healInfo.healRecovery, CenterPosition, CenterPosition, CriticalType.Normal);
+			GameUIManager.it.ShowFloatingText(_healInfo.healRecovery, CenterPosition, CenterPosition, TextType.HEAL);
 		}
 	}
 
@@ -321,11 +351,6 @@ public abstract class Unit : HittableUnit
 
 		float delta = Time.deltaTime;
 
-
-		//unitBehavior?.OnPreUpdate(this, delta);
-		//unitBehavior?.OnUpdate(this, delta);
-		//unitBehavior?.OnPostUpdate(this, delta);
-
 		for (int i = 0; i < neutralizeMoves.Count; i++)
 		{
 			neutralizeMoves[i].OnUpdate(delta);
@@ -349,11 +374,19 @@ public abstract class Unit : HittableUnit
 	}
 	protected void FixedUpdate()
 	{
+		if (GameManager.GameStop)
+		{
+			return;
+		}
 		fsmModule?.OnFixedUpdate(Time.fixedDeltaTime);
 	}
 
 	protected virtual void LateUpdate()
 	{
+		if (GameManager.GameStop)
+		{
+			return;
+		}
 		CheckDeathState();
 	}
 

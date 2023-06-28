@@ -35,6 +35,8 @@ public enum StateType
 	DEATH = 1 << 6,
 	NEUTRALIZE = 1 << 7,
 	DASH = 1 << 8,
+	KNOCKBACK = 1 << 9,
+	HYPER_FINISH = 1 << 15,
 }
 
 public enum ControlSide
@@ -48,4 +50,20 @@ public enum Targeting
 {
 	OPPONENT = 1,
 	WALL,
+}
+
+
+public enum RewardCategory
+{
+	Ability,
+	Equip,
+	Costume,
+	Pet,
+	Currency,
+	Skill,
+	EXP,
+	RewardBox,
+	Relic,
+
+
 }

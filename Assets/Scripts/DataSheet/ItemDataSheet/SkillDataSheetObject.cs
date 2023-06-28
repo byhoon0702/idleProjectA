@@ -14,6 +14,7 @@ public class SkillDataSheetObject : BaseDataSheetObject
 	{
 #if UNITY_EDITOR
 
+		return;
 		if (dataSheet.infos.Count == 0)
 		{
 			return;

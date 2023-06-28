@@ -12,6 +12,8 @@ public class UIPetSlot : MonoBehaviour
 
 	[SerializeField] private GameObject equippedMark;
 	[SerializeField] private GameObject lockedMark;
+	[SerializeField] private Slider slider;
+	[SerializeField] private TextMeshProUGUI textSlider;
 
 	private ISelectListener parent;
 	private RuntimeData.PetInfo petInfo;
@@ -30,6 +32,10 @@ public class UIPetSlot : MonoBehaviour
 		}
 	}
 
+	public void ShowEquipMark(bool isTrue)
+	{
+		equippedMark.SetActive(isTrue);
+	}
 	public void OnUpdate(ISelectListener _parent, RuntimeData.PetInfo _petInfo, Action _action = null)
 	{
 		parent = _parent;
@@ -55,13 +61,23 @@ public class UIPetSlot : MonoBehaviour
 		isEquipped = false;
 		for (int i = 0; i < data.Length; i++)
 		{
-			if (data[i].itemTid == petInfo.tid)
+			if (data[i].itemTid == petInfo.Tid)
 			{
 				isEquipped = true;
 				equippedMark.SetActive(true);
 				break;
 			}
 		}
+
+
+		slider.value = petInfo.count / (float)PetContainer.needCount;
+
+		textSlider.text = $"{petInfo.count}/{PetContainer.needCount}";
+	}
+
+	public void ShowSlider(bool isTrue)
+	{
+		slider.gameObject.SetActive(isTrue);
 	}
 
 	public void OnSelect(long tid)
@@ -70,7 +86,7 @@ public class UIPetSlot : MonoBehaviour
 		{
 			return;
 		}
-		if (tid == petInfo.tid)
+		if (tid == petInfo.Tid)
 		{
 
 		}
@@ -83,7 +99,7 @@ public class UIPetSlot : MonoBehaviour
 
 	public void OnClickSelect()
 	{
-		parent.SetSelectedTid(petInfo.tid);
+		parent.SetSelectedTid(petInfo.Tid);
 		action?.Invoke();
 	}
 }

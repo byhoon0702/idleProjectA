@@ -11,8 +11,9 @@ public class StageImmortal : StageRule
 	public override void Begin()
 	{
 		count = 0;
-		StageManager.it.playableDirector.playableAsset = timelineCutScene;
+		SceneCamera.PlayableDirector.playableAsset = timelineCutScene;
 		base.Begin();
+		UIController.it.UiStageInfo.RefreshDPSCount();
 	}
 
 	public override void End()
@@ -31,7 +32,7 @@ public class StageImmortal : StageRule
 		{
 			return;
 		}
-
+		UIController.it.UiStageInfo.RefreshDPSCount();
 		base.OnLogicUpdate(deltaTime);
 
 		elapsedTime += deltaTime;
@@ -41,8 +42,12 @@ public class StageImmortal : StageRule
 			SpawnBoss();
 		}
 	}
-
-	internal void SpawnBoss()
+	public override void AddReward()
+	{
+		StageManager.it.CurrentStage.SetStageReward(StageManager.it.cumulativeDamage);
+		GameManager.UserDB.AddStageRewards(StageManager.it.CurrentStage.StageClearReward, false);
+	}
+	private void SpawnBoss()
 	{
 		count++;
 		//	SpawnManager.it.SpawnImmotal(StageManager.it.CurrentStage.spawnLast, 1);

@@ -10,7 +10,7 @@ public class UIManagementSkillInfo : MonoBehaviour
 	[SerializeField] private Button buttonEquip;
 	[SerializeField] private GameObject objEquip;
 	[SerializeField] private GameObject objUnequip;
-
+	[SerializeField] private GameObject objUnableEquip;
 
 	[SerializeField] private Button buttonLevelup;
 	[SerializeField] private Button buttonSkillLearn;
@@ -44,20 +44,26 @@ public class UIManagementSkillInfo : MonoBehaviour
 	{
 		bool isAvailable = info.level > 0;
 
-		buttonSkillLearn.gameObject.SetActive(isAvailable == false);
+		buttonSkillLearn.gameObject.SetActive(false);
 		objEquip.SetActive(isAvailable && info.isEquipped == false);
 		objUnequip.SetActive(isAvailable && info.isEquipped);
-		buttonLevelup.gameObject.SetActive(isAvailable);
+		objUnableEquip.SetActive(isAvailable == false);
+		//buttonLevelup.gameObject.SetActive(isAvailable);
+		buttonLevelup.gameObject.SetActive(false);
 
 		textSkillName.text = info.Name;
-		textSkillName.text = info.CooldownValue.ToString();
-		textSkillName.text = info.Description;
+		textSkillCooldown.text = $"{info.CooldownValue}s";
+		textSkillDescription.text = info.Description;
 
 		skillSlot.OnUpdate(null, info, null);
 	}
 
 	public void OnClickEquip()
 	{
+		if (info.level == 0 || info.unlock == false)
+		{
+			return;
+		}
 		if (info.isEquipped)
 		{
 			parent.UnEquipSkill();
@@ -83,6 +89,6 @@ public class UIManagementSkillInfo : MonoBehaviour
 		}
 		info.LevelUp();
 		UpdateInfo();
-		parent.OnUpdate(info.tid);
+		parent.OnUpdate(info.Tid);
 	}
 }

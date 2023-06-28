@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+
 public class UIItemVeterancy : MonoBehaviour
 {
 	[SerializeField] private Image icon;
@@ -17,8 +18,6 @@ public class UIItemVeterancy : MonoBehaviour
 
 	private UIManagementVeterancy parent;
 	private RuntimeData.VeterancyInfo info;
-
-
 
 	private void Awake()
 	{
@@ -82,20 +81,31 @@ public class UIItemVeterancy : MonoBehaviour
 		//textNextStat.text = $"{uiData.nextValue.ToString("{0:0.##}")}{tail}";
 		textPrice.text = info.cost.ToString();
 
+		bool check = GameManager.UserDB.veterancyContainer.Check(1);
+		if (check == false)
+		{
+			textPrice.color = Color.red;
+
+
+		}
+		else
+		{
+			textPrice.color = Color.white;
+
+		}
 		//tmpu_level.text = $"LV. {uiData.level}";
 	}
 
 	private void AbilityLevelUp()
 	{
-		info.ClickLevelup();
-		//uiData.LevelupItem(() =>
-		//{
-		//	Inventory.it.abilityCalculator.GetCalculator(ItemType.Property).Calculate(Inventory.it.Items);
-		//	Inventory.it.abilityCalculator.RefreshAbilityTotal();
+		if (GameManager.UserDB.veterancyContainer.Check(1) == false)
+		{
+			ToastUI.it.Enqueue("노련함 포인트가 부족하니다.");
+			return;
+		}
 
-		//	owner.UpdateItem(true);
-		//	owner.UpdateMoney();
-		//});
+		info.ClickLevelup();
+
 		GameManager.UserDB.UpdateUserStats();
 
 		if (UnitManager.it.Player != null)

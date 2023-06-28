@@ -44,13 +44,8 @@ public struct HyperClassData
 public class HyperData : BaseData
 {
 	public string name;
-
-	public HyperClass hyperClass;
-	public int maxLevel;
-	public Cost cost;
-	public List<ItemStats> stats;
-	public List<ItemStats> rewardStats;
-	public List<HyperRewardInfo> rewardinfo;
+	public long skillTid;
+	public List<long> skillTidList;
 }
 
 [System.Serializable]

@@ -40,8 +40,9 @@ public class UIEquipGrid : UIBaseGrid<RuntimeData.EquipItemInfo>
 			var info = list[i];
 			slot.OnUpdate(parent, info, () =>
 			{
-				parent.SelectEquipItem(info.tid);
+				parent.SelectEquipItem(info.Tid);
 				parent.UpdateInfo();
+				parent.OnUpdateEquip(info.type, info.Tid);
 			});
 		}
 	}

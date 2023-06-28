@@ -1,19 +1,9 @@
 ﻿
 using UnityEngine;
 using System.Collections.Generic;
+using RuntimeData;
 
 
-public class EnemyLevelData
-{
-	public int level;
-	public string attack;
-}
-
-public class EnemyData : BaseData
-{
-	public string name;
-	public List<EnemyLevelData> leveldata;
-}
 
 public class EnemyUnit : Unit
 {
@@ -48,7 +38,7 @@ public class EnemyUnit : Unit
 
 		InitMode("B/Enemy", info);
 		headingDirection = Vector3.right;
-		unitAnimation.AddAttackEvent(Attack);
+
 		rigidbody2D = GetComponent<Rigidbody2D>();
 
 		GameUIManager.it.ShowUnitGauge(this);
@@ -59,11 +49,9 @@ public class EnemyUnit : Unit
 			UIController.it.UiStageInfo.SetBossHpGauge(1f);
 		}
 		skillModule.Init(this, 1701500001);
-
 	}
 
-
-	public override void HeadingToTarget()
+	public override Vector3 HeadingToTarget()
 	{
 
 		if (target != null)
@@ -91,8 +79,9 @@ public class EnemyUnit : Unit
 				}
 
 			}
+			return normal;
 		}
-
+		return Vector3.right;
 	}
 	public override void OnMove(float delta)
 	{
@@ -104,7 +93,6 @@ public class EnemyUnit : Unit
 		target = UnitManager.it.Player;
 		HeadingToTarget();
 		rigidbody2D.MovePosition(transform.position + headingDirection * MoveSpeed * delta);
-		//transform.Translate(headingDirection * MoveSpeed * delta);
 	}
 
 
@@ -115,6 +103,10 @@ public class EnemyUnit : Unit
 			return;
 		}
 		if (_hitInfo.TotalAttackPower == 0)
+		{
+			return;
+		}
+		if (Hp <= 0)
 		{
 			return;
 		}
@@ -145,29 +137,53 @@ public class EnemyUnit : Unit
 			reverse.x = HeadPosition.x + (0.7f * currentDir);
 			reverse.y = HeadPosition.y + 0.6f;
 			reverse.z = 0;
-			GameUIManager.it.ShowFloatingText(correctionDamage, HeadPosition, reverse, _hitInfo.criticalType);
-			ShakeUnit();
 
+
+			TextType textType = TextType.ENEMY_HIT;
+
+			if (_hitInfo.criticalType == CriticalType.CriticalX2)
+			{
+				textType = TextType.CRITICAL_X2;
+			}
+			else if (_hitInfo.criticalType == CriticalType.Critical)
+
+			{
+				textType = TextType.CRITICAL;
+			}
+
+			GameUIManager.it.ShowFloatingText(correctionDamage, HeadPosition, reverse, textType);
+			ShakeUnit();
+			StageManager.it.cumulativeDamage += correctionDamage;
 			currentMode?.OnHit(_hitInfo);
 			hitCount++;
 
-			var go = Instantiate(hitEffect).GetComponent<UVAnimation>();
-			go.transform.position = position;
-			go.transform.localScale = Vector3.one;
-			go.transform.rotation = unitAnimation.transform.rotation;
-			go.Play(null);
+			GameObject otherHit = UnitManager.it.Player.hitEffectObject;
+			GameObject instancedHitEffect = null;
+			if (otherHit != null)
+			{
+				instancedHitEffect = Instantiate(hitEffect);
+			}
+			else
+			{
+				instancedHitEffect = Instantiate(hitEffect);
+				instancedHitEffect.GetComponent<UVAnimation>().Play(null);
+			}
 
+
+			instancedHitEffect.transform.position = position;
+			instancedHitEffect.transform.localScale = Vector3.one;
+			instancedHitEffect.transform.rotation = unitAnimation.transform.rotation;
 		}
 		Hp -= correctionDamage;
+		if (Hp <= 0)
+		{
+			GameManager.UserDB.questContainer.ProgressAdd(QuestGoalType.MONSTER_HUNT, info.rawData.tid, (IdleNumber)1);
+		}
 		if (isBoss)
 		{
 
 			UIController.it.UiStageInfo.SetBossHpGauge(Mathf.Clamp01((float)(Hp / MaxHp)));
 		}
-
-		GameManager.it.battleRecord.RecordAttackPower(_hitInfo);
-
-		//UIController.it.UiStageInfo.RefreshDPSCount();
 
 		if (_hitInfo.hitSound.IsNullOrWhiteSpace() == false)
 		{
@@ -192,7 +208,7 @@ public class EnemyUnit : Unit
 		}
 	}
 
-	public void Attack()
+	public override void Attack()
 	{
 		if (target == null)
 		{
@@ -212,25 +228,16 @@ public class EnemyUnit : Unit
 		ChangeState(StateType.NEUTRALIZE);
 	}
 
+	//public float knockPower;
 	public override void KnockBack(float power, Vector3 dir, int hitCount, bool isLastHit = true)
 	{
-		float knockbackPower = Mathf.Max(0, power);
-
-		KnockbackMove move = new KnockbackMove();
-		move.Set(transform, NeutralizeType.KNOCKBACK, knockbackPower, dir, 1);
-
-		var existMove = neutralizeMoves.Find(x => x.type.Equals(NeutralizeType.KNOCKBACK));
-
-		if (existMove == null)
+		if (Hp <= 0)
 		{
-			neutralizeMoves.Add(move);
-		}
-		else
-		{
-			existMove.AddPower(knockbackPower);
+			return;
 		}
 
-		OnCrowdControl();
+		rigidbody2D.AddForce(dir * power, ForceMode2D.Impulse);
+		ChangeState(StateType.KNOCKBACK);
 	}
 
 	public override void AirBorne(float power, int hitCount, bool isLastHit = true)
@@ -261,8 +268,14 @@ public class EnemyUnit : Unit
 	}
 	public override void CheckDeathState()
 	{
+		if (currentState is StateType.KNOCKBACK)
+		{
+			return;
+		}
 		if (Hp <= 0)
 		{
+
+
 			if (isBoss)
 			{
 				GameManager.it.battleRecord.bossKillCount++;
@@ -273,13 +286,38 @@ public class EnemyUnit : Unit
 			{
 				GameManager.it.battleRecord.killCount++;
 				StageManager.it.currentKillCount++;
+
+				IdleNumber exp = StageManager.it.CurrentStage.GetMonsterExp();
+				GameManager.UserDB.userInfoContainer.GainUserExp(exp);
+
+				if (exp > 0)
+				{
+					UIController.it.ShowItemLog(StageManager.it.CurrentStage.MonsterExp, exp);
+					GameObjectPoolManager.it.fieldItemPool.Get(out FieldItem fieldItem);
+					fieldItem.Appear(2, transform.position, UnitManager.it.Player.transform);
+				}
+				IdleNumber gold = StageManager.it.CurrentStage.GetMonsterGold();
+				GameManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD).Earn(gold);
+				if (gold > 0)
+				{
+					UIController.it.ShowItemLog(StageManager.it.CurrentStage.MonsterGold, gold);
+					GameObjectPoolManager.it.fieldItemPool.Get(out FieldItem fieldItem);
+					fieldItem.Appear(0, transform.position, UnitManager.it.Player.transform);
+				}
+
+				RewardInfo reward = StageManager.it.CurrentStage.GetMonsterReward();
+				if (reward != null)
+				{
+					reward.UpdateCount(StageManager.it.CurrentStage.StageNumber);
+					GameManager.UserDB.OpenRewardBox(reward, false);
+					UIController.it.ShowItemLog(reward, (IdleNumber)1);
+					GameObjectPoolManager.it.fieldItemPool.Get(out FieldItem fieldItem);
+					fieldItem.Appear(1, transform.position, UnitManager.it.Player.transform);
+				}
 			}
 
 			UIController.it.UiStageInfo.RefreshKillCount();
 			ChangeState(StateType.DEATH);
-
-			GameManager.UserDB.userInfoContainer.GainUserExp(Random.Range(10, 24));
-			GameManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD).Earn((IdleNumber)Random.Range(100, 430));
 		}
 	}
 
@@ -290,13 +328,16 @@ public class EnemyUnit : Unit
 		GameObject go = Instantiate(deathEffect);
 		go.transform.position = transform.position;
 
-		int count = Random.Range(1, 4);
-		for (int i = 0; i < count; i++)
-		{
-			GameObject killReward = (GameObject)Instantiate(Resources.Load("Item/FieldItem"));
-			killReward.GetComponent<FieldItem>().Appear(i, transform.position, UnitManager.it.Player.transform);
-		}
-
 		Destroy(gameObject);
+	}
+
+	public override void ActiveHyperEffect()
+	{
+
+	}
+
+	public override void InactiveHyperEffect()
+	{
+
 	}
 }

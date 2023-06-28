@@ -12,6 +12,7 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 	[SerializeField] private UIEquipSlot uiSlot;
 	[SerializeField] private TextMeshProUGUI nameText;
 	[SerializeField] private TextMeshProUGUI equipText;
+	[SerializeField] private TextMeshProUGUI ownText;
 
 	[SerializeField] private Button equipButton;
 	[SerializeField] private Button levelupButton;
@@ -67,21 +68,22 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 		equipText.text = $"{sb.ToString()}";
 
 		sb.Clear();
-		//for (int i = 0; i < equipInfo.itemObject.OwnedAbilities.Length; i++)
-		//{
-		//	sb.Append($"{equipInfo.itemObject.OwnedAbilities[i].type.ToUIString()}");
-		//	sb.Append($" {equipInfo.itemObject.OwnedAbilities[i].GetValue(equipInfo.level).ToString()}");
-		//	sb.Append('\n');
-		//}
+		for (int i = 0; i < equipInfo.ownedAbilities.Count; i++)
+		{
+			string tail = equipInfo.ownedAbilities[i].tailChar;
+			sb.Append($"{equipInfo.ownedAbilities[i].type.ToUIString()}");
+			sb.Append($" <color=yellow>{equipInfo.ownedAbilities[i].Value.ToString()}{tail}</color>");
+			sb.Append('\n');
+		}
 
-		//toOwnText.text = $"{sb.ToString()}";
+		ownText.text = $"{sb.ToString()}";
 	}
 	public void UpdateButton()
 	{
 		if (equipInfo != null)
 		{
 			bool buttonActive = equipInfo.unlock;
-			bool equipped = equipInfo.tid != GameManager.UserDB.equipContainer.GetSlot(equipInfo.rawData.equipType).itemTid;
+			bool equipped = equipInfo.Tid != GameManager.UserDB.equipContainer.GetSlot(equipInfo.rawData.equipType).itemTid;
 			bool levelupable = ItemLevelupable();
 
 			equipButton.interactable = buttonActive && equipped;
@@ -92,7 +94,7 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 			equipButton.interactable = false;
 		}
 
-		upgradeAllButton.interactable = false;
+		//upgradeAllButton.interactable = false;
 	}
 	public bool ItemLevelupable()
 	{
@@ -126,13 +128,12 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 		UpdateItemInfo();
 		UpdateItemLevelupInfo();
 		UpdateButton();
-
+		parent.OnUpdateEquip(parent.equipType, equipInfo.Tid);
 	}
 
 	public void OnClickShowLevelUp()
 	{
 		parent.UiPopupEquipLevelup.OnUpdate(parent, equipInfo);
-
 	}
 
 	public void OnClickShowUpgrade()
@@ -142,7 +143,8 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 
 	private void OnUpgradeAllButtonClick()
 	{
+		GameManager.UserDB.equipContainer.UpgradeAll(parent.equipType);
+		parent.OnUpdateEquip(parent.equipType, equipInfo.Tid);
 
 	}
-
 }

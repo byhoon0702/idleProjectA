@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using RuntimeData;
 using UnityEngine;
 
 public class UIRewardLog : MonoBehaviour
@@ -9,10 +10,10 @@ public class UIRewardLog : MonoBehaviour
 	private int currentIndex = 0;
 
 
-	public void ShowLog(int _tid, IdleNumber _count)
+	public void ShowLog(RewardInfo reward, IdleNumber _count)
 	{
 		UILogItem item = GetCurrentLogItem();
-		item.ShowLog(_tid, _count);
+		item.ShowLog(reward, _count);
 		item.transform.SetAsFirstSibling();
 	}
 

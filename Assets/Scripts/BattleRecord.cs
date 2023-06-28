@@ -12,7 +12,7 @@ public class BattleRecord
 	public DPSInfo unknownDPS = new DPSInfo();
 	public int killCount;
 	public int bossKillCount;
-
+	public IdleNumber totalDamage;
 
 
 	public void RecordAttackPower(HitInfo _hitInfo)

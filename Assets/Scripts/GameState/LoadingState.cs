@@ -17,6 +17,11 @@ public class LoadingState : StageFSM
 		elapsedTime = 0;
 
 		SceneCamera.it.ResetToStart();
+		UIController.it.HyperSkill.SetProgressHyperMode(0, 0);
+		SceneCamera.it.BlackOutCurtain.color = new Color(0, 0, 0, 0);
+		GameUIManager.it.HideStageResult();
+
+
 		return this;
 	}
 	public override FSM RunNextState(float time)
@@ -36,12 +41,7 @@ public class LoadingState : StageFSM
 
 	public override void OnUpdate(float time)
 	{
-		//elapsedTime += time;
-		//if (elapsedTime > 1)
-		//{
-		//	VGameManager.it.ChangeState(GameState.BGLOADING);
 
-		//}
 	}
 }
 

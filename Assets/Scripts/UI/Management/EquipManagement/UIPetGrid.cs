@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIPetGrid : UIBaseGrid<RuntimeData.PetInfo>
+public class UIPetGrid : MonoBehaviour
 {
-	public override void Init(UIManagementEquip _parent)
+	public GameObject itemPrefab;
+
+	[SerializeField] protected Transform itemRoot;
+
+	private UIManagementPet parent;
+	public void Init(UIManagementPet _parent)
 	{
 		parent = _parent;
 	}
-	public override void OnUpdate(List<RuntimeData.PetInfo> itemList)
+	public void OnUpdate(List<RuntimeData.PetInfo> itemList)
 	{
 		int countForMake = itemList.Count - itemRoot.childCount;
 
@@ -24,7 +29,7 @@ public class UIPetGrid : UIBaseGrid<RuntimeData.PetInfo>
 		{
 
 			var child = itemRoot.GetChild(i);
-			if (i >= itemList.Count - 1)
+			if (i > itemList.Count - 1)
 			{
 				child.gameObject.SetActive(false);
 				continue;
@@ -34,9 +39,10 @@ public class UIPetGrid : UIBaseGrid<RuntimeData.PetInfo>
 			UIPetSlot slot = child.GetComponent<UIPetSlot>();
 
 			var info = itemList[i];
+
 			slot.OnUpdate(parent, info, () =>
 			{
-				parent.SelectPetItem(info.tid);
+				parent.SetSelectedTid(info.Tid);
 				parent.UpdateInfo();
 			});
 		}

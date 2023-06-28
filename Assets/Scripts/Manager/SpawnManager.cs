@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Mono.Cecil;
+
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
@@ -180,13 +180,37 @@ public class SpawnManager : MonoBehaviour
 
 		pet.gameObject.SetActive(true);
 
-		petList[index] = pet;
+		if (index < petList.Count)
+		{
+			petList[index] = pet;
+		}
+		else
+		{
+			petList.Add(pet);
+		}
+
 		pet.transform.SetParent(playerRoot);
 	}
 
 	public void RemovePet(int index)
 	{
-		Destroy(petList[index].gameObject);
+		if (petList == null)
+		{
+			return;
+		}
+		if (index < 0)
+		{
+			return;
+		}
+		if (index < petList.Count)
+
+		{
+			if (petList[index] != null)
+			{
+				Destroy(petList[index].gameObject);
+			}
+
+		}
 	}
 
 	public void ChangePet(int index)
@@ -321,13 +345,14 @@ public class SpawnManager : MonoBehaviour
 
 	public bool SpawnEnemies(float minDistance, float maxDistance)
 	{
+
 		int waveUnitCount = StageManager.it.CurrentStage.DisplayUnitCount;
 		var enemyInfoList = StageManager.it.CurrentStage.spawnEnemyInfos;
 
 		int totalSpawnCount = StageManager.it.CurrentStage.totalSpawnCount;
 
 		int countLimit = StageManager.it.CurrentStage.CountLimit;
-		int perWaveCount = Mathf.Min(4, waveUnitCount - UnitManager.it.GetEnemies().Count);
+		int perWaveCount = Mathf.Min(StageManager.it.CurrentStage.SpawnPerWave, waveUnitCount - UnitManager.it.GetEnemies().Count);
 
 		if (countLimit > 0)
 		{
@@ -478,6 +503,32 @@ public class SpawnManager : MonoBehaviour
 		_outResult.SetOk();
 		return bossUnit;
 	}
+	public EnemyUnit MakeBoss(UnitData _bossInfo, Vector3 pos, out VResult _outResult)
+	{
+		_outResult = new VResult();
+		EnemyUnit bossUnit = Instantiate(enemyUnitPrefab);
+
+		lastUnit = bossUnit;
+
+		if (bossUnit == null)
+		{
+			_outResult.SetFail(VResultCode.MAKE_FAIL, "EnemyUnit Spawn Fail.. SpawnManager.treasureBoxPrefab");
+			return null;
+		}
+
+		bossUnit.name = _bossInfo.name;
+		bossUnit.transform.SetParent(enemyRoot);
+		bossUnit.transform.position = pos;
+		bossUnit.isBoss = true;
+		bossUnit.Spawn(_bossInfo);
+
+
+		bossUnit.gameObject.SetActive(true);
+
+		StageManager.it.CurrentStage.totalBossSpawnCount++;
+		_outResult.SetOk();
+		return bossUnit;
+	}
 
 	public EnemyUnit MakeImmotal(UnitData _bossInfo, float _xPosition)
 	{
@@ -519,6 +570,7 @@ public class SpawnManager : MonoBehaviour
 	{
 		if (playerUnit != null)
 		{
+			playerUnit.InactiveHyperEffect();
 			Destroy(playerUnit.gameObject);
 			playerUnit = null;
 		}

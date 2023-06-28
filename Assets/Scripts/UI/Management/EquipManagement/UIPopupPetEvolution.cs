@@ -18,7 +18,7 @@ public class UIPopupPetEvolution : MonoBehaviour
 
 	private RuntimeData.PetInfo itemInfo;
 	private RuntimeData.PetInfo nextItemInfo;
-	private UIManagementEquip parent;
+	private UIManagementPet parent;
 	private void Awake()
 	{
 		buttonClose.onClick.RemoveAllListeners();
@@ -26,7 +26,7 @@ public class UIPopupPetEvolution : MonoBehaviour
 		buttonUpgrade.onClick.RemoveAllListeners();
 		buttonUpgrade.onClick.AddListener(OnClickUpgrade);
 	}
-	public void OnUpdate(UIManagementEquip _parent, RuntimeData.PetInfo info)
+	public void OnUpdate(UIManagementPet _parent, RuntimeData.PetInfo info)
 	{
 		gameObject.SetActive(true);
 		parent = _parent;
@@ -51,7 +51,7 @@ public class UIPopupPetEvolution : MonoBehaviour
 		//}
 
 		GameManager.UserDB.petContainer.EvolutionPet(itemInfo);
-		parent.OnUpdatePet(itemInfo.tid);
+		parent.UpdateInfo();
 		OnClose();
 	}
 	public void OnClose()

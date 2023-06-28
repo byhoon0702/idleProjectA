@@ -23,12 +23,35 @@ namespace RuntimeData
 		public float CooldownValue => cooldownValue;
 
 		public bool isEquipped = false;
+		public float duration = 1f;
 
-		public int maxLevel => rawData.maxLevel;
 		#endregion
 
-		#region 수정되면 안되는 필드
 
+
+
+		#region 수정되면 안되는 필드
+		public int maxLevel
+		{
+			get
+			{
+				if (rawData.detailData.HasValue)
+				{
+					return rawData.detailData.Value.maxLevel;
+				}
+				return 100;
+			}
+		}
+		public bool Instant => itemObject.Instant;
+		public bool IsSkillState => itemObject.IsChangeState;
+		public Grade grade
+		{
+			get
+			{
+
+				return rawData.itemGrade;
+			}
+		}
 		public override IdleNumber BaseValue
 		{
 			get
@@ -37,7 +60,7 @@ namespace RuntimeData
 			}
 		}
 
-		public SkillCooldownType CooldownType => rawData.cooldownType;
+		public SkillCooldownType CooldownType => rawData.detailData.Value.cooldownType;
 		public string Name
 		{
 			get
@@ -61,9 +84,25 @@ namespace RuntimeData
 		}
 		public bool HideInUI => rawData.hideInUI;
 		public Sprite icon => itemObject != null ? itemObject.Icon : null;
-		public SkillData rawData { get; private set; }
+		private SkillData rawData;
 		public SkillTree skillTree { get; private set; }
-		public NewSkill itemObject { get; private set; }
+
+		public SkillCore itemObject { get; private set; }
+
+		public SkillActiveType activeType
+		{
+			get
+			{
+				if (rawData.detailData.HasValue == false)
+				{
+					return SkillActiveType.ACTIVE;
+
+				}
+				return rawData.detailData.Value.activeType;
+			}
+		}
+
+
 		public AbilityInfo skillAbility;
 		#endregion
 
@@ -101,10 +140,13 @@ namespace RuntimeData
 		{
 			rawData = data as SkillData;
 			tid = rawData.tid;
-			itemObject = GameManager.UserDB.skillContainer.GetScriptableObject<NewSkill>(tid);
+			itemObject = GameManager.UserDB.skillContainer.GetScriptableObject<SkillCore>(tid);
 			SetLevelData();
 			UpdateAbilities();
-			cooldownValue = rawData.cooldownValue;
+			if (rawData.detailData.HasValue)
+			{
+				cooldownValue = rawData.detailData.Value.cooldownValue;
+			}
 		}
 
 
@@ -114,16 +156,20 @@ namespace RuntimeData
 			interval = 0;
 			hitRange = 1;
 
-			for (int i = 0; i < rawData.levelSheet.Count; i++)
+
+			if (rawData.detailData.HasValue)
 			{
-				var levelsheet = rawData.levelSheet[i];
-				if (levelsheet.level > level)
+				for (int i = 0; i < rawData.detailData.Value.levelSheet.Count; i++)
 				{
-					break;
+					var levelsheet = rawData.detailData.Value.levelSheet[i];
+					if (levelsheet.level > level)
+					{
+						break;
+					}
+					hitCount = levelsheet.attackCount;
+					interval = levelsheet.attackInterval;
+					hitRange = levelsheet.attackRange;
 				}
-				hitCount = levelsheet.attackCount;
-				interval = levelsheet.attackInterval;
-				hitRange = levelsheet.attackRange;
 			}
 		}
 
@@ -142,19 +188,26 @@ namespace RuntimeData
 			SetLevel(++level);
 		}
 
-		public override void Load(ItemInfo info)
+		public override void Load<T>(T info)
 		{
 			base.Load(info);
 			if (level >= maxLevel)
 			{
 				level = maxLevel;
 			}
+		}
 
+		public override void UpdateData()
+		{
+			unlock = true;
+			if (level == 0)
+			{
+				level = 1;
+			}
 			SetLevelData();
 			UpdateAbilities();
 			UpdateModifier();
 		}
-
 		public void SetLevel(int _level)
 		{
 			level = _level;
@@ -163,9 +216,6 @@ namespace RuntimeData
 				level = maxLevel;
 			}
 
-			SetLevelData();
-			UpdateAbilities();
-			UpdateModifier();
 		}
 
 		public void UpdateModifier()
@@ -174,7 +224,7 @@ namespace RuntimeData
 			{
 				case ValueModifyTarget.SKILL:
 					{
-						var baseSkill = GameManager.UserDB.skillContainer.Get(rawData.rootSkillTid);
+						var baseSkill = GameManager.UserDB.skillContainer.Get(rawData.detailData.Value.rootSkillTid);
 						if (baseSkill != null)
 						{
 							baseSkill.RemoveAllModifiersFromSource(this);
@@ -201,7 +251,7 @@ namespace RuntimeData
 			{
 				case ValueModifyTarget.SKILL:
 					{
-						var baseSkill = GameManager.UserDB.skillContainer.Get(rawData.rootSkillTid);
+						var baseSkill = GameManager.UserDB.skillContainer.Get(rawData.detailData.Value.rootSkillTid);
 						if (baseSkill != null)
 						{
 							baseSkill.RemoveAllModifiersFromSource(this);

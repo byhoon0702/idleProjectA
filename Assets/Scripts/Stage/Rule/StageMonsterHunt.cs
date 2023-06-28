@@ -33,6 +33,10 @@ public class StageMonsterHunt : StageRule
 
 	public override void OnLogicUpdate(float deltaTime)
 	{
+		if (GameManager.GameStop)
+		{
+			return;
+		}
 		if (isEnd)
 		{
 			return;
@@ -49,7 +53,7 @@ public class StageMonsterHunt : StageRule
 		elapsedTime += deltaTime;
 	}
 
-	internal void SpawnUpdate(float time)
+	private void SpawnUpdate(float time)
 	{
 		if (noMoreSpawn)
 		{

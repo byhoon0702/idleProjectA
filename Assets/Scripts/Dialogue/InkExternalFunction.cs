@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using AmplifyShaderEditor;
 using Ink.Runtime;
-using UnityEngine;
 
 public class InkExternalFunction
 {
