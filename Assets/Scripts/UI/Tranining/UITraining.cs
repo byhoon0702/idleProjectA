@@ -4,10 +4,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+public enum LevelUpCount
+{
+	ONE,
+	TEN,
+	HUNDRED,
+	MAX,
+
+}
+
 public class UITraining : UIBase
 {
 	[SerializeField] private UIItemTraining itemPrefab;
 	[SerializeField] private Transform itemRoot;
+
+	public LevelUpCount levelupCount { get; private set; } = LevelUpCount.ONE;
 
 	private List<UIItemTraining> items = new List<UIItemTraining>();
 
@@ -15,42 +26,46 @@ public class UITraining : UIBase
 	{
 		base.OnEnable();
 		EventCallbacks.onItemChanged += OnItemChanged;
-
-		//SceneCamera.it.ChangeViewPort(true);
 	}
 
 	protected override void OnDisable()
 	{
 		base.OnDisable();
 		EventCallbacks.onItemChanged -= OnItemChanged;
-		//if (SceneCamera.it != null)
-		//{
-		//	SceneCamera.it.ChangeViewPort(false);
-		//}
 	}
 
 	private void OnItemChanged(List<long> _changedItems)
 	{
 
 	}
-
+	private void Awake()
+	{
+		levelupCount = LevelUpCount.ONE;
+	}
 	public void OnUpdate(bool _refreshGrid)
 	{
 		UpdateItem();
 	}
 
-	public void UpdateItem()
+	public UIItemTraining Find(long tid)
 	{
-		var list = GameManager.UserDB.training.trainingInfos;
-		int countForMake = list.Count - itemRoot.childCount;
-
-		if (countForMake > 0)
+		for (int i = 0; i < itemRoot.childCount; i++)
 		{
-			for (int i = 0; i < countForMake; i++)
+			var itemTraining = itemRoot.GetChild(i).GetComponent<UIItemTraining>();
+			if (itemTraining.TrainingInfo.Tid == tid)
 			{
-				var item = Instantiate(itemPrefab, itemRoot);
+				return itemTraining;
 			}
 		}
+		return null;
+	}
+
+	public void UpdateItem()
+	{
+		var list = PlatformManager.UserDB.training.trainingInfos;
+		int countForMake = list.Count - itemRoot.childCount;
+
+		itemRoot.CreateListCell(countForMake, itemPrefab.gameObject);
 
 		list.Sort((a, b) => { return b.isOpen.CompareTo(a.isOpen); });
 
@@ -87,4 +102,38 @@ public class UITraining : UIBase
 			slot.OnRefresh();
 		}
 	}
+
+	public void OnLevelUpCountOne(bool isOn)
+	{
+		if (isOn)
+		{
+			levelupCount = LevelUpCount.ONE;
+			Refresh();
+		}
+	}
+	public void OnLevelUpCountTen(bool isOn)
+	{
+		if (isOn)
+		{
+			levelupCount = LevelUpCount.TEN;
+			Refresh();
+		}
+	}
+	public void OnLevelUpCountHundred(bool isOn)
+	{
+		if (isOn)
+		{
+			levelupCount = LevelUpCount.HUNDRED;
+			Refresh();
+		}
+	}
+	public void OnLevelUpCountMaxLevel(bool isOn)
+	{
+		if (isOn)
+		{
+			levelupCount = LevelUpCount.MAX;
+			Refresh();
+		}
+	}
+
 }

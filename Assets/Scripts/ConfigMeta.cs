@@ -305,19 +305,19 @@ public class ConfigMeta : ScriptableObject
 	/// State 가중치 1
 	/// </summary>
 	[Tooltip("State 가중치 1")]
-	[SerializeField] public float UNIT_STATE_WEIGHT_1 = 1.85f;
+	[SerializeField] public float STAGE_WEIGHT = 1.85f;
 
 	/// <summary>
 	/// State 가중치 2
 	/// </summary>
 	[Tooltip("State 가중치 2")]
-	[SerializeField] public float UNIT_STATE_WEIGHT_2 = 0.2f;
+	[SerializeField] public float LEVEL_WEIGHT = 0.2f;
 
 	/// <summary>
 	/// State 가중치 3
 	/// </summary>
 	[Tooltip("State 가중치 3")]
-	[SerializeField] public float UNIT_STATE_WEIGHT_3 = 2;
+	[SerializeField] public float BOSS_WEIGHT = 2;
 
 	/// <summary>
 	/// State AttackPower 가중치

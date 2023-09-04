@@ -37,7 +37,7 @@ public class GachaLevelInfo
 	public int level;
 	public int exp;
 
-	public Reward reward;
+	public ChanceReward reward;
 }
 
 [Serializable]
@@ -84,12 +84,14 @@ public class GachaDataSummonInfo
 [Serializable]
 public class GachaData : BaseData
 {
-	public string name;
+
 	public GachaType gachaType;
 	public GachaDataSummonInfo[] summonInfos;
 	public List<GachaLevelInfo> gachaLevelInfos;
 
 	public List<GachaChanceInfo> chances;
+
+
 }
 
 [Serializable]

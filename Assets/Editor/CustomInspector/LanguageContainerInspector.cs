@@ -22,5 +22,10 @@ public class LanguageContainerInspector : Editor
 			AssetDatabase.SaveAssetIfDirty(container);
 			AssetDatabase.Refresh();
 		}
+
+		if (GUILayout.Button("검수 팝업"))
+		{
+
+		}
 	}
 }

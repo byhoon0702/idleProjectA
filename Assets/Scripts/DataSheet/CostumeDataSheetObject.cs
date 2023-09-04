@@ -17,7 +17,7 @@ public class CostumeDataSheetObject : BaseDataSheetObject
 	/// <summary>
 	/// 아이템 스크립터블 오브젝트 생성
 	/// </summary>
-	public override void Call()
+	public override void Call(string fileName)
 	{
 #if UNITY_EDITOR
 
@@ -36,16 +36,12 @@ public class CostumeDataSheetObject : BaseDataSheetObject
 		{
 			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas/Costumes", $"{typename}s");
 		}
-		//else
-		//{
-		//	AssetDatabase.DeleteAsset(path);
-		//	AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas/Costumes", $"{typename}s");
-		//}
+		RenameAsset<CostumeItemObject>(path, "Costume");
 
 		for (int i = 0; i < dataSheet.infos.Count; i++)
 		{
 			var data = dataSheet.infos[i];
-			string name = $"{data.tid}_{data.name}";
+			string name = $"Costume_{data.tid}";
 			string assetPath = $"{path}/{name}.asset";
 
 			var scriptable = (CostumeItemObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(CostumeItemObject));
@@ -55,7 +51,7 @@ public class CostumeDataSheetObject : BaseDataSheetObject
 				AssetDatabase.CreateAsset(scriptable, assetPath);
 			}
 
-			scriptable.SetBasicData(data.tid, data.name, data.description, data.costumeType, data.itemGrade, data.starLevel);
+			scriptable.SetBasicData(data);
 			scriptable.FindIconResource();
 			scriptable.FindObject();
 

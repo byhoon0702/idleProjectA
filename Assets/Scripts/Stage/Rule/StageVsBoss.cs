@@ -7,13 +7,13 @@ using UnityEngine;
 public class StageVsBoss : StageRule
 {
 	public float interval = 0f;
-
+	public bool usePhase;
 	private int bossIndex = 0;
 	public override void Begin()
 	{
-
 		bossIndex = 0;
 		base.Begin();
+		StageManager.it.usePhase = usePhase;
 	}
 
 	public override void End()
@@ -71,8 +71,8 @@ public class StageVsBoss : StageRule
 		{
 			int index = bossIndex + i;
 			index = StageManager.it.CurrentStage.spawnBoss.Count > index ? index : 0;
-
-			SpawnManager.it.SpawnLast(StageManager.it.CurrentStage.spawnBoss[index], 1);
+			Vector3 pos = StageManager.it.map.bossSpawnPos != null ? StageManager.it.map.bossSpawnPos.position : new Vector3(2, 0, 0);
+			SpawnManager.it.SpawnLast(StageManager.it.CurrentStage.spawnBoss[index], pos, 1);
 			bossIndex++;
 
 		}

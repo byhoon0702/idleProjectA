@@ -11,7 +11,7 @@ public class VeterancyDataSheetObject : BaseDataSheetObject
 	public VeterancyDataSheet dataSheet;
 
 
-	public override void Call()
+	public override void Call(string fileName)
 	{
 #if UNITY_EDITOR
 
@@ -28,11 +28,12 @@ public class VeterancyDataSheetObject : BaseDataSheetObject
 			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas", "Veterancy");
 		}
 
+		RenameAsset<VeterancyObject>(path, "Veterancy");
 
 		for (int i = 0; i < dataSheet.infos.Count; i++)
 		{
 			var data = dataSheet.infos[i];
-			string name = $"{data.tid}_{data.name}";
+			string name = $"Veterancy_{data.tid}";
 			string assetPath = $"{path}/{name}.asset";
 
 			var scriptable = (VeterancyObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(VeterancyObject));
@@ -41,7 +42,7 @@ public class VeterancyDataSheetObject : BaseDataSheetObject
 				scriptable = ScriptableObject.CreateInstance<VeterancyObject>();
 				AssetDatabase.CreateAsset(scriptable, assetPath);
 			}
-			scriptable.SetData(data);
+			scriptable.SetBasicData(data);
 
 			EditorUtility.SetDirty(scriptable);
 			AssetDatabase.SaveAssetIfDirty(scriptable);

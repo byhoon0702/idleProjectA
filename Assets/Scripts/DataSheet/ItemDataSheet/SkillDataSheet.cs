@@ -52,15 +52,53 @@ public enum Target
 	ENEMY,
 }
 
+public enum StatusEffect
+{
+	NONE,
+	STUN,
+}
 
 
 [System.Serializable]
 public class SkillLevelSheet
 {
-	public int level;
+	public string description_key;
+	public int evolutionLevel;
+	public int maxLevel;
+	//타겟 수
+	public int targetCount;
+	//사거리
 	public float attackRange;
+	//공격 횟수
 	public int attackCount;
+	//공격 간격
 	public float attackInterval;
+	//타격 범위
+	public float hitRange;
+	//타격 할 적 수
+	public int hitCount;
+
+	//넉백 파워
+	public float knockbackPower;
+	//스킬 지속시간
+	public float duration;
+
+	public StatusEffect statusEffect;
+
+	public SkillLevelSheet()
+	{
+		evolutionLevel = 0;
+		maxLevel = 100;
+		targetCount = 1;    // 타겟 카운트 2
+		attackRange = 1;    // 공격 사거리 3 
+		attackCount = 1;    // 공격 횟수 4
+		attackInterval = 0; // 공격 간격 5
+		hitRange = 0;       // 공격 범위 6
+		hitCount = 1;       // 범위 내의 타겟 수 7
+		knockbackPower = 0; // 넉백 8
+		duration = 0;       // 지속시간  9
+		statusEffect = StatusEffect.NONE; // 상태이상 10
+	}
 }
 
 
@@ -70,17 +108,13 @@ public enum SkillType
 	HEAL,
 	BUFF,
 	DEBUFF
-
-
 }
 
-public enum SkillTreeType
+public enum SkillTimeType
 {
-	ATTACK,
-	DEFENCE,
-	UTILITY,
-	SPECIAL,
-
+	NONE,
+	DURATION,
+	INTERVAL,
 }
 
 public enum ValueModifyTarget
@@ -89,17 +123,45 @@ public enum ValueModifyTarget
 	CHARACTER,
 	SKILL,
 }
+public enum RequirementType
+{
+	/// <summary>
+	/// 스킬 해금 조건 없음
+	/// </summary>
+	NONE,
+	//이전 스킬 레벨
+	BASESKILL,
+	//유저 레벨
+	USERLEVEL,
+	//스테이지
+	NORMAL_STAGE,
+	//승급 단계
+	ADVANCEMENT,
+	//몬스터 처치
+	MONSTERKILL,
+
+	//일일 몬스터 처리
+	DAILYKILLCOUNT,
+}
+
+[System.Serializable]
+public class RequirementInfo
+{
+	public RequirementType type;
+	public long parameter1;
+	public int parameter2;
+}
 
 [Serializable]
-public struct SkillDetailData
+public class SkillDetailData
 {
 	public SkillCooldownType cooldownType;
 	public float cooldownValue;
 	public SkillActiveType activeType;
 
-	public int maxLevel;
-	public long rootSkillTid;
-	public List<SkillLevelSheet> levelSheet;
+
+	//public long rootSkillTid;
+
 }
 
 
@@ -107,7 +169,7 @@ public struct SkillDetailData
 public class SkillData : ItemData
 {
 	public string ui_Description;
-	public SkillTreeType type;
+	public SkillTimeType timeType;
 	public SkillType skillType;
 
 	public string animation;
@@ -116,18 +178,14 @@ public class SkillData : ItemData
 	public ItemStats useValue;
 
 
-
-	public SkillDetailData? detailData;
+	public SkillDetailData detailData;
+	public List<SkillLevelSheet> levelSheet;
 	public bool hideInUI;
 	public SkillData()
 	{
 
 	}
-	//에디트용으로만 호출 할 것
-	public SkillData(SkillItemObject itemObject)
-	{
 
-	}
 
 }
 

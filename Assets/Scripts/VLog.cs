@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class VLog 
+public static class VLog
 {
 	public static bool showConditionLog = false;
 	public static bool showSkillLog = false;

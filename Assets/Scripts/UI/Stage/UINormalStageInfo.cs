@@ -11,11 +11,11 @@ public class UINormalStageInfo : MonoBehaviour
 	[SerializeField] private Slider sliderStageProgress;
 	[SerializeField] private Button buttonBossEnter;
 
-	StageInfo stageInfo;
-	public void OnUpdate(StageInfo _stageInfo)
+	RuntimeData.StageInfo stageInfo;
+	public void OnUpdate(RuntimeData.StageInfo _stageInfo)
 	{
 		stageInfo = _stageInfo;
-		textStageTitle.text = $"{stageInfo.data.stageNumber} {stageInfo.data.stageNumber}";
+		textStageTitle.text = $"{stageInfo.stageListData.stageNumber} {stageInfo.stageListData.stageNumber}";
 	}
 
 	public void OnClickBoss()

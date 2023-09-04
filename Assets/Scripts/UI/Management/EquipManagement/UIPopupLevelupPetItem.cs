@@ -5,17 +5,16 @@ using TMPro;
 using UnityEngine.UI;
 using System.Text;
 
-public class UIPopupLevelupPetItem : MonoBehaviour
+public class UIPopupLevelupPetItem : UIBase
 {
 	[SerializeField] private UIPetSlot uiPetSlot;
 
-	[SerializeField] Image imageCurrency;
-	[SerializeField] protected TextMeshProUGUI textMeshCurrency;
 	[SerializeField] Image imageButtonCurrency;
 	[SerializeField] protected TextMeshProUGUI textMeshButtonCurrency;
 
 	[SerializeField] protected Button buttonExit;
 	[SerializeField] protected Button buttonUpgrade;
+	public Button ButtonUpgrade => buttonUpgrade;
 
 	[SerializeField] protected TextMeshProUGUI textMeshProName;
 	[SerializeField] protected TextMeshProUGUI textEquipBuff;
@@ -33,16 +32,13 @@ public class UIPopupLevelupPetItem : MonoBehaviour
 		buttonUpgrade.onClick.AddListener(OnClickLevelUp);
 	}
 
-	public void OnClose()
-	{
-		gameObject.SetActive(false);
-	}
+
 	public void OnUpdate(UIManagementPet _parent, RuntimeData.PetInfo info)
 	{
 		gameObject.SetActive(true);
 		parent = _parent;
 		itemInfo = info;
-		textMeshProName.text = itemInfo.itemObject.ItemName;
+		textMeshProName.text = PlatformManager.Language[itemInfo.rawData.name];
 		OnUpdateInfo();
 
 	}
@@ -52,13 +48,14 @@ public class UIPopupLevelupPetItem : MonoBehaviour
 		uiPetSlot.OnUpdate(null, itemInfo, null);
 		UpdateItemLevelupInfo();
 
-		var currencyItem = GameManager.UserDB.inventory.FindCurrency(CurrencyType.PET_UPGRADE_ITEM);
-		textMeshCurrency.text = currencyItem.Value.ToString();
-		imageCurrency.sprite = currencyItem.IconImage;
+		var currencyItem = PlatformManager.UserDB.inventory.FindCurrency(CurrencyType.PET_UPGRADE_ITEM);
+
+		///imageCurrency.sprite = currencyItem.IconImage;
 		imageButtonCurrency.sprite = currencyItem.IconImage;
 
 		IdleNumber value = itemInfo.LevelUpNeedCount();
-		textMeshButtonCurrency.text = value.ToString();
+		//textMeshCurrency.text = currencyItem.Value.ToString();
+		textMeshButtonCurrency.text = $"{currencyItem.Value.ToString()}/{value.ToString()}";
 
 		if (value > currencyItem.Value)
 		{
@@ -78,9 +75,9 @@ public class UIPopupLevelupPetItem : MonoBehaviour
 		for (int i = 0; i < itemInfo.equipAbilities.Count; i++)
 		{
 			string tail = itemInfo.equipAbilities[i].tailChar;
-			IdleNumber nextValue = itemInfo.equipAbilities[i].GetNextValue(itemInfo.level + 1);
+			IdleNumber nextValue = itemInfo.equipAbilities[i].GetNextValue(itemInfo.Level + 1);
 			sb.Append($"{itemInfo.equipAbilities[i].type.ToUIString()}");
-			sb.Append($" <color=yellow>{itemInfo.equipAbilities[i].Value.ToString()}{tail}</color><color=green> > {nextValue.ToString()}{tail}</color>");
+			sb.Append($" <color=yellow>{itemInfo.equipAbilities[i].GetValue(itemInfo.Level).ToString()}{tail}</color><color=green> > {nextValue.ToString()}{tail}</color>");
 			sb.Append('\n');
 
 
@@ -91,9 +88,9 @@ public class UIPopupLevelupPetItem : MonoBehaviour
 		for (int i = 0; i < itemInfo.ownedAbilities.Count; i++)
 		{
 			string tail = itemInfo.ownedAbilities[i].tailChar;
-			IdleNumber nextValue = itemInfo.ownedAbilities[i].GetNextValue(itemInfo.level + 1);
+			IdleNumber nextValue = itemInfo.ownedAbilities[i].GetNextValue(itemInfo.Level + 1);
 			sb.Append($"{itemInfo.ownedAbilities[i].type.ToUIString()}");
-			sb.Append($" <color=yellow>{itemInfo.ownedAbilities[i].Value.ToString()}{tail}</color><color=green> > {nextValue.ToString()}{tail}</color>");
+			sb.Append($" <color=yellow>{itemInfo.ownedAbilities[i].GetValue(itemInfo.Level).ToString()}{tail}</color><color=green> > {nextValue.ToString()}{tail}</color>");
 			sb.Append('\n');
 		}
 		textOwnedBuff.text = sb.ToString();
@@ -108,15 +105,15 @@ public class UIPopupLevelupPetItem : MonoBehaviour
 		}
 
 
-		var currencyitem = GameManager.UserDB.inventory.FindCurrency(CurrencyType.PET_UPGRADE_ITEM);
+		var currencyitem = PlatformManager.UserDB.inventory.FindCurrency(CurrencyType.PET_UPGRADE_ITEM);
 
 		if (currencyitem.Pay(itemInfo.LevelUpNeedCount()) == false)
 		{
-			ToastUI.it.Enqueue("펫 먹이가 부족합니다");
+			ToastUI.Instance.Enqueue("펫 먹이가 부족합니다");
 			return;
 		}
 
-		GameManager.UserDB.petContainer.LevelUpPet(ref itemInfo);
+		PlatformManager.UserDB.petContainer.LevelUpPet(ref itemInfo);
 
 		parent.OnUpdate(false);
 		OnUpdateInfo();
@@ -130,10 +127,10 @@ public class UIPopupLevelupPetItem : MonoBehaviour
 		}
 		if (itemInfo.CanLevelUp() == false)
 		{
-			ToastUI.it.Enqueue("최대 레벨입니다.");
+			ToastUI.Instance.Enqueue("최대 레벨입니다.");
 			return false;
 		}
-		var currencyitem = GameManager.UserDB.inventory.FindCurrency(CurrencyType.PET_UPGRADE_ITEM);
+		var currencyitem = PlatformManager.UserDB.inventory.FindCurrency(CurrencyType.PET_UPGRADE_ITEM);
 
 		if (currencyitem == null)
 		{
@@ -142,7 +139,7 @@ public class UIPopupLevelupPetItem : MonoBehaviour
 
 		if (currencyitem.Check(itemInfo.LevelUpNeedCount()) == false)
 		{
-			ToastUI.it.Enqueue("펫 먹이가 부족합니다");
+			ToastUI.Instance.Enqueue("펫 먹이가 부족합니다");
 			return false;
 		}
 

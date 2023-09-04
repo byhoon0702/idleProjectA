@@ -59,15 +59,19 @@ public class UnitMoveState : UnitFSM
 			owner.FindTarget(fixedTime, true, owner.PursuitRange);
 		}
 
-		float distance = Vector3.Distance(owner.target.transform.position, owner.transform.position);
+		var targetCollider = owner.target.unitAnimation.collider2d;
+		//float distance = Vector3.Distance(owner.target.transform.position, owner.transform.position);
 
-		if (distance <= owner.AttackRange)
+		float distance;
+		float additionalRange = 0;
+
+		if (owner.TargetInRange(owner.target, out distance, out additionalRange))
 		{
 			owner.ChangeState(StateType.ATTACK);
 			return;
 		}
 
-		owner.unitAnimation.SetParameter("moveSpeed", Mathf.Min(owner.MoveSpeed, 2f));
+		owner.unitAnimation.SetParameter("moveSpeed", Mathf.Min(owner.MoveSpeed, 3f));
 		if (owner.unitAnimation.animator.GetCurrentAnimatorStateInfo(0).IsName("run") == false)
 		{
 			owner.PlayAnimation(StateType.MOVE);

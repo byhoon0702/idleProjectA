@@ -1,15 +1,13 @@
 ﻿//========AUTO GENERATED CODE======//
 using UnityEngine;
 using System;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+
 [Serializable]
 public class PetDataSheetObject : BaseDataSheetObject
 {
 	[SerializeField]
 	public PetDataSheet dataSheet;
-	public override void Call()
+	public override void Call(string fileName)
 	{
 #if UNITY_EDITOR
 
@@ -24,32 +22,17 @@ public class PetDataSheetObject : BaseDataSheetObject
 
 		string path = $"Assets/Resources/RuntimeDatas/Pets";
 
-		if (AssetDatabase.IsValidFolder(path) == false)
+		if (UnityEditor.AssetDatabase.IsValidFolder(path) == false)
 		{
-			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas", $"Pets");
+			UnityEditor.AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas", $"Pets");
 		}
 
-		for (int i = 0; i < dataSheet.infos.Count; i++)
-		{
-			var data = dataSheet.infos[i];
-			string name = $"{data.tid}_{data.name}";
-			string assetPath = $"{path}/{name}.asset";
+		RenameAsset<PetItemObject>(path, "Pet");
 
-			var scriptable = (PetItemObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(PetItemObject));
-			if (scriptable == null)
-			{
-				scriptable = ScriptableObject.CreateInstance<PetItemObject>();
-				AssetDatabase.CreateAsset(scriptable, assetPath);
-			}
+		MakeScriptableObject<PetData, PetItemObject>(dataSheet.infos, path, "Pet");
 
-			scriptable.SetBasicData(data.tid, data.name, data.description, data.itemGrade, data.starlevel);
-
-
-			EditorUtility.SetDirty(scriptable);
-			AssetDatabase.SaveAssetIfDirty(scriptable);
-		}
-		AssetDatabase.SaveAssets();
-		AssetDatabase.Refresh();
+		UnityEditor.AssetDatabase.SaveAssets();
+		UnityEditor.AssetDatabase.Refresh();
 #endif
 
 	}

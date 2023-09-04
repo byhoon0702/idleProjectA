@@ -10,42 +10,53 @@ public class SkillDataSheetObject : BaseDataSheetObject
 	[SerializeField]
 	public SkillDataSheet dataSheet;
 
-	public override void Call()
+	public override void Call(string fileName)
 	{
 #if UNITY_EDITOR
 
-		return;
 		if (dataSheet.infos.Count == 0)
 		{
 			return;
 		}
 
 
-		var firstData = dataSheet.infos[0];
-		string typename = firstData.name;
 
-		string path = $"Assets/Resources/RuntimeDatas/Skills/Items";
+		string[] split = fileName.Split('_');
+
+		string typename = split[1];
+
+		string path = $"Assets/Resources/RuntimeDatas/Skills/{typename}";
 
 		if (AssetDatabase.IsValidFolder(path) == false)
 		{
-			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas/Skills", $"Items");
+			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas/Skills", $"{typename}");
 		}
+		RenameSkillAsset<SkillCore>(path, typename);
 
 		for (int i = 0; i < dataSheet.infos.Count; i++)
 		{
 			var data = dataSheet.infos[i];
-			string name = $"{data.tid}_{data.name}";
+			string name = $"Skill_{data.tid}_{data.description}";
 			string assetPath = $"{path}/{name}.asset";
 
-			var scriptable = (NewSkill)AssetDatabase.LoadAssetAtPath(assetPath, typeof(NewSkill));
+			var scriptable = (SkillCore)AssetDatabase.LoadAssetAtPath(assetPath, typeof(SkillCore));
 			if (scriptable == null)
 			{
-				scriptable = ScriptableObject.CreateInstance<NewSkill>();
-				AssetDatabase.CreateAsset(scriptable, assetPath);
+				name = $"Skill_{data.tid}_";
+				assetPath = $"{path}/{name}.asset";
+				scriptable = (SkillCore)AssetDatabase.LoadAssetAtPath(assetPath, typeof(SkillCore));
+				if (scriptable == null)
+				{
+					name = $"Skill_{data.tid}";
+					assetPath = $"{path}/{name}.asset";
+					scriptable = (SkillCore)AssetDatabase.LoadAssetAtPath(assetPath, typeof(SkillCore));
+					if (scriptable == null)
+					{
+						continue;
+					}
+				}
 			}
-			scriptable.SetEditorData(data);
-			//scriptable.SetUseAbility(data.useValue);
-
+			scriptable.SetBasicData(data);
 			EditorUtility.SetDirty(scriptable);
 			AssetDatabase.SaveAssetIfDirty(scriptable);
 		}

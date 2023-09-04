@@ -10,6 +10,7 @@ public class AnimationEventReceiver : MonoBehaviour
 {
 
 	[SerializeField] Unit owner;
+	[SerializeField] ParticleSystem particle;
 
 	public void Init(Unit _owner)
 	{
@@ -58,5 +59,16 @@ public class AnimationEventReceiver : MonoBehaviour
 		int count = animator.GetInteger("attackLoop");
 		count--;
 		animator.SetInteger("attackLoop", count);
+	}
+
+	public void ParticleStart()
+	{
+		if (particle == null)
+		{
+			return;
+		}
+
+		particle.Stop();
+		particle.Play();
 	}
 }

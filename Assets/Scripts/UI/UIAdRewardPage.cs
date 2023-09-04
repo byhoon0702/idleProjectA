@@ -4,92 +4,67 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UIAdRewardPage : MonoBehaviour
+public class UIAdRewardPage : UIBase
 {
 	[SerializeField] private Button freeButton;
 	[SerializeField] private Button showAdButton;
+	[SerializeField] private TextMeshProUGUI textAdButton;
+
 	[SerializeField] private Button buyPacakgeButton;
 
 	[SerializeField] private Button closeButton;
 	[SerializeField] private TextMeshProUGUI itemCount;
-
-	[Space]
-	[SerializeField] private GameObject goldIcon;
-	[SerializeField] private GameObject diaIcon;
+	[SerializeField] private Image imageIcon;
 
 	[Space]
 	[SerializeField] private GameObject FreeButtonObject;
 	[SerializeField] private GameObject ShowAdButtonObject;
 	[SerializeField] private GameObject BuyPackageButtonObject;
 
-	private ItemData rewardItemData;
 	private IdleNumber count;
 
-	private void OnEnable()
+	protected override void OnEnable()
 	{
-		freeButton.onClick.RemoveAllListeners();
-		freeButton.onClick.AddListener(OnClickFreeButton);
-
-		showAdButton.onClick.RemoveAllListeners();
-		showAdButton.onClick.AddListener(OnClickShowAdButton);
-
-		buyPacakgeButton.onClick.RemoveAllListeners();
-		buyPacakgeButton.onClick.AddListener(OnClickBuyPackageButton);
-
-		closeButton.onClick.RemoveAllListeners();
-		closeButton.onClick.AddListener(OnClickCloseButton);
+		base.OnEnable();
+		freeButton.SetButtonEvent(OnClickFreeButton);
+		showAdButton.SetButtonEvent(OnClickShowAdButton);
+		buyPacakgeButton.SetButtonEvent(OnClickBuyPackageButton);
+		closeButton.SetButtonEvent(Close);
 	}
 
-	public void ShowPage(int _rewardTid, IdleNumber _count)
+	public void ShowPage()
 	{
 		gameObject.SetActive(true);
 
-		ItemData rewardItemData = DataManager.GetFromAll<ItemData>(_rewardTid);
-		count = _count;
 
-		itemCount.text = count.ToString();
+		var reward = PlatformManager.UserDB.inventory.SelectRewardChest.MakeRewardInfo();
 
-		//bool isGold = rewardItemData.tid == Inventory.it.GoldTid;
-		//bool isDia = rewardItemData.tid == Inventory.it.DiaTid;
+		//textAdButton.text = $"{PlatformManager.UserDB.inventory.SelectRewardChest.ViewCount}/{PlatformManager.UserDB.inventory.SelectRewardChest.rawData.dailyViewCount}";
+		imageIcon.sprite = reward.iconImage;
+		itemCount.text = $"+{reward.fixedCount.ToString()}";
 
-		//goldIcon.SetActive(isGold);
-		//diaIcon.SetActive(isDia);
-
-		ShowFreeReward();
-	}
-
-	// 광고무료 패키지를 구매했는지 체크
-	private void ShowFreeReward()
-	{
-		FreeButtonObject.SetActive(true);
-		ShowAdButtonObject.SetActive(false);
-		BuyPackageButtonObject.SetActive(false);
-	}
-
-	private void ShowAdReward()
-	{
 		FreeButtonObject.SetActive(false);
 		ShowAdButtonObject.SetActive(true);
 		BuyPackageButtonObject.SetActive(true);
 	}
 
+	// 광고무료 패키지를 구매했는지 체크
 	private void OnClickFreeButton()
 	{
-
+		Close();
+		PlatformManager.UserDB.inventory.SelectRewardChest.GetReward();
 	}
 
 	private void OnClickShowAdButton()
 	{
-
+		Close();
+		PlatformManager.UserDB.inventory.SelectRewardChest.Watch();
 	}
 
 	private void OnClickBuyPackageButton()
 	{
+		Close();
 
-	}
-
-	private void OnClickCloseButton()
-	{
-		gameObject.SetActive(false);
+		UIController.it.BottomMenu.ShopToggle.isOn = true;
 	}
 }

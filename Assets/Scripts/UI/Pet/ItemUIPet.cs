@@ -33,13 +33,14 @@ public class ItemUIPet : ItemUIBase
 		}
 
 		bg.sprite = GameUIManager.it.spriteGradeList[(int)info.grade];
+		imageFrame.sprite = GameUIManager.it.spriteGradeFrameList[(int)info.grade];
 		selectListener?.AddSelectListener(OnSelect);
 
-		countText.text = $"LV.{info.level}";
-		levelText.text = info.grade.ToString();
-		if (info.itemObject.Icon != null)
+		textInfo.text = $"LV.{info.Level}";
+
+		if (info.itemObject.ItemIcon != null)
 		{
-			icon.sprite = info.itemObject.Icon;
+			icon.sprite = info.itemObject.ItemIcon;
 		}
 		//countText.text = $"{info.count}";
 		evoltionLevelText.text = $"{info.evolutionLevel}";

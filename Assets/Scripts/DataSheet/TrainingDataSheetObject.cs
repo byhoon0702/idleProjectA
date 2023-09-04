@@ -12,7 +12,7 @@ public class TrainingDataSheetObject : BaseDataSheetObject
 	[SerializeField]
 	public TrainingDataSheet dataSheet;
 
-	public override void Call()
+	public override void Call(string fileName)
 	{
 #if UNITY_EDITOR
 
@@ -24,35 +24,18 @@ public class TrainingDataSheetObject : BaseDataSheetObject
 
 		var firstData = dataSheet.infos[0];
 
-
-		string path = $"Assets/Resources/RuntimeDatas/TrainingItems";
+		string path = $"Assets/Resources/RuntimeDatas/Trainings";
 
 		if (AssetDatabase.IsValidFolder(path) == false)
 		{
-			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas", $"TrainingItems");
+			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas", $"Trainings");
 		}
+		RenameAsset<TrainingItemObject>(path, "Training");
 
+		MakeScriptableObject<TrainingData, TrainingItemObject>(dataSheet.infos, path, "Training");
 
-		var infos = dataSheet.GetInfosClone();
-		for (int i = 0; i < infos.Count; i++)
-		{
-			var data = infos[i];
-			string name = $"{data.tid}_{data.name}";
-			string assetPath = $"{path}/{name}.asset";
-
-			var scriptable = (TrainingItemObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(TrainingItemObject));
-			if (scriptable == null)
-			{
-				scriptable = ScriptableObject.CreateInstance<TrainingItemObject>();
-				AssetDatabase.CreateAsset(scriptable, assetPath);
-			}
-			//scriptable.SetEquipAbilities(data.equipValues.ToArray());
-			//scriptable.SetOwnedAbilities(data.ownValues.ToArray());
-			scriptable.SetData(data);
-			scriptable.FindIconResource();
-			EditorUtility.SetDirty(scriptable);
-		}
-		AssetDatabase.SaveAssets();
+		UnityEditor.AssetDatabase.SaveAssets();
+		UnityEditor.AssetDatabase.Refresh();
 #endif
 	}
 }

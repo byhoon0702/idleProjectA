@@ -28,40 +28,49 @@ public class UIController : MonoBehaviour
 	[Header("Bottoms")]
 	[SerializeField] private UIManagement management;
 	[SerializeField] private UIManagementEquip equipment;
-	//[SerializeField] private UIManagementSkill skill;
-
 	[SerializeField] private UIManagementPet pet;
 	[SerializeField] private UIManagementShop shop;
 	[SerializeField] private UIManagementGacha gacha;
-	[SerializeField] private UIDungeonList dungeonList;
+	[SerializeField] private UIManagementBattle dungeonList;
 	[SerializeField] private UIManagementRelic relic;
 
 
 	[Header("-------------------------")]
 	[SerializeField] private UITraining training;
 	[SerializeField] private UITopMoney topMoney;
-	[SerializeField] private HyperSkillUi hyperSkill;
+	[SerializeField] private UserSkillUi hyperSkill;
 	[SerializeField] private SkillGlobalUi skillGlobal;
-	[SerializeField] private UICoinEffectPool coinEffectPool;
+
 	[SerializeField] private UIAdRewardChest adRewardChest;
-	[SerializeField] private UIRewardLog uiRewardLog;
+	public UIAdRewardChest AdRewardChest => adRewardChest;
+	//[SerializeField] private UIRewardLog uiRewardLog;
+	[SerializeField] private UIPopupAcquiredRewardInfo uiPopupAcquiredRewardInfo;
 
 	[SerializeField] private UIBottomMenu bottomMenu;
 
 	[SerializeField] private UIPublicPopupRewardDisplay uiPopupRewardDisplay;
 	[SerializeField] private UIPublicToastRewardDisplay uiToastRewardDisplay;
+	[SerializeField] private UIPopupOfflineRewardDisplay uiPopupOfflineRewardDisplay;
+
+	[SerializeField] private UIPopupStageSelect uiPopupStageSelect;
+	[SerializeField] private UIPopupQuestList uiPopupQuest;
+	[SerializeField] private UIPopupCollection uIManagementCollection;
+	[SerializeField] private UIPopupAttendance uiPopupAttendance;
+
+
+	[SerializeField] private UIAdBuffInfoObject[] adBuffInfoObjs;
 	public UIBottomMenu BottomMenu => bottomMenu;
 	public UIManagement Management => management;
 	public UIManagementEquip Equipment => equipment;
 	//public UIManagementSkill Skill => skill;
 	//	public UIManagementPet Pet => pet;
-	public UIDungeonList DungeonList => dungeonList;
+	public UIManagementBattle DungeonList => dungeonList;
 
 
 	public UIStageInfo UiStageInfo => uiStageInfo;
-	public HyperSkillUi HyperSkill => hyperSkill;
+	public UserSkillUi HyperSkill => hyperSkill;
 	public SkillGlobalUi SkillGlobal => skillGlobal;
-	public UIDungeonList UIDungeonList => dungeonList;
+	public UIManagementBattle UIDungeonList => dungeonList;
 
 	private bool isCoinEffectActivated = true;
 
@@ -74,20 +83,6 @@ public class UIController : MonoBehaviour
 
 
 
-	private void Update()
-	{
-		if (Input.GetKeyDown(KeyCode.Escape))
-		{
-			var closableList = GetComponentsInChildren<IUIClosable>();
-			if (closableList.Length > 0)
-			{
-				if (closableList[closableList.Length - 1].Closable())
-				{
-					closableList[closableList.Length - 1].Close();
-				}
-			}
-		}
-	}
 
 	public void Init()
 	{
@@ -101,6 +96,10 @@ public class UIController : MonoBehaviour
 			questTracks[i].OnUpdate();
 		}
 
+		for (int i = 0; i < adBuffInfoObjs.Length; i++)
+		{
+			adBuffInfoObjs[i].Init();
+		}
 	}
 	public void ShowAdRewardChest(bool isShow)
 	{
@@ -121,16 +120,18 @@ public class UIController : MonoBehaviour
 		}
 
 		Vector2 pos = GameUIManager.it.ToUIPosition(_fromObject.position);
-
-		var coinEffect = coinEffectPool.Get("", "default");
-		coinEffect.Run(pos);
 	}
 
-
-
-	public void ShowItemLog(RewardInfo reward, IdleNumber _count)
+	public void ShowItemLog(bool isTrue)
 	{
-		uiRewardLog.ShowLog(reward, _count);
+		if (isTrue)
+		{
+			uiPopupAcquiredRewardInfo.Show();
+		}
+		else
+		{
+			uiPopupAcquiredRewardInfo.Close();
+		}
 	}
 
 	public void SetCoinEffectActivate(bool _isActive)
@@ -138,7 +139,7 @@ public class UIController : MonoBehaviour
 		isCoinEffectActivated = _isActive;
 	}
 
-	public void ToggleManagement()
+	public void ToggleManagement(System.Action onClose, UIManagement.ViewType view = UIManagement.ViewType.Training)
 	{
 		InactiveAllMainUI();
 		if (management.gameObject.activeInHierarchy)
@@ -146,46 +147,30 @@ public class UIController : MonoBehaviour
 			return;
 		}
 
-		management.gameObject.SetActive(true);
-		management.OnUpdate();
+		if (management.Activate(onClose))
+		{
+			management.OnUpdate(view);
+		}
 	}
 
-	public void ToggleEquipment(EquipTabType type = EquipTabType.WEAPON, long tid = 0)
+	public void ToggleEquipment(EquipTabType type = EquipTabType.WEAPON, long tid = 0, System.Action onClose = null)
 	{
 		InactiveAllMainUI();
+
 		if (equipment.gameObject.activeInHierarchy)
 		{
+
 			return;
 		}
 
-		equipment.gameObject.SetActive(true);
-		equipment.OnUpdate(type, tid);
+
+		if (equipment.Activate(onClose))
+		{
+			equipment.OnUpdate(type, tid);
+		}
 	}
 
-	//public void ToggleJuvenescence()
-	//{
-	//	InactiveAllMainUI();
-	//	if (juvenescence.gameObject.activeInHierarchy)
-	//	{
-	//		return;
-	//	}
-
-	//	juvenescence.gameObject.SetActive(true);
-	//	juvenescence.SetPage(JuvenescencePage.Juvenescence);
-	//}
-
-	//public void ToggleSkill()
-	//{
-	//	InactiveAllMainUI();
-	//	if (skill.gameObject.activeInHierarchy)
-	//	{
-	//		return;
-	//	}
-
-	//	skill.gameObject.SetActive(true);
-	//	skill.OnUpdate(0);
-	//}
-	public void TogglePet()
+	public void TogglePet(System.Action onClose)
 	{
 		InactiveAllMainUI();
 		if (pet.gameObject.activeInHierarchy)
@@ -193,11 +178,13 @@ public class UIController : MonoBehaviour
 			return;
 		}
 
-		pet.gameObject.SetActive(true);
-		pet.OnUpdate(false);
+		if (pet.Activate(onClose))
+		{
+			pet.OnUpdate(false);
+		}
 	}
 
-	public void ToggleShop()
+	public void ToggleShop(System.Action onClose)
 	{
 		InactiveAllMainUI();
 		if (shop.gameObject.activeInHierarchy)
@@ -205,10 +192,12 @@ public class UIController : MonoBehaviour
 			return;
 		}
 
-		shop.gameObject.SetActive(true);
-		shop.OnUpdate();
+		if (shop.Activate(onClose))
+		{
+			shop.OnUpdate(ShopType.PACKAGE);
+		}
 	}
-	public void ShowDungeonList()
+	public void ShowDungeonList(System.Action onClose)
 	{
 		InactiveAllMainUI();
 		if (dungeonList.gameObject.activeInHierarchy)
@@ -216,11 +205,14 @@ public class UIController : MonoBehaviour
 			return;
 		}
 
-		dungeonList.gameObject.SetActive(true);
-		dungeonList.OnUpdate();
+		if (dungeonList.Activate(onClose))
+		{
+			dungeonList.OnUpdate();
+		}
+
 	}
 
-	public void ToggleRelic()
+	public void ToggleRelic(System.Action onClose)
 	{
 		InactiveAllMainUI();
 		if (relic.gameObject.activeInHierarchy)
@@ -228,11 +220,13 @@ public class UIController : MonoBehaviour
 			return;
 		}
 
-		relic.gameObject.SetActive(true);
-		relic.OnUpdate();
+		if (relic.Activate(onClose))
+		{
+			relic.OnUpdate();
+		}
 	}
 
-	public void ToggleGacha()
+	public void ToggleGacha(System.Action onClose)
 	{
 		InactiveAllMainUI();
 		if (gacha.gameObject.activeInHierarchy)
@@ -240,8 +234,11 @@ public class UIController : MonoBehaviour
 			return;
 		}
 
-		gacha.gameObject.SetActive(true);
-		gacha.OnUpdate();
+		if (gacha.Activate(onClose))
+		{
+			gacha.OnUpdate();
+		}
+
 	}
 
 	public void InactiveAllMainUI()
@@ -271,6 +268,12 @@ public class UIController : MonoBehaviour
 
 	}
 
+	public void ShowOfflineRewardPopup(List<AddItemInfo> rewardInfo, int totalMinutes, int totalKill)
+	{
+		uiPopupOfflineRewardDisplay.Show(rewardInfo);
+		uiPopupOfflineRewardDisplay.SetInfo(totalMinutes, totalKill);
+	}
+
 	public void ShowRewardPopup(List<AddItemInfo> rewardInfo)
 	{
 		uiPopupRewardDisplay.Show(rewardInfo);
@@ -279,5 +282,28 @@ public class UIController : MonoBehaviour
 	public void ShowRewardToast(List<AddItemInfo> rewardInfo)
 	{
 		uiToastRewardDisplay.Show(rewardInfo);
+	}
+	public void ShowStageSelect()
+	{
+		if (uiPopupStageSelect.Activate())
+		{
+			uiPopupStageSelect.Show();
+		}
+	}
+
+	public void ShowQuest()
+	{
+
+	}
+	public void ShowCollection()
+	{
+
+	}
+	public void ShowAttendance()
+	{
+		if (uiPopupAttendance.Activate())
+		{
+			uiPopupAttendance.Open();
+		}
 	}
 }

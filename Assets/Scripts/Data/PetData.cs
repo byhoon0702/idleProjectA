@@ -2,25 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
-
-
 public class ItemData : BaseData
 {
-	public string name;
 	public Grade itemGrade;
-	public string hashTag;
-
 }
+
+[System.Serializable]
+public class PetEvolutionData
+{
+	public int level;
+	public string description;
+}
+
 
 [System.Serializable]
 public class PetData : ItemData
 {
-
 	public int starlevel;
 
-	//public PetCategory category;
+	public long skillTid;
+
+	public int maxLevel;
+	public int maxEvolutionLevel;
+
+	public List<PetEvolutionData> evolutionDatas;
+
 	public List<ItemStats> equipValues;
 	public List<ItemStats> ownValues;
 

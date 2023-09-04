@@ -19,6 +19,8 @@ public class SubListDataWindow : PopupWindowContent
 	Vector2 scrollPos;
 
 	ReorderableDataList owner;
+
+	int fieldCount;
 	public void DrawChild(ReorderableDataList _owner, SerializedObject _so, SerializedProperty _property)
 	{
 		if (so == null)
@@ -28,8 +30,17 @@ public class SubListDataWindow : PopupWindowContent
 		owner = _owner;
 		property = _property;
 		settings = owner.settings;
-
+		System.Type type = ConvertUtility.ConvertStringToType(property.type);
+		if (type == null)
+		{
+			fieldCount = 1;
+		}
+		else
+		{
+			fieldCount = type.GetFields().Length;
+		}
 	}
+
 	public override Vector2 GetWindowSize()
 	{
 		//return new Vector2(size.x == 0 ? 400 : size.x, size.y == 0 ? 300 : size.y);
@@ -46,6 +57,7 @@ public class SubListDataWindow : PopupWindowContent
 
 		if (property != null)
 		{
+
 			if (property.isArray)
 			{
 				if (childReorderableList == null)
@@ -63,7 +75,7 @@ public class SubListDataWindow : PopupWindowContent
 			}
 
 		}
-		EditorGUILayout.LabelField("", GUILayout.Width(size.x));
+		EditorGUILayout.LabelField("", GUILayout.Width((settings.cellSize.x + settings.columeSpace) * fieldCount));
 		EditorGUILayout.EndScrollView();
 		EditorGUILayout.EndVertical();
 		if (EditorGUI.EndChangeCheck())

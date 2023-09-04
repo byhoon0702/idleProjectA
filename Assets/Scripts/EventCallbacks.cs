@@ -4,12 +4,16 @@ using UnityEngine;
 
 public static class EventCallbacks
 {
+	public delegate void OnCurrencyChanged(CurrencyType type);
 	public delegate void ItemChanged(List<long> _changedItems);
 	public delegate void LevelupChanged(int _beforeLv, int _afterLv);
 	public delegate void TotalCombatChanged(IdleNumber _beforeCombat, IdleNumber _afterCombat);
 
-
-
+	public static event OnCurrencyChanged onCurrencyChanged;
+	public static void CallCurrencyChanged(CurrencyType type)
+	{
+		onCurrencyChanged?.Invoke(type);
+	}
 	/// <summary>
 	/// 아이템이 변화했을때 호출됨
 	/// </summary>

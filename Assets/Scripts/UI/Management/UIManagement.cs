@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine.Analytics;
 using Unity.Physics;
 
-public class UIManagement : MonoBehaviour
+public class UIManagement : UIBase
 {
 	public enum ViewType
 	{
@@ -29,11 +29,17 @@ public class UIManagement : MonoBehaviour
 
 	[Header("Button")]
 	[SerializeField] private UIContentToggle trainingButton;
+	public UIContentToggle TrainingButton => trainingButton;
 	[SerializeField] private UIContentToggle skillButton;
+	public UIContentToggle SkillButton => skillButton;
 	[SerializeField] private UIContentToggle veterancyButton;
+	public UIContentToggle VeterancyButton => veterancyButton;
 	[SerializeField] private UIContentToggle advanceButton;
+	public UIContentToggle AdvanceButton => advanceButton;
 	[SerializeField] private UIContentToggle awakeningButton;
+	public UIContentToggle AwakeningButton => awakeningButton;
 	[SerializeField] private UIContentToggle costumeButton;
+	public UIContentToggle CostumeButton => costumeButton;
 
 
 	[SerializeField] private RectTransform uiRectTransform;
@@ -134,21 +140,11 @@ public class UIManagement : MonoBehaviour
 	}
 
 
-	private void OnEnable()
-	{
-		UIController.it.SetCoinEffectActivate(false);
-	}
-
-	private void OnDisable()
-	{
-		UIController.it.SetCoinEffectActivate(true);
-	}
-
-	public void OnUpdate()
+	public void OnUpdate(ViewType view)
 	{
 		trainingButton.SetIsOnWithoutNotify(true);
 		currentTab = trainingButton;
-		ChangeView(ViewType.Training);
+		ChangeView(view);
 	}
 
 	public void ChangeView(ViewType _viewType)
@@ -185,7 +181,7 @@ public class UIManagement : MonoBehaviour
 				break;
 			case ViewType.Costume:
 				costumeUI.gameObject.SetActive(true);
-				costumeUI.OnUpdate(CostumeType.WEAPON, 0, false);
+				costumeUI.OnUpdate();
 				break;
 
 			case ViewType.Skill:
@@ -199,14 +195,9 @@ public class UIManagement : MonoBehaviour
 		}
 	}
 
-	public bool Closable()
-	{
-		return true;
-	}
-
-	public void Close()
+	protected override void OnClose()
 	{
 		UIController.it.InactivateAllBottomToggle();
-		gameObject.SetActive(false);
+		base.OnClose();
 	}
 }

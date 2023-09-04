@@ -14,7 +14,7 @@ public class ImmortalUnit : EnemyUnit
 		//base.CheckDeathState();
 	}
 
-	public override void Hit(HitInfo _hitInfo)
+	public override void Hit(HitInfo _hitInfo, RuntimeData.SkillInfo _skillInfo)
 	{
 		if (GameManager.GameStop)
 		{
@@ -34,7 +34,7 @@ public class ImmortalUnit : EnemyUnit
 
 		if (isBoss)
 		{
-			IdleNumber value = GameManager.UserDB.GetValue(StatsType.Boss_Damage_Buff);
+			IdleNumber value = PlatformManager.UserDB.GetValue(StatsType.Boss_Damage_Buff);
 
 			if (value != 0)
 			{
@@ -43,7 +43,7 @@ public class ImmortalUnit : EnemyUnit
 		}
 		else
 		{
-			IdleNumber value = GameManager.UserDB.GetValue(StatsType.Mob_Damage_Buff);
+			IdleNumber value = PlatformManager.UserDB.GetValue(StatsType.Mob_Damage_Buff);
 			if (value != 0)
 			{
 				correctionDamage *= 1 + (value / 100f);
@@ -95,22 +95,22 @@ public class ImmortalUnit : EnemyUnit
 		while (Hp <= correctionDamage)
 		{
 			correctionDamage = correctionDamage - Hp;
-			var unitData = info.data;
+			var unitData = info.rawData;
 			info.unitLevel = info.unitLevel + 1;
-			info = new EnemyUnitInfo(this, unitData, StageManager.it.CurrentStage);
+			info.CalculateBaseAttackPowerAndHp(StageManager.it.CurrentStage); //= new RuntimeData.EnemyUnitInfo(this, unitData as EnemyUnitData, StageManager.it.CurrentStage);
 		}
 		Hp -= correctionDamage;
 		UIController.it.UiStageInfo.SetBossHpGauge(Mathf.Clamp01((float)(Hp / MaxHp)));
 
 		if (Hp <= 0)
 		{
-			//GameManager.UserDB.questContainer.ProgressAdd(QuestGoalType.MONSTER_HUNT, info.rawData.tid, (IdleNumber)1);
+			//PlatformManager.UserDB.questContainer.ProgressAdd(QuestGoalType.MONSTER_HUNT, info.rawData.tid, (IdleNumber)1);
 		}
 
 
 		if (_hitInfo.hitSound.IsNullOrWhiteSpace() == false)
 		{
-			VSoundManager.it.PlayEffect(_hitInfo.hitSound);
+			SoundManager.Instance.PlayEffect(_hitInfo.hitSound);
 		}
 	}
 }

@@ -2,28 +2,29 @@
 //[CreateAssetMenu(fileName = "Unit Normal Mode", menuName = "ScriptableObject/Unit Normal Mode", order = 1)]
 public class UnitNormalMode : UnitModeBase
 {
-
 	public override void OnModeEnter(StateType state)
 	{
-		OnSpawn(path, resource);
+		OnSpawn();
 
 		unit.unitAnimation = modelAnimation;
-		unit.SetUnitCosutmeComponent(modelAnimation.GetComponent<NormalUnitCostume>());
-		if (unit.unitCostume != null)
-		{
-			unit.unitCostume.Init();
-			if (unit is PlayerUnit)
-			{
-				var player = (unit as PlayerUnit);
-				player.EquipWeapon();
-				player.ChangeNormalUnit(GameManager.UserDB.advancementContainer.Info);
-				player.hitEffectObject = null;
-			}
-			unit.ChangeCostume();
-		}
 
 		unit.ChangeState(state, true);
 		unit.unitAnimation.PlayDissolve(0);
+		//unit.SetUnitCosutmeComponent(modelAnimation.GetComponent<NormalUnitCostume>());
+		//if (unit.unitCostume != null)
+		//{
+		//	unit.unitCostume.Init();
+		//	if (unit is PlayerUnit)
+		//	{
+		//		var player = (unit as PlayerUnit);
+		//		player.EquipWeapon();
+		//		player.ChangeNormalUnit(PlatformManager.UserDB.advancementContainer.Info);
+		//		player.hitEffectObject = null;
+		//	}
+		//	unit.ChangeCostume();
+		//}
+
+
 
 		//unit.normalAttack = normalAttack;
 
@@ -34,8 +35,9 @@ public class UnitNormalMode : UnitModeBase
 
 	public override void OnModeExit()
 	{
-		modelAnimation.Release();
-
+		//modelAnimation.Release();
+		Destroy(modelAnimation.gameObject);
+		modelAnimation = null;
 	}
 
 	public override void OnAttackNormal()
@@ -43,15 +45,7 @@ public class UnitNormalMode : UnitModeBase
 		unit.PlayAnimation(StateType.ATTACK);
 	}
 
-	public override void OnAttackSkill()
-	{
 
-	}
-
-	public override void OnMove()
-	{
-
-	}
 
 	public override void OnHit(HitInfo hit)
 	{

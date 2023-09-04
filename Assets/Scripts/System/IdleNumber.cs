@@ -8,15 +8,6 @@ using System.Text.RegularExpressions;
 [Serializable]
 public struct IdleNumber
 {
-	public static readonly string[] IndexToMagnitude =
-	{
-		"",
-		"K",
-		"M",
-		"B",
-		"T"
-	};
-
 	public double Value;
 	public int Exp;
 	public const int tencubed = 1000;
@@ -25,10 +16,6 @@ public struct IdleNumber
 	public const int amountofletter = 26;
 	public const int intChar = 'A';
 	public const string regex = @"[A-Z]";
-	//public IdleNumber()
-	//{
-
-	//}
 
 	public IdleNumber(IdleNumber idlenumber)
 	{
@@ -43,6 +30,11 @@ public struct IdleNumber
 		NormalizeSelf();
 	}
 
+	public void Reset()
+	{
+		Value = 0;
+		Exp = 0;
+	}
 
 	public string GetUnit_ABC()
 	{
@@ -73,25 +65,25 @@ public struct IdleNumber
 		return unit;
 	}
 
-	public string GetUnit()
-	{
-		string unit = "";
-		int magnitude = Exp / position;
-		if (magnitude < IndexToMagnitude.Length)
-		{
-			return unit = IndexToMagnitude[magnitude];
-		}
+	//public string GetUnit()
+	//{
+	//	string unit = "";
+	//	int magnitude = Exp / position;
+	//	if (magnitude < IndexToMagnitude.Length)
+	//	{
+	//		return unit = IndexToMagnitude[magnitude];
+	//	}
 
-		var unitInt = magnitude - IndexToMagnitude.Length;
-		var secondUnit = unitInt % amountofletter;
-		var firstUnit = unitInt / amountofletter;
+	//	var unitInt = magnitude - IndexToMagnitude.Length;
+	//	var secondUnit = unitInt % amountofletter;
+	//	var firstUnit = unitInt / amountofletter;
 
-		int char_a = intChar;
+	//	int char_a = intChar;
 
-		unit = $"{Convert.ToChar(firstUnit + char_a)}{Convert.ToChar(secondUnit + char_a)}";
+	//	unit = $"{Convert.ToChar(firstUnit + char_a)}{Convert.ToChar(secondUnit + char_a)}";
 
-		return unit;
-	}
+	//	return unit;
+	//}
 
 	/// <summary>
 	/// 해당 함수로 10의 25승 이상의 값을 호출 할 시 앱이 멈출 수 있기 때문에 가급적 사용하지 않는다.
@@ -129,7 +121,7 @@ public struct IdleNumber
 		}
 
 		Exp = 0;
-		Value = Mathf.Floor((float)(Value * Mathf.Pow(10, Exp)));
+		Value = Mathf.Round((float)(Value * Mathf.Pow(10, Exp)));
 	}
 
 	public long GetValueToLong()
@@ -141,20 +133,20 @@ public struct IdleNumber
 		IdleNumber a = new IdleNumber(this);
 		a.NormalizeSelf();
 
-		double turncateValue = a.Exp > 2 ? a.Value : Mathf.Floor((float)a.Value);
+		double turncateValue = a.Value;
 		string unit = a.GetUnit_ABC();
 
 		if (turncateValue >= 100)
 		{
-			return $"{Math.Floor(turncateValue)}{unit}";
+			return $"{Math.Round(turncateValue, 2)}{unit}";
 		}
 		else if (turncateValue >= 10)
 		{
-			return $"{Math.Floor(turncateValue * 10) / 10:0.#}{unit}";
+			return $"{Math.Round(turncateValue * 10 / 10, 2):0.#}{unit}";
 		}
 		else
 		{
-			return $"{Math.Floor(turncateValue * 100) / 100:0.##}{unit}";
+			return $"{Math.Round(turncateValue * 100 / 100, 2):0.##}{unit}";
 		}
 	}
 
@@ -168,24 +160,29 @@ public struct IdleNumber
 
 		if (format.IsNullOrEmpty() == false)
 		{
-			return $"{string.Format(format, turncateValue)}{unit}";
+			return $"{string.Format(format, Math.Round(turncateValue, 2))}{unit}";
 		}
 		if (turncateValue >= 100)
 		{
-			return $"{Math.Floor(turncateValue)}{unit}";
+			return $"{Math.Round(turncateValue, 2)}{unit}";
 		}
 		else if (turncateValue >= 10)
 		{
-			return $"{Math.Floor(turncateValue * 10) / 10:0.#}{unit}";
+			return $"{Math.Round(turncateValue * 10 / 10, 2):0.#}{unit}";
 		}
 		else
 		{
-			return $"{Math.Floor(turncateValue * 100) / 100:0.##}{unit}";
+			return $"{Math.Round(turncateValue * 100 / 100, 2):0.##}{unit}";
 		}
 	}
 
-	private void NormalizeSelf()
+	public void NormalizeSelf()
 	{
+
+		if (double.IsInfinity(Value))
+		{
+			Value = long.MaxValue;
+		}
 		if (Value < 0)
 		{
 			Exp = 0;
@@ -582,7 +579,8 @@ public struct IdleNumber
 	#endregion
 	private static IdleNumber Calculate(IdleNumber a, IdleNumber b, char operator_symbol)
 	{
-
+		a.NormalizeSelf();
+		b.NormalizeSelf();
 		IdleNumber left = new IdleNumber(a);
 		IdleNumber right = new IdleNumber(b);
 

@@ -14,7 +14,7 @@ public class TreasureBox : HittableUnit
 	{
 		get
 		{
-			return new HitInfo(AttackPower);
+			return new HitInfo(gameObject.layer, AttackPower);
 		}
 	}
 	public override float AttackSpeed => 0;
@@ -26,10 +26,8 @@ public class TreasureBox : HittableUnit
 
 	public override Vector3 CenterPosition => position;
 
-	protected bool isRewardable = true;
 
-
-	public void Spawn(UnitData _spawnInfo, StageInfo _stageInfo)
+	public void Spawn(UnitData _spawnInfo, RuntimeData.StageInfo _stageInfo)
 	{
 		info = _spawnInfo;
 
@@ -52,6 +50,7 @@ public class TreasureBox : HittableUnit
 			model.gameObject.tag = "Enemy";
 			unitAnimation = model.GetComponent<UnitAnimation>();
 			unitAnimation.Init();
+			unitAnimation.SetMaskInteraction();
 			GameUIManager.it.ShowUnitGauge(this);
 		}
 	}
@@ -70,7 +69,16 @@ public class TreasureBox : HittableUnit
 		}
 	}
 
-	public override void Hit(HitInfo _hitInfo)
+	protected override void OnHit(HitInfo hitInfo)
+	{
+
+	}
+
+	protected override IEnumerator OnHitRoutine(HitInfo hitInfo)
+	{
+		yield return null;
+	}
+	public override void Hit(HitInfo _hitInfo, RuntimeData.SkillInfo _skillInfo)
 	{
 		if (Hp > 0)
 		{
@@ -106,7 +114,7 @@ public class TreasureBox : HittableUnit
 		//}
 		if (_hitInfo.hitSound.IsNullOrWhiteSpace() == false)
 		{
-			VSoundManager.it.PlayEffect(_hitInfo.hitSound);
+			SoundManager.Instance.PlayEffect(_hitInfo.hitSound);
 		}
 	}
 

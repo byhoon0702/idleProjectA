@@ -18,8 +18,13 @@ public class BattleState : StageFSM
 			UIController.it.UiStageInfo.SwitchBossMode(false);
 		}
 
-		UIController.it.UiStageInfo.SwitchContentExitButton(StageManager.it.CurrentStage.stageType != StageType.Normal || StageManager.it.bossSpawn);
-		UIController.it.UiStageInfo.ShowNormalButtonGroup(StageManager.it.CurrentStage.stageType == StageType.Normal);
+		UIController.it.UiStageInfo.SwitchContentExitButton(StageManager.it.CurrentStage.StageType != StageType.Normal || StageManager.it.bossSpawn);
+		UIController.it.UiStageInfo.ShowNormalButtonGroup(StageManager.it.CurrentStage.StageType == StageType.Normal);
+
+
+		StageManager.it.stagePlayTick = Time.realtimeSinceStartupAsDouble;
+
+
 		return this;
 	}
 
@@ -33,9 +38,11 @@ public class BattleState : StageFSM
 
 
 	}
+
 	public override FSM RunNextState(float time)
 	{
-		//stageRule.OnUpdate(time);
+		StageManager.it.StagePlayTime();
+
 		stageRule.OnLogicUpdate(time);
 		if (stageRule.isEnd)
 		{

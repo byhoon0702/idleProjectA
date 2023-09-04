@@ -7,13 +7,14 @@ public class CurrencyItemObject : ItemObject
 	public CurrencyType currencyType;
 	public IdleNumber maxValue;
 
-	public void SetBasicData(CurrencyData data)
+	public override void SetBasicData<T>(T data)
 	{
+		var currencyData = data as CurrencyData;
 		tid = data.tid;
 		itemName = data.name;
 		description = data.description;
-		maxValue = (IdleNumber)data.maxValue;
-		currencyType = data.type;
+		maxValue = (IdleNumber)currencyData.maxValue;
+		currencyType = currencyData.type;
 	}
 
 }

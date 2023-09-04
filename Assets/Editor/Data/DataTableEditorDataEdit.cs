@@ -119,6 +119,13 @@ public partial class DataTableEditor
 				t.GetMethod("Call", BindingFlags.Public | BindingFlags.Instance).Invoke(serializedObject.targetObject, null);
 			}
 		}
+		if (t.Equals(typeof(StageDataSheetObject)))
+		{
+			if (GUILayout.Button("Stage 번호 자동 생성", GUILayout.Width(200)))
+			{
+				t.GetMethod("StageNumberGenerate", BindingFlags.Public | BindingFlags.Instance).Invoke(serializedObject.targetObject, null);
+			}
+		}
 	}
 
 	private void ChangeTid()
@@ -398,7 +405,7 @@ public partial class DataTableEditor
 				{
 					if (GUILayout.Button("Call"))
 					{
-						methodinfo.Invoke(targetObje, null);
+						methodinfo.Invoke(targetObje, new string[] { currentJsonFileName.Split('.')[0] });
 					}
 				}
 

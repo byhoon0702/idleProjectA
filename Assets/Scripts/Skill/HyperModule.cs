@@ -32,7 +32,7 @@ public class HyperModule : MonoBehaviour
 
 
 		hyperFinishSkill = new SkillSlot();
-		hyperFinishSkill.item = GameManager.UserDB.skillContainer.skillList.Find(x => x.Tid == 1701600010);
+		hyperFinishSkill.item = PlatformManager.UserDB.skillContainer.skillList.Find(x => x.Tid == 1701600010);
 	}
 	float time = 0f;
 	float maxTime = 0f;
@@ -54,7 +54,7 @@ public class HyperModule : MonoBehaviour
 		}
 		if (isHyper == false)
 		{
-			if (GameManager.UserDB.skillContainer.isAutoHyper)
+			if (PlatformManager.UserDB.skillContainer.isAutoHyper)
 			{
 				ActivateHyper();
 			}
@@ -158,11 +158,11 @@ public class HyperModule : MonoBehaviour
 				if (useFinish == false)
 				{
 					//필살기 시전
-
-					var hyperClassObject = GameManager.UserDB.awakeningContainer.selectedInfo.hyperClassObject;
+					var hyperSlot = PlatformManager.UserDB.costumeContainer[CostumeType.HYPER];
+					var hyperClassObject = hyperSlot.item.hyperClassObject;
 					player.PlayHyperFinishTimeline(hyperClassObject.FinishTimeline);
 					hyperFinishSkill = new SkillSlot();
-					hyperFinishSkill.item = GameManager.UserDB.skillContainer.skillList.Find(x => x.Tid == hyperClassObject.FinishSkillTid);
+					hyperFinishSkill.item = PlatformManager.UserDB.skillContainer.skillList.Find(x => x.Tid == hyperClassObject.FinishSkillTid);
 					player.TriggerHyperFinishSkill(hyperFinishSkill);
 					player.ChangeState(StateType.HYPER_FINISH, true);
 					useFinish = true;

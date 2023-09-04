@@ -34,66 +34,29 @@ public class UISkillSlot : MonoBehaviour
 	public bool IsAvailable(out string description)
 	{
 		description = "";
+
 		if (skillRequirement == null)
 		{
-
 			return true;
 		}
 
-
-		switch (skillRequirement.type)
-		{
-			case RequirementType.STAGE:
-				{
-					long dungeonTid = skillRequirement.parameter1;
-					int stageNumber = skillRequirement.parameter2;
-
-					var stage = GameManager.UserDB.stageContainer.GetStage(dungeonTid, stageNumber);
-
-					description = $"{dungeonTid}_{stageNumber} 클리어";
-					if (stage == null)
-					{
-						return false;
-					}
-
-					return stage.isClear;
-				}
-			case RequirementType.USERLEVEL:
-				{
-					int requiredLevel = Mathf.FloorToInt(skillRequirement.parameter1);
-					var userlevel = GameManager.UserDB.userInfoContainer.userInfo.UserLevel;
-					description = $"{requiredLevel} 이상 해제";
-					return userlevel >= requiredLevel;
-				}
-
-			case RequirementType.BASESKILL:
-				{
-					long tid = skillRequirement.parameter1;
-					int baseSkillLevel = skillRequirement.parameter2;
-					var baseSkillInfo = GameManager.UserDB.skillContainer.Get(tid);
-
-					description = $"{baseSkillInfo.Name} {baseSkillLevel} 필요";
-
-					if (baseSkillInfo == null)
-					{
-						return false;
-					}
-
-					return baseSkillInfo.level >= baseSkillLevel;
-				}
-
-			case RequirementType.NONE:
-				return true;
-		}
-		return false;
+		return skillRequirement.IsRequirementFulfill(out description);
 	}
 
 	public void OnUpdateLock()
 	{
 		bool isAvailable = IsAvailable(out string description);
+		if (skillInfo.unlock == false)
+		{
+			isAvailable = false;
+		}
+		if (skillInfo.Level == 0)
+		{
+			isAvailable = false;
+		}
 		lockedMark.SetActive(isAvailable == false);
 	}
-	public void OnUpdate(ISelectListener _parent, RuntimeData.SkillInfo _skillInfo, Action _onAction)
+	public void OnUpdate(ISelectListener _parent, RuntimeData.SkillInfo _skillInfo, Action _onAction = null)
 	{
 		parent = _parent;
 		skillInfo = _skillInfo;
@@ -105,32 +68,34 @@ public class UISkillSlot : MonoBehaviour
 		slotButton.enabled = onAction != null;
 		lockedMark.SetActive(false);
 		equippedMark.SetActive(false);
+
 		ShowSlider(false);
 		if (skillInfo == null)
 		{
 			return;
 		}
+		isEquipped = skillInfo.isEquipped;
+		equippedMark.SetActive(isEquipped);
+		OnUpdateLock();
+		//for (int i = 0; i < PlatformManager.UserDB.skillContainer.skillSlot.Length; i++)
+		//{
+		//	var data = PlatformManager.UserDB.skillContainer.skillSlot[i];
+		//	isEquipped = false;
+		//	if (data.item != null && data.item.isEquipped)
+		//	{
+		//		isEquipped = true;
+		//		equippedMark.SetActive(true);
+		//		break;
+		//	}
+		//}
 
-		//skillRequirement = DataManager.Get<SkillTreeDataSheet>().GetSkillRequirement(skillInfo.rawData.detailData.rootSkillTid, skillInfo.Tid);
+		int nextCount = skillInfo.EvolutionNeedCount();
+		expSlider.value = (float)skillInfo.Count / nextCount;
+		expText.text = $"{skillInfo.Count}/{nextCount}";
 
-		for (int i = 0; i < GameManager.UserDB.skillContainer.skillSlot.Length; i++)
-		{
-			var data = GameManager.UserDB.skillContainer.skillSlot[i];
-			isEquipped = false;
-			if (data.itemTid == skillInfo.Tid)
-			{
-				isEquipped = true;
-				equippedMark.SetActive(true);
-				break;
-			}
-		}
-
-		int nextCount = 10;// skillInfo.LevelUpNeedCount();
-		expSlider.value = (float)skillInfo.count / nextCount;
-		expText.text = $"{skillInfo.count}/{nextCount}";
 	}
 
-	public void OnRefresh()
+	public void Refresh()
 	{
 
 	}
@@ -148,7 +113,12 @@ public class UISkillSlot : MonoBehaviour
 	}
 	public void OnClickSelect()
 	{
-		parent?.SetSelectedTid(skillInfo.Tid);
+
+
+		if (parent != null && skillInfo != null)
+		{
+			parent.SetSelectedTid(skillInfo.Tid);
+		}
 		onAction?.Invoke();
 	}
 	public void ShowSlider(bool show)

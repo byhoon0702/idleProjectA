@@ -41,7 +41,7 @@ public class FloatingText : MonoBehaviour
 	{
 		gameObject.SetActive(true);
 
-		transform.position = position;
+
 		Camera sceneCam = SceneCamera.it.sceneCamera;
 
 		if (floatingTextMesh != null)
@@ -77,27 +77,31 @@ public class FloatingText : MonoBehaviour
 		floatingTextMesh.alpha = 1;
 		floatingTextMesh.text = value.ToFloatingString();
 
-		void FadeFont()
-		{
-			floatingTextMesh.DOFade(0, 0.4f).OnComplete(OnReturnPool);
-		}
-
 		Vector2 endPos = endPosition;
 
-		transform.transform.localScale = Vector3.one * 2;
-		scale = transform.DOScale(1, 0.2f);
-		movex = transform.DOMoveX(endPos.x, 0.2f);
-		movey = transform.DOMoveY(endPos.y, 0.1f).OnComplete(FadeFont);
+
+		void FadeFont()
+		{
+			floatingTextMesh.DOFade(0, 0.2f).SetDelay(0.2f).OnComplete(OnReturnPool);
+			movey = transform.DOMoveY(endPos.y + 0.5f, 0.2f).SetDelay(0.2f);
+		}
+
+
+		endPos.x = position.x;
+		transform.position = endPos;
+		transform.transform.localScale = Vector3.one * 3;
+		scale = transform.DOScale(1, 0.1f).OnComplete(FadeFont);
+
 	}
 
 	Tweener scale;
-	Tweener movex;
+
 	Tweener movey;
 	void OnReturnPool()
 	{
 		//DOTween.Kill(transform);
 		scale?.Kill();
-		movex?.Kill();
+
 		movey?.Kill();
 		managedPool.Release(this);
 	}
@@ -105,7 +109,7 @@ public class FloatingText : MonoBehaviour
 	{
 
 		scale?.Kill();
-		movex?.Kill();
+		//movex?.Kill();
 		movey?.Kill();
 	}
 

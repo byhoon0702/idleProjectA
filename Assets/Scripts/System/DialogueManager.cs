@@ -39,7 +39,6 @@ public class DialogueManager : MonoBehaviour
 	}
 
 
-
 	public void ChangeInkJson(TextAsset inkJson)
 	{
 		currentInkJson = inkJson;
@@ -48,10 +47,9 @@ public class DialogueManager : MonoBehaviour
 	public void BeginDialogue()
 	{
 		currentStory = new Story(currentInkJson.text);
-
-		//inkExternalFunction.Bind(currentStory, "changeSpeaker", (System.Action<string>)FindSpeaker);
 		ContinueStory();
 	}
+
 	Action onCompleteDialogue;
 	public void EnterDialogueMode(Action _onCompleteDialogue)
 	{
@@ -97,6 +95,7 @@ public class DialogueManager : MonoBehaviour
 
 	public void CreateSkillBubble(string dialogue, Unit speaker)
 	{
+
 		RemoveTalkBox();
 		var gameObject = Instantiate(talkBoxPrefab, dialogueUIRoot);
 		UITalkBubble bubble = gameObject.GetComponent<UITalkBubble>();

@@ -26,12 +26,25 @@ public class GameUIManager : MonoBehaviour
 	public IObjectPool<FloatingText> floatingTextPool;
 	public IObjectPool<UnitStatusUI> unitStatusPool;
 	public List<Sprite> spriteGradeList = new List<Sprite>();
+	public List<Sprite> spriteGradeFrameList = new List<Sprite>();
+
+	public Sprite spriteAds;
+	public Sprite spriteExp;
+
 	public UIController uiController;
 
+	public Camera renderTexureCamera;
+	public Transform renderTexureStand;
+
+
+	public ContentOpenMessageSystem contentOpenMessageSystem;
 
 	[SerializeField] private UIStageClear uiStageClear;
 	[SerializeField] private UIStageStart uiStageStart;
 
+	public Stack<IUIClosable> uIClosables = new Stack<IUIClosable>();
+
+	//public Dictionary<>
 
 	public event OnClose onClose;
 
@@ -44,12 +57,12 @@ public class GameUIManager : MonoBehaviour
 
 	private void OnEnable()
 	{
-		EventCallbacks.onLevelupChanged += ShowLevelupPopup;
+		//EventCallbacks.onLevelupChanged += ShowLevelupPopup;
 	}
 
 	private void OnDisable()
 	{
-		EventCallbacks.onLevelupChanged -= ShowLevelupPopup;
+		//EventCallbacks.onLevelupChanged -= ShowLevelupPopup;
 	}
 
 	#region FloatingTextPool
@@ -192,13 +205,44 @@ public class GameUIManager : MonoBehaviour
 		floatingtext.Show(value, position, endPosition, _textType);
 	}
 
-	private void ShowLevelupPopup(Int32 _beforeLv, Int32 _afterLv)
+	public void AddContentOpenMessage(ContentOpenMessage message)
 	{
-		ToastUI.it.Enqueue($"Levelup! {_beforeLv} -> {_afterLv}");
+		contentOpenMessageSystem.AddMessage(message);
 	}
-
-	public void OnClose()
+	public void Close()
 	{
 		onClose?.Invoke();
+		uIClosables.Clear();
+	}
+
+	public GameObject CreateUnitForUI(GameObject _costume)
+	{
+		var obj = Instantiate(_costume);
+
+		obj.transform.SetParent(renderTexureStand);
+		obj.transform.localPosition = Vector3.zero;
+		obj.transform.localScale = Vector3.one;
+		obj.transform.localRotation = Quaternion.identity;
+
+
+		obj.ChangeLayer(LayerMask.NameToLayer("UI"));
+
+		return obj;
+
+	}
+	private void Update()
+	{
+
+		if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			if (uIClosables.Count > 0)
+			{
+				if (uIClosables.Peek() != null)
+				{
+					var closable = uIClosables.Pop();
+					closable.Close();
+				}
+			}
+		}
 	}
 }

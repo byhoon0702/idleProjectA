@@ -17,7 +17,7 @@ public class EquipItemDataSheetObject : BaseDataSheetObject
 	/// <summary>
 	/// 아이템 스크립터블 오브젝트 생성
 	/// </summary>
-	public override void Call()
+	public override void Call(string fileName)
 	{
 #if UNITY_EDITOR
 
@@ -36,12 +36,12 @@ public class EquipItemDataSheetObject : BaseDataSheetObject
 		{
 			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas/EquipItems", $"{typename}s");
 		}
-
+		RenameAsset<EquipItemObject>(path, typename);
 
 		for (int i = 0; i < dataSheet.infos.Count; i++)
 		{
 			var data = dataSheet.infos[i];
-			string name = $"{data.tid}_{data.name}";
+			string name = $"{typename}_{data.tid}";
 			string assetPath = $"{path}/{name}.asset";
 
 			var scriptable = (EquipItemObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(EquipItemObject));
@@ -50,7 +50,7 @@ public class EquipItemDataSheetObject : BaseDataSheetObject
 				scriptable = ScriptableObject.CreateInstance<EquipItemObject>();
 				AssetDatabase.CreateAsset(scriptable, assetPath);
 			}
-			scriptable.SetBasicData(data.tid, data.name, data.description, data.equipType, data.itemGrade, data.starLevel);
+			scriptable.SetBasicData(data);
 
 			scriptable.FindIconResource();
 			scriptable.FindEquipObejct();

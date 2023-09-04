@@ -12,9 +12,20 @@ public struct LevelupConsumeData
 }
 
 [System.Serializable]
-public struct PetEvolutionData
+public struct BreakThrough
 {
-	public int evolutionLevel;
+	public int level;
+	public long needItemTid;
+	public int count;
+	public int maxLevel;
+
+}
+
+
+[System.Serializable]
+public struct PetEvolutionLevelData
+{
+	public int level;
 	public int consumeCount;
 }
 
@@ -23,6 +34,15 @@ public struct PetDismentleData
 {
 	public Grade grade;
 	public int needCount;
+}
+
+[System.Serializable]
+public struct SkillEvolutionData
+{
+	public int level;
+	public CurrencyType type;
+	public int count;
+
 }
 
 /// <summary>
@@ -38,10 +58,14 @@ public class CommonData : ScriptableObject
 	[Tooltip("강화 요구치")]
 	public List<LevelupConsumeData> LevelUpConsumeDataList;
 
-	public List<PetEvolutionData> PetEvolutionDataList;
+	public List<PetEvolutionLevelData> PetEvolutionLevelDataList;
 
 	public List<PetDismentleData> PetDismentleDataList;
 
+	public List<BreakThrough> EquipBreakThroughList;
+
+
+	public List<SkillEvolutionData> SkillEvolutionNeedsList;
 
 
 }

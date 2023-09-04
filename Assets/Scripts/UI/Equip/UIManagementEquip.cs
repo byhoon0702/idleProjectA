@@ -29,9 +29,13 @@ public class UIManagementEquip : UIBase, ISelectListener
 
 	[Header("메인 탭")]
 	[SerializeField] private Toggle weaponTab;
+	public Toggle WeaponTab => weaponTab;
 	[SerializeField] private Toggle armorTab;
+	public Toggle ArmorTab => armorTab;
 	[SerializeField] private Toggle ringTab;
+	public Toggle RingTab => ringTab;
 	[SerializeField] private Toggle necklaceTab;
+	public Toggle NecklaceTab => necklaceTab;
 
 	[Header("UI리스트")]
 	[SerializeField] private UIManagementEquipInfo uiEquipInfo;
@@ -44,8 +48,13 @@ public class UIManagementEquip : UIBase, ISelectListener
 	public UIPopupEquipUpgrade UiPopupEquipUpgrade => uiPopupEquipUpgrade;
 
 
+	[SerializeField] private UIPopupEquipBreakthrough uiPopupEquipBreakthrough;
+	public UIPopupEquipBreakthrough UiPopupEquipBreakthrough => uiPopupEquipBreakthrough;
+
+
 	[Header("Grid")]
 	[SerializeField] private UIEquipGrid uiEquipGrid;
+	public UIEquipGrid UiEquipGrid => uiEquipGrid;
 
 	public EquipType equipType { get; private set; }
 	public EquipTabType tabType { get; private set; }
@@ -56,21 +65,20 @@ public class UIManagementEquip : UIBase, ISelectListener
 	private RuntimeData.ItemInfo selectedInfo;
 
 
-
 	public void UpdateTabSlot()
 	{
 		weaponTab.onValueChanged.AddListener((toggle) =>
 		{
 			if (tabType != EquipTabType.WEAPON)
 			{
-				OnUpdateEquip(EquipType.WEAPON, GameManager.UserDB.equipContainer.GetSlot(EquipType.WEAPON).itemTid);
+				OnUpdateEquip(EquipType.WEAPON, PlatformManager.UserDB.equipContainer.GetSlot(EquipType.WEAPON).itemTid);
 			}
 		});
 		armorTab.onValueChanged.AddListener((toggle) =>
 		{
 			if (tabType != EquipTabType.ARMOR)
 			{
-				OnUpdateEquip(EquipType.ARMOR, GameManager.UserDB.equipContainer.GetSlot(EquipType.ARMOR).itemTid);
+				OnUpdateEquip(EquipType.ARMOR, PlatformManager.UserDB.equipContainer.GetSlot(EquipType.ARMOR).itemTid);
 			}
 
 		});
@@ -78,7 +86,7 @@ public class UIManagementEquip : UIBase, ISelectListener
 		{
 			if (tabType != EquipTabType.RING)
 			{
-				OnUpdateEquip(EquipType.RING, GameManager.UserDB.equipContainer.GetSlot(EquipType.RING).itemTid);
+				OnUpdateEquip(EquipType.RING, PlatformManager.UserDB.equipContainer.GetSlot(EquipType.RING).itemTid);
 			}
 
 		});
@@ -86,7 +94,7 @@ public class UIManagementEquip : UIBase, ISelectListener
 		{
 			if (tabType != EquipTabType.NECKLACE)
 			{
-				OnUpdateEquip(EquipType.NECKLACE, GameManager.UserDB.equipContainer.GetSlot(EquipType.NECKLACE).itemTid);
+				OnUpdateEquip(EquipType.NECKLACE, PlatformManager.UserDB.equipContainer.GetSlot(EquipType.NECKLACE).itemTid);
 			}
 		});
 
@@ -106,10 +114,10 @@ public class UIManagementEquip : UIBase, ISelectListener
 
 		if (selectedItemTid == 0)
 		{
-			selectedItemTid = DefaultSelectTid();
+			selectedItemTid = PlatformManager.UserDB.equipContainer.GetSlot(_itemType).itemTid;
 		}
 
-		var list = GameManager.UserDB.equipContainer.GetList(equipType);
+		var list = PlatformManager.UserDB.equipContainer.GetList(equipType);
 		selectedInfo = list.Find(x => x.Tid == selectedItemTid);
 		if (selectedInfo == null)
 		{
@@ -129,15 +137,8 @@ public class UIManagementEquip : UIBase, ISelectListener
 	public void SelectEquipItem(long tid)
 	{
 		selectedItemTid = tid;
-		selectedInfo = GameManager.UserDB.equipContainer.GetList(equipType).Find(x => x.Tid == selectedItemTid);
+		selectedInfo = PlatformManager.UserDB.equipContainer.GetList(equipType).Find(x => x.Tid == selectedItemTid);
 	}
-
-	public void SelectPetItem(long tid)
-	{
-		selectedItemTid = tid;
-		selectedInfo = GameManager.UserDB.petContainer.petList.Find(x => x.Tid == selectedItemTid);
-	}
-
 
 	public void UpdateInfo()
 	{
@@ -151,7 +152,7 @@ public class UIManagementEquip : UIBase, ISelectListener
 
 	private long DefaultSelectTid()
 	{
-		long tid = GameManager.UserDB.equipContainer.GetList(equipType)[0].Tid;
+		long tid = PlatformManager.UserDB.equipContainer.GetSlot(equipType).itemTid;
 		if (tid == 0)
 		{
 			tid = DataManager.Get<EquipItemDataSheet>().GetByItemType(equipType)[0].tid;
@@ -208,9 +209,11 @@ public class UIManagementEquip : UIBase, ISelectListener
 		}
 	}
 
+	//protected override void OnClose()
+	//{
 
+	//	UIController.it.InactivateAllBottomToggle();
+	//	base.OnClose();
 
-
-
-
+	//}
 }

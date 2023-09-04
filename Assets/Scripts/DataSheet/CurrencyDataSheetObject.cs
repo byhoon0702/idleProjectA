@@ -10,7 +10,7 @@ public class CurrencyDataSheetObject : BaseDataSheetObject
 	[SerializeField]
 	public CurrencyDataSheet dataSheet;
 
-	public override void Call()
+	public override void Call(string fileName)
 	{
 #if UNITY_EDITOR
 		if (dataSheet.infos.Count == 0)
@@ -29,11 +29,11 @@ public class CurrencyDataSheetObject : BaseDataSheetObject
 			AssetDatabase.CreateFolder("Assets/Resources/RuntimeDatas", "CurrencyItems");
 		}
 
-
+		RenameAsset<CurrencyItemObject>(path, "Currency");
 		for (int i = 0; i < dataSheet.infos.Count; i++)
 		{
 			var data = dataSheet.infos[i];
-			string name = $"{data.tid}_{data.type}";
+			string name = $"Currency_{data.tid}";
 			string assetPath = $"{path}/{name}.asset";
 
 			var scriptable = (CurrencyItemObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(CurrencyItemObject));

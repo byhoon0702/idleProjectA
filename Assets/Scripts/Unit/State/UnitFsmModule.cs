@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class UnitFsmModule : MonoBehaviour
 {
-
 	public UnitFSM[] fsmStates;
 
 	public Dictionary<StateType, UnitFSM> fsmDictionary = new Dictionary<StateType, UnitFSM>();
 	private UnitFSM currentfsm;
 	private Unit owner;
 	private StateType currentState;
+
 	public void Init(Unit unit)
 	{
 		owner = unit;

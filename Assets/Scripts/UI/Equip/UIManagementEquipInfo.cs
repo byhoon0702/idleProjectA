@@ -12,31 +12,31 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 	[SerializeField] private UIEquipSlot uiSlot;
 	[SerializeField] private TextMeshProUGUI nameText;
 	[SerializeField] private TextMeshProUGUI equipText;
-	[SerializeField] private TextMeshProUGUI ownText;
+	[SerializeField] private TextMeshProUGUI[] ownText;
 
 	[SerializeField] private Button equipButton;
+	public Button EquipButton => equipButton;
 	[SerializeField] private Button levelupButton;
+	public Button LevelupButton => levelupButton;
 	[SerializeField] private Button upgradeButton;
+	public Button UpgradeButton => upgradeButton;
+	[SerializeField] private Button breakthroughButton;
+	public Button BreakthroughButton => breakthroughButton;
 
 	[SerializeField] private Button upgradeAllButton;
 
-	[SerializeField] private UIItemOptionText[] ownedBuffs;
-	[SerializeField] private UIItemOptionText[] optionBuffs;
-
 	private UIManagementEquip parent;
+	public UIManagementEquip Parent => parent;
 	private RuntimeData.EquipItemInfo equipInfo;
+	public RuntimeData.EquipItemInfo SelectedInfo => equipInfo;
 
 	private void Awake()
 	{
-		equipButton.onClick.RemoveAllListeners();
-		equipButton.onClick.AddListener(OnEquipButtonClick);
-		levelupButton.onClick.RemoveAllListeners();
-		levelupButton.onClick.AddListener(OnClickShowLevelUp);
-		upgradeButton.onClick.RemoveAllListeners();
-		upgradeButton.onClick.AddListener(OnClickShowUpgrade);
-
-		upgradeAllButton.onClick.RemoveAllListeners();
-		upgradeAllButton.onClick.AddListener(OnUpgradeAllButtonClick);
+		equipButton.SetButtonEvent(OnEquipButtonClick);
+		levelupButton.SetButtonEvent(OnClickShowLevelUp);
+		upgradeButton.SetButtonEvent(OnClickShowUpgrade);
+		breakthroughButton.SetButtonEvent(OnClickBreakThrough);
+		upgradeAllButton.SetButtonEvent(OnUpgradeAllButtonClick);
 	}
 
 	public override void OnUpdate(UIManagementEquip _parent, RuntimeData.EquipItemInfo _info)
@@ -51,7 +51,7 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 	public void UpdateItemInfo()
 	{
 		uiSlot.OnUpdate(parent, equipInfo, null);
-		nameText.text = equipInfo.itemObject.ItemName;
+		nameText.text = PlatformManager.Language[equipInfo.rawData.name];
 
 	}
 
@@ -62,32 +62,43 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 		{
 			string tail = equipInfo.equipAbilities[i].tailChar;
 			sb.Append($"{equipInfo.equipAbilities[i].type.ToUIString()}");
-			sb.Append($" <color=yellow>{equipInfo.equipAbilities[i].Value.ToString()}{tail}</color>");
+			sb.Append($" <color=yellow>{equipInfo.equipAbilities[i].GetValue(equipInfo.Level).ToString()}{tail}</color>");
 			sb.Append('\n');
 		}
 		equipText.text = $"{sb.ToString()}";
 
-		sb.Clear();
-		for (int i = 0; i < equipInfo.ownedAbilities.Count; i++)
+
+
+
+		for (int i = 0; i < ownText.Length; i++)
 		{
-			string tail = equipInfo.ownedAbilities[i].tailChar;
-			sb.Append($"{equipInfo.ownedAbilities[i].type.ToUIString()}");
-			sb.Append($" <color=yellow>{equipInfo.ownedAbilities[i].Value.ToString()}{tail}</color>");
-			sb.Append('\n');
+			sb.Clear();
+			ownText[i].text = "";
+			if (i < equipInfo.ownedAbilities.Count)
+			{
+				string tail = equipInfo.ownedAbilities[i].tailChar;
+				sb.Append($"{equipInfo.ownedAbilities[i].type.ToUIString()}");
+				sb.Append($" <color=yellow>{equipInfo.ownedAbilities[i].GetValue(equipInfo.Level).ToString()}{tail}</color>");
+				sb.Append('\n');
+
+				ownText[i].text = $"{sb.ToString()}";
+			}
 		}
 
-		ownText.text = $"{sb.ToString()}";
+
 	}
 	public void UpdateButton()
 	{
 		if (equipInfo != null)
 		{
 			bool buttonActive = equipInfo.unlock;
-			bool equipped = equipInfo.Tid != GameManager.UserDB.equipContainer.GetSlot(equipInfo.rawData.equipType).itemTid;
+			bool equipped = equipInfo.Tid != PlatformManager.UserDB.equipContainer.GetSlot(equipInfo.rawData.equipType).itemTid;
 			bool levelupable = ItemLevelupable();
 
 			equipButton.interactable = buttonActive && equipped;
-
+			levelupButton.gameObject.SetActive(levelupable);
+			breakthroughButton.gameObject.SetActive(buttonActive && equipInfo.Level > 0 && equipInfo.IsMaxLevel());
+			upgradeButton.gameObject.SetActive(buttonActive && equipInfo.isLastItem == false);
 		}
 		else
 		{
@@ -100,18 +111,14 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 	{
 
 
-		if (equipInfo == null && equipInfo.count == 0)
+		if (equipInfo == null && equipInfo.Count == 0)
 		{
 			return false;
 		}
-		if (equipInfo.CanLevelUp() == false)
+		if (equipInfo.IsMaxLevel())
 		{
 			return false;
 		}
-		//if (Inventory.it.CheckMoney(item.Tid, new IdleNumber(item.nextExp)).Fail())
-		//{
-		//	return false;
-		//}
 
 		return true;
 	}
@@ -122,13 +129,14 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 	/// </summary>
 	private void OnEquipButtonClick()
 	{
-		GameManager.UserDB.equipContainer.GetSlot(parent.equipType).Equip(equipInfo);
+		PlatformManager.UserDB.equipContainer.GetSlot(parent.equipType).Equip(equipInfo);
 		//parent.UpdateItems(true);
 
 		UpdateItemInfo();
 		UpdateItemLevelupInfo();
 		UpdateButton();
 		parent.OnUpdateEquip(parent.equipType, equipInfo.Tid);
+		PlatformManager.UserDB.questContainer.ProgressOverwrite(QuestGoalType.EQUIP_ITEM, equipInfo.Tid, (IdleNumber)1);
 	}
 
 	public void OnClickShowLevelUp()
@@ -141,9 +149,14 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 		parent.UiPopupEquipUpgrade.OnUpdate(parent, equipInfo);
 	}
 
+	public void OnClickBreakThrough()
+	{
+		parent.UiPopupEquipBreakthrough.OnUpdate(parent, equipInfo);
+	}
+
 	private void OnUpgradeAllButtonClick()
 	{
-		GameManager.UserDB.equipContainer.UpgradeAll(parent.equipType);
+		PlatformManager.UserDB.equipContainer.UpgradeAll(parent.equipType);
 		parent.OnUpdateEquip(parent.equipType, equipInfo.Tid);
 
 	}

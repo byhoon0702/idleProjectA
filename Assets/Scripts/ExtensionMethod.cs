@@ -1,9 +1,67 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Events;
+
+public static class RenderExtension
+{
+
+	private static int CountCornersVisibleFrom(this RectTransform rectTransform, Camera camera)
+	{
+		//RectTransformUtility.RectangleContainsScreenPoint()
+		Rect screenBounds = new Rect(0f, 0f, Screen.width, Screen.height); // Screen space bounds (assumes camera renders across the entire screen)
+		Vector3[] objectCorners = new Vector3[4];
+		rectTransform.GetWorldCorners(objectCorners);
+
+		int visibleCorners = 0;
+		Vector3 tempScreenSpaceCorner; // Cached
+		for (var i = 0; i < objectCorners.Length; i++) // For each corner in rectTransform
+		{
+			tempScreenSpaceCorner = camera.WorldToScreenPoint(objectCorners[i]); // Transform world space position of corner to screen space
+			if (screenBounds.Contains(tempScreenSpaceCorner)) // If the corner is inside the screen
+			{
+				visibleCorners++;
+			}
+		}
+
+		return visibleCorners;
+	}
+	public static bool IsFullyVisibleFrom(this RectTransform rectTransform, Camera camera)
+	{
+		return CountCornersVisibleFrom(rectTransform, camera) == 4; // True if all 4 corners are visible
+	}
+	public static bool IsVisibleFrom(this RectTransform rectTransform, Camera camera)
+	{
+		return CountCornersVisibleFrom(rectTransform, camera) > 0; // True if any corners are visible
+	}
+}
 
 public static class ExtensionMethod
 {
+
+	public static void ChangeLayer(this GameObject go, int layer)
+	{
+		go.layer = layer;
+		for (int i = 0; i < go.transform.childCount; i++)
+		{
+			Transform child = go.transform.GetChild(i);
+			ChangeLayer(child.gameObject, layer);
+		}
+	}
+
+
+
+	public static void SetButtonEvent(this Button button, UnityAction buttonEvent)
+	{
+		button.onClick.RemoveAllListeners();
+		button.onClick.AddListener(buttonEvent);
+	}
+	public static void SetButtonEvent(this UIEconomyButton button, ButtonRepeatEvent buttonEvent, UnityAction onClick = null)
+	{
+		button.SetEvent(buttonEvent, onClick);
+	}
+
 	public static bool HasParameter(this Animator animator, string name)
 	{
 		for (int i = 0; i < animator.parameterCount; i++)
@@ -110,63 +168,124 @@ public static class ExtensionMethod
 		return string.IsNullOrEmpty(s);
 	}
 
+	public static void Restart(this ParticleSystem ps)
+	{
+		ps.Clear(true);
+		//ps.Simulate(0, true, true);
+		ps.Play(true);
+	}
+
+	public static string ToUIString(this StatusEffect type)
+	{
+		switch (type)
+		{
+			case StatusEffect.STUN:
+				return "str_skill_stun";
+		}
+
+		return "";
+	}
+	public static Color GradeColor(this Grade grade)
+	{
+		switch (grade)
+		{
+			case Grade.D:
+				return new Color32(255, 255, 255, 255);
+			case Grade.C:
+				return new Color32(52, 149, 26, 255);
+			case Grade.B:
+				return new Color32(28, 176, 255, 255);
+			case Grade.A:
+				return new Color32(255, 12, 255, 255);
+			case Grade.S:
+				return new Color32(255, 255, 51, 255);
+			case Grade.SS:
+				return new Color32(245, 180, 3, 255);
+			case Grade.SSS:
+				return new Color32(255, 18, 36, 255);
+		}
+		return Color.white;
+	}
+
+	public static string GradeString(this Grade grade)
+	{
+		switch (grade)
+		{
+			case Grade.D:
+				return "D 등급";
+			case Grade.C:
+				return "C 등급";
+			case Grade.B:
+				return "B 등급";
+			case Grade.A:
+				return "A 등급";
+			case Grade.S:
+				return "S 등급";
+			case Grade.SS:
+				return "SS 등급";
+			case Grade.SSS:
+				return "SSS 등급";
+		}
+
+		return "등급 없음";
+	}
+
+	public static string ToUIString(this ContentType type)
+	{
+		return PlatformManager.Language[$"str_ui_contents_{type.ToString().ToLower()}"];
+
+	}
 	public static string ToUIString(this StatsType _state)
 	{
 		switch (_state)
 		{
 			case StatsType.Atk:
-				return "공격력";
+				return PlatformManager.Language["str_ui_status_info_atk"];
 			case StatsType.Hp:
-				return "체력";
+				return PlatformManager.Language["str_ui_status_info_hp"];
 			case StatsType.Atk_Speed:
-				return "공격 속도";
+				return PlatformManager.Language["str_ui_status_info_atk_speed"];
 			case StatsType.Crits_Chance:
-				return "치명타 확률";
+				return PlatformManager.Language["str_ui_status_info_crits_chance"];
 			case StatsType.Crits_Damage:
-				return "치명타 피해";
+				return PlatformManager.Language["str_ui_status_info_crits_damage"];
 			case StatsType.Super_Crits_Chance:
-				return "회심의 일격 확률";
+				return PlatformManager.Language["str_ui_status_info_super_crits_chance"];
 			case StatsType.Super_Crits_Damage:
-				return "회심의 일격 피해";
+				return PlatformManager.Language["str_ui_status_info_super_crits_damage"];
 			case StatsType.Move_Speed:
-				return "이동속도";
+				return PlatformManager.Language["str_ui_status_info_skill_move_speed"];
 			case StatsType.Hp_Recovery:
-				return "회복력";
+				return PlatformManager.Language["str_ui_status_info_hp_recovery"];
 			case StatsType.Skill_Cooltime:
-				return "스킬 쿨타임";
+				return PlatformManager.Language["str_ui_status_info_skill_cooldown"];
 			case StatsType.Skill_Damage:
-				return "스킬 피해";
+				return PlatformManager.Language["str_ui_status_info_skill_damage"];
 			case StatsType.Mob_Damage_Buff:
-				return "몬스터 추가 피해";
+				return PlatformManager.Language["str_ui_status_info_skill_mob_damage"];
 			case StatsType.Boss_Damage_Buff:
-				return "보스 몬스터 추가 피해";
+				return PlatformManager.Language["str_ui_status_info_skill_boss_damage"];
 			case StatsType.Atk_Buff:
 				return "공격력 증폭";
 			case StatsType.Hp_Buff:
 				return "회복력 증폭";
-			case StatsType.Gold_Buff:
-				return "골드 추가 획득";
-			case StatsType.EXP_Buff:
-				return "경험치 추가 획득";
-			case StatsType.Item_Buff:
-				return "아이템 추가 획득";
+			case StatsType.Buff_Gain_Gold:
+				return PlatformManager.Language["str_ui_status_info_skill_gain_gold"];
+			case StatsType.Buff_Gain_Exp:
+				return PlatformManager.Language["str_ui_status_info_skill_gain_exp"];
+			case StatsType.Buff_Gain_Item:
+				return PlatformManager.Language["str_ui_status_info_skill_gain_item"];
 			case StatsType.Final_Damage_Buff:
-				return "최종 피해";
-			case StatsType.Hyper_Atk:
-				return "하이퍼 모드 공격력";
-			case StatsType.Hyper_Hp:
-				return "하이퍼 모드 체력";
-			case StatsType.Hyper_Atk_Speed:
-				return "하이퍼 모드 공격 속도";
-			case StatsType.Hyper_Move_Speed:
-				return "하이퍼 모드 이동 속도";
-			case StatsType.Hyper_Duration:
-				return "하이퍼 모드 지속 시간";
+				return PlatformManager.Language["str_ui_status_info_skill_total_damage"];
+			case StatsType.Damage_Reduce:
+				return "데미지 감소";
+
 			default:
 				return $"{_state.ToString()}";
 		}
 	}
 }
+
 public static class ListUtil
 {
 	public static List<ELEM_TYPE> shuffleList<ELEM_TYPE>(List<ELEM_TYPE> src_list)
@@ -204,4 +323,184 @@ public static class ListUtil
 
 		return false;
 	}
+}
+
+public static class ConditionCheck
+{
+	public static bool IsFulFillCondition(this OpenCondition condition, out string message)
+	{
+		message = "";
+		switch (condition.type)
+		{
+			case ConditionType.CONTENT:
+
+				message = $"{condition.content.ToUIString()} 오픈 필요";
+				return PlatformManager.UserDB.contentsContainer.IsOpen(condition.content);
+
+			case ConditionType.USELEVEL:
+				{
+					bool isOpen = PlatformManager.UserDB.userInfoContainer.userInfo.UserLevel >= condition.parameter;
+					message = $"{condition.parameter} 달성 필요";
+					return isOpen;
+				}
+			case ConditionType.QUEST:
+				{
+					var questInfo = PlatformManager.UserDB.questContainer.MainQuestList.Find(x => x.Tid == condition.tid);
+
+					message = $"{PlatformManager.Language[questInfo.rawData.questTitle]} 클리어 필요";
+
+					bool isOpen = questInfo.progressState == QuestProgressState.END;
+
+					return isOpen;
+				}
+			case ConditionType.GUIDE:
+				break;
+			case ConditionType.STAGE:
+				{
+					long dungeonTid = condition.tid;
+					int stageNumber = condition.parameter;
+
+					var stage = PlatformManager.UserDB.stageContainer.GetNormalStage(stageNumber);
+					message = $"STAGE {stageNumber} {stage.StageName} 클리어 필요";
+					var isOpen = stage.isClear;
+					return isOpen;
+				}
+			case ConditionType.DATETIME:
+				{
+					if (System.DateTime.TryParse(condition.dateTime, out System.DateTime conditionDate))
+					{
+						return (TimeManager.Instance.UtcNow - conditionDate).TotalSeconds > 0;
+					}
+					else
+					{
+						return true;
+					}
+				}
+			default:
+				return true;
+		}
+		return true;
+	}
+	public static bool IsPassFulfill(this RequirementInfo info, out string message)
+	{
+		message = "";
+		if (PlatformManager.UserDB == null)
+		{
+			message = "사용자 데이터 정의가 되지 않음";
+			return false;
+		}
+
+		switch (info.type)
+		{
+			case RequirementType.NORMAL_STAGE:
+				{
+					//long dungeonTid = info.parameter1;
+					int stageNumber = info.parameter2;
+
+					var stage = PlatformManager.UserDB.stageContainer.LastPlayedNormalStage();
+
+					message = $"STAGE {stageNumber} {stage.StageName} 도달시 획득 가능";
+					if (stage == null)
+					{
+						return false;
+					}
+
+					return stageNumber <= stage.StageNumber;
+				}
+			case RequirementType.USERLEVEL:
+				{
+					int requiredLevel = Mathf.FloorToInt(info.parameter2);
+					var userlevel = PlatformManager.UserDB.userInfoContainer.userInfo.UserLevel;
+					message = $"{requiredLevel} 달성시 획득 가능";
+					return userlevel >= requiredLevel;
+				}
+			case RequirementType.DAILYKILLCOUNT:
+				{
+					int required = info.parameter2;
+					message = $"{required} 달성시 획득 가능";
+					return PlatformManager.UserDB.userInfoContainer.dailyKillCount >= required;
+				}
+
+			case RequirementType.NONE:
+				return true;
+		}
+
+		return false;
+	}
+
+
+	public static bool IsRequirementFulfill(this RequirementInfo info, out string message)
+	{
+		message = "";
+		if (PlatformManager.UserDB == null)
+		{
+			message = "사용자 데이터 정의가 되지 않음";
+			return false;
+		}
+
+		switch (info.type)
+		{
+			case RequirementType.NORMAL_STAGE:
+				{
+					//long dungeonTid = info.parameter1;
+					int stageNumber = info.parameter2;
+
+					var stage = PlatformManager.UserDB.stageContainer.GetNormalStage(stageNumber);
+
+					message = $"STAGE {stageNumber} {stage.Name} 클리어";
+					if (stage == null)
+					{
+						return false;
+					}
+
+					return stage.isClear;
+				}
+			case RequirementType.USERLEVEL:
+				{
+					int requiredLevel = Mathf.FloorToInt(info.parameter2);
+					var userlevel = PlatformManager.UserDB.userInfoContainer.userInfo.UserLevel;
+					message = $"{requiredLevel} 이상 해제";
+					return userlevel >= requiredLevel;
+				}
+
+			case RequirementType.BASESKILL:
+				{
+					long tid = info.parameter1;
+					int baseSkillLevel = info.parameter2;
+					var baseSkillInfo = PlatformManager.UserDB.skillContainer.FindSKill(tid);
+
+					message = $"{baseSkillInfo.Name} {baseSkillLevel} 필요";
+
+					if (baseSkillInfo == null)
+					{
+						return false;
+					}
+
+					return baseSkillInfo.Level >= baseSkillLevel;
+				}
+			case RequirementType.ADVANCEMENT:
+				{
+					int step = info.parameter2;
+					message = "승급 부족";
+					return PlatformManager.UserDB.advancementContainer.AdvancementLevel >= step;
+				}
+			case RequirementType.MONSTERKILL:
+				{
+					int required = info.parameter2;
+					return true;
+				}
+			case RequirementType.DAILYKILLCOUNT:
+				{
+					int required = info.parameter2;
+					message = "일일 몬스터 처치 수 부족";
+					return PlatformManager.UserDB.userInfoContainer.dailyKillCount >= required;
+				}
+
+			case RequirementType.NONE:
+				return true;
+		}
+
+		return false;
+	}
+
 }

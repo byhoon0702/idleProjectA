@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.Services.Core;
+using Unity.Services.Authentication;
 
 public enum IntroState_e
 {
@@ -23,12 +25,12 @@ public class Intro : MonoBehaviour
 	public EnterGameState enterGameState;
 	public UserInfoContainer userinfoContainer;
 
-	public UserDB userDB;
 	public UIPopupLogin uiPopupLogin;
-
+	public UIPopupAgreement uiPopupAgreement;
 	public IntroState_e currentState { get; private set; }
-	public FSM currentFSM;
+	public IntroFSM currentFSM;
 
+	public LanguageContainer language;
 	[SerializeField] private Button button;
 	[SerializeField] private TextMeshProUGUI progressText;
 	[SerializeField] private Slider progress;
@@ -38,10 +40,6 @@ public class Intro : MonoBehaviour
 
 
 	private int touchToStartAlphaToggle = -1;
-
-
-
-
 	private void Awake()
 	{
 		it = this;
@@ -61,6 +59,14 @@ public class Intro : MonoBehaviour
 		enterGameState = new EnterGameState();
 
 		ChangeState(IntroState_e.INTRO);
+		GameSetting.Instance.LoadSettings();
+
+		SoundManager.Instance.Init();
+		SoundManager.Instance.PlayBgm(Resources.Load<AudioClip>("BgmSound/bgm_intro_00"));
+	}
+	public void ShowTermsAgreementPopup()
+	{
+		uiPopupAgreement.Open(() => { ChangeState(IntroState_e.LOGIN); });
 	}
 
 	public void ChangeState(IntroState_e state)
@@ -139,10 +145,14 @@ public class Intro : MonoBehaviour
 
 	private void OnClickStartGame()
 	{
-		if (currentState == IntroState_e.LOGIN)
-		{
-			ChangeState(IntroState_e.ENTERGAME);
-		}
+		//if (PlatformManager.Instance.IsSignedIn() == false)
+		//{
+		//	return;
+		//}
+		//if (currentState == IntroState_e.LOGIN)
+		//{
+		//	ChangeState(IntroState_e.ENTERGAME);
+		//}
 	}
 
 	public void SetProgressBar(float _ratio, string _text)
@@ -150,6 +160,7 @@ public class Intro : MonoBehaviour
 		progress.value = _ratio;
 		progressText.text = _text;
 	}
+
 
 	public void SetActiveProgressBar(bool _isActive)
 	{

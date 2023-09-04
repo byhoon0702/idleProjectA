@@ -30,8 +30,8 @@ public class ItemUICostume : ItemUIBase
 
 		selectListener?.AddSelectListener(OnSelect);
 
-		levelText.text = $"LV {info.level}";
-		if (info.count == 0)
+		textInfo.text = $"LV {info.Level}";
+		if (info.Count == 0)
 		{
 
 		}
@@ -39,10 +39,13 @@ public class ItemUICostume : ItemUIBase
 		{
 
 		}
-		if (info.itemObject.Icon != null)
+
+		if (info.itemObject != null && info.itemObject.ItemIcon != null)
 		{
-			icon.sprite = info.itemObject.Icon;
+			icon.sprite = info.itemObject.ItemIcon;
 		}
+		bg.sprite = GameUIManager.it.spriteGradeList[(int)info.grade];
+		imageFrame.sprite = GameUIManager.it.spriteGradeFrameList[(int)info.grade];
 	}
 
 	public void OnSelect(long tid)

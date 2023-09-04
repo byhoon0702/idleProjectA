@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.Services.Core;
+using Unity.Services.Authentication;
 
 public class UIPopupLogin : MonoBehaviour
 {
@@ -41,26 +43,35 @@ public class UIPopupLogin : MonoBehaviour
 		gameObject.SetActive(true);
 		objDevLogin.SetActive(isEditor);
 		buttonLoginGoogle.gameObject.SetActive(!isEditor);
-		buttonLoginGuest.gameObject.SetActive(!isEditor);
+		buttonLoginGuest.gameObject.SetActive(false);
 	}
 
 	public void OnClickLoginGoogle()
 	{
+		PlatformManager.Instance.OnClickGoogleLogin(() =>
+		{
+			string nickName = GooglePlayGames.PlayGamesPlatform.Instance.localUser.userName;
+
+		});
 		//플랫폼 인증 아이디 사용할것 
-		Intro.it.userDB.SetLoginInfo(System.Guid.NewGuid().ToString(), "GoogleUesr", "google");
+
 		gameObject.SetActive(false);
 	}
 
 	public void OnClickLoginGuest()
 	{
-		//플랫폼 인증 아이디 사용할것 
-		Intro.it.userDB.SetLoginInfo(System.Guid.NewGuid().ToString(), "GuestUser", "guest");
+		PlatformManager.Instance.OnClickAnonymous(() =>
+		{
+		});
+
 		gameObject.SetActive(false);
 	}
 
 	public void OnClickDev()
 	{
-		Intro.it.userDB.SetLoginInfo(System.Guid.NewGuid().ToString(), inputField.text, "dev");
+		PlatformManager.Instance.OnClickAnonymous(() =>
+		{
+		});
 		gameObject.SetActive(false);
 	}
 }

@@ -59,7 +59,7 @@ public class UIEquipSlot : MonoBehaviour
 		itemUI.ShowStars(equipInfo.unlock);
 		lockedMark.SetActive(equipInfo.unlock == false);
 
-		var data = GameManager.UserDB.equipContainer.GetSlot(equipInfo.type);
+		var data = PlatformManager.UserDB.equipContainer.GetSlot(equipInfo.type);
 		isEquipped = false;
 		if (data.itemTid == equipInfo.Tid)
 		{
@@ -67,9 +67,9 @@ public class UIEquipSlot : MonoBehaviour
 			equippedMark.SetActive(true);
 		}
 
-		slider.value = (float)equipInfo.count / (float)EquipContainer.needCount;
+		slider.value = (float)equipInfo.Count / (float)EquipContainer.needCount;
 
-		textSliderCount.text = $"{equipInfo.count}/{EquipContainer.needCount}";
+		textSliderCount.text = $"{equipInfo.Count}/{EquipContainer.needCount}";
 
 	}
 	public void ShowEquipMark(bool isTrue)

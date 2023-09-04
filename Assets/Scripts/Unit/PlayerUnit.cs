@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
 public class PlayerUnit : Unit
 {
-	public PlayerUnitInfo info
+	public UnitModeBase unitHyperMode;
+	public HyperModule hyperModule;
+	public SignalReceiver signalReceiver;
+	public RuntimeData.PlayerUnitInfo info
 	{
 		get;
 		private set;
@@ -14,7 +18,7 @@ public class PlayerUnit : Unit
 
 	[SerializeField] private PlayableDirector hyperDirector;
 	private float hpRecoveryRemainTime;
-	public override string CharName => info.data.name;
+	public override string CharName => info.rawData.name;
 	public override ControlSide ControlSide => ControlSide.PLAYER;
 	public override UnitType UnitType => UnitType.Player;
 
@@ -40,16 +44,13 @@ public class PlayerUnit : Unit
 					damage = AttackPower * (info.stats.GetValue(StatsType.Crits_Damage) / 100f) * (info.stats.GetValue(StatsType.Super_Crits_Damage) / 100f);
 				}
 			}
-			HitInfo hit = new HitInfo(damage, criticalType);
+			HitInfo hit = new HitInfo(gameObject.layer, damage, criticalType);
 
 			return hit;
 		}
 	}
 	public override IdleNumber AttackPower => info.AttackPower();
 	public override float AttackSpeed => info.AttackSpeed();
-
-
-
 	public override CriticalType RandomCriticalType => info.IsCritical();
 	public override float CriticalDamageMultifly => info.CriticalDamageMultifly();
 	public override float CriticalX2DamageMultifly => info.CriticalX2DamageMultifly();
@@ -63,12 +64,6 @@ public class PlayerUnit : Unit
 
 	public int hyperPhase;
 
-	private FxSpriteEffectAuto trainingLevelupEffect;
-
-	private GameObject hyperModel;
-
-
-
 	public void HPRecoveryUpdate(float _dt)
 	{
 		hpRecoveryRemainTime += _dt;
@@ -80,7 +75,7 @@ public class PlayerUnit : Unit
 				var recoveryValue = info.HPRecovery();
 				if (recoveryValue > 0)
 				{
-					Heal(new HealInfo(AttackerType.Player, recoveryValue));
+					Heal(new HealInfo(gameObject.layer, this, recoveryValue));
 				}
 			}
 		}
@@ -110,11 +105,10 @@ public class PlayerUnit : Unit
 		}
 		HeadingToTarget();
 
-		skillModule.DefaultAttack(HitInfo);
+		skillModule.DefaultAttack();
 		attackCount++;
 
 		hyperModule?.StackHyperGauge();
-
 	}
 
 	public void PlayHyperFinishTimeline(TimelineAsset timelineAsset)
@@ -133,6 +127,10 @@ public class PlayerUnit : Unit
 			if (track.name.Equals("HyperCharacter"))
 			{
 				hyperDirector.SetGenericBinding(track, UnitManager.it.Player.unitAnimation.animator);
+			}
+			if (track.name.Equals("Signal Track"))
+			{
+				hyperDirector.SetGenericBinding(track, signalReceiver);
 			}
 			if (track.name.Equals("Cinemachine Zoom Track"))
 			{
@@ -173,16 +171,16 @@ public class PlayerUnit : Unit
 
 	public void ChangeNormalUnit(RuntimeData.AdvancementInfo _info)
 	{
-		if (unitMode is UnitNormalMode)
-		{
+		//if (unitMode is UnitNormalMode)
+		//{
 
-			if (_info.Level == 0)
-			{
-				unitFacial?.ChangeFacial(0);
-				return;
-			}
-			unitFacial?.ChangeFacial(_info.CostumeIndex);
-		}
+		//	if (_info.Level == 0)
+		//	{
+		//		unitFacial?.ChangeFacial(0);
+		//		return;
+		//	}
+		//	unitFacial?.ChangeFacial(_info.CostumeIndex);
+		//}
 	}
 
 	public void Spawn(UnitData _data, int _level = 1)
@@ -192,16 +190,19 @@ public class PlayerUnit : Unit
 			VLog.ScheduleLogError("No Unit Data");
 		}
 
-		info = new PlayerUnitInfo(this, _data);
+		info = new RuntimeData.PlayerUnitInfo(this, _data);
 		rigidbody2D = GetComponent<Rigidbody2D>();
 
 		Init();
 
-		instaneStats = Instantiate(stats);
+		PlatformManager.UserDB.RemoveAllModifiers(StatModeType.SkillBuff);
+		PlatformManager.UserDB.RemoveAllModifiers(StatModeType.SkillDebuff);
 
-		InitMode("B/Player", info);
+		//Debug.Log($"{PlatformManager.UserDB.costumeContainer[CostumeType.CHARACTER].costume}");
 
-		InactiveHyperEffect();
+		InitMode(PlatformManager.UserDB.costumeContainer[CostumeType.CHARACTER].costume);
+
+		//InactiveHyperEffect();
 
 		headingDirection = Vector3.right;
 
@@ -211,22 +212,64 @@ public class PlayerUnit : Unit
 		InitSkills();
 	}
 
+
+
+	public override void InitMode(GameObject go)
+	{
+		unitMode?.OnInit(this, go);
+		unitHyperMode?.OnInit(this);
+
+		unitHyperMode?.OnModeExit();
+		unitMode?.OnModeEnter(StateType.IDLE);
+		currentMode = unitMode;
+
+		attackEffectObject = null;
+		hitEffectObject = null;
+		skillModule.Init(this, info.defaultSkillTid);
+		skillModule.ChangeSkillSet(PlatformManager.UserDB.skillContainer.skillSlot);
+
+		UIController.it.HyperSkill.SetHyperMode(false);
+	}
+
 	void InitSkills()
 	{
 		skillModule.Init(this, info.defaultSkillTid);
-		skillModule.ChangeSkillSet(GameManager.UserDB.skillContainer.skillSlot);
+		skillModule.ChangeSkillSet(PlatformManager.UserDB.skillContainer.skillSlot);
 
 		skillModule.ResetSkills();
 	}
 
 	public void NormalSpawn()
 	{
-		unitCostume = unitAnimation.GetComponent<NormalUnitCostume>();
-		if (unitCostume != null)
+		//unitCostume = unitAnimation.GetComponent<NormalUnitCostume>();
+		//if (unitCostume != null)
+		//{
+		//	unitCostume.Init();
+		//	ChangeCostume();
+		//}
+	}
+	public override void KnockBack(float power, Vector3 dir, int hitCount, bool isLastHit = true)
+	{
+		if (Hp <= 0)
 		{
-			unitCostume.Init();
-			ChangeCostume();
+			return;
 		}
+
+		if (currentState == StateType.SKILL || currentState == StateType.DASH || currentState == StateType.HYPER_FINISH)
+		{
+			return;
+		}
+
+		var knockbackResist = info.stats.GetValue(StatsType.Knockback_Resist);
+
+		float differ = power - knockbackResist;
+		if (differ <= 0)
+		{
+			return;
+		}
+
+		rigidbody2D.AddForce((transform.position - target.position).normalized * differ, ForceMode2D.Impulse);
+		ChangeState(StateType.KNOCKBACK);
 	}
 
 	public bool TriggerHyperFinishSkill(SkillSlot skillSlot)
@@ -244,17 +287,15 @@ public class PlayerUnit : Unit
 
 		IdleNumber totalAttackPower = AttackPower;
 		IdleNumber skillvalue = skillSlot.item.skillAbility.Value;
-		IdleNumber skillBuffvalue = GameManager.UserDB.GetValue(StatsType.Skill_Damage);
+		IdleNumber skillBuffvalue = PlatformManager.UserDB.GetValue(StatsType.Skill_Damage);
 
 		totalAttackPower = (totalAttackPower * (skillvalue + (skillvalue * skillBuffvalue))) / 100f;
 
-		HitInfo info = new HitInfo(AttackPower);
-		info = new HitInfo(totalAttackPower);
+		HitInfo info = new HitInfo(gameObject.layer, AttackPower);
+		info = new HitInfo(gameObject.layer, totalAttackPower);
 
 		skillModule.RegisterUsingSkill(skillSlot, info);
-		//skillSlot.Use();
-		//DialogueManager.it.CreateSkillBubble(skillSlot.item.Name, this);
-		//unitAnimation.PlayAnimation("skill1");
+
 		return true;
 	}
 
@@ -264,15 +305,19 @@ public class PlayerUnit : Unit
 		{
 			FindTarget(0, true);
 		}
+		if (target == null)
+		{
+			return false;
+		}
 
 		IdleNumber totalAttackPower = AttackPower;
 		IdleNumber skillvalue = skillSlot.item.skillAbility.Value;
-		IdleNumber skillBuffvalue = GameManager.UserDB.GetValue(StatsType.Skill_Damage);
+		IdleNumber skillBuffvalue = PlatformManager.UserDB.GetValue(StatsType.Skill_Damage);
 
 		totalAttackPower = (totalAttackPower * (skillvalue + (skillvalue * skillBuffvalue))) / 100f;
 
-		HitInfo info = new HitInfo(AttackPower);
-		info = new HitInfo(totalAttackPower);
+		HitInfo info = new HitInfo(gameObject.layer, AttackPower);
+		info = new HitInfo(gameObject.layer, totalAttackPower);
 
 		if (skillSlot.item.Instant)
 		{
@@ -289,9 +334,9 @@ public class PlayerUnit : Unit
 		}
 
 		skillSlot.Use();
-		DialogueManager.it.CreateSkillBubble(skillSlot.item.Name, this);
+		//DialogueManager.it.CreateSkillBubble(skillSlot.item.Name, this);
 
-		unitAnimation.PlayAnimation(skillSlot.item.itemObject.animationClip);
+		unitAnimation.PlayAnimation(skillSlot.item.rawData.animation);
 
 
 		return true;
@@ -310,14 +355,14 @@ public class PlayerUnit : Unit
 
 	public void EquipWeapon()
 	{
-		var weaponSlot = GameManager.UserDB.equipContainer.GetSlot(EquipType.WEAPON);
-		if (weaponSlot.item == null || weaponSlot.item.Tid == 0)
-		{
-			return;
-		}
+		//var weaponSlot = PlatformManager.UserDB.equipContainer.GetSlot(EquipType.WEAPON);
+		//if (weaponSlot.item == null || weaponSlot.item.Tid == 0)
+		//{
+		//	return;
+		//}
 
-		GameManager.UserDB.costumeContainer[CostumeType.WEAPON].Clear();
-		unitCostume.EquipeWeapon(GameManager.UserDB.equipContainer.GetSlot(EquipType.WEAPON).item);
+		//PlatformManager.UserDB.costumeContainer[CostumeType.WEAPON].Clear();
+		//unitCostume.EquipeWeapon(PlatformManager.UserDB.equipContainer.GetSlot(EquipType.WEAPON).item);
 	}
 
 	public override void ChangeCostume()
@@ -326,17 +371,22 @@ public class PlayerUnit : Unit
 		{
 			return;
 		}
-		var headInfo = GameManager.UserDB.costumeContainer[CostumeType.HEAD].item;
-		var bodyInfo = GameManager.UserDB.costumeContainer[CostumeType.BODY].item;
-		var weaponInfo = GameManager.UserDB.costumeContainer[CostumeType.WEAPON].item;
 
-		unitCostume.ChangeCostume(headInfo, bodyInfo, weaponInfo);
+		//Destroy(unitAnimation.gameObject);
+
+		//var headInfo = PlatformManager.UserDB.costumeContainer[CostumeType.HEAD].item;
+		var bodyInfo = PlatformManager.UserDB.costumeContainer[CostumeType.CHARACTER].item;
+		InitMode(bodyInfo.itemObject.CostumeObject);
 
 
-		if (weaponInfo == null)
-		{
-			unitCostume.EquipeWeapon(GameManager.UserDB.equipContainer.GetSlot(EquipType.WEAPON).item);
-		}
+		//InitMode("B/Player", bodyInfo);
+		//var weaponInfo = PlatformManager.UserDB.costumeContainer[CostumeType.WEAPON].item;
+
+		//unitCostume.ChangeCostume(headInfo, bodyInfo, weaponInfo);
+		//if (weaponInfo == null)
+		//{
+		//	unitCostume.EquipeWeapon(PlatformManager.UserDB.equipContainer.GetSlot(EquipType.WEAPON).item);
+		//}
 	}
 
 	public override void OnMove(float delta)
@@ -440,6 +490,7 @@ public class PlayerUnit : Unit
 	/// </summary>
 	public override void InactiveHyperEffect()
 	{
+		unitMode?.OnInit(this, PlatformManager.UserDB.costumeContainer[CostumeType.CHARACTER].costume);
 		unitMode?.OnModeEnter(currentState);
 		unitHyperMode?.OnModeExit();
 
@@ -449,7 +500,7 @@ public class PlayerUnit : Unit
 		attackEffectObject = null;
 		hitEffectObject = null;
 		skillModule.Init(this, info.defaultSkillTid);
-		skillModule.ChangeSkillSet(GameManager.UserDB.skillContainer.skillSlot);
+		skillModule.ChangeSkillSet(PlatformManager.UserDB.skillContainer.skillSlot);
 
 		UIController.it.HyperSkill.SetHyperMode(false);
 
@@ -486,17 +537,8 @@ public class PlayerUnit : Unit
 	{
 		base.PlayAnimation(type);
 	}
-
-	public override void Hit(HitInfo _hitInfo)
+	protected override void OnHit(HitInfo _hitInfo)
 	{
-		if (_hitInfo.TotalAttackPower == 0)
-		{
-			return;
-		}
-		if (GameManager.GameStop)
-		{
-			return;
-		}
 		if (Hp > 0)
 		{
 			hitCount++;
@@ -514,7 +556,7 @@ public class PlayerUnit : Unit
 
 		if (_hitInfo.hitSound.IsNullOrWhiteSpace() == false)
 		{
-			VSoundManager.it.PlayEffect(_hitInfo.hitSound);
+			SoundManager.Instance.PlayEffect(_hitInfo.hitSound);
 		}
 
 		var go = Instantiate(hitEffect).GetComponent<UVAnimation>();
@@ -525,6 +567,58 @@ public class PlayerUnit : Unit
 
 		currentMode?.OnHit(_hitInfo);
 	}
+
+	protected override IEnumerator OnHitRoutine(HitInfo hitInfo)
+	{
+
+
+
+
+
+
+		yield return null;
+	}
+
+	public override void Hit(HitInfo _hitInfo, RuntimeData.SkillInfo _skillInfo)
+	{
+		if (_hitInfo.TotalAttackPower == 0)
+		{
+			return;
+		}
+		if (GameManager.GameStop)
+		{
+			return;
+		}
+		PlayHitSound();
+		OnHit(_hitInfo);
+
+	}
+
+	public override void Debuff(DebuffInfo _debuffInfo)
+	{
+		base.Debuff(_debuffInfo);
+
+	}
+
+	public override void Buff(BuffInfo buffInfo)
+	{
+		base.Buff(buffInfo);
+	}
+
+	public override void AddDebuff(AppliedBuff debuffInfo)
+	{
+		info.stats.UpdataModifier(debuffInfo.ability.type, new StatsModifier(debuffInfo.ability.Value, StatModeType.SkillDebuff, debuffInfo.key));
+	}
+
+	public override void AddBuff(AppliedBuff buffinfo)
+	{
+		info.stats.UpdataModifier(buffinfo.ability.type, new StatsModifier(buffinfo.ability.Value, StatModeType.Buff, buffinfo.key));
+	}
+	public override void RemoveBuff(AppliedBuff key)
+	{
+		info.stats.RemoveAllModifiers(key.key);
+	}
+
 
 	Transform levelupTrans;
 	public void PlayLevelupEffect(StatsType ability)
@@ -569,11 +663,14 @@ public class PlayerUnit : Unit
 		}
 
 		int index = UnityEngine.Random.Range(0, unitlist.Count);
-		HittableUnit newTarget = unitlist[index];
-
-		if (TargetAddable(newTarget))
+		if (index < unitlist.Count && index >= 0)
 		{
-			SetTarget(newTarget);
+			HittableUnit newTarget = unitlist[index];
+
+			if (TargetAddable(newTarget))
+			{
+				SetTarget(newTarget);
+			}
 		}
 	}
 
@@ -613,16 +710,8 @@ public class PlayerUnit : Unit
 	}
 
 
-
 	public void ResetUnit()
 	{
 		Hp = MaxHp;
-	}
-
-
-
-	public override void Debuff(List<StatInfo> debufflist)
-	{
-
 	}
 }

@@ -12,6 +12,7 @@ public class UIStageInfo : MonoBehaviour
 
 	[SerializeField] private Button btnExit;
 	[SerializeField] private Button btnPlayBoss;
+	public Button BtnPlayBoss => btnPlayBoss;
 	[SerializeField] private Toggle toggleContinue;
 
 	[SerializeField] private GameObject objBossIcon;
@@ -29,7 +30,7 @@ public class UIStageInfo : MonoBehaviour
 	[SerializeField] private Slider sliderTimeAttack;
 	[SerializeField] private TextMeshProUGUI textTimeAttack;
 
-	private StageInfo stageInfo;
+	private RuntimeData.StageInfo stageInfo;
 
 	public void ShowNormalButtonGroup(bool isTrue)
 	{
@@ -39,11 +40,6 @@ public class UIStageInfo : MonoBehaviour
 	public void ToggleContinueChallenge(bool isTrue)
 	{
 		StageManager.it.continueBossChallenge = isTrue;
-	}
-
-	public void OnClickStageChange()
-	{
-		ToastUI.it.Enqueue("현재 개발중 입니다.");
 	}
 
 	public void SwitchBossMode(bool isTrue)
@@ -74,7 +70,7 @@ public class UIStageInfo : MonoBehaviour
 		var curStage = StageManager.it.CurrentStage;
 		hpSlider.value = 0f;
 		stageNameRoot.SetActive(true);
-		textStageName.text = $"{curStage.StageName}";
+		textStageName.text = $"STAGE {curStage.StageNumber} {PlatformManager.Language[curStage.Name]}";
 	}
 
 	public void ShowBossName()
@@ -83,7 +79,7 @@ public class UIStageInfo : MonoBehaviour
 		textStageName.text = "";
 		if (UnitManager.it.Boss != null)
 		{
-			textStageName.text = $"{UnitManager.it.Boss.CharName}";
+			textStageName.text = PlatformManager.Language[UnitManager.it.Boss.info.rawData.name];
 		}
 	}
 	public void SetBossHpGauge(float _ratio)
@@ -92,7 +88,7 @@ public class UIStageInfo : MonoBehaviour
 		textHpSlider.text = $"{_ratio * 100f:0.##}%";
 	}
 
-	public void OnUpdate(StageInfo _stageInfo)
+	public void OnUpdate(RuntimeData.StageInfo _stageInfo)
 	{
 		stageInfo = _stageInfo;
 		toggleContinue.isOn = StageManager.it.continueBossChallenge;
@@ -153,8 +149,7 @@ public class UIStageInfo : MonoBehaviour
 	public void OnClickPlayBoss()
 	{
 		// 현재레벨의 보스 스테이지 찾기
-		//var bossStageInfo = StageManager.it.metaGameStage.GetStage(StageType.Normal, StageManager.it.CurrentStage.StageLv);
-		var bossStageInfo = GameManager.UserDB.stageContainer.GetStage(StageType.Normal, StageManager.it.CurrentStage.AreaNumber, StageManager.it.CurrentStage.StageNumber, StageManager.it.CurrentStage.Difficulty);
+		var bossStageInfo = PlatformManager.UserDB.stageContainer.GetStage(StageType.Normal, StageManager.it.CurrentStage.StageNumber);
 		StageManager.it.OnClickBoss(bossStageInfo);
 
 	}

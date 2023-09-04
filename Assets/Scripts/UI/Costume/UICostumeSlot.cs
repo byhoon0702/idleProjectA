@@ -56,7 +56,7 @@ public class UICostumeSlot : MonoBehaviour
 
 		lockedMark.SetActive(costumeInfo.unlock == false);
 
-		var data = GameManager.UserDB.costumeContainer[costumeInfo.Type];
+		var data = PlatformManager.UserDB.costumeContainer[costumeInfo.Type];
 		isEquipped = false;
 		if (data.itemTid == costumeInfo.Tid)
 		{

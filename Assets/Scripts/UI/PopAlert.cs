@@ -5,32 +5,63 @@ using UnityEngine;
 
 public class PopAlert : MonoBehaviour
 {
-	private static PopAlert it;
-	private static PopAlertDefault current;
+	private static PopAlert Instance;
+	public PopAlertDefault current;
 
 
 	private void Awake()
 	{
-		it = this;
+		if (Instance == null)
+		{
+			Instance = this;
+		}
+		else
+		{
+			if (Instance.gameObject != null)
+			{
+				if (Instance.gameObject != gameObject)
+				{
+					Destroy(gameObject);
+				}
+			}
+			else
+			{
+				Instance = null;
+				Instance = this;
+			}
+		}
+		DontDestroyOnLoad(gameObject);
 	}
+
+	public static void Create(string title, string desc, Action okCallback = null, Action cancelCallback = null)
+	{
+
+		if (Instance.current == null)
+		{
+			Instance.current = Instantiate(Resources.Load<PopAlertDefault>("PopAlertDefault"), Instance.transform);
+		}
+		Instance.current.gameObject.SetActive(true);
+		Instance.current.Init(title, desc, _onOkCallback: okCallback, _onCancelCallback: cancelCallback);
+	}
+
 
 	public static void Create(VResult _resultCode, Action _okCallback = null, Action _cancelCallback = null)
 	{
-		if (current != null)
-		{
-			try
-			{
-				current.Close();
-			}
-			catch(Exception e)
-			{
-				VLog.LogError("콜백함수 처리오류\n{e}");
-			}
-			current = null;
-		}
+		//if (current != null)
+		//{
+		//	try
+		//	{
+		//		current.Close();
+		//	}
+		//	catch (Exception e)
+		//	{
+		//		VLog.LogError("콜백함수 처리오류\n{e}");
+		//	}
+		//	current = null;
+		//}
 
-		current = Instantiate(Resources.Load<PopAlertDefault>("PopAlertDefault"), it.transform);
-		current.Init(_resultCode.Clone(), _okCallback, _cancelCallback);
+		//current = Instantiate(Resources.Load<PopAlertDefault>("PopAlertDefault"), Instance.transform);
+		//current.Init(_resultCode.Clone(), _okCallback, _cancelCallback);
 	}
 
 	public static void CreateException(Exception _e, string _msg)

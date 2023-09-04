@@ -21,20 +21,20 @@ public class UIProfile : MonoBehaviour
 		if (time >= 0.5f)
 		{
 			OnupdateAttackPower();
-			textUserName.text = $"{GameManager.UserDB.userInfoContainer.userInfo.UserName}";
+			textUserName.text = $"{PlatformManager.UserDB.userInfoContainer.userInfo.UserName}";
 			time = 0;
 		}
 	}
 
 	public void OnupdateAttackPower()
 	{
-		IdleNumber total = GameManager.UserDB.UserStats.GetTotalPower();
+		IdleNumber total = PlatformManager.UserDB.UserStats.GetTotalPower();
 		combatPower.text = total.ToString();
 	}
 
 	public void OnClickMain()
 	{
-		GameUIManager.it.OnClose();
+		GameUIManager.it.Close();
 		uiMain.OnUpdate();
 	}
 }

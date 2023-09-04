@@ -9,9 +9,8 @@ public abstract class ItemUIBase : MonoBehaviour
 	[SerializeField] protected Image icon;
 	[SerializeField] protected Image bg;
 	[SerializeField] protected Image imageFrame;
-	[SerializeField] protected TextMeshProUGUI levelText;
-	[SerializeField] protected TextMeshProUGUI countText;
 
+	[SerializeField] protected TextMeshProUGUI textInfo;
 
 
 	[SerializeField] protected Button button;

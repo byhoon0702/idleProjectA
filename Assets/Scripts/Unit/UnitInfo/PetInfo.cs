@@ -2,21 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PetInfo : UnitInfo
+public class PetInfo : RuntimeData.UnitInfo
 {
 	new public Pet owner;
 	new public PetData data;
-	new public PetData rawData;
 
-	public PetInfo(Pet owner, PetData _data) : base()
+	public PetInfo(Pet _owner, PetData _data)
 	{
-		this.owner = owner;
+		this.owner = _owner;
 		this.data = _data.Clone();
-		this.rawData = _data;
-
-		//stats[Ability.Attackpower].SetValue((IdleNumber)data.attackPower);
-		//SetProjectile(data.skillEffectTidNormal);
-
 	}
 
 	public override IdleNumber AttackPower()

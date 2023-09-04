@@ -7,12 +7,33 @@ public class SoundEffectPlayer : MonoBehaviour
 	public string soundKey;
 	private AudioSource audioSource;
 
-
-
-
 	private void Awake()
 	{
 		audioSource = gameObject.AddComponent<AudioSource>();
+
+	}
+	private void Start()
+	{
+		GameSetting.Instance.FxChanged += OnFxChanged;
+		OnFxChanged(GameSetting.Instance.Fx);
+	}
+	private void OnDestroy()
+	{
+		GameSetting.Instance.FxChanged -= OnFxChanged;
+	}
+
+	private void OnFxChanged(bool isOn)
+	{
+		audioSource.enabled = isOn;
+	}
+
+	public void Play(AudioClip clip)
+	{
+		gameObject.SetActive(true);
+		audioSource.clip = clip;
+		audioSource.Play();
+
+		StartCoroutine(CheckEnd());
 	}
 
 	public void Play(string _soundKey)
@@ -20,7 +41,7 @@ public class SoundEffectPlayer : MonoBehaviour
 		soundKey = _soundKey;
 
 		var soundData = DataManager.Get<SoundEffectDataSheet>().Get(_soundKey);
-		if(soundData == null)
+		if (soundData == null)
 		{
 			VLog.SoundLogError($"Effect 못찾음. SoundEffectDataSheet. key: {_soundKey}");
 			ReturnSound();
@@ -38,7 +59,7 @@ public class SoundEffectPlayer : MonoBehaviour
 		gameObject.SetActive(true);
 
 		audioSource.clip = clip;
-		audioSource.volume = GameSetting.it.property.fxVolume * 0.01f;
+		audioSource.volume = 1;
 		audioSource.Play();
 
 		VLog.SoundLog($"{soundData.description} 재생. key: {_soundKey}, res: {soundData.resource}");
@@ -48,16 +69,16 @@ public class SoundEffectPlayer : MonoBehaviour
 
 	private IEnumerator CheckEnd()
 	{
-		while(true)
+		while (true)
 		{
 			yield return new WaitForSeconds(1);
-			if(audioSource.isPlaying == false)
+			if (audioSource.isPlaying == false)
 			{
 				ReturnSound();
 			}
 		}
 	}
-	
+
 	private void ReturnSound()
 	{
 		gameObject.SetActive(false);

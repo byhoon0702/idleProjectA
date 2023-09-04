@@ -25,18 +25,18 @@ public class TimeEditor : EditorWindow
 		}
 
 		TimeScale();
-		if (TimeManager.it == null)
+		if (TimeManager.Instance == null)
 		{
 			return;
 		}
 
 		GUILayout.Label("Sync", "PreToolbar");
 		second = EditorGUILayout.IntField("Minute", second);
-		TimeManager.it.syncRelative = second * TimeSpan.TicksPerMinute;
+		TimeManager.Instance.syncRelative = second * TimeSpan.TicksPerMinute;
 		GUILayout.Label("UTC", "PreToolbar");
-		GUILayout.Label(TimeManager.it.server_utc.ToString());
+		GUILayout.Label(TimeManager.Instance.UtcNow.ToString());
 		GUILayout.Label("Now", "PreToolbar");
-		GUILayout.Label(TimeManager.it.m_now.ToString());
+		GUILayout.Label(TimeManager.Instance.Now.ToString());
 		GUILayout.Label("Play Time", "PreToolbar");
 		//GUILayout.Label(UserInfo.PlayTicksToString);
 	}

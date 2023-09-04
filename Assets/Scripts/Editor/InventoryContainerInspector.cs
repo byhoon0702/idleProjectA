@@ -10,9 +10,12 @@ using Unity.VisualScripting;
 public class InventoryContainerInspector : Editor
 {
 	InventoryContainer inventory;
+	//SerializedProperty adsRewardChest;
 	private void OnEnable()
 	{
 		inventory = target as InventoryContainer;
+
+		//adsRewardChest = serializedObject.FindProperty("adsRewardChestList");
 	}
 	public override void OnInspectorGUI()
 	{
@@ -39,6 +42,7 @@ public class InventoryContainerInspector : Editor
 		}
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("currencyList"));
 
+		//EditorGUILayout.PropertyField(adsRewardChest);
 		//EditorGUILayout.Space(5);
 
 		//EditorGUILayout.LabelField("Equipment");

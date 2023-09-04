@@ -14,6 +14,9 @@ public class StageNormal : StageRule
 		base.Begin();
 		spawnTime = 0;
 		GameManager.it.battleRecord.bossKillCount = 0;
+
+
+		GameUIManager.it.uiController.AdRewardChest.Init();
 	}
 
 	public override void End()
@@ -33,9 +36,10 @@ public class StageNormal : StageRule
 	{
 		if (currentFsm is SpawnState)
 		{
-			if (StageManager.it.continueBossChallenge)
+			if (StageManager.it.continueBossChallenge || StageManager.it.playBossStage)
 			{
 				currentFsm = ChangeState(StageStateType.STAGECUTSCENE);
+				StageManager.it.playBossStage = false;
 				return;
 			}
 		}
@@ -57,6 +61,10 @@ public class StageNormal : StageRule
 		{
 			return;
 		}
+
+
+		GameUIManager.it.uiController.AdRewardChest.OnUpdate(deltaTime);
+
 		base.OnLogicUpdate(deltaTime);
 		// 플레이어 죽음
 		if (CheckEnd())

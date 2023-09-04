@@ -50,8 +50,6 @@ public static class DataManager
 				}
 			}
 		}
-
-
 	}
 
 	public static bool LoadFromNonBinary(TextAsset file)

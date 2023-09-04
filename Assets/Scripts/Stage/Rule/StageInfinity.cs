@@ -41,7 +41,7 @@ public class StageInfinity : StageRule
 	public override void AddReward()
 	{
 		StageManager.it.CurrentStage.SetStageReward((IdleNumber)StageManager.it.currentKillCount);
-		GameManager.UserDB.AddStageRewards(StageManager.it.CurrentStage.StageClearReward, false);
+		PlatformManager.UserDB.AddRewards(StageManager.it.CurrentStage.StageClearReward, false);
 	}
 
 	private void SpawnUpdate(float time)

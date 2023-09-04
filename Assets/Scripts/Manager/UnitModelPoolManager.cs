@@ -32,7 +32,7 @@ public class UnitModelPoolManager : VObjectPool<UnitAnimation>
 		try
 		{
 
-			UnitAnimation model = Instantiate(GetResource(_path, _name));
+			UnitAnimation model = GetResource(_path, _name);
 			model.name = _name;
 			return model;
 		}

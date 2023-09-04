@@ -235,13 +235,17 @@ public partial class DataTableEditor : EditorWindow
 			string fileName = Path.GetFileNameWithoutExtension(file);
 			if (path == "Json")
 			{
-				datalistforDataListPage.Add(fileName, new DataListInfo() { path = file, data = JsonConverter.ToData(file) });
+				datalistforDataListPage.Add(fileName, new DataListInfo() { name = fileName, path = file, data = JsonConverter.ToData(file) });
 			}
 			else
 			{
-				datalistforDataListPage.Add(fileName, new DataListInfo() { path = file, data = CsvConverter.ToData(file) });
+				datalistforDataListPage.Add(fileName, new DataListInfo() { name = fileName, path = file, data = CsvConverter.ToData(file) });
 			}
 		}
+
+
+
+
 
 	}
 
@@ -725,7 +729,7 @@ public partial class DataTableEditor : EditorWindow
 				sb.AppendLine("\t[SerializeField]");
 				sb.AppendLine($"\tpublic {label} dataSheet;");
 
-				sb.AppendLine("public override void Call()");
+				sb.AppendLine("public override void Call(string fileName)");
 				sb.AppendLine("{");
 				sb.AppendLine("#if UNITY_EDITOR");
 				sb.AppendLine("#endif");

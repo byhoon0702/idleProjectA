@@ -57,7 +57,7 @@ public class UIPetSlot : MonoBehaviour
 
 		lockedMark.SetActive(petInfo.unlock == false);
 
-		var data = GameManager.UserDB.petContainer.PetSlots;
+		var data = PlatformManager.UserDB.petContainer.PetSlots;
 		isEquipped = false;
 		for (int i = 0; i < data.Length; i++)
 		{
@@ -69,10 +69,26 @@ public class UIPetSlot : MonoBehaviour
 			}
 		}
 
+		bool isMax = false;
 
-		slider.value = petInfo.count / (float)PetContainer.needCount;
+		if (petInfo.evolutionLevel >= PlatformManager.CommonData.PetEvolutionLevelDataList.Count)
+		{
+			isMax = true;
+		}
+		if (isMax)
+		{
+			slider.value = 1f;
 
-		textSlider.text = $"{petInfo.count}/{PetContainer.needCount}";
+			textSlider.text = "Max";
+		}
+		else
+		{
+			var evol_data = PlatformManager.CommonData.PetEvolutionLevelDataList[petInfo.evolutionLevel];
+
+			slider.value = petInfo.Count / (float)evol_data.consumeCount;
+
+			textSlider.text = $"{petInfo.Count}/{evol_data.consumeCount}";
+		}
 	}
 
 	public void ShowSlider(bool isTrue)
@@ -99,7 +115,10 @@ public class UIPetSlot : MonoBehaviour
 
 	public void OnClickSelect()
 	{
-		parent.SetSelectedTid(petInfo.Tid);
+		if (parent != null && petInfo != null)
+		{
+			parent.SetSelectedTid(petInfo.Tid);
+		}
 		action?.Invoke();
 	}
 }

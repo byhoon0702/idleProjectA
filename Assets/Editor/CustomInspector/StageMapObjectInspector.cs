@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(StageMapObject))]
+[CanEditMultipleObjects]
 public class StageMapObjectInspector : Editor
 {
 
@@ -16,14 +17,14 @@ public class StageMapObjectInspector : Editor
 	{
 		base.OnInspectorGUI();
 
-		if (GUILayout.Button("Save"))
-		{
-			Save();
-		}
-		if (GUILayout.Button("Load"))
-		{
-			Load();
-		}
+		//if (GUILayout.Button("Save"))
+		//{
+		//	Save();
+		//}
+		//if (GUILayout.Button("Load"))
+		//{
+		//	Load();
+		//}
 	}
 
 

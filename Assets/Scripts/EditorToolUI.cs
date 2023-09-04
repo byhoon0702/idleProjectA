@@ -16,8 +16,8 @@ public enum EditorToolPage
 public class EditorToolUI : MonoBehaviour
 {
 	[Header("==== Panels ====")]
-	public ProjectileEditorPanel projectileEditorPanel;
-	public AnimationEditorPanel animationEditorPanel;
+	//public ProjectileEditorPanel projectileEditorPanel;
+	//public AnimationEditorPanel animationEditorPanel;
 
 	[Header("==== ====== ====")]
 	[Space(1)]
@@ -29,7 +29,7 @@ public class EditorToolUI : MonoBehaviour
 
 	public Toggle hyperMode;
 
-	private EditorUnit viewTarget;
+	//private EditorUnit viewTarget;
 	private UnityEditor.Animations.AnimatorController animatorController;
 	private List<UnitData> unitdata;
 	private List<string> animationList = new List<string>();
@@ -46,17 +46,17 @@ public class EditorToolUI : MonoBehaviour
 		dropdown.ClearOptions();
 		dropdown.AddOptions(names);
 
-		animationEditorPanel.Init(this);
-		projectileEditorPanel.Init(this);
+		//animationEditorPanel.Init(this);
+		//projectileEditorPanel.Init(this);
 	}
 
-	public void SetUnit(EditorUnit _unit, UnityEditor.Animations.AnimatorController _animatorController)
-	{
-		viewTarget = _unit;
-		animatorController = _animatorController;
-		animationEditorPanel.SetUnit(viewTarget, animatorController);
-		projectileEditorPanel.SetUnit(viewTarget, animatorController);
-	}
+	//public void SetUnit(EditorUnit _unit, UnityEditor.Animations.AnimatorController _animatorController)
+	//{
+	//	viewTarget = _unit;
+	//	animatorController = _animatorController;
+	//	animationEditorPanel.SetUnit(viewTarget, animatorController);
+	//	//projectileEditorPanel.SetUnit(viewTarget, animatorController);
+	//}
 
 	//public void ToggleTab(int index)
 	//{
@@ -72,12 +72,12 @@ public class EditorToolUI : MonoBehaviour
 
 	public void SummonEnemies()
 	{
-		UnitEditor.it.SpawnDummy((int)enemyCountSlider.value);
+
 
 	}
 	public void ClearEnemies()
 	{
-		UnitEditor.it.SpawnDummy(0);
+
 
 	}
 	public void OnSliderValueChange(float value)
@@ -95,30 +95,28 @@ public class EditorToolUI : MonoBehaviour
 
 	public void OnClickSpawnUnit()
 	{
-		animationEditorPanel.animationSpeedSlider.value = 1;
-		animationEditorPanel.SetSliderValue(1);
-		animationEditorPanel.SetAttackTimeSliderValue(0.1f);
+		//animationEditorPanel.animationSpeedSlider.value = 1;
+		//animationEditorPanel.SetSliderValue(1);
+		//animationEditorPanel.SetAttackTimeSliderValue(0.1f);
 
-		UnitEditor.it.OnClickSpawn(unitdata[dropdown.value]);
-		UnitEditor.it.SetAnimationSpeed(1);
-		UnitEditor.it.SetAttackTime(0.1f);
+
 	}
 
 	public void OnClickHyper(bool hyper)
 	{
-		if (UnitEditor.it.viewPlayer == null)
-		{
-			hyperMode.isOn = false;
-			return;
-		}
-		if (hyper)
-		{
-			UnitEditor.it.viewPlayer.ActivateHyperMode();
-		}
-		else
-		{
-			UnitEditor.it.viewPlayer.DeactivateHyperMode();
-		}
+		//if (UnitEditor.it.viewPlayer == null)
+		//{
+		//	hyperMode.isOn = false;
+		//	return;
+		//}
+		//if (hyper)
+		//{
+		//	UnitEditor.it.viewPlayer.ActivateHyperMode();
+		//}
+		//else
+		//{
+		//	UnitEditor.it.viewPlayer.DeactivateHyperMode();
+		//}
 	}
 
 

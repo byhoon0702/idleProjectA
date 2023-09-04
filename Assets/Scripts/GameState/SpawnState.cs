@@ -9,7 +9,7 @@ public class SpawnState : StageFSM
 
 	public override FSM OnEnter()
 	{
-		VSoundManager.it.PlayBgm("main_bgm");
+
 		isSpawnEnd = false;
 		UIController.it.UiStageInfo.OnUpdate(StageManager.it.CurrentStage);
 		SpawnManager.it.SpawnCoroutine(() =>

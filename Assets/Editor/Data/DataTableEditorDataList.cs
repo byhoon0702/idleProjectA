@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using System.IO;
 using System.Text;
@@ -106,11 +107,11 @@ public partial class DataTableEditor
 				{
 					if (tidIncludedList.ContainsKey(data.Key))
 					{
-						tidIncludedList[data.Key] = new DataListInfo() { path = datalist.path, data = datalist.data };
+						tidIncludedList[data.Key] = new DataListInfo() { name = data.Key, path = datalist.path, data = datalist.data };
 					}
 					else
 					{
-						tidIncludedList.Add(data.Key, new DataListInfo() { path = datalist.path, data = datalist.data });
+						tidIncludedList.Add(data.Key, new DataListInfo() { name = data.Key, path = datalist.path, data = datalist.data });
 					}
 					break;
 				}
@@ -120,25 +121,49 @@ public partial class DataTableEditor
 
 	private void DrawDataListElement(Dictionary<string, DataListInfo> elementDic)
 	{
-		foreach (var datalist in elementDic)
+
+		var list = elementDic.Values.ToList();
+
+		list.Sort((x, y) =>
 		{
-			System.Type t = datalist.Value.data.GetType();
+			System.Type xt = x.data.GetType();
+			System.Type yt = y.data.GetType();
+
+			FieldInfo fieldinfoX = xt.GetField("prefixID", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+			FieldInfo fieldinfoY = yt.GetField("prefixID", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+			long prefixX = 0;
+			long prefixY = 0;
+			if (fieldinfoX != null)
+			{
+				prefixX = (long)fieldinfoX.GetValue(x.data);
+			}
+			if (fieldinfoY != null)
+			{
+				prefixY = (long)fieldinfoY.GetValue(y.data);
+			}
+
+			return prefixX.CompareTo(prefixY);
+		});
+
+		foreach (var datalist in list)
+		{
+			System.Type t = datalist.data.GetType();
 
 			FieldInfo fieldinfo = t.GetField("prefixID", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 			long prefixID = 0;
 			if (fieldinfo != null)
 			{
-				prefixID = (long)fieldinfo.GetValue(datalist.Value.data);
+				prefixID = (long)fieldinfo.GetValue(datalist.data);
 				if (prefixID < minTidPrefix)
 				{
 					prefixID = minTidPrefix;
-					fieldinfo.SetValue(datalist.Value.data, prefixID);
+					fieldinfo.SetValue(datalist.data, prefixID);
 				}
 			}
 
 			GUIContent guiContent = new GUIContent();
-			guiContent.text = datalist.Key;
-			GUILayout.BeginVertical(datalist.Key, "window");
+			guiContent.text = datalist.name;
+			GUILayout.BeginVertical(datalist.name, "window");
 
 			GUILayout.BeginHorizontal();
 			EditorGUI.indentLevel++;
@@ -147,7 +172,7 @@ public partial class DataTableEditor
 			GUILayout.Label($"프리픽스ID : {prefixID}");
 			if (GUILayout.Button("불러오기", GUILayout.Width(130)))
 			{
-				string path = datalist.Value.path;
+				string path = datalist.path;
 				currentJsonFilePath = path;
 				if (path.Contains(".csv"))
 				{

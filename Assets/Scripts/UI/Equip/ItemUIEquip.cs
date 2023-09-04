@@ -32,39 +32,41 @@ public class ItemUIEquip : ItemUIBase
 			return;
 		}
 		bg.sprite = GameUIManager.it.spriteGradeList[(int)info.grade];
+		imageFrame.sprite = GameUIManager.it.spriteGradeFrameList[(int)info.grade];
+
 		selectListener?.AddSelectListener(OnSelect);
 
-		levelText.text = $"{info.grade.ToString()}";
-
-		if (info.itemObject.Icon != null)
+		if (info.itemObject.ItemIcon != null)
 		{
-			icon.sprite = info.itemObject.Icon;
+			icon.sprite = info.itemObject.ItemIcon;
 		}
 		else
 		{
 			icon.sprite = null;
 		}
 
-		countText.text = "";
+		textInfo.text = "";
+		evoltionLevelObject.SetActive(info.BreakthroughLevel > 0);
+		evoltionLevelText.text = info.BreakthroughLevel.ToString();
 	}
 
 	public void ShowCount(bool isShow)
 	{
 		if (isShow == false)
 		{
-			countText.text = "";
+			textInfo.text = "";
 			return;
 		}
-		countText.text = info.count.ToString();
+		textInfo.text = info.Count.ToString();
 	}
 	public void ShowLevel(bool isShow)
 	{
 		if (isShow == false)
 		{
-			countText.text = "";
+			textInfo.text = "";
 			return;
 		}
-		countText.text = $"LV.{info.level}";
+		textInfo.text = $"LV.{info.Level}";
 	}
 
 	public void ShowStars(bool istrue)

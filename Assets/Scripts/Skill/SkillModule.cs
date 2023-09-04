@@ -30,7 +30,7 @@ public class SkillModule : MonoBehaviour
 
 		if (defaultSkillTid != 0)
 		{
-			defaultSkill.item = GameManager.UserDB.skillContainer.skillList.Find(x => x.Tid == defaultSkillTid);
+			defaultSkill.item = PlatformManager.UserDB.skillContainer.skillList.Find(x => x.Tid == defaultSkillTid);
 		}
 	}
 
@@ -47,7 +47,7 @@ public class SkillModule : MonoBehaviour
 		}
 	}
 
-	public void DefaultAttack(HitInfo hitinfo)
+	public void DefaultAttack()
 	{
 		defaultSkill.Trigger(caster);
 	}
@@ -59,10 +59,15 @@ public class SkillModule : MonoBehaviour
 		{
 			return;
 		}
-		if (caster.hyperModule != null && caster.hyperModule.IsHyper)
+
+		if (caster is PlayerUnit)
 		{
-			return;
+			if ((caster as PlayerUnit).hyperModule != null && (caster as PlayerUnit).hyperModule.IsHyper)
+			{
+				return;
+			}
 		}
+
 
 		if (caster.IsAlive())
 		{
@@ -106,6 +111,8 @@ public class SkillModule : MonoBehaviour
 
 	public void RemoveSkill(SkillSlot info)
 	{
+		if (info.item == null)
+		{ return; }
 		if (info.item.activeType == SkillActiveType.PASSIVE)
 		{
 			var skill = skillDictionary[SkillActiveType.PASSIVE].Find(x => x.itemTid == info.itemTid);
@@ -168,12 +175,28 @@ public class SkillModule : MonoBehaviour
 
 			if (skill.IsReady())
 			{
-				if (caster is PlayerUnit && GameManager.UserDB.skillContainer.isAutoSkill)
+				if (caster is PlayerUnit && PlatformManager.UserDB.skillContainer.isAutoSkill)
 				{
 					if (caster.IsTargetAlive())
 					{
 						caster.TriggerSkill(skill);
-						GameManager.UserDB.skillContainer.GlobalCooldown();
+						PlatformManager.UserDB.skillContainer.GlobalCooldown();
+					}
+				}
+
+				if (caster is Pet)
+				{
+					if (caster.TriggerSkill(skill))
+					{
+						PlatformManager.UserDB.skillContainer.PetGlobalCooldown();
+					}
+				}
+
+				if (caster is EnemyUnit)
+				{
+					if (caster.IsTargetAlive())
+					{
+						caster.TriggerSkill(skill);
 					}
 				}
 			}

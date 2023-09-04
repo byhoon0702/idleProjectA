@@ -5,13 +5,14 @@ using UnityEngine.UI;
 using TMPro;
 
 
-public class UIPopupPetEvolution : MonoBehaviour
+public class UIPopupPetEvolution : UIBase
 {
 	[SerializeField] private UIPetSlot uiCurrentSlot;
 	[SerializeField] private UIPetSlot uiNextSlot;
 
 	[SerializeField] private Button buttonClose;
 	[SerializeField] private Button buttonUpgrade;
+	public Button ButtonUpgrade => buttonUpgrade;
 
 	[SerializeField] private TextMeshProUGUI textCurrentInfo;
 	[SerializeField] private TextMeshProUGUI textNextInfo;
@@ -34,28 +35,28 @@ public class UIPopupPetEvolution : MonoBehaviour
 		itemInfo = info;
 
 		nextItemInfo = info.Clone();
-		nextItemInfo.evolutionLevel++;
+		nextItemInfo.Evolution(false);
+		nextItemInfo.UpdatePetSkill();
 
 		uiCurrentSlot.OnUpdate(null, itemInfo);
 		uiNextSlot.OnUpdate(null, nextItemInfo);
+
+		var data = PlatformManager.CommonData.PetEvolutionLevelDataList[info.evolutionLevel];
+		bool canEvolution = info.Count >= data.consumeCount;
+
+		buttonUpgrade.interactable = canEvolution;
+
+		info.PetSkill.MakeCompareDescritption(nextItemInfo.PetSkill, out string current, out string next);
+
+		textCurrentInfo.text = current;
+		textNextInfo.text = next;
 	}
 	public void OnClickUpgrade()
 	{
-		//if (nextItemInfo == null)
-		//{
-		//	return;
-		//}
-		//if (itemInfo.count < 1)
-		//{
-		//	return;
-		//}
-
-		GameManager.UserDB.petContainer.EvolutionPet(itemInfo);
-		parent.UpdateInfo();
-		OnClose();
-	}
-	public void OnClose()
-	{
-		gameObject.SetActive(false);
+		if (PlatformManager.UserDB.petContainer.EvolutionPet(itemInfo))
+		{
+			parent.OnUpdate(true);
+			OnClose();
+		}
 	}
 }

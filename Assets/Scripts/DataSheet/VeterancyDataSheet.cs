@@ -1,7 +1,4 @@
 ﻿
-
-
-
 [System.Serializable]
 public class PreConditionData
 {
@@ -9,21 +6,13 @@ public class PreConditionData
 	public long preconditionLevel;
 	public bool isSum;
 }
-[System.Serializable]
-public class Cost
-{
-	public CurrencyType currency;
-	public string cost;
-	public float costIncrease;
-	public float costWeight;
-}
 
 
 
 [System.Serializable]
 public class VeterancyData : BaseData
 {
-	public string name;
+
 	public ItemStats buff;
 
 	public int maxLevel;

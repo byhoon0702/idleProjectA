@@ -23,24 +23,24 @@ public class StageContainerInspector : Editor
 	}
 	private void UpdateStageMapList(string path)
 	{
-		StageMapObjectDictionary infoList = new StageMapObjectDictionary();
+		//StageMapObjectDictionary infoList = new StageMapObjectDictionary();
 
-		var guids = AssetDatabase.FindAssets("t:scriptableobject", new string[] { path });
+		//var guids = AssetDatabase.FindAssets("t:scriptableobject", new string[] { path });
 
-		for (int i = 0; i < guids.Length; i++)
-		{
-			string assetpath = AssetDatabase.GUIDToAssetPath(guids[i]);
+		//for (int i = 0; i < guids.Length; i++)
+		//{
+		//	string assetpath = AssetDatabase.GUIDToAssetPath(guids[i]);
 
-			StageMapObject stageMapObject = (StageMapObject)AssetDatabase.LoadAssetAtPath(assetpath, typeof(StageMapObject));
-			if (infoList.ContainsKey(stageMapObject.stageType) == false)
-			{
-				infoList.Add(stageMapObject.stageType, new StageMapObjectList());
-			}
+		//	StageMapObject stageMapObject = (StageMapObject)AssetDatabase.LoadAssetAtPath(assetpath, typeof(StageMapObject));
+		//	if (infoList.ContainsKey(stageMapObject.stageType) == false)
+		//	{
+		//		infoList.Add(stageMapObject.stageType, new StageMapObjectList());
+		//	}
 
-			infoList[stageMapObject.stageType].list.Add(stageMapObject);
-		}
+		//	infoList[stageMapObject.stageType].list.Add(stageMapObject);
+		//}
 
-		container.SetDataList(infoList);
-		EditorUtility.SetDirty(container);
+		//container.SetDataList(infoList);
+		//EditorUtility.SetDirty(container);
 	}
 }

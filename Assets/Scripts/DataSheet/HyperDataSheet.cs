@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using RuntimeData;
-using UnityEngine;
-using UnityEngine.Rendering.Universal;
+
 
 public enum HyperClass
 {
@@ -30,22 +28,16 @@ public class HyperRewardInfo
 }
 
 
-
-[System.Serializable]
-public struct HyperClassData
-{
-	public int level;
-	public int upgradeCount;
-	public List<ItemStats> stats;
-
-}
-
 [System.Serializable]
 public class HyperData : BaseData
 {
-	public string name;
+
 	public long skillTid;
+	public long finalSkillTid;
+
 	public List<long> skillTidList;
+
+	public int maxPhase;
 }
 
 [System.Serializable]

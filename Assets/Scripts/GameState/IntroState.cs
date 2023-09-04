@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class IntroState : RootState
@@ -9,7 +10,7 @@ public class IntroState : RootState
 	{
 
 	}
-	public override FSM OnEnter()
+	public override async Task<IntroFSM> OnEnter()
 	{
 		elapsedTime = 0;
 		Intro.it.SetActiveProgressBar(false);
@@ -19,7 +20,7 @@ public class IntroState : RootState
 	public override void OnExit()
 	{
 	}
-	public override FSM RunNextState(float time)
+	public override IntroFSM RunNextState(float time)
 	{
 		elapsedTime += time;
 

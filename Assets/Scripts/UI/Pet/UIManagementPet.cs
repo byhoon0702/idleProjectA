@@ -17,14 +17,18 @@ public interface ISelectListener
 public class UIManagementPet : UIBase, ISelectListener
 {
 	[SerializeField] private UIManagementPetInfo petInfoUI;
+	public UIManagementPetInfo PetInfoUI => petInfoUI;
 	[SerializeField] private GameObject equipList;
+	public GameObject EquipList => equipList;
 
 	[Header("장착동료")]
 	[SerializeField] private GameObject[] petSlotHighlights;
 	[SerializeField] private UIPetSlot[] petSlots;
+	public UIPetSlot[] PetSlots => petSlots;
 
 	[Header("아이템리스트")]
 	[SerializeField] private UIPetGrid uiPetGrid;
+	public UIPetGrid UiPetGrid => uiPetGrid;
 	[SerializeField] private UIPopupLevelupPetItem uIPopupLevelupPetItem;
 	public UIPopupLevelupPetItem UiPopupPetLevelup => uIPopupLevelupPetItem;
 	[SerializeField] private UIPopupPetEvolution uIPopupPetEvolution;
@@ -42,7 +46,7 @@ public class UIManagementPet : UIBase, ISelectListener
 	protected override void OnEnable()
 	{
 		base.OnEnable();
-		equipList.gameObject.SetActive(false);
+		equipList.SetActive(false);
 
 	}
 
@@ -89,7 +93,7 @@ public class UIManagementPet : UIBase, ISelectListener
 
 	public void UpdateEquipItem()
 	{
-		var petContainer = GameManager.UserDB.petContainer;
+		var petContainer = PlatformManager.UserDB.petContainer;
 		for (int i = 0; i < petContainer.PetSlots.Length; i++)
 		{
 
@@ -98,12 +102,9 @@ public class UIManagementPet : UIBase, ISelectListener
 			slot.gameObject.SetActive(true);
 			slot.OnUpdate(this, slotData.item, () =>
 			{
-				if (exchangeSlot)
-				{
-					ExchangePet(slotData);
-					return;
-				}
+				ExchangePet(slotData);
 				UpdateInfo();
+				equipList.SetActive(false);
 			});
 		}
 	}
@@ -112,9 +113,7 @@ public class UIManagementPet : UIBase, ISelectListener
 	public void UpdateItemList(bool _refresh)
 	{
 		uiPetGrid.Init(this);
-		uiPetGrid.OnUpdate(GameManager.UserDB.petContainer.petList);
-
-
+		uiPetGrid.OnUpdate(PlatformManager.UserDB.petContainer.petList);
 	}
 
 	public void UpdateInfo()
@@ -125,10 +124,10 @@ public class UIManagementPet : UIBase, ISelectListener
 			petSlotHighlights[i].SetActive(false);
 		}
 		RuntimeData.PetInfo info = null;
-		info = GameManager.UserDB.petContainer.petList.Find(x => x.Tid == selectedItemTid);
+		info = PlatformManager.UserDB.petContainer.petList.Find(x => x.Tid == selectedItemTid);
 		if (info == null)
 		{
-			info = GameManager.UserDB.petContainer.petList[0];
+			info = PlatformManager.UserDB.petContainer.petList[0];
 			selectedItemTid = info.Tid;
 		}
 
@@ -138,52 +137,49 @@ public class UIManagementPet : UIBase, ISelectListener
 	}
 
 
-
 	public void ExchangePet(PetSlot slot)
 	{
-		equipList.gameObject.SetActive(true);
-		GameManager.UserDB.petContainer.Unequip(slot.itemTid);
-		GameManager.UserDB.petContainer.Equip(selectedItemTid);
+		slot.UnEquip();
+		slot.Equip(selectedItemTid);
 
 		for (int i = 0; i < petSlotHighlights.Length; i++)
 		{
 			petSlotHighlights[i].SetActive(false);
 		}
-		exchangeSlot = false;
 
+		UpdateInfo();
 		UpdateEquipItem();
 		UpdateItemList(false);
-		UpdateInfo();
 
-		SpawnManager.it.ChangePet(GameManager.UserDB.petContainer.GetIndex(selectedItemTid));
+		SpawnManager.it.ChangePet(PlatformManager.UserDB.petContainer.GetIndex(selectedItemTid));
 	}
 
 	public void EquipPet()
 	{
-		bool equipped = GameManager.UserDB.petContainer.Equip(selectedItemTid);
+		equipList.SetActive(true);
+		exchangeSlot = true;
+		//bool equipped = PlatformManager.UserDB.petContainer.Equip(selectedItemTid);
 
-		if (equipped == false)
-		{
-			exchangeSlot = true;
-			for (int i = 0; i < petSlotHighlights.Length; i++)
-			{
-				petSlotHighlights[i].SetActive(true);
-			}
-			return;
-		}
+		//if (equipped == false)
+		//{
+		//	exchangeSlot = true;
+		//	for (int i = 0; i < petSlotHighlights.Length; i++)
+		//	{
+		//		petSlotHighlights[i].SetActive(true);
+		//	}
+		//	return;
+		//}
 
-		SpawnManager.it.AddPet(GameManager.UserDB.petContainer.GetIndex(selectedItemTid));
-		UpdateEquipItem();
-		UpdateItemList(false);
-		UpdateInfo();
-
-
+		//SpawnManager.it.AddPet(PlatformManager.UserDB.petContainer.GetIndex(selectedItemTid));
+		//UpdateEquipItem();
+		//UpdateItemList(false);
+		//UpdateInfo();
 	}
 
 	public void UnEquipPet()
 	{
-		SpawnManager.it.RemovePet(GameManager.UserDB.petContainer.GetIndex(selectedItemTid));
-		GameManager.UserDB.petContainer.Unequip(selectedItemTid);
+		SpawnManager.it.RemovePet(PlatformManager.UserDB.petContainer.GetIndex(selectedItemTid));
+		PlatformManager.UserDB.petContainer.Unequip(selectedItemTid);
 
 		UpdateEquipItem();
 		UpdateItemList(false);
@@ -193,10 +189,15 @@ public class UIManagementPet : UIBase, ISelectListener
 
 
 
-	public override void Close()
+	protected override void OnClose()
 	{
+		if (equipList.activeInHierarchy)
+		{
+			equipList.SetActive(false);
+			return;
+		}
 		UIController.it.InactivateAllBottomToggle();
-		gameObject.SetActive(false);
-		equipList.gameObject.SetActive(false);
+		base.OnClose();
+
 	}
 }

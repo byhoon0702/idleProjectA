@@ -8,8 +8,11 @@ using RuntimeData;
 
 public class ItemUISkill : ItemUIBase
 {
+	[SerializeField] private GameObject objEvolutionLevel;
+	[SerializeField] private TextMeshProUGUI textEvolutionLevel;
 	private RuntimeData.SkillInfo info;
 	private ISelectListener selectListener;
+
 	public override void OnUpdate(RuntimeData.IDataInfo _skillInfo, Action _onClick = null, ISelectListener _selectListener = null)
 	{
 		info = _skillInfo as RuntimeData.SkillInfo;
@@ -27,10 +30,15 @@ public class ItemUISkill : ItemUIBase
 		{
 			icon.sprite = info.itemObject.Icon;
 		}
+		bg.sprite = GameUIManager.it.spriteGradeList[(int)info.grade];
+		imageFrame.sprite = GameUIManager.it.spriteGradeFrameList[(int)info.grade];
+
+		objEvolutionLevel.SetActive(info.EvolutionLevel > 0);
+
+		textEvolutionLevel.text = info.EvolutionLevel.ToString();
 
 
-		levelText.text = $"{info.grade}";
-		countText.text = $"LV.{info.level}";
+		textInfo.text = $"LV.{info.Level}";
 	}
 
 	public void OnSelect(long tid)

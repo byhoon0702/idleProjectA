@@ -20,13 +20,12 @@ public class UnitAttackState : UnitFSM
 
 	public override void OnUpdate(float time)
 	{
-
 		if (owner.IsTargetAlive() == false)
 		{
 			owner.ChangeState(StateType.IDLE, true);
 			return;
 		}
-		if (owner.TargetInRange() == false)
+		if (owner.TargetInRange(owner.target, out float distance, out float additionalRange) == false)
 		{
 			owner.ChangeState(StateType.MOVE, true);
 			return;
@@ -45,8 +44,6 @@ public class UnitAttackState : UnitFSM
 		{
 			owner.NormalAttack();
 		}
-
-
 	}
 
 	public override void OnFixedUpdate(float fixedTime)

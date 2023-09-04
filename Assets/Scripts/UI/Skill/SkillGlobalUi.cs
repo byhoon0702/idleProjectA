@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 
 
@@ -13,6 +11,9 @@ public class SkillGlobalUi : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI buttonText;
 
 	[SerializeField] private InteractableSkilIcon[] uiSkillIcons;
+	[SerializeField] private InteractableSkilIcon[] petSkillIcons;
+
+
 
 	private void Awake()
 	{
@@ -20,18 +21,23 @@ public class SkillGlobalUi : MonoBehaviour
 		{
 			icon.OnUpdate(null);
 		}
+		foreach (var icon in petSkillIcons)
+		{
+			icon.OnUpdate(null);
+		}
 	}
 
 	public void OnUpdate()
 	{
-		for (int i = 0; i < GameManager.UserDB.skillContainer.skillSlot.Length; i++)
+		for (int i = 0; i < PlatformManager.UserDB.skillContainer.skillSlot.Length; i++)
 		{
-			uiSkillIcons[i].OnUpdate(GameManager.UserDB.skillContainer.skillSlot[i]);
+			uiSkillIcons[i].OnUpdate(PlatformManager.UserDB.skillContainer.skillSlot[i]);
 		}
+		for (int i = 0; i < PlatformManager.UserDB.skillContainer.petSkillSlot.Length; i++)
+		{
+			petSkillIcons[i].OnUpdate(PlatformManager.UserDB.skillContainer.petSkillSlot[i]);
+		}
+
 	}
 
-	private void Update()
-	{
-
-	}
 }

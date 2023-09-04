@@ -32,12 +32,11 @@ public class UIManagementVeterancy : UIBase
 	{
 		UpdateItem();
 		UpdateMoney();
-		time = 0;
 	}
 
 	public void UpdateItem()
 	{
-		var list = GameManager.UserDB.veterancyContainer.veterancyInfos;
+		var list = PlatformManager.UserDB.veterancyContainer.veterancyInfos;
 		int countForMake = list.Count - itemRoot.childCount;
 
 		if (countForMake > 0)
@@ -47,8 +46,6 @@ public class UIManagementVeterancy : UIBase
 				var item = Instantiate(itemPrefab, itemRoot);
 			}
 		}
-
-
 
 		for (int i = 0; i < itemRoot.childCount; i++)
 		{
@@ -66,24 +63,28 @@ public class UIManagementVeterancy : UIBase
 			var info = list[i];
 			slot.OnUpdate(this, info);
 		}
-
 	}
 
+	public UIItemVeterancy Find(StatsType type)
+	{
+		for (int i = 0; i < itemRoot.childCount; i++)
+		{
+			var itemTraining = itemRoot.GetChild(i).GetComponent<UIItemVeterancy>();
+			if (itemTraining.VeterancyInfo.type == type)
+			{
+				return itemTraining;
+			}
+		}
+		return null;
+	}
 	public void UpdateMoney()
 	{
-		propertyPointText.text = GameManager.UserDB.veterancyContainer.VeterancyPoint.ToString();
-	}
-	private float time = 0;
-	void Update()
-	{
-		if (time > 0.3f)
-		{
-			OnUpdate();
-		}
+		propertyPointText.text = PlatformManager.UserDB.veterancyContainer.VeterancyPoint.ToString();
 	}
 
 	public void OnResetButtonClick()
 	{
+		PlatformManager.UserDB.veterancyContainer.ResetPoint();
 		OnUpdate();
 	}
 }

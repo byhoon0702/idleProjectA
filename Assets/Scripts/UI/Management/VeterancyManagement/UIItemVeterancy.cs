@@ -9,19 +9,24 @@ public class UIItemVeterancy : MonoBehaviour
 {
 	[SerializeField] private Image icon;
 	[SerializeField] private TextMeshProUGUI textTitle;
+	[SerializeField] private TextMeshProUGUI textLevel;
 	[SerializeField] private TextMeshProUGUI textCurrentStat;
 	[SerializeField] private TextMeshProUGUI textNextStat;
 
+	[SerializeField] private GameObject objMax;
+
 	[SerializeField] private RepeatButton upgradeButton;
+	public RepeatButton UpgradeButton => upgradeButton;
 	[SerializeField] private TextMeshProUGUI textPrice;
 
 
 	private UIManagementVeterancy parent;
 	private RuntimeData.VeterancyInfo info;
+	public RuntimeData.VeterancyInfo VeterancyInfo => info;
 
 	private void Awake()
 	{
-		upgradeButton.repeatCallback = () => AbilityLevelUp();
+		upgradeButton.repeatCallback = AbilityLevelUp;
 
 		upgradeButton.onbuttonUp = (isRepeat) =>
 		{
@@ -40,14 +45,14 @@ public class UIItemVeterancy : MonoBehaviour
 	{
 		if (info != null)
 		{
-			info.OnClickLevelup += UpdateLevelInfo;
+			info.OnClickLevelup += OnRefresh;
 		}
 	}
 	private void OnDisable()
 	{
 		if (info != null)
 		{
-			info.OnClickLevelup -= UpdateLevelInfo;
+			info.OnClickLevelup -= OnRefresh;
 		}
 	}
 
@@ -57,61 +62,66 @@ public class UIItemVeterancy : MonoBehaviour
 		info = _uiData;
 
 		icon.sprite = info.icon;
-		info.OnClickLevelup -= UpdateLevelInfo;
-		info.OnClickLevelup += UpdateLevelInfo;
+		info.OnClickLevelup -= OnRefresh;
+		info.OnClickLevelup += OnRefresh;
 		UpdateLevelInfo();
 	}
 
 	public void OnRefresh()
 	{
 		UpdateLevelInfo();
+		parent.UpdateMoney();
 	}
 
 	public void UpdateLevelInfo()
 	{
-		textTitle.text = info.Name;
+		textTitle.text = PlatformManager.Language[info.Name];
 
 		string tail = "";
-		if (info != null && info.modeType != StatModeType.Flat)
+		if (info != null && info.rawData.buff.isPercentage)
 		{
+
 			tail = "%";
 		}
 
+		textLevel.text = $"LV.{info.Level}";
 		textCurrentStat.text = $"{info.currentValue.ToString("{0:0.##}")}{tail}";
 		//textNextStat.text = $"{uiData.nextValue.ToString("{0:0.##}")}{tail}";
 		textPrice.text = info.cost.ToString();
 
-		bool check = GameManager.UserDB.veterancyContainer.Check(1);
+		bool check = PlatformManager.UserDB.veterancyContainer.Check(info.cost);
 		if (check == false)
 		{
 			textPrice.color = Color.red;
-
-
 		}
 		else
 		{
 			textPrice.color = Color.white;
-
 		}
-		//tmpu_level.text = $"LV. {uiData.level}";
+		bool isMax = info.IsMax();
+		objMax.SetActive(isMax);
+		upgradeButton.gameObject.SetActive(!isMax);
+
 	}
 
-	private void AbilityLevelUp()
+	private bool AbilityLevelUp()
 	{
-		if (GameManager.UserDB.veterancyContainer.Check(1) == false)
+		if (PlatformManager.UserDB.veterancyContainer.Check(info.cost) == false)
 		{
-			ToastUI.it.Enqueue("노련함 포인트가 부족하니다.");
-			return;
+			ToastUI.Instance.Enqueue("노련함 포인트가 부족합니다.");
+			return false;
 		}
 
 		info.ClickLevelup();
 
-		GameManager.UserDB.UpdateUserStats();
+		PlatformManager.UserDB.UpdateUserStats();
 
 		if (UnitManager.it.Player != null)
 		{
 			UnitManager.it.Player.PlayLevelupEffect(info.type);
 		}
 
+		parent.OnUpdate();
+		return true;
 	}
 }

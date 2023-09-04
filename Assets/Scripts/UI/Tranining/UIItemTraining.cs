@@ -13,8 +13,11 @@ public class UIItemTraining : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI textCurrentStat;
 	[SerializeField] private TextMeshProUGUI textNextStat;
 	[SerializeField] private TextMeshProUGUI tmpu_level;
+	[SerializeField] private TextMeshProUGUI textButtonLabel;
 
 	[SerializeField] private RepeatButton upgradeButton;
+	public RepeatButton UpgradeButton => upgradeButton;
+	[SerializeField] private Button buttonMax;
 	[SerializeField] private TextMeshProUGUI textPrice;
 
 	[SerializeField] private GameObject objLock;
@@ -24,28 +27,17 @@ public class UIItemTraining : MonoBehaviour
 
 	private UITraining parent;
 	private RuntimeData.TrainingInfo trainingInfo;
+	public RuntimeData.TrainingInfo TrainingInfo => trainingInfo;
+	private IdleNumber _cost;
 
+	private RuntimeData.CurrencyInfo currency;
 	public Animator animator;
+	private int levelUpCount = 1;
 	private void Awake()
 	{
 		objBgHighlight.SetActive(false);
-		upgradeButton.repeatCallback = () =>
-		{
-			animator.SetBool("Pressed", true);
-			AbilityLevelUp();
-		};
-		upgradeButton.onbuttonUp = (isRepeat) =>
-		{
-			if (isRepeat)
-			{
-				animator.SetBool("Pressed", false);
-			}
-			else
-			{
-				animator.SetTrigger("Selected");
-				AbilityLevelUp();
-			}
-		};
+		upgradeButton.repeatCallback = AbilityLevelUpRepeat;
+		upgradeButton.onbuttonUp = AbilityLevelUp;
 	}
 
 
@@ -55,6 +47,7 @@ public class UIItemTraining : MonoBehaviour
 		{
 			trainingInfo.OnClickLevelup += UpdateLevelInfo;
 		}
+		EventCallbacks.onCurrencyChanged += CurrencyChanged;
 	}
 	private void OnDisable()
 	{
@@ -62,6 +55,17 @@ public class UIItemTraining : MonoBehaviour
 		{
 			trainingInfo.OnClickLevelup -= UpdateLevelInfo;
 		}
+		EventCallbacks.onCurrencyChanged -= CurrencyChanged;
+	}
+
+	public void CurrencyChanged(CurrencyType type)
+	{
+		if (type != CurrencyType.GOLD)
+		{
+			return;
+		}
+		UpdateLevelInfo();
+		UpdateButton();
 	}
 
 	public void OnUpdate(UITraining _parent, RuntimeData.TrainingInfo _uiData)
@@ -98,18 +102,75 @@ public class UIItemTraining : MonoBehaviour
 
 		textTitle.text = trainingInfo.type.ToUIString();
 
-		trainingInfo.SetLevel(trainingInfo.Level);
+		var baseValue = PlatformManager.UserDB.GetBaseValue(trainingInfo.type);
+		textCurrentStat.text = $"{(baseValue + trainingInfo.currentValue).ToString("{0:0.##}")}{trainingInfo.tailChar}";
+		currency = PlatformManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD);
+		_cost = (IdleNumber)0;
 
-		var baseValue = GameManager.UserDB.GetBaseValue(trainingInfo.type);
-		textCurrentStat.text = $"{(baseValue + trainingInfo.currentValue).ToString("{0:0.##}")}{trainingInfo.itemObject.tailChar}";
-		textPrice.text = trainingInfo.cost.ToString();
+		switch (parent.levelupCount)
+		{
+
+			case LevelUpCount.MAX:
+				{
+					_cost = trainingInfo.GetCost(trainingInfo.Level);
+					int count = 0;
+					IdleNumber totalCost = (IdleNumber)0;
+					while (totalCost <= currency.Value)
+					{
+						var currentCost = trainingInfo.GetCost(trainingInfo.Level + count);
+						totalCost += currentCost;
+
+						if (totalCost > currency.Value)
+						{
+							break;
+						}
+						count++;
+						_cost = totalCost;
+					}
+					levelUpCount = Mathf.Max(1, count);
+				}
+				break;
+			default:
+				{
+					if (parent.levelupCount == LevelUpCount.ONE)
+					{
+						levelUpCount = 1;
+					}
+					if (parent.levelupCount == LevelUpCount.TEN)
+					{
+						levelUpCount = 10;
+					}
+					if (parent.levelupCount == LevelUpCount.HUNDRED)
+					{
+						levelUpCount = 100;
+					}
+
+
+					for (int i = 0; i < levelUpCount; i++)
+					{
+						_cost += trainingInfo.GetCost(trainingInfo.Level + i);
+					}
+
+				}
+				break;
+		}
+		textButtonLabel.text = $"{PlatformManager.Language["str_ui_reinforce"]} +{levelUpCount}";
+		textPrice.text = _cost.ToString();
 
 		tmpu_level.text = $"LV. {trainingInfo.Level}";
 	}
 
 	private void UpdateButton()
 	{
-		bool check = GameManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD).Check(trainingInfo.cost);
+		if (trainingInfo.isMaxLevel)
+		{
+			buttonMax.gameObject.SetActive(true);
+			upgradeButton.gameObject.SetActive(false);
+			return;
+		}
+		buttonMax.gameObject.SetActive(false);
+		upgradeButton.gameObject.SetActive(true);
+		bool check = PlatformManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD).Check(_cost);
 
 		if (check)
 		{
@@ -121,17 +182,31 @@ public class UIItemTraining : MonoBehaviour
 		}
 
 	}
-
-	private void AbilityLevelUp()
+	private void AbilityLevelUp(bool isRepeat)
 	{
-		if (GameManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD).Pay(trainingInfo.cost) == false)
+		if (isRepeat)
 		{
-			ToastUI.it.Enqueue("골드가 부족합니다.");
+			animator.SetBool("Pressed", false);
+			return;
+		}
+		if (currency.Check(_cost) == false)
+		{
+			ToastUI.Instance.Enqueue("골드가 부족합니다.");
+
+			return;
+		}
+		if (trainingInfo.isMaxLevel)
+		{
+			ToastUI.Instance.Enqueue("최대 레벨입니다.");
+
 			return;
 		}
 
-		trainingInfo.ClickLevelup();
+		animator.SetTrigger("Selected");
 
+		trainingInfo.ClickLevelup(levelUpCount);
+
+		currency.Pay(_cost);
 		if (UnitManager.it.Player != null)
 		{
 			UnitManager.it.Player.PlayLevelupEffect(trainingInfo.type);
@@ -139,5 +214,33 @@ public class UIItemTraining : MonoBehaviour
 
 		UpdateButton();
 		parent.Refresh();
+	}
+	private bool AbilityLevelUpRepeat()
+	{
+		if (trainingInfo.isMaxLevel)
+		{
+			ToastUI.Instance.Enqueue("최대 레벨입니다.");
+			animator.SetBool("Pressed", false);
+			return false;
+		}
+		if (currency.Check(_cost) == false)
+		{
+			ToastUI.Instance.Enqueue("골드가 부족합니다.");
+			animator.SetBool("Pressed", false);
+			return false;
+		}
+
+		animator.SetBool("Pressed", true);
+
+		trainingInfo.ClickLevelup(levelUpCount);
+		currency.Pay(_cost);
+		if (UnitManager.it.Player != null)
+		{
+			UnitManager.it.Player.PlayLevelupEffect(trainingInfo.type);
+		}
+
+		UpdateButton();
+		parent.Refresh();
+		return true;
 	}
 }

@@ -53,6 +53,11 @@ public class HyperSkillUi : MonoBehaviour
 	}
 	public void OnClickHyper()
 	{
+		if (PlatformManager.UserDB.awakeningContainer.HyperActivate == false)
+		{
+			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_awakening_open_warning"]);
+			return;
+		}
 		if (target == null)
 		{
 			return;
@@ -76,7 +81,7 @@ public class HyperSkillUi : MonoBehaviour
 
 	public void OnClickAutoSkill(bool isTrue)
 	{
-		GameManager.UserDB.skillContainer.isAutoSkill = isTrue;
+		PlatformManager.UserDB.skillContainer.isAutoSkill = isTrue;
 		if (isTrue)
 		{
 			buttonAutoSkillText.color = Color.yellow;
@@ -88,7 +93,14 @@ public class HyperSkillUi : MonoBehaviour
 	}
 	public void OnClickAutoHyper(bool isTrue)
 	{
-		GameManager.UserDB.skillContainer.isAutoHyper = isTrue;
+		if (PlatformManager.UserDB.awakeningContainer.HyperActivate == false)
+		{
+			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_awakening_open_warning"]);
+			toggleAutoHyper.SetIsOnWithoutNotify(false);
+			return;
+		}
+
+
 		if (isTrue)
 		{
 			buttonAutoHyperText.color = Color.yellow;
@@ -97,6 +109,7 @@ public class HyperSkillUi : MonoBehaviour
 		{
 			buttonAutoHyperText.color = Color.white;
 		}
+		PlatformManager.UserDB.skillContainer.isAutoHyper = isTrue;
 	}
 
 	public void SetProgressHyperMode(float _ratio, float _value)

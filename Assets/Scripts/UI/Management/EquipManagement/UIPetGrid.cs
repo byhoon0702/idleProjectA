@@ -13,6 +13,12 @@ public class UIPetGrid : MonoBehaviour
 	{
 		parent = _parent;
 	}
+	public Transform GetChild(int index)
+	{
+		var go = itemRoot.GetChild(index);
+
+		return go;
+	}
 	public void OnUpdate(List<RuntimeData.PetInfo> itemList)
 	{
 		int countForMake = itemList.Count - itemRoot.childCount;

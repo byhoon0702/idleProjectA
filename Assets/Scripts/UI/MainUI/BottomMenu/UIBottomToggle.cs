@@ -18,7 +18,6 @@ public class UIBottomToggle : UIBehaviour
 
 	protected override void Awake()
 	{
-		toggle.onValueChanged.RemoveAllListeners();
 		toggle.onValueChanged.AddListener(OnValueChange);
 	}
 	public void OnValueChange(bool isOn)
@@ -31,16 +30,11 @@ public class UIBottomToggle : UIBehaviour
 			if (!selectObject.gameObject.activeInHierarchy)
 			{
 				selectObject.gameObject.SetActive(true);
-
-				//DOTween.To(() => layoutElement.preferredWidth, x => layoutElement.preferredWidth = x, 250f, 0.3f);
-				//layoutElement.preferredWidth = 230;
 			}
 		}
 		else
 		{
 			selectObject.gameObject.SetActive(false);
-			//DOTween.To(() => layoutElement.preferredWidth, x => layoutElement.preferredWidth = x, 210f, 0.3f);
-			//layoutElement.preferredWidth = 175;
 		}
 	}
 

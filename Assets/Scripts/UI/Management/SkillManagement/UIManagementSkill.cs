@@ -10,16 +10,24 @@ public class UIManagementSkill : UIBase, ISelectListener
 {
 
 	[SerializeField] private UIManagementSkillInfo uiManagementSkillInfo;
+	public UIManagementSkillInfo UiManagementSkillInfo => uiManagementSkillInfo;
 
 
 	[Header("장착스킬")]
 	[SerializeField] private GameObject objSkillSlotRoot;
+	public GameObject ObjSkillSlotRoot => objSkillSlotRoot;
 	[SerializeField] private GameObject[] uiSkillSlotHighlights;
 	[SerializeField] private UISkillSlot[] uiSkillSlots;
+	public UISkillSlot[] UiSkillSlots => uiSkillSlots;
 
 	[Header("아이템리스트")]
 	[SerializeField] private UISkillSlot itemPrefab;
 	[SerializeField] private RectTransform itemRoot;
+	[Header("팝업")]
+	[SerializeField] private UIPopupSkillLevelup uiPopupSkillLevelup;
+	public UIPopupSkillLevelup UiPopupSkillLevelup => uiPopupSkillLevelup;
+	[SerializeField] private UIPopupSkillEvolution uiPopupSkillEvolution;
+	public UIPopupSkillEvolution UiPopupSkillEvolution => uiPopupSkillEvolution;
 
 
 	public event OnSelect onSelect;
@@ -27,11 +35,16 @@ public class UIManagementSkill : UIBase, ISelectListener
 	private RuntimeData.SkillInfo selectedInfo;
 	private bool exchangeSlot;
 	private List<RuntimeData.SkillInfo> filtered;
+
+	public Transform Find(int index)
+	{
+		return itemRoot.GetChild(index);
+	}
 	public void OnUpdate(long tid)
 	{
 		objSkillSlotRoot.SetActive(false);
 		filtered = new List<RuntimeData.SkillInfo>();
-		var list = GameManager.UserDB.skillContainer.skillList;
+		var list = PlatformManager.UserDB.skillContainer.skillList;
 
 		for (int i = 0; i < list.Count; i++)
 		{
@@ -73,7 +86,7 @@ public class UIManagementSkill : UIBase, ISelectListener
 	public void UpdateEquipItem()
 	{
 
-		var skillContainer = GameManager.UserDB.skillContainer;
+		var skillContainer = PlatformManager.UserDB.skillContainer;
 		for (int i = 0; i < skillContainer.skillSlot.Length; i++)
 		{
 			var slot = uiSkillSlots[i];
@@ -122,7 +135,7 @@ public class UIManagementSkill : UIBase, ISelectListener
 
 				UpdateInfo();
 			});
-			slot.ShowSlider(false);
+			slot.ShowSlider(true);
 		}
 	}
 
@@ -167,7 +180,7 @@ public class UIManagementSkill : UIBase, ISelectListener
 		//	return;
 		//}
 
-		//VGameManager.UserDB.skillContainer.Equip(UnitManager.it.Player, selectedItemTid);
+		//VPlatformManager.UserDB.skillContainer.Equip(UnitManager.it.Player, selectedItemTid);
 		//UpdateEquipItem();
 		//UpdateItem();
 		//UpdateButton();
@@ -181,7 +194,7 @@ public class UIManagementSkill : UIBase, ISelectListener
 	public void UnEquipSkill()
 	{
 
-		GameManager.UserDB.skillContainer.UnEquip(selectedItemTid);
+		PlatformManager.UserDB.skillContainer.UnEquip(selectedItemTid);
 
 		UpdateEquipItem();
 		UpdateItem();
@@ -218,5 +231,30 @@ public class UIManagementSkill : UIBase, ISelectListener
 	public void OnClickShowTree()
 	{
 
+	}
+
+	public void OnClickLevelUp()
+	{
+		if (uiPopupSkillLevelup.Activate())
+		{
+			uiPopupSkillLevelup.OnUpdate(this, selectedInfo);
+		}
+	}
+	public void OnClickEvolution()
+	{
+		if (uiPopupSkillEvolution.Activate())
+		{
+			uiPopupSkillEvolution.OnUpdate(this, selectedInfo);
+		}
+	}
+
+	protected override void OnClose()
+	{
+		if (objSkillSlotRoot.activeInHierarchy)
+		{
+			objSkillSlotRoot.SetActive(true);
+			return;
+		}
+		base.OnClose();
 	}
 }

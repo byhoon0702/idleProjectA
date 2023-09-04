@@ -32,10 +32,10 @@ public class UITopMoney : MonoBehaviour
 
 	public void SetData()
 	{
-		var currentGoldCount = GameManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD);
+		var currentGoldCount = PlatformManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD);
 		textGoldCount.text = currentGoldCount.Value.ToString();
 
-		var currentDiaCount = GameManager.UserDB.inventory.FindCurrency(CurrencyType.DIA);
+		var currentDiaCount = PlatformManager.UserDB.inventory.FindCurrency(CurrencyType.DIA);
 		textDiaCount.text = currentDiaCount.Value.ToString();
 
 	}

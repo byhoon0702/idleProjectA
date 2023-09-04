@@ -3,27 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
-
+using Unity.Serialization;
 
 public class UIManagementAdvancement : UIBase
 {
-
+	public Sprite[] ImageGrade;
 	[SerializeField] private GameObject itemPrefab;
 	[SerializeField] private Transform itemRoot;
 
-	private UnitAdvancementInfo currentInfo;
+	private RuntimeData.AdvancementInfo currentInfo;
 	private UIManagement parent;
 	private UnitCostume unitCostume;
-
 
 	public void Init(UIManagement _parent)
 	{
 		parent = _parent;
 	}
+	public Transform Find(int index)
+	{
+		return itemRoot.GetChild(index);
+	}
 
 	public void OnUpdate()
 	{
-		currentInfo = GameManager.UserDB.advancementContainer.Info.advancementInfo;
+		currentInfo = PlatformManager.UserDB.advancementContainer.Info;
 		UpdateInfo();
 
 	}
@@ -47,7 +50,7 @@ public class UIManagementAdvancement : UIBase
 
 	public void UpdateInfo()
 	{
-		var list = GameManager.UserDB.advancementContainer.Info.rawData.upgradeInfoList;
+		var list = PlatformManager.UserDB.advancementContainer.InfoList;
 
 		int countForMake = list.Count - itemRoot.childCount;
 
@@ -71,10 +74,7 @@ public class UIManagementAdvancement : UIBase
 			}
 
 			var info = list[i];
-			if (info.level == 0)
-			{
-				continue;
-			}
+
 			child.gameObject.SetActive(true);
 			UIItemAdvancement slot = child.GetComponent<UIItemAdvancement>();
 

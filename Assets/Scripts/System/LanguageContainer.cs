@@ -18,18 +18,28 @@ public class LanguageContainer : ScriptableObject
 
 	public SystemLanguage language;
 
-	[SerializeField] private LanguageDictionary uiLanguageDictionary;
+	[HideInInspector][SerializeField] private LanguageDictionary uiLanguageDictionary;
 	public LanguageDictionary UiLanguageDictionary => uiLanguageDictionary;
 
 	public string this[string key]
 	{
 		get
 		{
+			if (key.IsNullOrEmpty())
+			{
+				return "key is null";
+			}
 			if (uiLanguageDictionary.ContainsKey(key) == false)
 			{
 				return $"<color=red>{key}</color>";
 			}
-			return uiLanguageDictionary[key];
+			string str = "";
+			str = uiLanguageDictionary[key];
+			if (str.Contains("\\n"))
+			{
+				str = str.Replace("\\n", "\n");
+			}
+			return str;
 		}
 	}
 
@@ -43,59 +53,61 @@ public class LanguageContainer : ScriptableObject
 	public void ReadFile()
 	{
 		TextAsset text = Resources.Load(path) as TextAsset;
-
+		if (text == null)
+		{
+			Debug.LogWarning($"{path} 에서 파일을 찾을 수 없습니다.");
+			return;
+		}
 		string[] lines = Regex.Split(text.text, LINE_SPLIT_RE);
 
 		uiLanguageDictionary = new LanguageDictionary();
 		var line_enumerator = lines.GetEnumerator();
 		int startindex = 1;
 		int lineIndex = 0;
-		while (line_enumerator.MoveNext())
+		try
 		{
-			if (lineIndex == 0)
+			while (line_enumerator.MoveNext())
 			{
-				lineIndex++;
-				continue;
-			}
-			string line = (string)line_enumerator.Current;
-			if (line == "")
-			{
-				lineIndex++;
-				continue;
-			}
-			string[] subline = Regex.Split(line, SPLIT_RE);
-			if (lineIndex == 1)
-			{
-				int langIndex = 2;
-
-				for (int i = langIndex; i < subline.Length; i++)
+				if (lineIndex == 0)
 				{
-					if (GetLocalCode() == subline[i])
-					{
-						startindex = i;
-						break;
-					}
+					lineIndex++;
+					continue;
 				}
-				lineIndex++;
-				continue;
-			}
+				string line = (string)line_enumerator.Current;
+				if (line == "")
+				{
+					lineIndex++;
+					continue;
+				}
+				string[] subline = Regex.Split(line, SPLIT_RE);
+				if (lineIndex == 1)
+				{
+					int langIndex = 2;
 
-			uiLanguageDictionary.Add(subline[1], subline[startindex]);
-			lineIndex++;
+					for (int i = langIndex; i < subline.Length; i++)
+					{
+						if (GetLocalCode() == subline[i])
+						{
+							startindex = i;
+							break;
+						}
+					}
+					lineIndex++;
+					continue;
+				}
+				if (subline[1].IsNullOrEmpty())
+				{
+					lineIndex++;
+					continue;
+				}
+				uiLanguageDictionary.Add(subline[1], subline[startindex]);
+				lineIndex++;
+			}
 		}
-		//StreamReader streamReader = new StreamReader(path);
-		//bool endOfFile = false;
-		//while (!endOfFile)
-		//{
-		//	string data_String = streamReader.ReadLine();
-		//	if (data_String == null)
-		//	{
-		//		endOfFile = true;
-		//		break;
-		//	}
-		//	var data_values = data_String.Split(','); //string, string타입
-		//}
-		//streamReader.Close();
+		catch (System.Exception ex)
+		{
+			Debug.LogError($"{lineIndex}");
+		}
 	}
 	public string GetLocalCode()
 	{

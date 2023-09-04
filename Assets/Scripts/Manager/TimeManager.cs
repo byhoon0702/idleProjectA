@@ -5,19 +5,19 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
-	private static TimeManager instance;
-	public static TimeManager it => instance;
+	public static TimeManager Instance;
 	public Int64 syncRelative;
 
-
-	public DateTime server_utc
+	long currTicks = 0;
+	public DateTime UtcNow
 	{
 		get
 		{
 			return DateTime.UtcNow.AddTicks(syncRelative);
 		}
 	}
-	public DateTime m_now
+
+	public DateTime Now
 	{
 		get
 		{
@@ -25,26 +25,61 @@ public class TimeManager : MonoBehaviour
 		}
 	}
 
+	public DateTime LocalServerTime;
+	public DateTime UtcServerTime;
+
+	public DateTime LocalResetTime
+	{
+		get
+		{
+			return LocalServerTime.Date.AddHours(5);
+		}
+	}
+	public DateTime UtcResetTime
+	{
+		get
+		{
+			var ts = LocalServerTime - UtcServerTime;
+			return LocalResetTime.AddHours(-ts.TotalHours);
+		}
+	}
+
 	public long prevPlayTicks;
+	public string LastLoginTimeForOfflineReward;
 
 
 	private void Awake()
 	{
-		instance = this;
+		if (Instance == null)
+		{
+			Instance = this;
+		}
+		else
+		{
+			if (Instance.gameObject != null)
+			{
+				if (Instance.gameObject != gameObject)
+				{
+					Destroy(gameObject);
+				}
+			}
+			else
+			{
+				Instance = null;
+				Instance = this;
+			}
+		}
+
 		syncRelative = 0;
 
-		prevPlayTicks = m_now.Ticks;
+		prevPlayTicks = Now.Ticks;
 	}
 
-	private void Update()
-	{
-		long currTicks = m_now.Ticks;
-		//UserInfo.PlayTicks += (currTicks - prevPlayTicks);
-		prevPlayTicks = currTicks;
-	}
 
-	public void SetServerUtc(DateTime in_server_utc)
+	public void SetServerTime(DateTime in_server_utc)
 	{
+		UtcServerTime = in_server_utc;
+		LocalServerTime = in_server_utc.ToLocalTime();
 		syncRelative = in_server_utc.Ticks - DateTime.UtcNow.Ticks;
 	}
 }

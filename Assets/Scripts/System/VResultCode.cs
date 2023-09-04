@@ -1,5 +1,5 @@
-//========AUTO GENERATED CODE======//
-public enum VResultCode 
+﻿//========AUTO GENERATED CODE======//
+public enum VResultCode
 {
 	/// <summary>
 	/// 
@@ -50,5 +50,7 @@ public enum VResultCode
 	/// 스테이지 안열림
 	/// </summary>
 	STAGE_NO_OPEND = 2000000010,
+
+	EXCEPTION_OCCURRED = 2000000011,
 
 }

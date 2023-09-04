@@ -94,9 +94,9 @@ public class SkillItemObjectInspector : Editor
 		var data = dataSheet.Get(skill.Tid);
 		if (data != null)
 		{
-			if (data.detailData.HasValue)
+			if (data.detailData != null)
 			{
-				skill.SetBasicData(data.tid, data.name, data.description, data.detailData.Value.cooldownValue);
+				skill.SetBasicData(data);
 				skill.SetUseAbility(data.useValue);
 
 				EditorUtility.SetDirty(skill);
@@ -108,28 +108,27 @@ public class SkillItemObjectInspector : Editor
 	{
 		if (dataSheet == null)
 		{
-
 			if (LoadDataSheet() == false)
 			{
 				return;
 			}
 		}
 
-		for (int i = 0; i < dataSheet.infos.Count; i++)
-		{
-			if (dataSheet.infos[i].tid == skill.Tid)
-			{
-				SkillData newData = new SkillData(skill);
+		//for (int i = 0; i < dataSheet.infos.Count; i++)
+		//{
+		//	if (dataSheet.infos[i].tid == skill.Tid)
+		//	{
+		//		SkillData newData = new SkillData(skill);
 
-				dataSheet.infos[i] = newData;
-				break;
-			}
-		}
+		//		dataSheet.infos[i] = newData;
+		//		break;
+		//	}
+		//}
 
-		var jsonFile = JsonUtility.ToJson(dataSheet);
+		//var jsonFile = JsonUtility.ToJson(dataSheet);
 
-		string path = $"{Application.dataPath}/AssetFolder/Resources/Data/Json/SkillItemDataSheet.json";
-		System.IO.File.WriteAllText(path, jsonFile);
-		AssetDatabase.Refresh();
+		//string path = $"{Application.dataPath}/AssetFolder/Resources/Data/Json/SkillItemDataSheet.json";
+		//System.IO.File.WriteAllText(path, jsonFile);
+		//AssetDatabase.Refresh();
 	}
 }

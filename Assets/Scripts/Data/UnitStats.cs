@@ -4,6 +4,11 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+public enum BuffType
+{
+
+}
+
 public enum StatsType
 {
 	None,
@@ -25,7 +30,7 @@ public enum StatsType
 	Hp_Buff,
 
 	Hp_Recovery = 20,
-	Hp_Recovery_Buff,
+
 	/// <summary>
 	/// 치명타
 	/// </summary>
@@ -48,38 +53,56 @@ public enum StatsType
 	Boss_Damage_Buff = 120,
 
 	Evasion = 130,
-	Evasion_Buff,
 
-	Gold_Buff = 140,
-	EXP_Buff = 150,
+	Buff_Gain_Gold = 140,
+	Buff_Gain_Exp = 150,
+	Buff_Gain_Item = 160,
 
-	Item_Buff = 160,
 	Final_Damage_Buff = 170,
 	Damage_Reduce = 180,
 
-	Hyper_Atk = 200,
-	Hyper_Hp = 210,
-	Hyper_Atk_Speed = 220,
-	Hyper_Move_Speed = 230,
-	Hyper_Duration = 240,
-
+	Knockback_Resist = 190,
 }
 
 public enum StatModeType
 {
 	None = 0,
-	Replace = 1,
-	Flat = 100,
-	FlatAdd = 130,
-	FlatMulti = 150,
-	PercentAdd = 200,
-	PercentMulti = 300,
+	/// <summary>
+	/// 원본 값에 더하기
+	/// </summary>
+	Add = 1,
+	/// <summary>
+	/// 원본 값에 곱하기
+	/// </summary>
+	Multi = 100,
+	/// <summary>
+	/// 버프
+	/// </summary>
+	Buff = 130,
+
+	/// <summary>
+	/// 광고 버프
+	/// </summary>
+	AdsBuff = 150,
+	/// <summary>
+	/// 하이퍼 버프 
+	/// </summary>
+	Hyper = 200,
+
+
+	SkillBuff = 300,
+	/// <summary>
+	/// 디버프
+	/// </summary>
+	SkillDebuff = 500,
+
+
+	Replace = 1000,
 }
 
 
 public class StatsModifier
 {
-	public bool calcWithBase;
 	public readonly IdleNumber Value;
 	public readonly StatModeType Type;
 	public readonly int Order;
@@ -117,15 +140,15 @@ public class Stat : ModifyInfo
 
 	}
 
-	public void Init()
-	{
-		BaseValue = (IdleNumber)baseValue;
-	}
+	//public void Init()
+	//{
+	//	BaseValue = (IdleNumber)baseValue;
+	//}
 
-	public void SetBaseValue(IdleNumber value)
-	{
-		BaseValue = value;
-	}
+	//public void SetBaseValue(IdleNumber value)
+	//{
+	//	BaseValue = value;
+	//}
 	public override void SetDirty()
 	{
 		isDirty = true;
@@ -138,9 +161,16 @@ public class Stat : ModifyInfo
 
 
 [CreateAssetMenu(fileName = "Unit Stats", menuName = "ScriptableObject/Unit Stats", order = 1)]
-public class UnitStats : ScriptableObject
+public class UnitStats
 {
 	public List<Stat> stats;
+
+	public void CopyTo(UnitStats _stats)
+	{
+		Stat[] array = new Stat[stats.Count];
+		stats.CopyTo(array, 0);
+		_stats.stats = new List<Stat>(array);
+	}
 	public void Load()
 	{
 
@@ -167,7 +197,6 @@ public class UnitStats : ScriptableObject
 
 	public void AddModifier(StatsType type, StatsModifier modifier)
 	{
-		//Debug.Log($"{type} , {modifier.Value}");
 		GetStat(type)?.AddModifiers(modifier);
 	}
 
@@ -206,24 +235,58 @@ public class UnitStats : ScriptableObject
 	{
 		GetStat(type)?.UpdateModifiers(modifier);
 	}
+	public void RemoveAllModifiers(object source)
+	{
+		for (int i = 0; i < stats.Count; i++)
+		{
+			bool remove = stats[i].RemoveAllModifiersFromSource(source);
+			if (remove)
+			{
+				VLog.Log($"Remove Modifier {source}");
+			}
+		}
+	}
+	public void RemoveAllModifiers(StatModeType type)
+	{
+		for (int i = 0; i < stats.Count; i++)
+		{
+			stats[i].RemoveAllModifiersFromSource(type);
+		}
+	}
 
 	public void RemoveModifier(StatsType type, object source)
 	{
-		//Debug.Log($"Remove Modifier {type} , {source}");
 		GetStat(type)?.RemoveAllModifiersFromSource(source);
 	}
 	public void Generate()
 	{
 		StatsType[] types = (StatsType[])System.Enum.GetValues(typeof(StatsType));
 		stats = new List<Stat>();
-		for (int i = 0; i < types.Length; i++)
-		{
-			Stat item = new Stat();
-			item.type = types[i];
-			item.baseValue = "0";
-			item.name = types[i].ToString();
-			stats.Add(item);
-		}
+		stats.Add(new Stat() { type = StatsType.Atk, baseValue = "10" });
+		stats.Add(new Stat() { type = StatsType.Hp, baseValue = "100" });
+		stats.Add(new Stat() { type = StatsType.Hp_Recovery, baseValue = "5" });
+		stats.Add(new Stat() { type = StatsType.Crits_Chance, baseValue = "0" });
+		stats.Add(new Stat() { type = StatsType.Crits_Damage, baseValue = "120" });
+		stats.Add(new Stat() { type = StatsType.Super_Crits_Chance, baseValue = "0" });
+		stats.Add(new Stat() { type = StatsType.Super_Crits_Damage, baseValue = "120" });
+		stats.Add(new Stat() { type = StatsType.Atk_Speed, baseValue = "100" });
+		stats.Add(new Stat() { type = StatsType.Move_Speed, baseValue = "100" });
+		stats.Add(new Stat() { type = StatsType.Skill_Cooltime, baseValue = "0" });
+		stats.Add(new Stat() { type = StatsType.Skill_Damage, baseValue = "0" });
+		stats.Add(new Stat() { type = StatsType.Mob_Damage_Buff, baseValue = "0" });
+		stats.Add(new Stat() { type = StatsType.Boss_Damage_Buff, baseValue = "0" });
+		stats.Add(new Stat() { type = StatsType.Buff_Gain_Gold, baseValue = "0" });
+		stats.Add(new Stat() { type = StatsType.Buff_Gain_Exp, baseValue = "0" });
+		stats.Add(new Stat() { type = StatsType.Buff_Gain_Item, baseValue = "0" });
+		stats.Add(new Stat() { type = StatsType.Final_Damage_Buff, baseValue = "0" });
+		//for (int i = 0; i < types.Length; i++)
+		//{
+		//	Stat item = new Stat();
+		//	item.type = types[i];
+		//	item.baseValue = "0";
+		//	item.name = types[i].ToString();
+		//	stats.Add(item);
+		//}
 
 	}
 

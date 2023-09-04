@@ -12,7 +12,7 @@ public class UnitDataSheet : DataSheetBase<UnitData>
 		{
 			if (infos[i].tid == _tid)
 			{
-				return infos[i].Clone();
+				return infos[i].Clone<UnitData>();
 			}
 		}
 		return null;

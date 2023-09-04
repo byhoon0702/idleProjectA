@@ -3,20 +3,17 @@ using System.Threading.Tasks;
 using Ink.Parsed;
 using UnityEngine;
 
-
-//[CreateAssetMenu(fileName = "Unit Hyper Mode", menuName = "ScriptableObject/Unit Hyper Mode", order = 1)]
 public class UnitHyperMode : UnitModeBase
 {
 	public GameObject hyperEffect;
 
-	private GameObject model;
 	private HyperUnitCostume hyperUnitCostume;
 	public override void OnModeEnter(StateType state)
 	{
 
 		path = "";
 		resource = "";
-		OnSpawn(path, resource);
+		OnSpawn();
 		unit.unitAnimation = modelAnimation;
 
 		hyperUnitCostume = modelAnimation.GetComponent<HyperUnitCostume>();
@@ -29,32 +26,31 @@ public class UnitHyperMode : UnitModeBase
 
 		OnSpawnEffect(unit.position);
 
-		unit.skillModule.Init(unit, GameManager.UserDB.awakeningContainer.selectedInfo.hyperData.skillTid);
-		unit.skillModule.ChangeSkillSet(GameManager.UserDB.skillContainer.skillSlot);
+		var hyperSlot = PlatformManager.UserDB.costumeContainer[CostumeType.HYPER];
 
-		GameManager.UserDB.HyperStats.stats.Clear();
-		var hyperStats = GameManager.UserDB.awakeningContainer.selectedInfo.abilityInfos;
+		unit.skillModule.Init(unit, hyperSlot.item.hyperData.skillTid);
+		unit.skillModule.ChangeSkillSet(PlatformManager.UserDB.skillContainer.skillSlot);
 
-		for (int i = 0; i < hyperStats.Count; i++)
+		foreach (var stats in PlatformManager.UserDB.HyperStats)
 		{
-			var stat = hyperStats[i];
-			GameManager.UserDB.AddModifiers(false, stat.type, new StatsModifier(stat.Value, StatModeType.PercentAdd, unit.hyperModule));
+			PlatformManager.UserDB.AddModifiers(stats.Key, new StatsModifier(stats.Value.Value, StatModeType.Hyper, hyperSlot));
 		}
-
 	}
-	public override void OnSpawn(string _path, string _resource)
+
+	public override void OnSpawn()
 	{
 		if (modelAnimation != null)
 		{
 			modelAnimation.Release();
 		}
 
-		GameObject costume = null;// GameManager.UserDB.awakeningContainer.selectedInfo.hyperClassObject.HyperCostumes[0];
+		var hyperSlot = PlatformManager.UserDB.costumeContainer[CostumeType.HYPER];
+		GameObject costume = hyperSlot.costume;
 		if (unit is PlayerUnit)
 		{
 			PlayerUnit player = unit as PlayerUnit;
-			player.hitEffectObject = GameManager.UserDB.awakeningContainer.selectedInfo.hyperClassObject.HitEffectObject;
-			player.attackEffectObject = GameManager.UserDB.awakeningContainer.selectedInfo.hyperClassObject.AttackEffectObject;
+			player.hitEffectObject = hyperSlot.item.hyperClassObject.HitEffectObject;
+			player.attackEffectObject = hyperSlot.item.hyperClassObject.AttackEffectObject;
 		}
 
 		var gameObject = Instantiate(costume);
@@ -73,32 +69,30 @@ public class UnitHyperMode : UnitModeBase
 		}
 
 		modelAnimation.Init();
+		modelAnimation.SetMaskInteraction();
 		unit.unitAnimation = modelAnimation;
 		unit.unitFacial = modelAnimation.GetComponent<UnitFacial>();
-		model = modelAnimation.gameObject;
 		modelAnimation.animationEventReceiver.Init(unit);
 		modelAnimation.PlayDissolve(1.5f);
 	}
 
 	public override void OnModeExit()
 	{
-		//if (modelAnimation != null)
-		//{
-		//	modelAnimation.Release();
-		//}
+
 		if (hyperEffect != null)
 		{
 			hyperEffect.SetActive(false);
 		}
-		//for (int i = 0; i < GameManager.UserDB.HyperStats.stats.Count; i++)
-		//{
-		//	var stat = GameManager.UserDB.HyperStats.stats[i];
-		//	GameManager.UserDB.RemoveModifiers(false, stat.type, unit.hyperModule);
-		//}
 
-		if (model != null)
+		var hyperSlot = PlatformManager.UserDB.costumeContainer[CostumeType.HYPER];
+		foreach (var stats in PlatformManager.UserDB.HyperStats)
 		{
-			Destroy(model);
+			PlatformManager.UserDB.RemoveModifiers(stats.Key, hyperSlot);
+		}
+
+		if (modelAnimation != null)
+		{
+			Destroy(modelAnimation.gameObject);
 		}
 	}
 
@@ -107,15 +101,7 @@ public class UnitHyperMode : UnitModeBase
 		unit.PlayAnimation(StateType.ATTACK);
 	}
 
-	public override void OnAttackSkill()
-	{
 
-	}
-
-	public override void OnMove()
-	{
-
-	}
 
 	public override void OnHit(HitInfo hit)
 	{

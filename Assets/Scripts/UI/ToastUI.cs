@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ToastUI : MonoBehaviour
 {
-	public static ToastUI it { get; private set; }
+	public static ToastUI Instance { get; private set; }
 	public float time = 0.3f;
 	[SerializeField] private ItemToast[] uiItemToasts;
 	private Queue<string> toastMessageQueue = new Queue<string>();
@@ -13,7 +13,11 @@ public class ToastUI : MonoBehaviour
 
 	private void Awake()
 	{
-		it = this;
+		Instance = this;
+	}
+	private void OnDestroy()
+	{
+		Instance = null;
 	}
 
 	public void Enqueue(string text)

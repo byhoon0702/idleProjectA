@@ -28,20 +28,20 @@ public static class TimeUtil
 
 	public static Int64 NowToTimeStamp()
 	{
-		return DateTimeToTimeStamp(TimeManager.it.server_utc);
+		return DateTimeToTimeStamp(TimeManager.Instance.UtcNow);
 	}
 	public static string NowToTimeStampString()
 	{
-		return TimeManager.it.server_utc.ToString("yyyy_MM_dd_HH_mm_ss");
+		return TimeManager.Instance.UtcNow.ToString("yyyy_MM_dd_HH_mm_ss");
 	}
 
 	public static string NowToString()
 	{
-		return DateTimeToString(TimeManager.it.server_utc);
+		return DateTimeToString(TimeManager.Instance.UtcNow);
 	}
 	public static string YesterdayToString()
 	{
-		return DateTimeToString(TimeManager.it.server_utc.AddDays(-1));
+		return DateTimeToString(TimeManager.Instance.UtcNow.AddDays(-1));
 	}
 
 	public static Int64 DateTimeToTimeStamp(DateTime utc)
@@ -66,11 +66,11 @@ public static class TimeUtil
 
 	public static string UtcNowString()
 	{
-		return TimeManager.it.server_utc.ToString("yyyy-MM-dd HH:mm:ss");
+		return TimeManager.Instance.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 	}
 	public static string UtcDayKey()
 	{
-		return TimeManager.it.server_utc.ToString("yyMMdd");
+		return TimeManager.Instance.UtcNow.ToString("yyMMdd");
 	}
 	public static string DateDayKey(DateTime dt)
 	{
@@ -187,7 +187,7 @@ public static class TimeUtil
 
 	public static bool IsBetweenTime(DateTime startUtc, DateTime endUtc)
 	{
-		DateTime utcNow = TimeManager.it.server_utc;
+		DateTime utcNow = TimeManager.Instance.UtcNow;
 		if (startUtc <= utcNow && endUtc >= utcNow)
 		{
 			return true;
@@ -208,7 +208,7 @@ public static class TimeUtil
 
 	public static bool IsBetweenTime(Int64 start, Int64 end)
 	{
-		Int64 utcNow = DateTimeToTimeStamp(TimeManager.it.server_utc);
+		Int64 utcNow = DateTimeToTimeStamp(TimeManager.Instance.UtcNow);
 		if (start <= utcNow && utcNow >= end)
 		{
 			return true;
@@ -219,7 +219,7 @@ public static class TimeUtil
 
 	public static bool IsBetweenTime(string start_at, string end_at)
 	{
-		DateTime utcNow = TimeManager.it.server_utc;
+		DateTime utcNow = TimeManager.Instance.UtcNow;
 		var start = StringToDateTime(start_at);
 		var end = StringToDateTime(end_at);
 
@@ -234,7 +234,7 @@ public static class TimeUtil
 	// 메일의 만료일자를 가져온다.
 	public static string GetMailExpiredAt(Int64 expiredDay = 7)
 	{
-		DateTime utcNow = TimeManager.it.server_utc;
+		DateTime utcNow = TimeManager.Instance.UtcNow;
 		utcNow = utcNow.AddDays(expiredDay);
 
 		return DateTimeToString(utcNow);
@@ -272,7 +272,7 @@ public static class TimeUtil
 
 	public static Int64 getLeftMilliSec(DateTime at)
 	{
-		DateTime utc_now = TimeManager.it.server_utc;
+		DateTime utc_now = TimeManager.Instance.UtcNow;
 
 		return (Int64)(at - utc_now).TotalMilliseconds;
 	}
@@ -309,7 +309,7 @@ public static class TimeUtil
 
 	public static DateTime nextDayOfWeek(DayOfWeek need_day_of_week)
 	{
-		return nextDayOfWeek(TimeManager.it.server_utc, need_day_of_week);
+		return nextDayOfWeek(TimeManager.Instance.UtcNow, need_day_of_week);
 	}
 
 	//public static gplat_define.day_of_week_e getDayOfWeek(DateTime in_time)
@@ -410,7 +410,7 @@ public static class TimeUtil
 
 	public static DateTime TodayResetUtcTime()
 	{
-		var Now = TimeManager.it.server_utc;
+		var Now = TimeManager.Instance.UtcNow;
 
 		//서버 시간에 관계없이 UTC 기준 20시로 맞춘다(한국시간으론 오전 5시)
 		//20시를 기점으로 '오늘' 기준의 리셋타임을 가져온다
@@ -429,7 +429,7 @@ public static class TimeUtil
 	// 현재 시간을 기준으로 임의로 정한 다음 리셋시간을 구한다.
 	public static DateTime NextDayResetUtcTime(int hour, int minute)
 	{
-		var Now = TimeManager.it.server_utc;
+		var Now = TimeManager.Instance.UtcNow;
 		var target = new DateTime(Now.Year, Now.Month, Now.Day, hour, minute, 0, DateTimeKind.Utc);
 
 		if (target < Now)
@@ -450,7 +450,7 @@ public static class TimeUtil
 	// UTC 기준, 해당 날짜 이후의 리셋시간을 구한다.
 	public static DateTime GetResetUtcTime(int day_after, int hour, int minute)
 	{
-		var Now = TimeManager.it.server_utc;
+		var Now = TimeManager.Instance.UtcNow;
 		var target = new DateTime(Now.Year, Now.Month, Now.Day, hour, minute, 0, DateTimeKind.Utc);
 
 		if (target < Now)
@@ -577,7 +577,7 @@ public static class TimeUtil
 	public static bool isPassedTime(DateTime limitTime)
 	{
 		// 5초 일찍 요청온건 통과
-		if ((limitTime - TimeManager.it.server_utc).TotalSeconds < 6)
+		if ((limitTime - TimeManager.Instance.UtcNow).TotalSeconds < 6)
 		{
 			return true;
 		}
@@ -587,7 +587,7 @@ public static class TimeUtil
 
 	public static long PassedTimeSeconds(DateTime in_time)
 	{
-		return Convert.ToInt64((TimeManager.it.server_utc - in_time).TotalSeconds);
+		return Convert.ToInt64((TimeManager.Instance.UtcNow - in_time).TotalSeconds);
 	}
 	public static long PassedTimeSeconds(DateTime from_time, DateTime to_time)
 	{

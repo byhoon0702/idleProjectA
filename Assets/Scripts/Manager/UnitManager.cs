@@ -8,7 +8,7 @@ public class UnitManager : MonoBehaviour
 	public static UnitManager it => instance;
 
 	private List<Unit> playerToList = new List<Unit>(1);
-	public List<Pet> pets
+	public Pet[] pets
 	{
 		get
 		{
@@ -97,6 +97,38 @@ public class UnitManager : MonoBehaviour
 			}
 
 			outUnits.Add(unit);
+		}
+
+		return outUnits;
+	}
+
+	public List<HittableUnit> GetRandomEnemies(Vector3 pos, float range = 1f, int filterCount = 1)
+	{
+		List<HittableUnit> outUnits = new List<HittableUnit>();
+		List<HittableUnit> allEnemyUnits = new List<HittableUnit>(enemyGroup.GetComponentsInChildren<HittableUnit>());
+
+		List<HittableUnit> inRange = new List<HittableUnit>();
+		inRange = allEnemyUnits.FindAll(x => Vector3.Distance(pos, x.position) <= range);
+
+		int count = 0;
+		int index = -1;
+
+		if (filterCount == -1)
+		{
+			return inRange;
+		}
+		while (count < filterCount && inRange.Count > 0)
+		{
+			index = UnityEngine.Random.Range(0, inRange.Count);
+			var unit = inRange[index];
+			if (unit.currentState == StateType.DEATH)
+			{
+				inRange.RemoveAt(index);
+				continue;
+			}
+			outUnits.Add(inRange[index]);
+			inRange.RemoveAt(index);
+			count++;
 		}
 
 		return outUnits;

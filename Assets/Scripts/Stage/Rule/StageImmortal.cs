@@ -45,7 +45,7 @@ public class StageImmortal : StageRule
 	public override void AddReward()
 	{
 		StageManager.it.CurrentStage.SetStageReward(StageManager.it.cumulativeDamage);
-		GameManager.UserDB.AddStageRewards(StageManager.it.CurrentStage.StageClearReward, false);
+		PlatformManager.UserDB.AddRewards(StageManager.it.CurrentStage.StageClearReward, false);
 	}
 	private void SpawnBoss()
 	{

@@ -10,6 +10,7 @@ public class UserLevelData : BaseData
 	public float firstWeight;
 	public float secondWeight;
 }
+
 [System.Serializable]
 public class UserLevelDataSheet : DataSheetBase<UserLevelData>
 {

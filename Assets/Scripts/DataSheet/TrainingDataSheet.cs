@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class TrainingData : BaseData
 {
-	public string name;
+
 
 	public ItemStats buff;
 

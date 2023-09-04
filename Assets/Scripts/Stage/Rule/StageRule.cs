@@ -6,63 +6,17 @@ using UnityEngine.Timeline;
 
 public enum StageType
 {
-
 	Normal = 0,
 
-	/// <summary>
-	/// 참깨 동굴
-	/// </summary>
-	Sesame = 3,
-	/// <summary>
-	/// 용사의 무덤
-	/// </summary>
-	Tomb,
-	/// <summary>
-	/// 오염된 부화장
-	/// </summary>
-	Hatchery,
-	/// <summary>
-	/// 불로초 평원
-	/// </summary>
-	Immortal,
+	Dungeon = 10,
+	Tower = 20,
+	Guardian = 30,
+
+
 	/// <summary>
 	/// 회춘 던전
 	/// </summary>
-	Youth,
-
-	/// <summary>
-	/// 악몽의 탑
-	/// </summary>
-	NightmareTower = 101,
-	/// <summary>
-	/// 활력
-	/// </summary>
-	Vitality = 102,
-	/// <summary>
-	/// 냉기의 수호자
-	/// </summary>
-	Guardian_Frost = 103,
-	/// <summary>
-	/// 화염의 수호자
-	/// </summary>
-	Guardian_Flame = 104,
-	/// <summary>
-	/// 바위의 수호자
-	/// </summary>
-	Guardian_Stone = 105,
-	/// <summary>
-	/// 어둠의 수호자
-	/// </summary>
-	Guardian_Dark = 106,
-	/// <summary>
-	/// 부서진 배의 수호자
-	/// </summary>
-	Guardian_Shipwreck = 107,
-	/// <summary>
-	/// 화산의 수호자
-	/// </summary>
-	Guardian_Volcano = 108,
-
+	Youth = 40,
 }
 
 [System.Serializable]
@@ -78,7 +32,7 @@ public class StageStateDictionary : SerializableDictionary<StageStateType, Stage
 { }
 
 
-public abstract class StageRule : ScriptableObject
+public class StageRule : ScriptableObject
 {
 	public StageClearCondition[] clearConditions;
 	public StageFailCondition[] failConditions;
@@ -99,10 +53,11 @@ public abstract class StageRule : ScriptableObject
 		stateDictionary = new Dictionary<StageStateType, StageFSM>();
 		elapsedTime = 0;
 		isEnd = false;
+
 		StageManager.it.currentKillCount = 0;
 		StageManager.it.bossKillCount = 0;
 		StageManager.it.cumulativeDamage = (IdleNumber)0;
-		//GameManager.it.battleRecord.totalDamage = (IdleNumber)0;
+		StageManager.it.usePhase = false;
 
 		foreach (var state in stateSerializableDictionary)
 		{
@@ -165,7 +120,7 @@ public abstract class StageRule : ScriptableObject
 		}
 	}
 
-	public abstract void End();
+	public virtual void End() { }
 	public bool CheckWin()
 	{
 		if (clearConditions == null || clearConditions.Length == 0)
@@ -202,25 +157,29 @@ public abstract class StageRule : ScriptableObject
 
 	public virtual void AddReward()
 	{
-		StageManager.it.CurrentStage.SetStageReward((IdleNumber)StageManager.it.CurrentStage.StageNumber);
-		GameManager.UserDB.AddStageRewards(StageManager.it.CurrentStage.StageClearReward, false);
+		StageManager.it.CurrentStage.SetStageReward((IdleNumber)StageManager.it.CurrentStage.StageNumber - 1);
+		PlatformManager.UserDB.AddRewards(StageManager.it.CurrentStage.StageClearReward, false);
 	}
+
 	public bool CheckEnd()
 	{
 		if (CheckLose())
 		{
 			isWin = false;
 			isEnd = true;
+			StageManager.it.OnStageEnd(false);
 			return true;
 		}
 		if (CheckWin())
 		{
-			StageManager.it.OnStageClear();
-			StageManager.it.CurrentStage.isClear = true;
-			AddReward();
-			GameManager.UserDB.stageContainer.SavePlayStage(StageManager.it.CurrentStage, StageManager.it.cumulativeDamage, StageManager.it.currentKillCount);
 			isWin = true;
 			isEnd = true;
+			PlatformManager.UserDB.stageContainer.SavePlayStage(StageManager.it.CurrentStage, StageManager.it.cumulativeDamage, StageManager.it.currentKillCount);
+			StageManager.it.CurrentStage.isClear = true;
+			AddReward();
+
+			StageManager.it.OnStageEnd(true);
+			PlatformManager.UserDB.Save();
 			return true;
 		}
 		return false;

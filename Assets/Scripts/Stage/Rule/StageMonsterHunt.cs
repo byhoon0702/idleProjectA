@@ -9,7 +9,7 @@ public class StageMonsterHunt : StageRule
 
 	public float spawnInterval = 5f;
 	private float spawnTime;
-	private StageInfo currentInfo;
+	private RuntimeData.StageInfo currentInfo;
 	private bool noMoreSpawn;
 
 	public override void Begin()
@@ -61,10 +61,17 @@ public class StageMonsterHunt : StageRule
 		}
 		if (spawnTime == 0)
 		{
-			if (GameManager.it.battleRecord.killCount >= currentInfo.CountLimit && currentInfo.totalBossSpawnCount < currentInfo.BossCountLimit)
+			if (GameManager.it.battleRecord.killCount >= currentInfo.CountLimit)
 			{
-				SpawnManager.it.SpawnLast(currentInfo.spawnBoss[0], 0);
-				noMoreSpawn = true;
+				if (currentInfo.totalBossSpawnCount < currentInfo.BossCountLimit)
+				{
+					Vector3 pos = StageManager.it.map.bossSpawnPos != null ? StageManager.it.map.bossSpawnPos.position : new Vector3(2, 0, 0);
+					SpawnManager.it.SpawnLast(currentInfo.spawnBoss[0], pos, 2);
+				}
+				else
+				{
+					noMoreSpawn = true;
+				}
 			}
 			else
 			{

@@ -14,13 +14,12 @@ public class PopAlertDefault : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI resultCodeText;
 	[SerializeField] private TextMeshProUGUI okButtonText;
 	[SerializeField] private TextMeshProUGUI cancelButtonText;
-	[SerializeField] GameObject descRoot;
-	[SerializeField] private TextMeshProUGUI descText;
+
 
 
 	[SerializeField] private Button okButton;
 	[SerializeField] private Button cancelButton;
-	[SerializeField] private Button xButton;
+
 	[SerializeField] private Button panelButton;
 
 
@@ -30,23 +29,41 @@ public class PopAlertDefault : MonoBehaviour
 
 
 	// 내부에서 ResultCode값이 null이어도 방어가 필요함
-	public void Init(VResult _result, Action _onOkCallback = null, Action _onCancelCallback = null)
+	public void Init(string title, string desc, string okButtonStr = "str_ui_ok", string cancelButtonStr = "str_ui_cancel", Action _onOkCallback = null, Action _onCancelCallback = null)
 	{
-		result = _result;
-		if (_result.data.alertType == PopAlertType.ERROR)
+		titleText.text = title;
+		contentText.text = desc;
+
+		onOkCallback = _onOkCallback;
+		onCancelCallback = _onCancelCallback;
+
+		if (Intro.it != null)
 		{
-			VLog.LogError(result.ToString());
+			okButtonText.text = Intro.it.language[okButtonStr];
+			cancelButtonText.text = Intro.it.language[cancelButtonStr];
 		}
 		else
 		{
-			VLog.Log(result.ToString());
+			okButtonText.text = PlatformManager.Language[okButtonStr];
+			cancelButtonText.text = PlatformManager.Language[cancelButtonStr];
 		}
+		SetInteractable();
+		//UpdateUI();
+	}
+	public void Init(VResult _result, Action _onOkCallback = null, Action _onCancelCallback = null)
+	{
+		result = _result;
 
 		onOkCallback = _onOkCallback;
 		onCancelCallback = _onCancelCallback;
 
 		SetInteractable();
 		UpdateUI();
+	}
+	public void SetButtonText(string ok, string cancel)
+	{
+		okButtonText.text = ok;
+		cancelButtonText.text = cancel;
 	}
 
 	private void OnCancelButtonClick()
@@ -71,33 +88,27 @@ public class PopAlertDefault : MonoBehaviour
 
 	public void Close()
 	{
-		if(onCancelCallback != null)
+		if (onCancelCallback != null)
 		{
 			onCancelCallback.Invoke();
 			onOkCallback = null;
 		}
-		else if(onOkCallback != null)
+		else if (onOkCallback != null)
 		{
 			onOkCallback.Invoke();
 			onOkCallback = null;
 		}
 
-		Destroy(gameObject);
+		gameObject.SetActive(false);
 	}
 
 	private void SetInteractable()
 	{
 		// 버튼 이벤트 등록
-		xButton.onClick.RemoveAllListeners();
-		xButton.onClick.AddListener(OnCancelButtonClick);
-
 		panelButton.onClick.RemoveAllListeners();
-		panelButton.onClick.AddListener(() => 
+		panelButton.onClick.AddListener(() =>
 		{
-			if (xButton.gameObject.activeInHierarchy)
-			{
-				OnCancelButtonClick();
-			}
+
 		});
 
 		cancelButton.onClick.RemoveAllListeners();
@@ -107,14 +118,13 @@ public class PopAlertDefault : MonoBehaviour
 		okButton.onClick.AddListener(OnOkButtonClick);
 
 
-		// 버튼 활성화 여부 처리
-		xButton.gameObject.SetActive(result.data.alertType != PopAlertType.ERROR);
 		okButton.gameObject.SetActive(true);
 		cancelButton.gameObject.SetActive(onCancelCallback != null);
 	}
 
 	private void UpdateUI()
 	{
+
 		// 제목
 		if (string.IsNullOrEmpty(result.data.title))
 		{
@@ -137,7 +147,7 @@ public class PopAlertDefault : MonoBehaviour
 
 
 		// 리절트 코드
-		if(UnityEnv.HouseMode)
+		if (UnityEnv.HouseMode)
 		{
 			resultCodeText.text = $"{result.data.tid.ToString()} : {result.data.key}";
 		}
@@ -145,12 +155,6 @@ public class PopAlertDefault : MonoBehaviour
 		{
 			resultCodeText.text = result.data.tid.ToString();
 		}
-
-
-		// 디스크립션
-		descRoot.SetActive(UnityEnv.HouseMode);
-		descText.text = result.description;
-
 
 		// 버튼
 		if (string.IsNullOrEmpty(result.data.okText))

@@ -12,7 +12,7 @@ public class ResultCodeDataSheetObject : BaseDataSheetObject
 	[SerializeField]
 	public ResultCodeDataSheet dataSheet;
 
-	public override void Call()
+	public override void Call(string fileName)
 	{
 		GenerateResultCode(dataSheet.infos);
 	}

@@ -5,11 +5,11 @@ using UnityEngine.EventSystems;
 #if UNITY_EDITOR
 public class BaseEditorPanel : UIBehaviour
 {
-	public EditorUnit viewTarget
-	{
-		get;
-		protected set;
-	}
+	//public EditorUnit viewTarget
+	//{
+	//	get;
+	//	protected set;
+	//}
 	public UnityEditor.Animations.AnimatorController animatorController
 	{
 		get;
@@ -28,9 +28,9 @@ public class BaseEditorPanel : UIBehaviour
 	}
 
 
-	public virtual void SetUnit(EditorUnit _unit, UnityEditor.Animations.AnimatorController _animatorController)
-	{
+	//public virtual void SetUnit(EditorUnit _unit, UnityEditor.Animations.AnimatorController _animatorController)
+	//{
 
-	}
+	//}
 }
 #endif

@@ -8,20 +8,49 @@ public class BgmPlayer : MonoBehaviour
 	private SoundBgmData currBgmData;
 
 
+	private void Start()
+	{
+		GameSetting.Instance.BgmChanged += OnBgmChanged;
+	}
 	public void Initialize()
 	{
 		audioSource = gameObject.AddComponent<AudioSource>();
-		UpdateBgmVolume(GameSetting.it.property.bgmVolume);
+		audioSource.loop = true;
+		OnBgmChanged(GameSetting.Instance.Bgm);
 	}
-
-	public void UpdateBgmVolume(float _vol)
+	private void OnDestroy()
 	{
-		if (audioSource != null && audioSource.enabled)
-		{
-			audioSource.volume = GameSetting.it.property.bgmVolume * 0.01f;
-		}
+		GameSetting.Instance.BgmChanged -= OnBgmChanged;
 	}
 
+	//public void UpdateBgmVolume(float _vol)
+	//{
+	//	if (audioSource != null && audioSource.enabled)
+	//	{
+	//		audioSource.volume = _vol;
+	//	}
+	//}
+	bool mute;
+	public void Mute()
+	{
+		mute = true;
+		audioSource.enabled = false;
+	}
+
+	public void Unmute()
+	{
+		mute = false;
+		audioSource.enabled = true;
+	}
+	public void OnBgmChanged(bool isOn)
+	{
+		audioSource.enabled = isOn && mute == false;
+	}
+	public void Play(AudioClip clip)
+	{
+		audioSource.clip = clip;
+		audioSource.Play();
+	}
 	public void Play(string _soundKey)
 	{
 		var bgmData = DataManager.Get<SoundBgmDataSheet>().Get(_soundKey);

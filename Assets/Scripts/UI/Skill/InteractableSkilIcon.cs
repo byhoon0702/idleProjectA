@@ -3,31 +3,30 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-
-
+using TMPro;
 public class InteractableSkilIcon : MonoBehaviour
 {
-	[SerializeField] private Button button;
-	[SerializeField] private Image icon;
+	[SerializeField] protected Button button;
+	[SerializeField] protected Image icon;
 
-	[SerializeField] private Image globalCooltimeGauge;
-	[SerializeField] private Image cooltimeGauge;
+	[SerializeField] protected Image globalCooltimeGauge;
+	[SerializeField] protected Image cooltimeGauge;
+	[SerializeField] protected TextMeshProUGUI textCooltime;
+
+	[SerializeField] protected GameObject skillIcon;
+
+	[SerializeField] protected GameObject cooltimeIcon; // 쿨타임중
 
 
-	[SerializeField] private GameObject skillIcon;
+	protected SkillSlot skillSlot;
 
-	[SerializeField] private GameObject cooltimeIcon; // 쿨타임중
-
-
-	SkillSlot skillSlot;
-
-	public void OnUpdate(SkillSlot _skillSlot = null)
+	public virtual void OnUpdate(SkillSlot _skillSlot = null)
 	{
 		skillSlot = _skillSlot;
 
 		cooltimeIcon.SetActive(false);
 		skillIcon.SetActive(false);
-
+		textCooltime.text = "";
 		if (_skillSlot == null || _skillSlot.item == null)
 		{
 			return;
@@ -38,52 +37,50 @@ public class InteractableSkilIcon : MonoBehaviour
 		cooltimeGauge.sprite = _skillSlot.icon;
 		globalCooltimeGauge.sprite = _skillSlot.icon;
 		button.onClick.RemoveAllListeners();
-		button.onClick.AddListener(() =>
-		{
-			if (skillSlot == null)
-			{
-				return;
-			}
-			if (skillSlot.IsUsable() == false)
-			{
-				return;
-			}
-			if (skillSlot.IsReady() == false)
-			{
-				return;
-			}
-
-			if (UnitManager.it.Player == null)
-			{
-				return;
-			}
-
-			if (UnitManager.it.Player.IsAlive() == false)
-			{
-				return;
-			}
-			if (UnitManager.it.Player.IsTargetAlive() == false)
-			{
-				return;
-			}
-
-			if (UnitManager.it.Player.hyperModule.IsHyper)
-			{
-				return;
-			}
-
-
-			UnitManager.it.Player.TriggerSkill(skillSlot);
-			GameManager.UserDB.skillContainer.GlobalCooldown();
-			//if (skillSlot.item != null)
-			//{
-
-			//	skillSlot.Trigger(UnitManager.it.Player);
-			//}
-		});
+		button.onClick.AddListener(OnClickSkillSlot);
 	}
 
-	private void Update()
+	protected virtual void OnClickSkillSlot()
+	{
+		if (skillSlot == null)
+		{
+			GameUIManager.it.uiController.ToggleManagement(() => { GameUIManager.it.uiController.BottomMenu.ToggleHero.isOn = false; }, UIManagement.ViewType.Skill);
+			return;
+		}
+		if (skillSlot.IsUsable() == false)
+		{
+			return;
+		}
+		if (skillSlot.IsReady() == false)
+		{
+			return;
+		}
+
+		if (UnitManager.it.Player == null)
+		{
+			return;
+		}
+
+		if (UnitManager.it.Player.IsAlive() == false)
+		{
+			return;
+		}
+		if (UnitManager.it.Player.IsTargetAlive() == false)
+		{
+			return;
+		}
+
+		if (UnitManager.it.Player.hyperModule.IsHyper)
+		{
+			return;
+		}
+
+
+		UnitManager.it.Player.TriggerSkill(skillSlot);
+		PlatformManager.UserDB.skillContainer.GlobalCooldown();
+	}
+
+	protected void Update()
 	{
 		if (skillSlot == null || skillSlot.IsUsable() == false)
 		{
@@ -99,12 +96,20 @@ public class InteractableSkilIcon : MonoBehaviour
 			{
 				cooltimeGauge.gameObject.SetActive(true);
 			}
-
+			if (skillSlot.cooldown.coolTime > 0)
+			{
+				textCooltime.text = $"{skillSlot.cooldown.coolTime.ToString("0.0")}s";
+			}
+			else
+			{
+				textCooltime.text = "";
+			}
 			var ratio = skillSlot.cooldown.Progress();
 			cooltimeGauge.fillAmount = ratio;
 		}
 		else
 		{
+			textCooltime.text = "";
 			if (globalCooltimeGauge.gameObject.activeSelf)
 			{
 				globalCooltimeGauge.gameObject.SetActive(false);

@@ -53,7 +53,7 @@ public class AdditionalDamageModule
 		}
 		if (elapsedTime > interval)
 		{
-			unit.Hit(hitInfo);
+			//unit.Hit(hitInfo);
 			count++;
 			elapsedTime = 0;
 		}

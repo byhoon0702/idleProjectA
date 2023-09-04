@@ -14,7 +14,7 @@ public class StatusDataSheetObject : BaseDataSheetObject
 
 	[SerializeField]
 	public StatusDataSheet dataSheet;
-	public override void Call()
+	public override void Call(string fileName)
 	{
 		GenerateEnum();
 

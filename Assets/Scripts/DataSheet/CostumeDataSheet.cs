@@ -5,38 +5,17 @@ using UnityEngine;
 [System.Serializable]
 public class CostumeData : ItemData
 {
-	public int starLevel;
+	public string acquiredMessage;
 	public CostumeType costumeType;
 	public int point;
-	//public List<ItemStats> equipValues;
-	//public List<ItemStats> ownValues;
+	public long hyperTid;
+	public Cost cost;
+	public List<PlatformProductID> productIDs;
+	public bool hideUI;
+	public bool defaultGet;
 
-	//public override List<AbilityInfo> EquipAbilityInfos()
-	//{
-	//	List<AbilityInfo> abilityInfo = new List<AbilityInfo>();
-	//	for (int i = 0; i < equipValues.Count; i++)
-	//	{
-	//		var equip = equipValues[i];
-	//		AbilityInfo info = new AbilityInfo(equip.type, (IdleNumber)equip.value, (IdleNumber)equip.perLevel, equip.isMultiply);
-	//		abilityInfo.Add(info);
-	//	}
-
-	//	return abilityInfo;
-	//}
-
-	//public override List<AbilityInfo> OwnAbilityInfos()
-	//{
-	//	List<AbilityInfo> abilityInfo = new List<AbilityInfo>();
-	//	for (int i = 0; i < ownValues.Count; i++)
-	//	{
-	//		var equip = ownValues[i];
-	//		AbilityInfo info = new AbilityInfo(equip.type, (IdleNumber)equip.value, (IdleNumber)equip.perLevel, equip.isMultiply);
-	//		abilityInfo.Add(info);
-	//	}
-
-	//	return abilityInfo;
-	//}
 }
+
 [System.Serializable]
 public class CostumeDataSheet : DataSheetBase<CostumeData>
 {

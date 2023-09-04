@@ -5,6 +5,12 @@ using UnityEngine;
 public class UIEquipGrid : UIBaseGrid<RuntimeData.EquipItemInfo>
 
 {
+	public Transform GetChild(int index)
+	{
+		var go = itemRoot.GetChild(index);
+
+		return go;
+	}
 	public override void Init(UIManagementEquip _parent)
 	{
 		parent = _parent;
@@ -13,16 +19,7 @@ public class UIEquipGrid : UIBaseGrid<RuntimeData.EquipItemInfo>
 	public override void OnUpdate(List<RuntimeData.EquipItemInfo> itemList)
 	{
 		var list = itemList;
-		int countForMake = list.Count - itemRoot.childCount;
-
-		if (countForMake > 0)
-		{
-			for (int i = 0; i < countForMake; i++)
-			{
-				var item = Instantiate(itemPrefab, itemRoot);
-			}
-		}
-
+		itemRoot.CreateListCell(list.Count, itemPrefab);
 
 		for (int i = 0; i < itemRoot.childCount; i++)
 		{

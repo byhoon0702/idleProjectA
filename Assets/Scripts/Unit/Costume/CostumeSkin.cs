@@ -13,7 +13,7 @@ public class CostumeSkin : MonoBehaviour
 	[SerializeField] private AnimatorOverrideController overrideController;
 	public AnimatorOverrideController OverrideController => overrideController;
 
-
+	public SpriteLibrary spriteLibrary;
 	MaterialPropertyBlock tintPropertyBlock;
 	MaterialPropertyBlock maskPropertyBlock;
 	MaterialPropertyBlock dissolvePropertyBlock;
@@ -23,9 +23,16 @@ public class CostumeSkin : MonoBehaviour
 		renderers = new SpriteRenderer[skins.Length];
 		for (int i = 0; i < skins.Length; i++)
 		{
+			//SpriteResolver resolver = skins[i].GetComponent<SpriteResolver>();
+			//if (resolver == null)
+			//{
+			//	resolver = skins[i].gameObject.AddComponent<SpriteResolver>();
+			//}
+			//resolver.SetCategoryAndLabel(resolver.gameObject.name, resolver.gameObject.name);
 			renderers[i] = skins[i].GetComponent<SpriteRenderer>();
 		}
 	}
+
 	private void Start()
 	{
 		if (tintPropertyBlock == null)

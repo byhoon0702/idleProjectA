@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class StatusData : BaseData
 {
-	public string name;
+
 	public StatsType type;
 	public string uiName;
 

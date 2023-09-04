@@ -54,8 +54,8 @@ public class UITextMeshPro : MonoBehaviour
 		//해당 키가 없으면 키를 그대로 표시하고 폰트 색상을 붉은색으로
 		if (container.UiLanguageDictionary.Contains(key) == false)
 		{
-			//textmeshPro.text = $"<color=red>{key}</color>";
-			textmeshPro.text = $"{key}";
+			textmeshPro.text = $"<color=red>{key}</color>";
+			//textmeshPro.text = $"{key}";
 			return;
 		}
 

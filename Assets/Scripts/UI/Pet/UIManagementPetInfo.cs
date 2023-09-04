@@ -11,6 +11,7 @@ public class UIManagementPetInfo : MonoBehaviour
 	//[SerializeField] private TextMeshProUGUI ownedBuffLabelText;
 	[SerializeField] private TextMeshProUGUI ownedAbilityText;
 	[SerializeField] private TextMeshProUGUI equipAbliityText;
+	[SerializeField] private TextMeshProUGUI textPetSkill;
 	//[SerializeField] private TextMeshProUGUI ownedOptionText;
 
 	[SerializeField] private UIItemOptionText[] itemOptions;
@@ -20,8 +21,11 @@ public class UIManagementPetInfo : MonoBehaviour
 	[SerializeField] private GameObject toggleUnEquip;
 
 	[SerializeField] private Button buttonEquip;
+	public Button ButtonEquip => buttonEquip;
 	[SerializeField] private Button btnLevelUp;
+	public Button BtnLevelUp => btnLevelUp;
 	[SerializeField] private Button buttonEvolution;
+	public Button ButtonEvolution => buttonEvolution;
 	[SerializeField] private TextMeshProUGUI levelUpText;
 
 
@@ -55,6 +59,7 @@ public class UIManagementPetInfo : MonoBehaviour
 		else
 		{
 			parent.EquipPet();
+
 		}
 	}
 
@@ -66,7 +71,21 @@ public class UIManagementPetInfo : MonoBehaviour
 		toggleEquip.SetActive(petSlot.isEquipped == false && info.unlock);
 		toggleUnEquip.SetActive(petSlot.isEquipped && info.unlock);
 		toggleDisableEquip.SetActive(info.unlock == false);
-		nameValueText.text = info.ItemName;
+
+
+
+		var data = PlatformManager.CommonData.PetEvolutionLevelDataList[info.evolutionLevel];
+		bool canEvolution = info.Count >= data.consumeCount;
+
+		var currencyItem = PlatformManager.UserDB.inventory.FindCurrency(CurrencyType.PET_UPGRADE_ITEM);
+		IdleNumber value = info.LevelUpNeedCount();
+		bool canLevelUp = currencyItem.Value >= value;
+
+		btnLevelUp.interactable = info.unlock && canLevelUp;
+
+		buttonEvolution.interactable = info.unlock && canEvolution;
+
+		nameValueText.text = PlatformManager.Language[info.ItemName];
 
 		UpdateItemLevelupInfo();
 
@@ -78,7 +97,7 @@ public class UIManagementPetInfo : MonoBehaviour
 		{
 			string tail = petInfo.equipAbilities[i].tailChar;
 			sb.Append($"{petInfo.equipAbilities[i].type.ToUIString()}");
-			sb.Append($" <color=yellow>{petInfo.equipAbilities[i].GetValue(petInfo.level).ToString()}{tail}</color>");
+			sb.Append($" <color=yellow>{petInfo.equipAbilities[i].GetValue(petInfo.Level).ToString()}{tail}</color>");
 			sb.Append('\n');
 		}
 		equipAbliityText.text = $"{sb.ToString()}";
@@ -88,11 +107,21 @@ public class UIManagementPetInfo : MonoBehaviour
 		{
 			string tail = petInfo.ownedAbilities[i].tailChar;
 			sb.Append($"{petInfo.ownedAbilities[i].type.ToUIString()}");
-			sb.Append($" <color=yellow>{petInfo.ownedAbilities[i].GetValue(petInfo.level).ToString()}{tail}</color>");
+			sb.Append($" <color=yellow>{petInfo.ownedAbilities[i].GetValue(petInfo.Level).ToString()}{tail}</color>");
 			sb.Append('\n');
 		}
 
 		ownedAbilityText.text = $"{sb.ToString()}";
+
+		if (petInfo.PetSkill != null)
+		{
+			textPetSkill.text = petInfo.PetSkill.Description;
+		}
+		else
+		{
+			textPetSkill.text = "";
+		}
+
 	}
 	public void OnClickShowLevelUp()
 	{

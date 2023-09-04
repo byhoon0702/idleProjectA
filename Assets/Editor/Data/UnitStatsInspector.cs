@@ -10,7 +10,7 @@ public class UnitStatsInspector : Editor
 	UnitStats unitStats;
 	private void OnEnable()
 	{
-		unitStats = target as UnitStats;
+		//unitStats = target as UnitStats;
 	}
 	public override void OnInspectorGUI()
 	{
@@ -18,11 +18,11 @@ public class UnitStatsInspector : Editor
 
 		if (GUILayout.Button("Generate"))
 		{
-			unitStats.Generate();
-			EditorUtility.SetDirty(unitStats);
+			//unitStats.Generate();
+			//EditorUtility.SetDirty(unitStats);
 
-			AssetDatabase.SaveAssetIfDirty(unitStats);
-			AssetDatabase.Refresh();
+			//AssetDatabase.SaveAssetIfDirty(unitStats);
+			//AssetDatabase.Refresh();
 		}
 	}
 }

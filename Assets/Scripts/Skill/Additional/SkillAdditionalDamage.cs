@@ -34,7 +34,7 @@ public class SkillAdditionalDamage : ScriptableObject
 		{
 			power = target.AttackPower;
 		}
-		HitInfo hitinfo = new HitInfo(caster, power);
-		target.AdditionalDamage(info, hitinfo);
+		//HitInfo hitinfo = new HitInfo(caster, power);
+		//target.AdditionalDamage(info, hitinfo);
 	}
 }

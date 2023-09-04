@@ -8,12 +8,15 @@ using JetBrains.Annotations;
 public class UIManagementSkillInfo : MonoBehaviour
 {
 	[SerializeField] private Button buttonEquip;
+	public Button ButtonEquip => buttonEquip;
 	[SerializeField] private GameObject objEquip;
 	[SerializeField] private GameObject objUnequip;
 	[SerializeField] private GameObject objUnableEquip;
 
 	[SerializeField] private Button buttonLevelup;
-	[SerializeField] private Button buttonSkillLearn;
+	public Button ButtonLevelup => buttonLevelup;
+	[SerializeField] private Button buttonEvolution;
+	public Button ButtonEvolution => buttonEvolution;
 
 	[SerializeField] private UISkillSlot skillSlot;
 	[SerializeField] private TextMeshProUGUI textSkillName;
@@ -28,10 +31,10 @@ public class UIManagementSkillInfo : MonoBehaviour
 		buttonEquip.onClick.AddListener(OnClickEquip);
 		buttonLevelup.onClick.RemoveAllListeners();
 		buttonLevelup.onClick.AddListener(OnClickLevelUP);
-		buttonSkillLearn.onClick.RemoveAllListeners();
-		buttonSkillLearn.onClick.AddListener(OnClickLearn);
-
+		buttonEvolution.onClick.RemoveAllListeners();
+		buttonEvolution.onClick.AddListener(OnClickEvolution);
 	}
+
 	public void OnUpdate(UIManagementSkill _parent, RuntimeData.SkillInfo _info)
 	{
 		parent = _parent;
@@ -42,25 +45,26 @@ public class UIManagementSkillInfo : MonoBehaviour
 
 	private void UpdateInfo()
 	{
-		bool isAvailable = info.level > 0;
+		bool isAvailable = info.Level > 0;
 
-		buttonSkillLearn.gameObject.SetActive(false);
 		objEquip.SetActive(isAvailable && info.isEquipped == false);
 		objUnequip.SetActive(isAvailable && info.isEquipped);
 		objUnableEquip.SetActive(isAvailable == false);
-		//buttonLevelup.gameObject.SetActive(isAvailable);
-		buttonLevelup.gameObject.SetActive(false);
+		buttonLevelup.gameObject.SetActive(isAvailable);
+		buttonEvolution.gameObject.SetActive(isAvailable);
 
 		textSkillName.text = info.Name;
 		textSkillCooldown.text = $"{info.CooldownValue}s";
+
 		textSkillDescription.text = info.Description;
 
 		skillSlot.OnUpdate(null, info, null);
+		skillSlot.ShowSlider(true);
 	}
 
 	public void OnClickEquip()
 	{
-		if (info.level == 0 || info.unlock == false)
+		if (info.Level == 0 || info.unlock == false)
 		{
 			return;
 		}
@@ -71,24 +75,22 @@ public class UIManagementSkillInfo : MonoBehaviour
 		else
 		{
 			parent.EquipSkill();
+
 		}
 	}
 
 	public void OnClickLevelUP()
 	{
-		//info.LevelUp();
-		//UpdateInfo();
-		parent.OnClickShowTree();
+		parent.OnClickLevelUp();
 	}
 
-	public void OnClickLearn()
+	public void OnClickEvolution()
 	{
-		if (info.IsMax())
+		if (info.EvolutionLevel == info.EvolutionMaxLevel)
 		{
+			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_warn_max_evolution"]);
 			return;
 		}
-		info.LevelUp();
-		UpdateInfo();
-		parent.OnUpdate(info.Tid);
+		parent.OnClickEvolution();
 	}
 }

@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
+  m_Name: RemoteConfigDataStoreAsset
+  m_EditorClassIdentifier: 
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"700dff56-108b-4e37-9d98-8bffdfedb984\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"Season\",\r\n      \"type\": \"string\",\r\n     
+    \"value\": \"Default\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
+    \"entityId\": \"c0e2f9c9-230a-4f3e-93c8-e7bd3d07f747\"\r\n    },\r\n    \"rs\":
+    {\r\n      \"key\": \"MESSAGES_ALL\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
+    null,\r\n      \"value\": {\r\n        \"messageList\": [\r\n          \"MESSAGE_001\",\r\n         
+    \"MESSAGE_002\"\r\n        ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"f401d2f0-7a00-4f97-bca1-75b865f91196\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"MESSAGE_001\",\r\n      \"type\": \"json\",\r\n     
+    \"schemaId\": null,\r\n      \"value\": {\r\n        \"title\": \"welcome\",\r\n       
+    \"content\": \"\uD658\uC601\uD569\uB2C8\uB2E4.\",\r\n        \"attachment\":
+    [\r\n          {\r\n            \"tid\": \"9100000001\",\r\n            \"amount\":
+    \"10000\"\r\n          }\r\n        ],\r\n        \"expirationPeriod\": \"0.00:50:00.00\"\r\n     
+    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"642ca8cb-cde2-4b92-beca-b4bd2045373b\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"Maintenance\",\r\n      \"type\": \"bool\",\r\n     
+    \"value\": false\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"36e5f0a5-d5b8-409f-a47f-c9b3f40a7e35\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"MESSAGE_002\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
+    null,\r\n      \"value\": {\r\n        \"title\": \"\uCCAB \uC2A4\uD14C\uC774\uC9C0
+    \uD074\uB9AC\uC5B4\",\r\n        \"content\": \"\uCCAB \uC2A4\uD14C\uC774\uC9C0.\",\r\n       
+    \"attachment\": [\r\n          {\r\n            \"tid\": \"9100000001\",\r\n           
+    \"amount\": \"12000\"\r\n          }\r\n        ],\r\n        \"expirationPeriod\":
+    \"0.00:50:00.00\"\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
+    \"entityId\": \"d2c2f163-5d9e-4cf8-a9f6-b70b46ef36af\"\r\n    },\r\n    \"rs\":
+    {\r\n      \"key\": \"ATTENDANCE_REWARD_DAILY\",\r\n      \"type\": \"json\",\r\n     
+    \"schemaId\": null,\r\n      \"value\": {\r\n        \"totalDays\": \"14\",\r\n       
+    \"secondsPerDay\": \"86400\",\r\n        \"dailyRewards\": [\r\n          {\r\n           
+    \"tid\": \"9100000001\",\r\n            \"quantity\": \"100\"\r\n          },\r\n         
+    {\r\n            \"tid\": \"9100000002\",\r\n            \"quantity\": \"10\"\r\n         
+    },\r\n          {\r\n            \"tid\": \"9100000001\",\r\n            \"quantity\":
+    \"200\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"20\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"5569b096-3edb-4c3f-8ac0-c3db7994849c\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"DAILY_REWARDS_CONFIG\",\r\n      \"type\":
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {}\r\n    }\r\n  }\r\n]"
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"700dff56-108b-4e37-9d98-8bffdfedb984\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"Season\",\r\n      \"type\": \"string\",\r\n     
+    \"value\": \"Default\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
+    \"entityId\": \"c0e2f9c9-230a-4f3e-93c8-e7bd3d07f747\"\r\n    },\r\n    \"rs\":
+    {\r\n      \"key\": \"MESSAGES_ALL\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
+    null,\r\n      \"value\": {\r\n        \"messageList\": [\r\n          \"MESSAGE_001\",\r\n         
+    \"MESSAGE_002\"\r\n        ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"f401d2f0-7a00-4f97-bca1-75b865f91196\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"MESSAGE_001\",\r\n      \"type\": \"json\",\r\n     
+    \"schemaId\": null,\r\n      \"value\": {\r\n        \"title\": \"welcome\",\r\n       
+    \"content\": \"\uD658\uC601\uD569\uB2C8\uB2E4.\",\r\n        \"attachment\":
+    [\r\n          {\r\n            \"tid\": \"9100000001\",\r\n            \"amount\":
+    \"10000\"\r\n          }\r\n        ],\r\n        \"expirationPeriod\": \"0.00:50:00.00\"\r\n     
+    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"642ca8cb-cde2-4b92-beca-b4bd2045373b\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"Maintenance\",\r\n      \"type\": \"bool\",\r\n     
+    \"value\": false\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"36e5f0a5-d5b8-409f-a47f-c9b3f40a7e35\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"MESSAGE_002\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
+    null,\r\n      \"value\": {\r\n        \"title\": \"\uCCAB \uC2A4\uD14C\uC774\uC9C0
+    \uD074\uB9AC\uC5B4\",\r\n        \"content\": \"\uCCAB \uC2A4\uD14C\uC774\uC9C0.\",\r\n       
+    \"attachment\": [\r\n          {\r\n            \"tid\": \"9100000001\",\r\n           
+    \"amount\": \"12000\"\r\n          }\r\n        ],\r\n        \"expirationPeriod\":
+    \"0.00:50:00.00\"\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
+    \"entityId\": \"d2c2f163-5d9e-4cf8-a9f6-b70b46ef36af\"\r\n    },\r\n    \"rs\":
+    {\r\n      \"key\": \"ATTENDANCE_REWARD_DAILY\",\r\n      \"type\": \"json\",\r\n     
+    \"schemaId\": null,\r\n      \"value\": {\r\n        \"totalDays\": \"14\",\r\n       
+    \"secondsPerDay\": \"86400\",\r\n        \"dailyRewards\": [\r\n          {\r\n           
+    \"tid\": \"9100000001\",\r\n            \"quantity\": \"100\"\r\n          },\r\n         
+    {\r\n            \"tid\": \"9100000002\",\r\n            \"quantity\": \"10\"\r\n         
+    },\r\n          {\r\n            \"tid\": \"9100000001\",\r\n            \"quantity\":
+    \"200\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"20\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          },\r\n          {\r\n            \"tid\": \"9100000002\",\r\n           
+    \"quantity\": \"10\"\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"5569b096-3edb-4c3f-8ac0-c3db7994849c\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"DAILY_REWARDS_CONFIG\",\r\n      \"type\":
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {}\r\n    }\r\n  }\r\n]"
+  _environments: "[\r\n  {\r\n    \"projectId\": \"50233666-2001-4cf3-ac38-b509e68826e7\",\r\n   
+    \"name\": \"editor\",\r\n    \"id\": \"9a4a4bac-4308-490a-8b71-b10bf8957886\",\r\n   
+    \"isDefault\": false,\r\n    \"createdAt\": \"2023-07-21T06:13:13Z\",\r\n   
+    \"updatedAt\": \"2023-07-21T06:13:13Z\"\r\n  },\r\n  {\r\n    \"projectId\":
+    \"50233666-2001-4cf3-ac38-b509e68826e7\",\r\n    \"name\": \"production\",\r\n   
+    \"id\": \"e4fec3ab-d79b-46a5-8701-d9ebc057b4d2\",\r\n    \"isDefault\": true,\r\n   
+    \"createdAt\": \"2023-07-11T05:49:22Z\",\r\n    \"updatedAt\": \"2023-07-11T05:49:22Z\"\r\n 
+    }\r\n]"

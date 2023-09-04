@@ -24,7 +24,7 @@ public class SpawnManager : MonoBehaviour
 
 	private PlayerUnit playerUnit = null;
 	private List<Unit> enemyList = new List<Unit>();
-	public List<Pet> petList { get; private set; } = new List<Pet>();
+	public Pet[] petList { get; private set; } = new Pet[3];
 	private HittableUnit lastUnit = null;
 
 	[SerializeField] private int gridSize = 4;
@@ -132,7 +132,7 @@ public class SpawnManager : MonoBehaviour
 
 	public void SpawnPet()
 	{
-		var petslot = GameManager.UserDB.petContainer.PetSlots;
+		var petslot = PlatformManager.UserDB.petContainer.PetSlots;
 		// 펫 생성
 
 		foreach (var unit in petList)
@@ -143,7 +143,7 @@ public class SpawnManager : MonoBehaviour
 			}
 			Destroy(unit.gameObject);
 		}
-		petList.Clear();
+
 		int index = 0;
 		for (int i = 0; i < petslot.Length; i++)
 		{
@@ -159,7 +159,7 @@ public class SpawnManager : MonoBehaviour
 
 			pet.gameObject.SetActive(true);
 
-			petList.Add(pet);
+			petList[i] = pet;
 			pet.transform.SetParent(playerRoot);
 			index++;
 		}
@@ -171,7 +171,7 @@ public class SpawnManager : MonoBehaviour
 		{
 			return;
 		}
-		var petslot = GameManager.UserDB.petContainer.PetSlots;
+		var petslot = PlatformManager.UserDB.petContainer.PetSlots;
 		Pet pet = MakePet(petslot[index], index + 1, playerUnit, out var petSpawnResult);
 		if (pet == null)
 		{
@@ -180,13 +180,9 @@ public class SpawnManager : MonoBehaviour
 
 		pet.gameObject.SetActive(true);
 
-		if (index < petList.Count)
+		if (index < petList.Length)
 		{
 			petList[index] = pet;
-		}
-		else
-		{
-			petList.Add(pet);
 		}
 
 		pet.transform.SetParent(playerRoot);
@@ -202,12 +198,13 @@ public class SpawnManager : MonoBehaviour
 		{
 			return;
 		}
-		if (index < petList.Count)
+		if (index < petList.Length)
 
 		{
 			if (petList[index] != null)
 			{
 				Destroy(petList[index].gameObject);
+				petList[index] = null;
 			}
 
 		}
@@ -215,9 +212,16 @@ public class SpawnManager : MonoBehaviour
 
 	public void ChangePet(int index)
 	{
-		var petslot = GameManager.UserDB.petContainer.PetSlots;
-		Vector3 pos = petList[index].transform.position;
-		Destroy(petList[index].gameObject);
+		var petslot = PlatformManager.UserDB.petContainer.PetSlots;
+
+		bool isChange = false;
+		Vector3 pos = Vector3.zero;
+		if (petList[index] != null)
+		{
+			isChange = true;
+			pos = petList[index].transform.position;
+			Destroy(petList[index].gameObject);
+		}
 
 		if (playerUnit == null)
 		{
@@ -233,9 +237,11 @@ public class SpawnManager : MonoBehaviour
 
 		petList[index] = pet;
 		pet.transform.SetParent(playerRoot);
-		pet.transform.position = pos;
+		if (isChange)
+		{
+			pet.transform.position = pos;
+		}
 	}
-
 
 	private List<PetData> GetEquipPetData()
 	{
@@ -373,8 +379,8 @@ public class SpawnManager : MonoBehaviour
 			var info = enemyInfoList[index];
 
 			Vector3 random = UnityEngine.Random.insideUnitSphere;
-			int minusX = (random.x < 0) ? -1 : 1;
-			int minusZ = (random.z < 0) ? -1 : 1;
+			float minusX = (random.x < 0) ? -1 : 1;
+			float minusZ = (random.z < 0) ? -1 : 1;
 			Vector2 pos = new Vector2(UnityEngine.Random.Range(minDistance, maxDistance) + Mathf.Abs(random.x), UnityEngine.Random.Range(minDistance, maxDistance) + Mathf.Abs(random.z));
 
 			var enemyUnit = MakeEnemy(info, new Vector3(pos.x * minusX, pos.y * minusZ, 0), out VResult enemySpawnResult);
@@ -393,13 +399,13 @@ public class SpawnManager : MonoBehaviour
 		return true;
 	}
 
-	public bool SpawnLast(UnitData _spawnInfo, float _distance)
+	public bool SpawnLast(RuntimeData.StageMonsterInfo _spawnInfo, Vector3 pos, float _distance)
 	{
 		float xPosition = UnitManager.it.Player.position.x + _distance;
 
-		if (_spawnInfo.type == UnitType.TreasureBox)
+		if (_spawnInfo.data.type == UnitType.TreasureBox)
 		{
-			MakeTreasureBox(_spawnInfo, xPosition, out var result);
+			MakeTreasureBox(_spawnInfo.data, pos, out var result);
 			if (result.Fail())
 			{
 				PopAlert.Create(result);
@@ -409,7 +415,7 @@ public class SpawnManager : MonoBehaviour
 		}
 		else
 		{
-			MakeBoss(_spawnInfo, out var result);
+			MakeBoss(_spawnInfo, pos, out var result);
 			if (result.Fail())
 			{
 				PopAlert.Create(result);
@@ -421,7 +427,7 @@ public class SpawnManager : MonoBehaviour
 		return true;
 	}
 
-	public bool SpawnImmotal(UnitData _spawnInfo, float _distance)
+	public bool SpawnImmotal(RuntimeData.StageMonsterInfo _spawnInfo, float _distance)
 	{
 		float xPosition = UnitManager.it.Player.position.x + _distance;
 		MakeImmotal(_spawnInfo, xPosition);
@@ -429,7 +435,7 @@ public class SpawnManager : MonoBehaviour
 		return true;
 	}
 
-	private EnemyUnit MakeEnemy(UnitData _spawnInfo, Vector3 _pos, out VResult _outResult)
+	private EnemyUnit MakeEnemy(RuntimeData.StageMonsterInfo _spawnInfo, Vector3 _pos, out VResult _outResult)
 	{
 		_outResult = new VResult();
 		EnemyUnit enemyUnit = Instantiate(enemyUnitPrefab);
@@ -440,7 +446,7 @@ public class SpawnManager : MonoBehaviour
 			return null;
 		}
 
-		enemyUnit.name = _spawnInfo.name;
+		enemyUnit.name = _spawnInfo.data.name;
 		enemyUnit.transform.SetParent(enemyRoot);
 		enemyUnit.transform.position = _pos;
 		enemyUnit.Spawn(_spawnInfo);
@@ -451,11 +457,11 @@ public class SpawnManager : MonoBehaviour
 		return enemyUnit;
 	}
 
-	private TreasureBox MakeTreasureBox(UnitData _spawnInfo, float _xPosition, out VResult _outResult)
+	private TreasureBox MakeTreasureBox(UnitData _spawnInfo, Vector3 pos, out VResult _outResult)
 	{
 		_outResult = new VResult();
 		TreasureBox treasureBox = Instantiate(treasureBoxPrefab);
-		Vector3 pos = new Vector3(UnityEngine.Random.Range(2, 6), UnityEngine.Random.Range(2, 6), 0);
+		pos = new Vector3(UnityEngine.Random.Range(2, 6), UnityEngine.Random.Range(2, 6), 0);
 
 		lastUnit = treasureBox;
 
@@ -476,7 +482,7 @@ public class SpawnManager : MonoBehaviour
 		return treasureBox;
 	}
 
-	public EnemyUnit MakeBoss(UnitData _bossInfo, out VResult _outResult)
+	public EnemyUnit MakeBoss(RuntimeData.StageMonsterInfo _bossInfo, out VResult _outResult)
 	{
 		_outResult = new VResult();
 		EnemyUnit bossUnit = Instantiate(enemyUnitPrefab);
@@ -490,7 +496,7 @@ public class SpawnManager : MonoBehaviour
 			return null;
 		}
 
-		bossUnit.name = _bossInfo.name;
+		bossUnit.name = _bossInfo.data.name;
 		bossUnit.transform.SetParent(enemyRoot);
 		bossUnit.transform.position = pos;
 		bossUnit.isBoss = true;
@@ -503,7 +509,7 @@ public class SpawnManager : MonoBehaviour
 		_outResult.SetOk();
 		return bossUnit;
 	}
-	public EnemyUnit MakeBoss(UnitData _bossInfo, Vector3 pos, out VResult _outResult)
+	public EnemyUnit MakeBoss(RuntimeData.StageMonsterInfo _bossInfo, Vector3 pos, out VResult _outResult)
 	{
 		_outResult = new VResult();
 		EnemyUnit bossUnit = Instantiate(enemyUnitPrefab);
@@ -516,7 +522,7 @@ public class SpawnManager : MonoBehaviour
 			return null;
 		}
 
-		bossUnit.name = _bossInfo.name;
+		bossUnit.name = _bossInfo.data.name;
 		bossUnit.transform.SetParent(enemyRoot);
 		bossUnit.transform.position = pos;
 		bossUnit.isBoss = true;
@@ -530,7 +536,7 @@ public class SpawnManager : MonoBehaviour
 		return bossUnit;
 	}
 
-	public EnemyUnit MakeImmotal(UnitData _bossInfo, float _xPosition)
+	public EnemyUnit MakeImmotal(RuntimeData.StageMonsterInfo _bossInfo, float _xPosition)
 	{
 		EnemyUnit bossUnit = Instantiate(immotalUnitPrefab);
 		Vector3 pos = new Vector3(0, 3f, 0);
@@ -542,7 +548,7 @@ public class SpawnManager : MonoBehaviour
 			VLog.LogError($"EnemyUnit Spawn Fail. Can not find Resource");
 			return null;
 		}
-		bossUnit.name = _bossInfo.name;
+		bossUnit.name = _bossInfo.data.name;
 		bossUnit.transform.SetParent(enemyRoot);
 		bossUnit.transform.position = pos;
 		bossUnit.isBoss = true;
@@ -600,7 +606,7 @@ public class SpawnManager : MonoBehaviour
 		}
 
 		enemyList.Clear();
-		petList.Clear();
+		petList = new Pet[3];
 	}
 
 	public void ClearDeadEnemy()
@@ -643,4 +649,5 @@ public class SpawnManager : MonoBehaviour
 
 		playerUnit.ResetUnit();
 	}
+
 }

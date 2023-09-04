@@ -20,8 +20,8 @@ public class UIBottomMenu : MonoBehaviour
 	public Toggle ToggleEquipment => toggleEquipment;
 	public Toggle ShopToggle => toggleShop;
 	public Toggle DungeonToggle => toggleDungeon;
-	public Toggle SkillToggle => togglePet;
-
+	public Toggle TogglePet => togglePet;
+	public Toggle ToggleGacha => toggleGacha;
 
 	private void Awake()
 	{
@@ -34,8 +34,8 @@ public class UIBottomMenu : MonoBehaviour
 		{
 			if (_isOn == true)
 			{
-				GameUIManager.it.OnClose();
-				UIController.it.ToggleManagement();
+				GameUIManager.it.Close();
+				UIController.it.ToggleManagement(() => { toggleHero.isOn = false; });
 			}
 			else
 			{
@@ -45,10 +45,11 @@ public class UIBottomMenu : MonoBehaviour
 
 		toggleEquipment.onValueChanged.AddListener((_isOn) =>
 		{
+			Debug.Log($"Toggle is {_isOn}");
 			if (_isOn == true)
 			{
-				GameUIManager.it.OnClose();
-				UIController.it.ToggleEquipment();
+				GameUIManager.it.Close();
+				UIController.it.ToggleEquipment(onClose: () => { toggleEquipment.isOn = false; });
 			}
 			else
 			{
@@ -60,8 +61,8 @@ public class UIBottomMenu : MonoBehaviour
 		{
 			if (_isOn == true)
 			{
-				GameUIManager.it.OnClose();
-				UIController.it.ToggleRelic();
+				GameUIManager.it.Close();
+				UIController.it.ToggleRelic(() => { toggleRelic.isOn = false; });
 			}
 			else
 			{
@@ -74,8 +75,8 @@ public class UIBottomMenu : MonoBehaviour
 		{
 			if (_isOn == true)
 			{
-				GameUIManager.it.OnClose();
-				UIController.it.ShowDungeonList();
+				GameUIManager.it.Close();
+				UIController.it.ShowDungeonList(() => { toggleDungeon.isOn = false; });
 			}
 			else
 			{
@@ -88,8 +89,8 @@ public class UIBottomMenu : MonoBehaviour
 		{
 			if (_isOn == true)
 			{
-				GameUIManager.it.OnClose();
-				UIController.it.TogglePet();
+				GameUIManager.it.Close();
+				UIController.it.TogglePet(() => { togglePet.isOn = false; });
 			}
 			else
 			{
@@ -101,8 +102,8 @@ public class UIBottomMenu : MonoBehaviour
 		{
 			if (_isOn == true)
 			{
-				GameUIManager.it.OnClose();
-				UIController.it.ToggleGacha();
+				GameUIManager.it.Close();
+				UIController.it.ToggleGacha(() => { toggleGacha.isOn = false; });
 			}
 			else
 			{
@@ -113,11 +114,8 @@ public class UIBottomMenu : MonoBehaviour
 		{
 			if (_isOn == true)
 			{
-				GameUIManager.it.OnClose();
-				UIController.it.InactiveAllMainUI();
-				ToastUI.it.Enqueue("현재 개발중입니다.");
-				//UIController.it.ToggleShop();
-				toggleShop.isOn = false;
+				GameUIManager.it.Close();
+				UIController.it.ToggleShop(() => { toggleShop.isOn = false; });
 			}
 			else
 			{

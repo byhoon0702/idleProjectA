@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class DataLoadingState : RootState
 {
@@ -8,7 +9,7 @@ public class DataLoadingState : RootState
 	{
 
 	}
-	public override FSM OnEnter()
+	public override async Task<IntroFSM> OnEnter()
 	{
 		elapsedTime = 0;
 
@@ -17,11 +18,12 @@ public class DataLoadingState : RootState
 
 		LoadConfig();
 		DataManager.LoadAllJson();
+
 		return this;
 
 
 	}
-	public override FSM RunNextState(float time)
+	public override IntroFSM RunNextState(float time)
 	{
 		return this;
 	}
@@ -38,7 +40,7 @@ public class DataLoadingState : RootState
 		if (elapsedTime > 0.1f)
 		{
 			Intro.it.SetActiveProgressBar(false);
-			Intro.it.ChangeState(IntroState_e.LOGIN);
+			Intro.it.ShowTermsAgreementPopup();
 		}
 	}
 

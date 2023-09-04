@@ -29,9 +29,9 @@ public class BattleRecord
 	/// </summary>
 	public void RecordHeal(HealInfo _heal, IdleNumber _healValue)
 	{
-		DPSInfo info = FinddDPSInfo(_heal.healer);
+		//DPSInfo info = FinddDPSInfo(_heal.healer);
 
-		info.hpRecovery += _healValue;
+		//info.hpRecovery += _healValue;
 	}
 
 	private DPSInfo FinddDPSInfo(AttackerType attackerType)
