@@ -71,21 +71,8 @@ public enum CurrencyType
 	CASH = 1000,
 
 	ADS = 2000,
-	ADS_A = 2001,
-	ADS_B = 2002,
-	ADS_C = 2003,
-	ADS_D = 2004,
-	ADS_E = 2005,
-	ADS_F = 2006,
-	ADS_G = 2007,
-	ADS_H = 2008,
-	ADS_I = 2009,
-	ADS_J = 2010,
-	ADS_K = 2011,
-	ADS_L = 2012,
-	ADS_M = 2013,
-	ADS_N = 2014,
-	ADS_O = 2015,
+
+	EVENT_CURRENCY = 3000,
 
 	BREAKTHROUGHT_ITEM_D = 20001,
 	BREAKTHROUGHT_ITEM_C = 20002,
@@ -114,6 +101,7 @@ public class CurrencyData : ItemData
 	public CurrencyType type;
 	public string refillValue;
 	public string maxValue;
+	public bool hideUI;
 }
 
 [System.Serializable]

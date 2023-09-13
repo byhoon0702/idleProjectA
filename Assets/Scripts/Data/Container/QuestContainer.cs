@@ -23,6 +23,7 @@ public class QuestContainer : BaseContainer
 	{
 		get
 		{
+			allQuestClear = true;
 			if (mainQuestList == null || mainQuestList.Count == 0)
 			{
 				return null;
@@ -34,6 +35,8 @@ public class QuestContainer : BaseContainer
 				{
 					if (mainQuestList[i].progressState != QuestProgressState.END)
 					{
+						allQuestClear = false;
+						OnQuestCompleteEvent?.Invoke(currentMainQuest);
 						currentMainQuest = mainQuestList[i];
 						currentMainQuest.SetReward();
 						break;
@@ -41,12 +44,17 @@ public class QuestContainer : BaseContainer
 				}
 			}
 
+
 			if (currentMainQuest == null || currentMainQuest.Tid == 0)
 			{
 
 				currentMainQuest = mainQuestList[0];
 				currentMainQuest.SetReward();
 
+			}
+			if (currentMainQuest.progressState == QuestProgressState.END)
+			{
+				return null;
 			}
 			if (currentMainQuest.progressState == QuestProgressState.ACTIVE || currentMainQuest.progressState == QuestProgressState.NONE)
 			{
@@ -59,6 +67,8 @@ public class QuestContainer : BaseContainer
 	public List<RuntimeData.QuestInfo> RepeatQuestList => repeatQuestList;
 
 	public static event Action OnUpdate;
+
+	public bool allQuestClear { get; private set; }
 	public override void Dispose()
 	{
 
@@ -94,7 +104,10 @@ public class QuestContainer : BaseContainer
 	}
 	public override void DailyResetData()
 	{
-
+		for (int i = 0; i < dailyQuestList.Count; i++)
+		{
+			dailyQuestList[i].Reset();
+		}
 	}
 	public void ProgressAdd(QuestGoalType goal, long tid, IdleNumber count)
 	{
@@ -175,9 +188,9 @@ public class QuestContainer : BaseContainer
 		}
 
 		CurrentMainQuest?.OnGetReward(true, true);
-		OnQuestCompleteEvent?.Invoke(CurrentMainQuest);
 
 	}
+
 	public static event Action<RuntimeData.QuestInfo> OnQuestCompleteEvent;
 
 	public RuntimeData.QuestInfo GetNonMainQuest()

@@ -40,8 +40,20 @@ public class StageInfinity : StageRule
 
 	public override void AddReward()
 	{
-		StageManager.it.CurrentStage.SetStageReward((IdleNumber)StageManager.it.currentKillCount);
-		PlatformManager.UserDB.AddRewards(StageManager.it.CurrentStage.StageClearReward, false);
+		var currentStage = StageManager.it.CurrentStage;
+
+		currentStage.SetReward((IdleNumber)StageManager.it.currentKillCount);
+		List<RuntimeData.RewardInfo> rewardList = new List<RuntimeData.RewardInfo>();
+		List<RuntimeData.RewardInfo> totalrewardList = new List<RuntimeData.RewardInfo>();
+
+		//totalrewardList.AddRange(StageManager.it.CurrentStage.StageClearReward);
+		//totalrewardList.Add(currentStage.MonsterExp);
+		totalrewardList.Add(currentStage.MonsterGold);
+		totalrewardList.AddRange(currentStage.GetMonsterRewardList());
+		displayRewardList = new List<RuntimeData.RewardInfo>();
+		rewardList = RewardUtil.ReArrangReward(totalrewardList);
+		displayRewardList.AddRange(rewardList);
+		PlatformManager.UserDB.AddRewards(rewardList, false);
 	}
 
 	private void SpawnUpdate(float time)

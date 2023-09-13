@@ -15,6 +15,7 @@ public class EnemyUnit : Unit
 	public override float SearchRange => info.searchRange;
 	public override float AttackTime => info.attackTime;
 	public override IdleNumber AttackPower => info.AttackPower();
+	public override IdleNumber SkillBuffValue => (IdleNumber)0;
 	public override HitInfo HitInfo
 	{
 		get
@@ -163,7 +164,7 @@ public class EnemyUnit : Unit
 				textType = TextType.CRITICAL;
 			}
 
-			GameUIManager.it.ShowFloatingText(correctionDamage, HeadPosition, reverse, textType);
+			GameUIManager.it.ShowFloatingText(correctionDamage, HeadPosition, reverse, textType, _hitInfo.sprite);
 			ShakeUnit();
 			StageManager.it.cumulativeDamage += correctionDamage;
 			currentMode?.OnHit(_hitInfo);
@@ -334,7 +335,7 @@ public class EnemyUnit : Unit
 
 			UIController.it.UiStageInfo.RefreshKillCount();
 			ChangeState(StateType.DEATH);
-			//GameSetting.Instance.FxChanged -= OnFxChange;
+			PlatformManager.UserDB.buffContainer.GainExp();
 		}
 	}
 	void KillReward()
@@ -355,7 +356,7 @@ public class EnemyUnit : Unit
 
 		if (exp > 0)
 		{
-			GameObjectPoolManager.it.fieldItemPool.Get(out FieldItem fieldItem);
+			FieldItemObjectPool.it.fieldItemPool.Get(out FieldItem fieldItem);
 			fieldItem.Appear(2, transform.position, UnitManager.it.Player.transform);
 
 			StageManager.it.AddAcquiredItem(1, new AddItemInfo(0, exp, RewardCategory.EXP));
@@ -374,7 +375,7 @@ public class EnemyUnit : Unit
 
 		if (gold > 0)
 		{
-			GameObjectPoolManager.it.fieldItemPool.Get(out FieldItem fieldItem);
+			FieldItemObjectPool.it.fieldItemPool.Get(out FieldItem fieldItem);
 			fieldItem.Appear(0, transform.position, UnitManager.it.Player.transform);
 			StageManager.it.AddAcquiredItem(goldItem.Tid, new AddItemInfo(goldItem.Tid, gold, RewardCategory.Currency));
 			GameManager.it.SleepModeAcquiredGold(gold);
@@ -390,7 +391,7 @@ public class EnemyUnit : Unit
 				var list = new List<RewardInfo>();
 				if (reward.Category == RewardCategory.RewardBox)
 				{
-					list.AddRange(PlatformManager.UserDB.OpenRewardBox(reward));
+					list.AddRange(RewardUtil.OpenRewardBox(reward));
 				}
 				else
 				{
@@ -400,13 +401,18 @@ public class EnemyUnit : Unit
 				PlatformManager.UserDB.AddRewards(list, false);
 				StageManager.it.AddAcquiredItem(list);
 				GameManager.it.SleepModeAcquiredItem(list);
-				GameObjectPoolManager.it.fieldItemPool.Get(out FieldItem fieldItem);
-				fieldItem.Appear(1, transform.position, UnitManager.it.Player.transform);
+				FieldItemObjectPool.it.fieldItemPool.Get(out FieldItem fieldItem);
+
+				if (reward.Category == RewardCategory.Event_Currency)
+				{
+					fieldItem.Appear(3, reward.iconImage, transform.position, UnitManager.it.Player.transform);
+				}
+				else
+				{
+					fieldItem.Appear(1, transform.position, UnitManager.it.Player.transform);
+				}
 			}
 		}
-
-		PlatformManager.UserDB.buffContainer.GainExp();
-
 	}
 
 
@@ -435,15 +441,7 @@ public class EnemyUnit : Unit
 		HitInfo info = new HitInfo(gameObject.layer, totalAttackPower);
 
 
-		skillModule.ActivateSkill(skillSlot, info);
-		//if (skillSlot.item.Instant)
-		//{
-		//	skillModule.ActivateSkill(skillSlot, info);
-		//}
-		//else
-		//{
-		//	skillModule.RegisterUsingSkill(skillSlot, info);
-		//}
+		skillModule.ActivateSkill(skillSlot);
 
 		if (skillSlot.item.IsSkillState)
 		{
@@ -451,9 +449,7 @@ public class EnemyUnit : Unit
 		}
 
 		skillSlot.Use();
-		//DialogueManager.it.CreateSkillBubble(skillSlot.item.Name, this);
 
-		//unitAnimation.PlayAnimation(skillSlot.item.rawData.animation);
 		return true;
 	}
 	public void ChangePhase()
@@ -511,12 +507,12 @@ public class EnemyUnit : Unit
 		{
 			return;
 		}
-		info.stats.UpdataModifier(debuffInfo.ability.type, new StatsModifier(debuffInfo.ability.Value, StatModeType.SkillDebuff, debuffInfo));
+		info.stats.UpdataModifier(debuffInfo.type, new StatsModifier(debuffInfo.power, StatModeType.SkillDebuff, debuffInfo));
 	}
 
 	public override void AddBuff(AppliedBuff buffinfo)
 	{
-		info.stats.UpdataModifier(buffinfo.ability.type, new StatsModifier(buffinfo.ability.Value, StatModeType.Buff, buffinfo));
+		info.stats.UpdataModifier(buffinfo.type, new StatsModifier(buffinfo.power, StatModeType.Buff, buffinfo));
 	}
 	public override void RemoveBuff(AppliedBuff key)
 	{

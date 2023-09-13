@@ -4,13 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum EffectPosType
-{
-	Target,
-	Self,
-	HitPosition,
-	Effect,
-}
+
 
 [CreateAssetMenu(fileName = "New Skill", menuName = "ScriptableObject/Skill/New Skill", order = 1)]
 public class NewSkill : SkillCore

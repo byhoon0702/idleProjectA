@@ -61,12 +61,14 @@ public class DashAttack : SkillCore
 			if (distance > 1)
 			{
 				Vector2 dirVec = caster.HeadingToTarget();
-				caster.rigidbody2D.MovePosition(caster.rigidbody2D.position + dirVec * data.speed * Time.deltaTime);
+				Vector3 dash = StageManager.it.MoveRestrict(caster.rigidbody2D.position + dirVec * data.speed * Time.deltaTime);
+				caster.rigidbody2D.MovePosition(dash);
 				yield return null;
 			}
 			else
 			{
 				var target = caster.target;
+				caster.rigidbody2D.velocity = Vector2.zero;
 				if (target != null)
 				{
 					if (info.KnockbackPower > 0)

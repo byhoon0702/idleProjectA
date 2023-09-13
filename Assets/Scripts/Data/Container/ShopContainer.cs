@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-[System.Serializable]
-public class ShopDictionary : SerializableDictionary<ShopType, List<RuntimeData.ShopInfo>>
-{ }
 
 
 public class ShopContainer : BaseContainer
@@ -20,22 +17,18 @@ public class ShopContainer : BaseContainer
 	[SerializeField] private List<RuntimeData.ShopInfo> battlePassList = new List<RuntimeData.ShopInfo>();
 
 
-
-	public List<RuntimeData.ShopInfo> this[ShopType type]
+	public List<RuntimeData.ShopInfo> GetNormal(ShopType type)
 	{
-		get
+		switch (type)
 		{
-			switch (type)
-			{
-				case ShopType.PACKAGE: return packageList;
-				case ShopType.SALE: return salesList;
-				case ShopType.DIA: return diaList;
-				case ShopType.NORMAL: return normalList;
-				case ShopType.ADS: return adsList;
-				case ShopType.BATTLEPASS: return battlePassList;
-			}
-			return new List<RuntimeData.ShopInfo>();
+			case ShopType.PACKAGE: return packageList;
+			case ShopType.SALE: return salesList;
+			case ShopType.DIA: return diaList;
+			case ShopType.NORMAL: return normalList;
+			case ShopType.ADS: return adsList;
+			case ShopType.BATTLEPASS: return battlePassList;
 		}
+		return new List<RuntimeData.ShopInfo>();
 	}
 
 	public override void Dispose()
@@ -69,7 +62,6 @@ public class ShopContainer : BaseContainer
 		SetListRawData(ref adsList, sheet.GetDatas(ShopType.ADS));
 		SetListRawData(ref battlePassList, sheet.GetDatas(ShopType.BATTLEPASS));
 
-
 		PurchaseManager.Instance.Initialize();
 	}
 
@@ -86,6 +78,9 @@ public class ShopContainer : BaseContainer
 		AddDictionary(scriptableDictionary, shopItemObjects);
 		shopItemObjects = Resources.LoadAll<ShopItemObject>("RuntimeDatas/ShopItems/Adss");
 		AddDictionary(scriptableDictionary, shopItemObjects);
+
+		//shopItemObjects = Resources.LoadAll<ShopItemObject>("RuntimeDatas/ShopItems/Events");
+		//AddDictionary(scriptableDictionary, shopItemObjects);
 	}
 	public override void DailyResetData()
 	{
@@ -126,7 +121,7 @@ public class ShopContainer : BaseContainer
 		}
 	}
 
-	private void ResetList(List<RuntimeData.ShopInfo> list)
+	private void ResetList<T>(List<T> list) where T : RuntimeData.ShopInfo
 	{
 		for (int i = 0; i < list.Count; i++)
 		{

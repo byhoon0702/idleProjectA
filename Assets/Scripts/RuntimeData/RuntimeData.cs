@@ -197,8 +197,9 @@ public class ModifyInfo : BaseInfo
 			hyperRatio = (IdleNumber)(1 + (hyper / 100f));
 		}
 
+		var first = (finalValue * (1 + (multi / 100f)));
 
-		finalValue = (finalValue * (1 + (multi / 100f))) * buffRatio * adsbuffRatio * hyperRatio;
+		finalValue = first * buffRatio * adsbuffRatio * hyperRatio;
 
 		for (int i = 0; i < debuff.Count; i++)
 		{
@@ -223,7 +224,7 @@ namespace RuntimeData
 		void UpdateData();
 	}
 
-	public class ItemInfo : ModifyInfo
+	public class ItemInfo : BaseInfo
 	{
 		public bool unlock;
 		[SerializeField] protected int _level;
@@ -233,6 +234,9 @@ namespace RuntimeData
 		/// </summary>
 		[SerializeField] protected int _count;
 		public int Count => _count;
+
+		public virtual Sprite IconImage { get; protected set; }
+		public virtual string ItemName { get; protected set; }
 
 		public override void Load<T>(T info)
 		{
@@ -244,7 +248,7 @@ namespace RuntimeData
 			ItemInfo itemInfo = info as ItemInfo;
 			unlock = itemInfo.unlock;
 			_level = itemInfo._level;
-			_count = itemInfo._count;
+			_count = Mathf.Max(0, itemInfo._count);
 			if (unlock)
 			{
 				if (_level == 0)
@@ -271,7 +275,14 @@ namespace RuntimeData
 			{
 				_count -= count;
 			}
-
+		}
+		public bool Check(int count)
+		{
+			return _count >= count;
+		}
+		public virtual T1 Clone<T1>() where T1 : ItemInfo
+		{
+			return null;
 		}
 	}
 
@@ -292,6 +303,7 @@ namespace RuntimeData
 	[System.Serializable]
 	public class EquipItemInfo : ItemInfo
 	{
+		public override string ItemName => PlatformManager.Language[rawData.name];
 		private const int defaultMaxLevel = 100;
 		public int MaxLevel { get; private set; }
 
@@ -300,7 +312,7 @@ namespace RuntimeData
 
 		public EquipType type => rawData.equipType;
 
-		public Sprite Icon
+		public override Sprite IconImage
 		{
 			get
 			{
@@ -344,7 +356,6 @@ namespace RuntimeData
 			base.Load(info);
 			EquipItemInfo temp = info as EquipItemInfo;
 			breakthroughLevel = temp.breakthroughLevel;
-			SetDirty();
 			UpdateAbilities();
 			MaxLevel = PlatformManager.CommonData.EquipBreakThroughList[breakthroughLevel].maxLevel;
 		}
@@ -437,7 +448,6 @@ namespace RuntimeData
 		public override void SetLevel(int level)
 		{
 			_level = level;
-			SetDirty();
 			UpdateAbilities();
 		}
 
@@ -454,6 +464,8 @@ namespace RuntimeData
 			//return requirement.requirement;
 			return (IdleNumber)(first + second);
 		}
+
+
 	}
 
 

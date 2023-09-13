@@ -85,7 +85,7 @@ public class UIManagementPetInfo : MonoBehaviour
 
 		buttonEvolution.interactable = info.unlock && canEvolution;
 
-		nameValueText.text = PlatformManager.Language[info.ItemName];
+		nameValueText.text = info.ItemName;
 
 		UpdateItemLevelupInfo();
 
@@ -125,12 +125,22 @@ public class UIManagementPetInfo : MonoBehaviour
 	}
 	public void OnClickShowLevelUp()
 	{
+		if (petInfo.IsMaxLevel())
+		{
+			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_warn_max_level"]);
+			return;
+		}
 		parent.UiPopupPetLevelup.OnUpdate(parent, petInfo);
 
 	}
 
 	public void OnClickShowUpgrade()
 	{
+		if (petInfo.IsMaxEvolution())
+		{
+			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_warn_max_evolution"]);
+			return;
+		}
 		parent.UiPopupPetEvolution.OnUpdate(parent, petInfo);
 	}
 	private void OnUpgradeAllButtonClick()

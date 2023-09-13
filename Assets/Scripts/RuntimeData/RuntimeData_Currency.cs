@@ -10,24 +10,15 @@ namespace RuntimeData
 	[System.Serializable]
 	public class CurrencyInfo : ItemInfo
 	{
+		public override string ItemName => PlatformManager.Language[rawData.name];
 		[SerializeField] private IdleNumber value;
-		public override IdleNumber Value => value;
+		public IdleNumber Value => value;
 		public IdleNumber max { get; private set; }
 		public IdleNumber refill { get; private set; }
 		public CurrencyType type { get; private set; }
 		public CurrencyData rawData { get; private set; }
 
-		public Sprite IconImage
-		{
-			get
-			{
-				if (itemObject == null)
-				{
-					return null;
-				}
-				return itemObject.ItemIcon;
-			}
-		}
+		public override Sprite IconImage => itemObject != null ? itemObject.ItemIcon : null;
 		public CurrencyItemObject itemObject { get; private set; }
 		public CurrencyInfo()
 		{
@@ -41,7 +32,7 @@ namespace RuntimeData
 				return;
 			}
 			base.Load(info);
-			SetDirty();
+
 
 			CurrencyInfo currencyInfo = info as CurrencyInfo;
 
@@ -89,7 +80,7 @@ namespace RuntimeData
 			}
 
 			value -= cost;
-			value.Turncate();
+			value.NormalizeSelf();
 			EventCallbacks.CallCurrencyChanged(type);
 			return true;
 		}
@@ -103,7 +94,7 @@ namespace RuntimeData
 			}
 
 			value += money;
-			value.Turncate();
+			value.NormalizeSelf();
 			EventCallbacks.CallCurrencyChanged(type);
 			return true;
 		}
@@ -114,7 +105,7 @@ namespace RuntimeData
 				return;
 			}
 			value = money;
-			value.Turncate();
+			value.NormalizeSelf();
 			EventCallbacks.CallCurrencyChanged(type);
 		}
 	}
@@ -122,19 +113,10 @@ namespace RuntimeData
 	[System.Serializable]
 	public class RewardBoxInfo : ItemInfo
 	{
+		public override string ItemName => PlatformManager.Language[rawData.name];
 		public List<RewardInfo> rewardInfo;
 
-		public Sprite IconImage
-		{
-			get
-			{
-				if (itemObject == null)
-				{
-					return null;
-				}
-				return itemObject.ItemIcon;
-			}
-		}
+		public override Sprite IconImage => itemObject != null ? itemObject.ItemIcon : null;
 		public RewardBoxData rawData { get; private set; }
 
 		public RewardBoxItemObject itemObject { get; private set; }
@@ -172,7 +154,6 @@ namespace RuntimeData
 				return;
 			}
 			base.Load(info);
-			SetDirty();
 		}
 
 		public void AddRewardBox(int _count)
@@ -180,7 +161,23 @@ namespace RuntimeData
 			_count += _count;
 		}
 
+		public List<RewardInfo> Open()
+		{
+			List<RewardInfo> rewardInfos = new List<RewardInfo>();
+			List<RewardInfo> result = new List<RewardInfo>();
+			for (int i = 0; i < rewardInfo.Count; i++)
+			{
+				RuntimeData.RewardInfo reward = rewardInfo[i];
+				reward.UpdateCount();
+				rewardInfos.Add(reward);
 
+				result = RewardUtil.RandomReward(rewardInfos, RandomLogic.RewardBox);
+
+			}
+
+
+			return result;
+		}
 	}
 
 
@@ -272,7 +269,12 @@ namespace RuntimeData
 		{
 
 		}
+
 		public RewardInfo(long _tid, RewardCategory _category, Grade _grade, int _count) : this(_tid, _category, _grade, (IdleNumber)_count)
+		{
+
+		}
+		public RewardInfo(long _tid, RewardCategory _category, IdleNumber _count) : this(_tid, _category, Grade.D, _count)
 		{
 
 		}
@@ -299,7 +301,6 @@ namespace RuntimeData
 			fixedCount = countMin;
 			switch (category)
 			{
-				case RewardCategory.Ability: break;
 				case RewardCategory.Equip:
 					{
 						var data = DataManager.Get<EquipItemDataSheet>().Get(tid);
@@ -321,6 +322,8 @@ namespace RuntimeData
 
 					}
 					break;
+
+
 				case RewardCategory.Costume:
 					{
 						//Debug.Log("Reward Costume");
@@ -360,6 +363,7 @@ namespace RuntimeData
 						//Star = data.starLevel;
 					}
 					break;
+				case RewardCategory.Event_Currency:
 				case RewardCategory.Currency:
 					{
 						//Debug.Log("Reward Currency");
@@ -502,7 +506,7 @@ namespace RuntimeData
 	[System.Serializable]
 	public class PersistentItemInfo : ItemInfo
 	{
-
+		public override string ItemName => PlatformManager.Language[RawData.name];
 		public Sprite icon;
 		public PersistentItemData RawData { get; private set; }
 		public override void Load<T>(T info)

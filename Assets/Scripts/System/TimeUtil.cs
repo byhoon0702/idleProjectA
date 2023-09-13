@@ -487,9 +487,9 @@ public static class TimeUtil
 
 	public static DateTime NextDayResetTime()
 	{
-		var localResetTime = TodayResetTime();
-		localResetTime = localResetTime.AddDays(1);
-		return localResetTime;
+		var utcResetTime = TodayResetUtcTime();
+		utcResetTime = utcResetTime.AddDays(1);
+		return utcResetTime;
 	}
 
 	public static string NextDayResetTimeToString()

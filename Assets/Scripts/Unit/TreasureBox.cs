@@ -6,7 +6,7 @@ public class TreasureBox : HittableUnit
 {
 	public UnitData info;
 	public override IdleNumber AttackPower => (IdleNumber)0;
-
+	public override IdleNumber SkillBuffValue => (IdleNumber)0;
 
 	public override ControlSide ControlSide => ControlSide.ENEMY;
 	public override UnitType UnitType => UnitType.TreasureBox;
@@ -101,7 +101,7 @@ public class TreasureBox : HittableUnit
 				textType = TextType.CRITICAL;
 			}
 
-			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, textType);
+			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, textType, _hitInfo.sprite);
 			unitAnimation?.PlayDamageWhite();
 		}
 

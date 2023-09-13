@@ -43,6 +43,7 @@ namespace RuntimeData
 	[System.Serializable]
 	public class CostumeInfo : ItemInfo
 	{
+		public override string ItemName => PlatformManager.Language[rawData.name];
 		public CostumeType Type => rawData.costumeType;
 
 		public Cost Cost => rawData.cost;
@@ -50,8 +51,8 @@ namespace RuntimeData
 		public Grade grade => rawData.itemGrade;
 		public CostumeItemObject itemObject { get; private set; }
 		public CostumeData rawData { get; private set; }
-		public string ItemName => rawData.name;
 
+		public override Sprite IconImage => itemObject != null ? itemObject.ItemIcon : null;
 		public HyperData hyperData { get; private set; }
 		public HyperClassObject hyperClassObject { get; private set; }
 		public CurrencyItemObject Currency { get; private set; }

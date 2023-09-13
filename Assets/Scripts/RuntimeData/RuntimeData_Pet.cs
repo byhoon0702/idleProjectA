@@ -24,13 +24,13 @@ namespace RuntimeData
 		}
 
 
-		public string ItemName { get; private set; }
+		public override string ItemName => PlatformManager.Language[rawData.name];
 
 		//런타임에서 로드 할것
 		public PetItemObject itemObject { get; private set; }
 
 		public PetData rawData { get; private set; }
-		public Sprite Icon => itemObject != null ? itemObject.ItemIcon : null;
+		public override Sprite IconImage => itemObject != null ? itemObject.ItemIcon : null;
 		public GameObject PetObject => itemObject != null ? itemObject.PetObject : null;
 
 		public List<AbilityInfo> equipAbilities { get; private set; } = new List<AbilityInfo>();
@@ -40,6 +40,7 @@ namespace RuntimeData
 
 		public RuntimeData.SkillInfo PetSkill { get; private set; }
 		private int maxEvolutionLevel = 7;
+		private const int maxLevel = 100;
 		public PetInfo Clone()
 		{
 			PetInfo clone = new PetInfo();
@@ -75,17 +76,22 @@ namespace RuntimeData
 
 			UpdatePetSkill();
 		}
-		public bool CanLevelUp()
-		{
-			return _level < 100;
-		}
+
 		public override void SetRawData<T>(T data)
 		{
 			rawData = data as PetData;
 			tid = rawData.tid;
 			itemObject = PlatformManager.UserDB.petContainer.GetScriptableObject<PetItemObject>(tid);
 			UpdateAbilities();
-			ItemName = rawData.name;
+		}
+
+		public bool IsMaxLevel()
+		{
+			return Level == maxLevel;
+		}
+		public bool IsMaxEvolution()
+		{
+			return evolutionLevel == maxEvolutionLevel;
 		}
 
 		public bool Evolution(bool applyToUserDb = true)
@@ -163,6 +169,11 @@ namespace RuntimeData
 
 		public void LevelUP()
 		{
+			if (_level == maxLevel)
+			{
+				return;
+			}
+
 			_level++;
 			UpdateAbilities();
 			PlatformManager.UserDB.questContainer.ProgressAdd(QuestGoalType.LEVELUP_PET, tid, (IdleNumber)1);

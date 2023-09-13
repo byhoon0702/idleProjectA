@@ -92,7 +92,7 @@ public class UIAwakeningUpgradePopup : UIBase
 
 		var costumeInfo = PlatformManager.UserDB.costumeContainer.FindCostumeItem(_info.RawData.costumeTid);
 		_textAwakeningLevel.text = PlatformManager.Language[_info.RawData.name];
-		_textCostumeName.text = PlatformManager.Language[costumeInfo.ItemName];
+		_textCostumeName.text = costumeInfo.ItemName;
 
 		int maxLevel = _info.RawData.awakeningLevels[0].MaxLevel;
 		_textMaxLevel.text = $"LV.{maxLevel}";

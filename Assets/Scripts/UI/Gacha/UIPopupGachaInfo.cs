@@ -36,8 +36,8 @@ public class UIPopupGachaInfo : UIBase
 
 	private void OnUpdateButton()
 	{
-		objButtonNext.SetActive(_level < _info.MaxLevel);
-		objButtonPrev.SetActive(_level > 1);
+		objButtonNext.SetActive(_level + 1 < _info.MaxLevel);
+		objButtonPrev.SetActive(_level >= 0);
 	}
 	public void Refresh()
 	{
@@ -61,7 +61,7 @@ public class UIPopupGachaInfo : UIBase
 
 	public void OnClickNextLevel()
 	{
-		if (_level == _info.MaxLevel)
+		if (_level + 1 == _info.MaxLevel)
 		{
 			return;
 		}
@@ -71,7 +71,7 @@ public class UIPopupGachaInfo : UIBase
 
 	public void OnClickPrevLevel()
 	{
-		if (_level - 1 == 0)
+		if (_level - 1 < 0)
 		{
 			return;
 		}

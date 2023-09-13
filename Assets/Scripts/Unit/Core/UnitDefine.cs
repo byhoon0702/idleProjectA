@@ -55,14 +55,15 @@ public enum Targeting
 
 public enum RewardCategory
 {
-	Ability,
-	Equip,
-	Costume,
-	Pet,
-	Currency,
-	Skill,
-	EXP,
-	RewardBox,
-	Relic,
-	Persistent,
+	Ability = 0,
+	Equip = 1,
+	Costume = 2,
+	Pet = 3,
+	Currency = 4,
+	Skill = 5,
+	EXP = 6,
+	RewardBox = 7,
+	Relic = 8,
+	Persistent = 9,
+	Event_Currency = 10,
 }

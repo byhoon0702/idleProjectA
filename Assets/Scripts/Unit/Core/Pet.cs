@@ -17,6 +17,7 @@ public class Pet : Unit
 	public override IdleNumber Hp { get; set; }
 
 	public override IdleNumber MaxHp => (IdleNumber)100;
+	public override IdleNumber SkillBuffValue => follow.SkillBuffValue;
 
 	public override UnitType UnitType => UnitType.Pet;
 
@@ -144,7 +145,7 @@ public class Pet : Unit
 			unitAnimation.PlayAnimation(skillSlot.item.rawData.animation);
 			if (skillSlot.item.Instant)
 			{
-				skillModule.ActivateSkill(skillSlot, info);
+				skillModule.ActivateSkill(skillSlot);
 			}
 			else
 			{
@@ -153,7 +154,7 @@ public class Pet : Unit
 		}
 		else
 		{
-			skillModule.ActivateSkill(skillSlot, info);
+			skillModule.ActivateSkill(skillSlot);
 		}
 
 		if (skillSlot.item.IsSkillState)
@@ -161,10 +162,8 @@ public class Pet : Unit
 			ChangeState(StateType.SKILL, true);
 		}
 
-
 		skillSlot.Use();
 		//DialogueManager.it.CreateSkillBubble(skillSlot.item.Name, this);
-
 
 		return true;
 	}

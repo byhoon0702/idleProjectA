@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public abstract class UIShopItemBase : MonoBehaviour
+public abstract class UIShopItemBase<T> : MonoBehaviour where T : RuntimeData.ShopInfo
 {
 	[SerializeField] protected Button buttonLock;
 	[SerializeField] protected UITextMeshPro uiTextTitle;
@@ -18,9 +18,10 @@ public abstract class UIShopItemBase : MonoBehaviour
 	[SerializeField] protected Button buttonFree;
 	[SerializeField] protected Button buttonAds;
 
-	protected RuntimeData.ShopInfo info;
+	protected T info;
 	protected bool limitOver;
 	protected string _lockMessage;
+	protected CurrencyType currencyType;
 	private void OnEnable()
 	{
 
@@ -47,7 +48,7 @@ public abstract class UIShopItemBase : MonoBehaviour
 		buttonFree.SetButtonEvent(OnClickFree);
 	}
 
-	public virtual void OnUpdate(UIShopBase _parent, RuntimeData.ShopInfo _info)
+	public virtual void OnUpdate(UIShopBase<T> _parent, T _info)
 	{
 		info = _info;
 
@@ -55,7 +56,7 @@ public abstract class UIShopItemBase : MonoBehaviour
 
 		uiTextTitle.SetKey(info.rawData.name);
 
-		CurrencyType currencyType = info.rawData.cost.currency;
+		currencyType = info.rawData.cost.currency;
 		IdleNumber price = (IdleNumber)info.rawData.cost.cost;
 
 		buttonCash.gameObject.SetActive(false);
@@ -72,13 +73,27 @@ public abstract class UIShopItemBase : MonoBehaviour
 			return;
 		}
 
+		if (limitOver)
+		{
+			buttonLock.gameObject.SetActive(true);
+			return;
+		}
+
 		switch (currencyType)
 		{
 			case CurrencyType.CASH:
 				buttonCash.gameObject.SetActive(true);
 
 				var product = PurchaseManager.Instance.GetProduct(info.rawData.productIDs);
-				textPriceCash.text = product.metadata.localizedPriceString;
+				if (product != null)
+				{
+
+					textPriceCash.text = product.metadata.localizedPriceString;
+				}
+				else
+				{
+					textPriceCash.text = info.rawData.cost.cost;
+				}
 				break;
 			case CurrencyType.ADS:
 				{
@@ -133,20 +148,32 @@ public abstract class UIShopItemBase : MonoBehaviour
 	public abstract void OnClickFree();
 	public void OnClickLock()
 	{
+		if (limitOver)
+		{
+			if (currencyType == CurrencyType.ADS)
+			{
+				ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_no_more_buy_ads"]);
+			}
+			else
+			{
+				ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_no_more_buy"]);
+			}
 
+			return;
+		}
 		ToastUI.Instance.Enqueue(_lockMessage);
 
 	}
 }
 
 
-public class UIShopItemNormal : UIShopItemBase
+public class UIShopItemNormal : UIShopItemBase<RuntimeData.ShopInfo>
 {
 
 	[SerializeField] private TextMeshProUGUI textInfo;
 	[SerializeField] private UIItemReward itemImage;
 	private UIShopNormal parent;
-	public override void OnUpdate(UIShopBase _parent, RuntimeData.ShopInfo _info)
+	public override void OnUpdate(UIShopBase<RuntimeData.ShopInfo> _parent, RuntimeData.ShopInfo _info)
 	{
 		base.OnUpdate(_parent, _info);
 		parent = _parent as UIShopNormal;
@@ -194,6 +221,7 @@ public class UIShopItemNormal : UIShopItemBase
 
 	public override void OnClickAds()
 	{
+
 		if (info.IsUnlock() == false)
 		{
 			return;
@@ -203,6 +231,17 @@ public class UIShopItemNormal : UIShopItemBase
 			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_warn_buy_limit_over"]);
 			return;
 		}
+
+
+		var item = PlatformManager.UserDB.inventory.GetPersistent(InventoryContainer.AdFreeTid);
+		bool free = item.unlock;
+		if (free)
+		{
+			info.OnPurchaseSuccess();
+			parent.Refresh();
+			return;
+		}
+
 		MobileAdsManager.Instance.ShowAds(() =>
 		{
 			info.OnPurchaseSuccess();

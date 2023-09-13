@@ -28,21 +28,6 @@ public class TimeManager : MonoBehaviour
 	public DateTime LocalServerTime;
 	public DateTime UtcServerTime;
 
-	public DateTime LocalResetTime
-	{
-		get
-		{
-			return LocalServerTime.Date.AddHours(5);
-		}
-	}
-	public DateTime UtcResetTime
-	{
-		get
-		{
-			var ts = LocalServerTime - UtcServerTime;
-			return LocalResetTime.AddHours(-ts.TotalHours);
-		}
-	}
 
 	public long prevPlayTicks;
 	public string LastLoginTimeForOfflineReward;
@@ -72,7 +57,7 @@ public class TimeManager : MonoBehaviour
 
 		syncRelative = 0;
 
-		prevPlayTicks = Now.Ticks;
+		prevPlayTicks = UtcNow.Ticks;
 	}
 
 

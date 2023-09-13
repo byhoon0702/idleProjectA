@@ -19,6 +19,7 @@ public class UICostumeInfo : MonoBehaviour
 	[SerializeField] private UIEconomyButton upgradeButton;
 
 	[SerializeField] private Button equipButton;
+	[SerializeField] private Button equippedButton;
 	public Button EquipButton => equipButton;
 	[SerializeField] private TextMeshProUGUI equipButtonLabel;
 
@@ -107,7 +108,7 @@ public class UICostumeInfo : MonoBehaviour
 	public void OnUpdate(RuntimeData.CostumeInfo info)
 	{
 		costumeInfo = info;
-		itemName.text = PlatformManager.Language[costumeInfo.ItemName];
+		itemName.text = costumeInfo.ItemName;
 		textPoint.text = costumeInfo.rawData.point.ToString();
 		textTotalPoints.text = PlatformManager.UserDB.costumeContainer.TotalCostumePoints.ToString();
 		textGetPlace.text = PlatformManager.Language[costumeInfo.rawData.acquiredMessage];
@@ -116,7 +117,7 @@ public class UICostumeInfo : MonoBehaviour
 		var currencyItem = PlatformManager.UserDB.inventory.FindCurrency(info.Cost.currency);
 		if (currencyItem != null)
 		{
-			upgradeButton.SetButton(info.Cost.currency, icon, info.Price.ToString(), currencyItem.Value >= info.Price);
+			upgradeButton.SetButton(info.Cost.currency, icon, $"{currencyItem.Value.ToString()}/{info.Price.ToString()}", currencyItem.Value >= info.Price);
 		}
 		else
 		{
@@ -124,18 +125,20 @@ public class UICostumeInfo : MonoBehaviour
 		}
 
 		equipButton.interactable = costumeInfo.unlock;
-		equipButton.gameObject.SetActive(costumeInfo.unlock);
+
 		upgradeButton.gameObject.SetActive(costumeInfo.unlock == false);
 
 		var data = PlatformManager.UserDB.costumeContainer[costumeInfo.Type];
 
 		if (data.itemTid == costumeInfo.Tid)
 		{
-			equipButtonLabel.text = PlatformManager.Language["str_ui_equip_now"];
+			equippedButton.gameObject.SetActive(costumeInfo.unlock);
+			equipButton.gameObject.SetActive(false);
 		}
 		else
 		{
-			equipButtonLabel.text = PlatformManager.Language["str_ui_equip"];
+			equippedButton.gameObject.SetActive(false);
+			equipButton.gameObject.SetActive(costumeInfo.unlock);
 		}
 
 	}

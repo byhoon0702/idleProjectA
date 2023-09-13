@@ -19,18 +19,14 @@ namespace RuntimeData
 		{
 			get
 			{
-				return (_isActive && (EndTime - TimeManager.Instance.Now).TotalSeconds > 0)
+				return (_isActive && (EndTime - TimeManager.Instance.UtcNow).TotalSeconds > 0)
 					|| PlatformManager.UserDB.inventory.GetPersistent(InventoryContainer.AdFreeTid).unlock;
 			}
 		}
 
-		[SerializeField] private string _exp;
+		[SerializeField] private IdleNumber _exp;
 
-		public IdleNumber Exp
-		{
-			get { return (IdleNumber)_exp; }
-			set { _exp = value.ToString(); }
-		}
+		public IdleNumber Exp => _exp;
 
 		[SerializeField] private string _endTime;
 
@@ -38,9 +34,6 @@ namespace RuntimeData
 		{
 			get; private set;
 		}
-
-
-
 
 		public AbilityInfo Ability { get; private set; }
 		public AdBuffData RawData { get; private set; }
@@ -58,8 +51,6 @@ namespace RuntimeData
 
 			_endTime = temp._endTime;
 			_exp = temp._exp;
-
-
 		}
 
 		public void WatchAd()
@@ -72,6 +63,10 @@ namespace RuntimeData
 			MobileAdsManager.Instance.ShowAds(() => { Activate(); });
 		}
 
+		public void GainExp()
+		{
+			_exp += 1;
+		}
 		public bool LevelUp()
 		{
 			if (Exp < NeedExp())
@@ -80,7 +75,7 @@ namespace RuntimeData
 				return false;
 			}
 
-			Exp -= NeedExp();
+			_exp -= NeedExp();
 			_level++;
 
 			if (IsActive)
@@ -92,7 +87,7 @@ namespace RuntimeData
 
 		public void Activate()
 		{
-			System.DateTime endtime = TimeManager.Instance.Now.AddMinutes(RawData.duration);
+			System.DateTime endtime = TimeManager.Instance.UtcNow.AddMinutes(RawData.duration);
 			_endTime = endtime.ToString();
 			EndTime = endtime;
 			_isActive = true;
@@ -110,7 +105,7 @@ namespace RuntimeData
 
 			if (_isActive)
 			{
-				System.TimeSpan ts = EndTime - TimeManager.Instance.Now;
+				System.TimeSpan ts = EndTime - TimeManager.Instance.UtcNow;
 
 				if (ts.TotalSeconds <= 0)
 				{
@@ -141,7 +136,7 @@ namespace RuntimeData
 			{
 				EndTime = endtime;
 			}
-			_isActive = (EndTime - TimeManager.Instance.Now).TotalSeconds > 0;
+			_isActive = (EndTime - TimeManager.Instance.UtcNow).TotalSeconds > 0;
 
 			AddBuffToUserStat();
 
@@ -154,12 +149,14 @@ namespace RuntimeData
 			tid = RawData.tid;
 
 			Ability = new AbilityInfo(RawData.stats);
-			_exp = "0";
+
+			_exp = new IdleNumber();
+
 		}
 
 		public IdleNumber NeedExp()
 		{
-			IdleNumber needExp = (IdleNumber)(RawData.BaseExp * (1 + ((RawData.ExpPerLevel * Level) / 100f)));
+			IdleNumber needExp = (IdleNumber)(RawData.BaseExp + (RawData.ExpPerLevel * Level));
 			return needExp;
 		}
 	}
@@ -247,7 +244,7 @@ public class BuffContainer : BaseContainer
 			var adBuff = adBuffList[i];
 			if (adBuff.IsActive)
 			{
-				adBuff.Exp += (IdleNumber)1;
+				adBuff.GainExp();
 			}
 		}
 		GainAdExp?.Invoke();

@@ -19,13 +19,19 @@ public class Heal : SkillCore
 				return false;
 			}
 		}
-
-		if (_info.skillAbility.Value > 0)
+		IdleNumber power = _caster.HitInfo.TotalAttackPower;
+		if (_caster is Pet)
 		{
-			_caster.HitInfo.TotalAttackPower *= _info.Value / 100f;
+			power = UnitManager.it.Player.HitInfo.TotalAttackPower;
 		}
 
-		_caster.StartCoroutine(Activation(_caster, _info, new HealInfo(_caster.gameObject.layer, _caster, _info.Value)));
+		HealInfo healInfo = new HealInfo(_caster.gameObject.layer, _caster, power);
+		if (_info.skillAbility.Value > 0)
+		{
+			healInfo.amount = power * ((_info.skillAbility.Value + 100) / 100f);
+		}
+
+		_caster.StartCoroutine(Activation(_caster, _info, healInfo));
 		return true;
 	}
 
@@ -87,7 +93,7 @@ public class Heal : SkillCore
 	private void HealTarget(Unit caster, HittableUnit target, RuntimeData.SkillInfo skillInfo, AffectedInfo affectedInfo)
 	{
 		HealInfo healInfo = affectedInfo as HealInfo;
-		healInfo.healRecovery = (target.MaxHp * skillInfo.Value) / 100f;
+		healInfo.healRecovery = (target.MaxHp * skillInfo.skillAbility.Value) / 100f;
 		target.Heal(healInfo);
 	}
 }

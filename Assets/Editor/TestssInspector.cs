@@ -17,7 +17,7 @@ public class TestssInspector : Editor
 
 		if (GUILayout.Button("Test"))
 		{
-			testss.OnTest();
+			//testss.OnTest();
 		}
 	}
 }

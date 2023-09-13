@@ -86,7 +86,8 @@ public class UIPopupSettings : UIBase
 
 	public async void OnClickLogout()
 	{
-		await RemoteConfigManager.Instance.CloudSaveAsync();
+		await PlatformManager.RemoteSave.CloudSaveAsync();
+
 		PlatformManager.Instance.LogOut();
 	}
 

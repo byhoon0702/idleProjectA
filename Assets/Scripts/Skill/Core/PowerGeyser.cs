@@ -38,21 +38,16 @@ public class PowerGeyser : SkillCore
 
 	protected override IEnumerator Activation(Unit caster, SkillInfo info, AffectedInfo hitInfo)
 	{
-		ShowEffect(caster, caster.position, info.EvolutionLevel);
-		attackCount = 0;
-		Vector3 pos = caster.position;
-		Vector3 dir = (caster.target.position - caster.position).normalized;
-		Vector3 headingVector = dir;
 
+		attackCount = 0;
+
+		Vector3 dir = (caster.target.position - caster.position).normalized;
 		var currentLevel = GetEvolutinData<PowerGeyserLevel>(info.EvolutionLevel);
 
-		float angleStep = 0f;
-		float halfAngle = 0f;
-		if (currentLevel.count > 1)
-		{
-			angleStep = currentLevel.angle / (currentLevel.count - 1);
-			halfAngle = currentLevel.angle / 2f;
-		}
+		float sep_angle = 0;
+		int seperate = currentLevel.count;
+		float angle = currentLevel.angle;
+		sep_angle = angle / Mathf.Max(1, (seperate - 1));
 
 		while (attackCount < info.AttackCount)
 		{
@@ -60,34 +55,45 @@ public class PowerGeyser : SkillCore
 			{
 				yield break;
 			}
+			float multi = 1f;
+			GameObject effect = attackCount == info.AttackCount - 1 ? large : small;
+			multi = attackCount == info.AttackCount - 1 ? largeRangeMulti : smallRangeMulti;
 
-			GameObject effect = null;
-			float multi = 1;
-			for (int i = 0; i < currentLevel.count; i++)
+			skillCameraEffect?.DoEffect(multi);
+			List<Vector3> vectors = new List<Vector3>();
+
+			for (int i = 0; i < seperate; i += 2)
 			{
-				pos = caster.position;
-				Quaternion offset = Quaternion.Euler(0, 0, (angleStep * i) - halfAngle);
-				headingVector = offset * dir;
-				pos += headingVector;
-				pos *= 1 + (distance * attackCount);
-				if (attackCount == info.AttackCount - 1)
+				if (i + 1 < seperate)
 				{
-					effect = Instantiate(large);
-					multi = largeRangeMulti;
-					skillCameraEffect?.DoEffect();
+					float calc_angle = angle - (sep_angle * i);
+					Vector3 angled = dir.GetAngledVector3(calc_angle);
+					vectors.Add(angled);
+					angled = dir.GetAngledVector3(calc_angle, true);
+					vectors.Add(angled);
 				}
 				else
 				{
-					effect = Instantiate(small);
-					multi = smallRangeMulti;
+					Vector3 angled = dir.GetAngledVector3(0);
+					vectors.Add(angled);
 				}
-				effect.transform.position = pos;
-				AffectOverlapCircle(caster, pos, info.HitRange * multi, pos - caster.position, hitInfo, info);
 			}
+
+			for (int i = 0; i < vectors.Count; i++)
+			{
+				Attack(effect, caster, vectors[i] * (distance * (1 + attackCount)) + caster.position, info.HitRange * multi, hitInfo, info);
+			}
+
 			attackCount++;
 
 			yield return new WaitForSeconds(info.Interval);
 		}
 		caster.ChangeState(StateType.IDLE, true);
+	}
+	void Attack(GameObject copy, Unit caster, Vector3 pos, float hitRange, AffectedInfo hitInfo, SkillInfo info)
+	{
+		GameObject effect = Instantiate(copy);
+		effect.transform.position = pos;
+		AffectOverlapCircle(caster, pos, hitRange, pos - caster.position, hitInfo, info);
 	}
 }

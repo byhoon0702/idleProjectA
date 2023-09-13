@@ -15,18 +15,14 @@ public class PopAlertDefault : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI okButtonText;
 	[SerializeField] private TextMeshProUGUI cancelButtonText;
 
-
-
 	[SerializeField] private Button okButton;
 	[SerializeField] private Button cancelButton;
 
 	[SerializeField] private Button panelButton;
 
-
 	public VResult result;
 	private Action onOkCallback;
 	private Action onCancelCallback;
-
 
 	// 내부에서 ResultCode값이 null이어도 방어가 필요함
 	public void Init(string title, string desc, string okButtonStr = "str_ui_ok", string cancelButtonStr = "str_ui_cancel", Action _onOkCallback = null, Action _onCancelCallback = null)
@@ -37,19 +33,11 @@ public class PopAlertDefault : MonoBehaviour
 		onOkCallback = _onOkCallback;
 		onCancelCallback = _onCancelCallback;
 
-		if (Intro.it != null)
-		{
-			okButtonText.text = Intro.it.language[okButtonStr];
-			cancelButtonText.text = Intro.it.language[cancelButtonStr];
-		}
-		else
-		{
-			okButtonText.text = PlatformManager.Language[okButtonStr];
-			cancelButtonText.text = PlatformManager.Language[cancelButtonStr];
-		}
+		okButtonText.text = PlatformManager.Language[okButtonStr];
+		cancelButtonText.text = PlatformManager.Language[cancelButtonStr];
 		SetInteractable();
-		//UpdateUI();
 	}
+
 	public void Init(VResult _result, Action _onOkCallback = null, Action _onCancelCallback = null)
 	{
 		result = _result;

@@ -34,10 +34,10 @@ public class AttendanceContainer : BaseContainer
 
 	public override void DailyResetData()
 	{
-		for (int i = 0; i < _attendanceList.Count; i++)
-		{
-			_attendanceList[i].Reset(TimeLimitType.DAILY);
-		}
+		//for (int i = 0; i < _attendanceList.Count; i++)
+		//{
+		//	_attendanceList[i].Reset(TimeLimitType.DAILY);
+		//}
 
 	}
 

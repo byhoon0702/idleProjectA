@@ -90,6 +90,7 @@ public class UIStageSuccess : UIStageResult
 		leftButtonKey = "str_ui_ok";
 		textButtonLeft.SetKey(leftButtonKey);
 		int showCount = 0;
+
 		if (rule is StageNormal)
 		{
 			toggleBossContinue.gameObject.SetActive(true);
@@ -102,29 +103,23 @@ public class UIStageSuccess : UIStageResult
 			rightButtonKey = "str_ui_to_boss";
 
 			SwitchButton(toggleBossContinue.isOn);
-			showCount = ShowReward();
+
 		}
 		else if (rule is StageInfinity)
 		{
 			autoClickTime = 15;
 			onClickLeft = rule.End;
 			onAutoClick = onClickLeft;
-			List<RuntimeData.RewardInfo> rewardList = new List<RuntimeData.RewardInfo>();
 
-			currentStage.SetReward((IdleNumber)StageManager.it.currentKillCount);
-			rewardList.Add(currentStage.MonsterExp);
-			rewardList.Add(currentStage.MonsterGold);
-			rewardList.AddRange(currentStage.GetMonsterRewardList());
-			showCount = ShowReward(rewardList);
 		}
 		else
 		{
 			autoClickTime = 15;
 			onClickLeft = rule.End;
 			onAutoClick = onClickLeft;
-			showCount = ShowReward();
-		}
 
+		}
+		showCount = ShowReward(rule.displayRewardList);
 		autoClickTimer = 0;
 
 		StartCoroutine(ShowRewardEffect(showCount));
@@ -147,16 +142,18 @@ public class UIStageSuccess : UIStageResult
 		{
 			var child = rewardRoot.GetChild(i);
 			child.gameObject.SetActive(false);
-			if (reward[i] == null)
-			{
-				continue;
-			}
+
 			if (i < reward.Count)
 			{
+				if (reward[i] == null)
+				{
+					continue;
+				}
 				UIItemReward uiItemReward = child.GetComponent<UIItemReward>();
 				uiItemReward.Set(new AddItemInfo(reward[i]));
 			}
 		}
+		//PlatformManager.UserDB.AddRewards(reward, false);
 		return reward.Count;
 	}
 

@@ -14,13 +14,13 @@ public class LeaderBoard : MonoBehaviour
 	public async void AddScore()
 	{
 		var scoreResponse = await LeaderboardsService.Instance.AddPlayerScoreAsync(k_LeaderBoardId, PlatformManager.UserDB.stageContainer.LastPlayedNormalStage().StageNumber);
-		Debug.Log(JsonConvert.SerializeObject(scoreResponse));
+		//Debug.Log(JsonConvert.SerializeObject(scoreResponse));
 	}
 
 	public async Task<LeaderboardScoresPage> GetScores()
 	{
 		var scoreResponse = await LeaderboardsService.Instance.GetScoresAsync(k_LeaderBoardId, new GetScoresOptions() { Offset = 0, Limit = 10 });
-		Debug.Log(JsonConvert.SerializeObject(scoreResponse));
+		//Debug.Log(JsonConvert.SerializeObject(scoreResponse));
 		return scoreResponse;
 
 	}

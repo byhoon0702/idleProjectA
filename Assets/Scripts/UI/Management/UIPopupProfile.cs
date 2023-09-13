@@ -52,6 +52,7 @@ public class UIPopupProfile : UIBase
 
 		gameObject.SetActive(true);
 		UpdateUnitInfo();
+		CreateUnitForUI();
 		UpdateEquipSlot();
 		UpdateEquipPet();
 		UpdateStatsInfo();
@@ -67,7 +68,7 @@ public class UIPopupProfile : UIBase
 	{
 		nameText.text = PlatformManager.UserDB.userInfoContainer.userInfo.UserName;
 		levelText.text = $"Lv. {PlatformManager.UserDB.userInfoContainer.userInfo.UserLevel}";
-		CreateUnitForUI();
+
 	}
 
 	public void CreateUnitForUI()
@@ -113,21 +114,30 @@ public class UIPopupProfile : UIBase
 		}
 
 		int index = 0;
+		for (int i = 0; i < statsInfoGrid.childCount; i++)
+		{
+			statsInfoGrid.GetChild(i).gameObject.SetActive(false);
+		}
 		foreach (var info in PlatformManager.UserDB.statusDataList)
 		{
+			if (info.type == StatsType.Buff_Gain_Item)
+			{
+				continue;
+			}
 			Transform child = statsInfoGrid.GetChild(index);
+			child.gameObject.SetActive(true);
 			UIStatsInfoCell cell = child.GetComponent<UIStatsInfoCell>();
-
-
-			string tail = "";
 
 			var data = PlatformManager.UserDB.UserStats.stats.Find(x => x.type == info.type);
 			if (info.isPercentage)
 			{
-				tail = "%";
+				cell.OnUpdate(info.type.ToUIString(), $"{data.Value.ToFloatingString()}%");
+			}
+			else
+			{
+				cell.OnUpdate(info.type.ToUIString(), $"{data.Value.ToString()}");
 			}
 
-			cell.OnUpdate(info.type.ToUIString(), $"{data.Value.ToString("{0:0.##}")} {tail}");
 			index++;
 		}
 	}

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIShopNormal : UIShopBase
+public class UIShopNormal : UIShopBase<RuntimeData.ShopInfo>
 {
 
 	[SerializeField] private UIPopupBuyNormalItem popupBuyNormalItem;
@@ -15,12 +15,12 @@ public class UIShopNormal : UIShopBase
 	{
 
 		currentType = type;
-		infoList = PlatformManager.UserDB.shopContainer[type];
+		infoList = PlatformManager.UserDB.shopContainer.GetNormal(type);
 		SetGrid();
 	}
 	public override void Refresh()
 	{
-		infoList = PlatformManager.UserDB.shopContainer[currentType];
+		infoList = PlatformManager.UserDB.shopContainer.GetNormal(currentType);
 		SetGrid();
 	}
 	protected override void SetGrid()

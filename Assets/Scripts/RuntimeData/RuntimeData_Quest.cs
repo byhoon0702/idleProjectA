@@ -22,6 +22,20 @@ namespace RuntimeData
 
 		public List<RewardInfo> rewardInfos { get; private set; } = new List<RewardInfo>();
 
+		public void Reset()
+		{
+			progressCount = "0";
+			if (Type != QuestType.MAIN)
+			{
+				progressState = QuestProgressState.ACTIVE;
+			}
+			else
+			{
+				progressState = QuestProgressState.NONE;
+			}
+			count = (IdleNumber)0;
+		}
+
 		public override void SetRawData<T>(T data) where T : class
 		{
 			rawData = data as QuestData;
@@ -79,13 +93,12 @@ namespace RuntimeData
 
 			progressState = info.progressState;
 			progressCount = info.progressCount;
-			if (progressState == QuestProgressState.COMPLETE || progressState == QuestProgressState.END)
-			{
-				progressCount = goalCount.ToString();
-			}
+			//if (progressState == QuestProgressState.COMPLETE || progressState == QuestProgressState.END)
+			//{
+			//	progressCount = goalCount.ToString();
+			//}
 
 			count = (IdleNumber)progressCount;
-
 
 		}
 
@@ -128,6 +141,16 @@ namespace RuntimeData
 
 			switch (GoalType)
 			{
+				case QuestGoalType.ACTIVATE_BUFF:
+					{
+						var item = PlatformManager.UserDB.inventory.GetPersistent(InventoryContainer.AdFreeTid);
+						bool free = item.unlock;
+						if (free)
+						{
+							OnChange(GoalType, GoalTid, (IdleNumber)1, true);
+						}
+					}
+					break;
 				case QuestGoalType.ABILITY_LEVEL:
 					{
 						var item = PlatformManager.UserDB.training.Find(GoalTid);
@@ -158,6 +181,22 @@ namespace RuntimeData
 						OnChange(GoalType, GoalTid, (IdleNumber)item.StageNumber, true);
 					}
 					break;
+				case QuestGoalType.LEVELUP_AWAKENING:
+					{
+						var item = PlatformManager.UserDB.awakeningContainer.InfoList;
+						int index = 0;
+						for (int i = 0; i < item.Count; i++)
+						{
+							if (item[i].IsAwaken == false)
+							{
+								break;
+							}
+							index = i + 1;
+						}
+						OnChange(GoalType, GoalTid, (IdleNumber)index, true);
+					}
+					break;
+
 			}
 		}
 		public void OnChange(QuestGoalType _goalType, long _goalTid, IdleNumber _progress, bool overwrite = false)

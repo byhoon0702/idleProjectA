@@ -111,7 +111,7 @@ public class UIManagementEquipInfo : UIManagementBaseInfo<RuntimeData.EquipItemI
 	{
 
 
-		if (equipInfo == null && equipInfo.Count == 0)
+		if (equipInfo == null && equipInfo.Count <= 0)
 		{
 			return false;
 		}

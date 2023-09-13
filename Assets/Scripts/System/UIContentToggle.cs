@@ -34,8 +34,6 @@ public class UIContentToggle : Toggle, IUIContent
 	public bool IsAvailable()
 	{
 		return PlatformManager.UserDB.contentsContainer.TryEnter(contentType);
-
-
 	}
 
 	public override void OnPointerClick(PointerEventData eventData)

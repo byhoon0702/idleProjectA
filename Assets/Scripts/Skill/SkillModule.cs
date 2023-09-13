@@ -55,6 +55,10 @@ public class SkillModule : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if (GameManager.GameStop)
+		{
+			return;
+		}
 		if (caster == null)
 		{
 			return;
@@ -89,6 +93,7 @@ public class SkillModule : MonoBehaviour
 
 	public void AddSkill(SkillSlot slot)
 	{
+
 		if (slot.item.activeType == SkillActiveType.PASSIVE)
 		{
 			var skill = skillDictionary[SkillActiveType.PASSIVE].Find(x => x.itemTid == slot.itemTid);
@@ -112,7 +117,9 @@ public class SkillModule : MonoBehaviour
 	public void RemoveSkill(SkillSlot info)
 	{
 		if (info.item == null)
-		{ return; }
+		{
+			return;
+		}
 		if (info.item.activeType == SkillActiveType.PASSIVE)
 		{
 			var skill = skillDictionary[SkillActiveType.PASSIVE].Find(x => x.itemTid == info.itemTid);
@@ -226,7 +233,7 @@ public class SkillModule : MonoBehaviour
 		//currentSlot.item.itemObject.Trigger(caster, )
 		//skill.Trigger(caster, currentSlot.item, info);
 	}
-	public void ActivateSkill(SkillSlot skillSlot, HitInfo hitInfo)
+	public void ActivateSkill(SkillSlot skillSlot)
 	{
 		if (skillSlot == null || skillSlot.IsUsable() == false)
 		{

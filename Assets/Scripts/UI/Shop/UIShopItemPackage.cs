@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UIShopItemPackage : UIShopItemBase
+public class UIShopItemPackage : UIShopItemBase<RuntimeData.ShopInfo>
 {
 	[SerializeField] private TextMeshProUGUI textBuyInfo;
 	[SerializeField] private UITextMeshPro uiTextDescription;
@@ -14,7 +14,7 @@ public class UIShopItemPackage : UIShopItemBase
 
 	UIShopPackage parent;
 
-	public override void OnUpdate(UIShopBase _parent, RuntimeData.ShopInfo _info)
+	public override void OnUpdate(UIShopBase<RuntimeData.ShopInfo> _parent, RuntimeData.ShopInfo _info)
 	{
 		base.OnUpdate(_parent, _info);
 		parent = _parent as UIShopPackage;
@@ -79,7 +79,14 @@ public class UIShopItemPackage : UIShopItemBase
 			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_warn_buy_limit_over"]);
 			return;
 		}
-
+		var item = PlatformManager.UserDB.inventory.GetPersistent(InventoryContainer.AdFreeTid);
+		bool free = item.unlock;
+		if (free)
+		{
+			info.OnPurchaseSuccess();
+			parent.Refresh();
+			return;
+		}
 		MobileAdsManager.Instance.ShowAds(() =>
 		{
 			info.OnPurchaseSuccess();

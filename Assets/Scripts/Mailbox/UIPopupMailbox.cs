@@ -25,7 +25,7 @@ public class UIPopupMailbox : UIBase
 	public async void Reset()
 	{
 		selectMessageId = "";
-		await CloudSaveManager.Instance.ResetCloudSaveData();
+		await CloudSaveManager.Instance.ResetMessageInboxData();
 		if (this == null) return;
 		await FetchUpdatedInboxData();
 		if (this == null) return;
@@ -96,7 +96,7 @@ public class UIPopupMailbox : UIBase
 	public void OnMessageSelect(UIItemMail message)
 	{
 		SelectMessage(message.Message.messageId);
-		uiPopupDetail.Open(message);
+		uiPopupDetail.Open(this, message);
 		RefreshView();
 
 	}
@@ -208,8 +208,8 @@ public class UIPopupMailbox : UIBase
 		{
 			await InGameMailBox.CloudCodeManager.Instance.CallClaimMessageAttachmentEndpoint(selectMessageId);
 			if (this == null) return false;
-			OnDeleteOpenMessageButtonPressed();
 			await UpdateSceneAfterClaim();
+			OnDeleteAllReadAndClaimedMail();
 
 			return true;
 		}

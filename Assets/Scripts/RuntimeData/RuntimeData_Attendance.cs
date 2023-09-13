@@ -95,7 +95,7 @@ namespace RuntimeData
 			{
 				RewardClaimDate = time;
 			}
-			if (rewardClaimTime.IsNullOrEmpty())
+			else
 			{
 				canGetReward = true;
 			}
@@ -120,7 +120,10 @@ namespace RuntimeData
 
 		public override void UpdateData()
 		{
-
+			if ((RewardClaimDate - TimeManager.Instance.UtcNow).TotalSeconds <= 0)
+			{
+				Reset(RawData.limitType);
+			}
 		}
 
 		public void GetReward()
@@ -139,7 +142,7 @@ namespace RuntimeData
 					break;
 				}
 			}
-			rewardClaimTime = TimeManager.Instance.UtcNow.ToString();
+			rewardClaimTime = TimeUtil.NextDayResetTimeToString();
 			_attendanceDay++;
 			canGetReward = false;
 		}

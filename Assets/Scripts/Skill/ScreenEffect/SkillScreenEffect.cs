@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class SkillScreenEffect : ScriptableObject
 {
-	public abstract void DoEffect();
+	public abstract void DoEffect(float multi = 1f);
 }

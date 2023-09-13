@@ -10,7 +10,9 @@ public class EnterGameState : RootState
 	}
 	public override async Task<IntroFSM> OnEnter()
 	{
+		PlatformManager.Instance.ShowLoadingRotate(true);
 		elapsedTime = 0;
+		UnityEngine.SceneManagement.SceneManager.LoadScene("Oldman");
 
 		return this;
 	}
@@ -25,10 +27,10 @@ public class EnterGameState : RootState
 
 	public override void OnUpdate(float time)
 	{
-		elapsedTime += time;
-		if (elapsedTime > 0.5f)
-		{
-			UnityEngine.SceneManagement.SceneManager.LoadScene("Oldman");
-		}
+		//elapsedTime += time;
+		//if (elapsedTime > 0.5f)
+		//{
+
+		//}
 	}
 }

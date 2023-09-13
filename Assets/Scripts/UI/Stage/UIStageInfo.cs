@@ -149,8 +149,8 @@ public class UIStageInfo : MonoBehaviour
 	public void OnClickPlayBoss()
 	{
 		// 현재레벨의 보스 스테이지 찾기
-		var bossStageInfo = PlatformManager.UserDB.stageContainer.GetStage(StageType.Normal, StageManager.it.CurrentStage.StageNumber);
-		StageManager.it.OnClickBoss(bossStageInfo);
+		//var bossStageInfo = PlatformManager.UserDB.stageContainer.GetStage(StageType.Normal, StageManager.it.CurrentStage.StageNumber);
+		StageManager.it.OnClickBoss(StageManager.it.CurrentStage);
 
 	}
 

@@ -62,11 +62,11 @@ public class UIPageBattleDungeon : UIPageBattle
 
 	public void ShowDungeonPopup(BattleData dungeonInfo)
 	{
-		parent.ShowDungeonPopup(dungeonInfo);
+		parent?.ShowDungeonPopup(dungeonInfo);
 	}
 
 	public void ShowDungeonStagePopup(BattleData dungeonInfo)
 	{
-		parent.ShowDungeonStagePopup(dungeonInfo);
+		parent?.ShowDungeonStagePopup(dungeonInfo);
 	}
 }

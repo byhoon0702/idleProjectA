@@ -52,8 +52,8 @@ public class UIItemRelic : MonoBehaviour
 		imageBg.sprite = GameUIManager.it.spriteGradeList[(int)info.rawData.itemGrade];
 		imageGrade.sprite = GameUIManager.it.spriteGradeFrameList[(int)info.rawData.itemGrade];
 
-		imageIcon.sprite = info.iconImage;
-		imageCost.sprite = info.iconImage;
+		imageIcon.sprite = info.IconImage;
+		imageCost.sprite = info.IconImage;
 	}
 
 	public void OnClickLevelUp()

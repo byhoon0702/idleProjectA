@@ -32,16 +32,47 @@ public class PopAlert : MonoBehaviour
 		}
 		DontDestroyOnLoad(gameObject);
 	}
+	bool isNoticeShow;
+	public static void CreateNotice(string title, string desc, string okString, Action okCallback = null, Action cancelCallback = null)
+	{
+		if (Instance.isNoticeShow)
+		{
+			return;
+		}
+		Instance.isNoticeShow = true;
+		if (Instance.current == null)
+		{
+			Instance.current = Instantiate(Resources.Load<PopAlertDefault>("PopAlertDefault"), Instance.transform);
+		}
+		Instance.current.gameObject.SetActive(true);
+		Instance.current.Init(title, desc, okString, "", _onOkCallback: () => { Instance.isNoticeShow = false; okCallback?.Invoke(); }, _onCancelCallback: cancelCallback);
+	}
 
 	public static void Create(string title, string desc, Action okCallback = null, Action cancelCallback = null)
 	{
-
+		if (Instance.isNoticeShow)
+		{
+			return;
+		}
 		if (Instance.current == null)
 		{
 			Instance.current = Instantiate(Resources.Load<PopAlertDefault>("PopAlertDefault"), Instance.transform);
 		}
 		Instance.current.gameObject.SetActive(true);
 		Instance.current.Init(title, desc, _onOkCallback: okCallback, _onCancelCallback: cancelCallback);
+	}
+	public static void Create(string title, string desc, string okString, string cancelString, Action okCallback = null, Action cancelCallback = null)
+	{
+		if (Instance.isNoticeShow)
+		{
+			return;
+		}
+		if (Instance.current == null)
+		{
+			Instance.current = Instantiate(Resources.Load<PopAlertDefault>("PopAlertDefault"), Instance.transform);
+		}
+		Instance.current.gameObject.SetActive(true);
+		Instance.current.Init(title, desc, okString, cancelString, _onOkCallback: okCallback, _onCancelCallback: cancelCallback);
 	}
 
 

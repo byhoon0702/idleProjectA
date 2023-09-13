@@ -13,7 +13,8 @@ namespace RuntimeData
 				return maxChance - _level;
 			}
 		}
-		public override IdleNumber BaseValue
+		public override string ItemName => PlatformManager.Language[rawData.name];
+		public IdleNumber BaseValue
 		{
 			get => (IdleNumber)rawData.ownValue.value;
 		}
@@ -21,7 +22,7 @@ namespace RuntimeData
 		{
 			get => (IdleNumber)rawData.ownValue.perLevel;
 		}
-		public override IdleNumber Value
+		public IdleNumber Value
 		{
 			get
 			{
@@ -29,19 +30,7 @@ namespace RuntimeData
 			}
 		}
 
-		public Sprite iconImage
-		{
-			get
-			{
-				if (itemObject == null)
-				{
-					return null;
-				}
-
-				return itemObject.ItemIcon;
-			}
-		}
-
+		public override Sprite IconImage => itemObject != null ? itemObject.ItemIcon : null;
 
 		public AbilityInfo ownedAbility;
 
@@ -51,7 +40,7 @@ namespace RuntimeData
 
 		public string Description()
 		{
-			return $"{ownedAbility.type.ToUIString()} <color=green>+{Value.ToString()}%</color>";
+			return $"{ownedAbility.type.ToUIString()} <color=green>+{Value.ToFloatingString()}%</color>";
 		}
 		public override void Load<T>(T info)
 		{
@@ -65,7 +54,6 @@ namespace RuntimeData
 			_count = temp._count;
 			unlock = true;
 
-			SetDirty();
 			UpdateAbility();
 		}
 
@@ -112,7 +100,7 @@ namespace RuntimeData
 
 			_level++;
 			_count--;
-			SetDirty();
+
 			UpdateAbility();
 			UpdateData();
 			ToastUI.Instance.Enqueue("강화 성공");

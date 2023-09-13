@@ -8,6 +8,7 @@ namespace RuntimeData
 	[System.Serializable]
 	public class GachaInfo : ItemInfo
 	{
+		public override string ItemName => PlatformManager.Language[rawData.name];
 		[SerializeField] private int viewAdsCount = 0;
 		public int ViewAdsCount => viewAdsCount;
 		[SerializeField] private int exp;
@@ -18,18 +19,7 @@ namespace RuntimeData
 
 		public GachaData rawData { get; private set; }
 
-		public Sprite IconImage
-		{
-			get
-			{
-				if (itemObject == null)
-				{
-					return null;
-				}
-				return itemObject.ItemIcon;
-			}
-
-		}
+		public override Sprite IconImage => itemObject != null ? itemObject.ItemIcon : null;
 		public GachaObject itemObject { get; private set; }
 
 
@@ -38,23 +28,8 @@ namespace RuntimeData
 		public GachaDataSummonInfo gachaAds { get; private set; }
 
 		public GachaLevelInfo currentLevelInfo { get; private set; }
-		public int MaxLevel
-		{
-			get
-			{
-				int max = 1;
-				for (int i = 0; i < rawData.chances.Count; i++)
-				{
-					var chance = rawData.chances[i];
-					if (max < chance.chances.Count)
-					{
-						max = chance.chances.Count;
-					}
-				}
+		public int MaxLevel { get; private set; }
 
-				return max;
-			}
-		}
 		public event System.Action OnLevelUp;
 
 		private struct InternalChance
@@ -98,7 +73,7 @@ namespace RuntimeData
 				{
 					gacha10 = rawData.summonInfos[i];
 				}
-				if (rawData.summonInfos[i].summonType == GachaButtonType.Gacha30)
+				if (rawData.summonInfos[i].summonType == GachaButtonType.Gacha100)
 				{
 					gacha30 = rawData.summonInfos[i];
 				}
@@ -109,6 +84,8 @@ namespace RuntimeData
 			}
 
 			itemObject = PlatformManager.UserDB.gachaContainer.GetScriptableObject<GachaObject>(tid);
+
+			MaxLevel = rawData.gachaLevelInfos[rawData.gachaLevelInfos.Count - 1].level;
 		}
 
 
@@ -122,6 +99,16 @@ namespace RuntimeData
 				}
 				currentLevelInfo = rawData.gachaLevelInfos.Find(x => x.level == _level);
 			}
+
+			if (currentLevelInfo == null)
+			{
+				_level = 0;
+			}
+		}
+
+		public void Reset()
+		{
+			viewAdsCount = 0;
 		}
 
 		public bool CanGetReward()
@@ -136,7 +123,7 @@ namespace RuntimeData
 				return false;
 			}
 
-			if (currentLevelInfo.reward.tid == 0)
+			if (currentLevelInfo != null && currentLevelInfo.reward.tid == 0)
 			{
 				return false;
 			}
@@ -156,8 +143,13 @@ namespace RuntimeData
 			}
 
 			var gachaReward = rawData.gachaLevelInfos[rewardIndex];
+			if (gachaReward == null)
+			{
+				return;
+			}
 			if (gachaReward.reward.tid == 0)
 			{
+				rewardIndex++;
 				return;
 			}
 			List<RewardInfo> rewardList = new List<RewardInfo>();
@@ -176,22 +168,18 @@ namespace RuntimeData
 
 		private void OnInternalUpdateExp(int _exp)
 		{
-			if (currentLevelInfo.reward.tid == 0)
-			{
-				return;
-			}
-
-			if (_level >= rawData.gachaLevelInfos.Count)
+			if (_level >= MaxLevel)
 			{
 				return;
 			}
 			exp += _exp;
-			if (exp >= currentLevelInfo.exp)
+
+			if (currentLevelInfo != null && exp >= currentLevelInfo.exp)
 			{
 				_level++;
-
 				exp -= currentLevelInfo.exp;
 			}
+
 			UpdateData();
 		}
 
@@ -262,7 +250,11 @@ namespace RuntimeData
 				}
 				InternalChance ic = new InternalChance();
 				ic.grade = rawData.chances[i].grade;
-				ic.chance = rawData.chances[i].chances[_level - 1];
+				if (_level < rawData.chances[i].chances.Count)
+				{
+					ic.chance = rawData.chances[i].chances[_level];
+				}
+
 				internalChances.Add(ic);
 			}
 
@@ -378,7 +370,7 @@ namespace RuntimeData
 			var summonInfo = gacha10;
 			switch (type)
 			{
-				case GachaButtonType.Gacha30:
+				case GachaButtonType.Gacha100:
 					summonInfo = gacha30;
 					break;
 				case GachaButtonType.Ads:

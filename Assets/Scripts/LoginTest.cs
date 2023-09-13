@@ -29,7 +29,7 @@ public class LoginTest : MonoBehaviour
 	async void Start()
 	{
 		InitializationOptions options = new InitializationOptions();
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
 		options.SetEnvironmentName("editor");
 #else
 		options.SetEnvironmentName("production");
@@ -58,7 +58,6 @@ public class LoginTest : MonoBehaviour
 	public void OnClickClearSession()
 	{
 		AuthenticationService.Instance.ClearSessionToken();
-
 	}
 	private async Task SignInGoogleAsync(string authCode)
 	{

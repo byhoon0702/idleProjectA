@@ -180,6 +180,7 @@ namespace RuntimeData
 			total = Mathf.Clamp(total, GameManager.Config.ATTACK_SPEED_MIN, GameManager.Config.ATTACK_SPEED_MAX);
 			return total;
 		}
+
 		public void UpdateMaxHP(PlayerUnit player)
 		{
 			maxHp = stats.GetValue(StatsType.Hp);
@@ -189,8 +190,12 @@ namespace RuntimeData
 
 				prevMaxHp = maxHp;
 			}
+			else
+			{
+				player.Hp = maxHp;
+				prevMaxHp = maxHp;
+			}
 		}
-
 
 		public float attackTime
 		{

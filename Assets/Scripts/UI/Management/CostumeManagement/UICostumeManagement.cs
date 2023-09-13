@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using VIVID;
+
 using UnityEngine.Rendering;
 using System.Globalization;
 
@@ -179,9 +179,10 @@ public class UICostumeManagement : UIBase, ISelectListener
 		}
 	}
 
-	public Transform Find(int index)
+	public UICostumeSlot Find(int index)
 	{
-		return itemRoot.GetChild(index);
+
+		return itemRoot.GetChild(index).GetComponent<UICostumeSlot>();
 	}
 
 	public void OnUpdate(bool _refreshGrid)

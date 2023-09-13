@@ -103,23 +103,24 @@ namespace RuntimeData
 			LimitCount = rawData.timeData.buyLimitCount;
 			LimitType = rawData.timeData.limitType;
 			itemObject = PlatformManager.UserDB.shopContainer.GetScriptableObject<ShopItemObject>(tid);
+
 		}
 
-		public void DailyReset()
+		public virtual void DailyReset()
 		{
 			buyCount = 0;
 		}
 
-		public void WeeklyReset()
+		public virtual void WeeklyReset()
 		{
-			if (TimeManager.Instance.Now.DayOfWeek == DayOfWeek.Monday)
+			if (TimeManager.Instance.UtcNow.ToLocalTime().DayOfWeek == DayOfWeek.Monday)
 			{
 				buyCount = 0;
 			}
 		}
-		public void MonthlyReset()
+		public virtual void MonthlyReset()
 		{
-			if (TimeManager.Instance.Now.Day == 1)
+			if (TimeManager.Instance.UtcNow.ToLocalTime().Day == 1)
 			{
 				buyCount = 0;
 			}
@@ -142,6 +143,7 @@ namespace RuntimeData
 			{
 				case CurrencyType.ADS:
 				case CurrencyType.CASH:
+				case CurrencyType.FREE:
 					break;
 				default:
 					PlatformManager.UserDB.inventory.FindCurrency(CurrencyType).Pay(Price * purchaseNumber);
@@ -151,19 +153,23 @@ namespace RuntimeData
 			buyCount += purchaseNumber;
 
 			List<RewardInfo> _rewardList = new List<RewardInfo>();
-			if (rewardList != null && rewardList.Count > 0)
-			{
-				for (int i = 0; i < rewardList.Count; i++)
-				{
-					RewardInfo reward = rewardList[i].Clone();
-					reward.Multiply((IdleNumber)purchaseNumber);
-					_rewardList.Add(reward);
-				}
 
-				PlatformManager.UserDB.AddRewards(_rewardList, true);
+			List<RewardInfo> result = new List<RewardInfo>();
+			for (int i = 0; i < rewardList.Count; i++)
+			{
+				var reward = rewardList[i].Clone();
+				reward.Multiply((IdleNumber)purchaseNumber);
+				_rewardList.Add(reward);
 			}
 
-			RemoteConfigManager.Instance.CloudSave();
+			result.AddRange(RewardUtil.ReArrangReward(_rewardList));
+
+			if (result.Count > 0)
+			{
+				PlatformManager.UserDB.AddRewards(result, true);
+			}
+
+			PlatformManager.RemoteSave.CloudSave();
 		}
 
 		public void OnPurchaseFail()
@@ -175,5 +181,10 @@ namespace RuntimeData
 		{
 
 		}
+	}
+	[Serializable]
+	public class EventShopInfo : ShopInfo
+	{
+
 	}
 }

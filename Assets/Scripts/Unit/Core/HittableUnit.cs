@@ -7,8 +7,6 @@ public abstract class HittableUnit : UnitBase
 	public abstract IdleNumber Hp { get; set; }
 	public abstract IdleNumber MaxHp { get; }
 
-
-
 	public GameObject hitEffect;
 
 	public GameObject hitEffectObject;

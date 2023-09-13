@@ -72,18 +72,29 @@ public class UIItemGacha : MonoBehaviour
 	{
 		if (gachaInfo.currentLevelInfo != null)
 		{
+			objReward.SetActive(true);
 			bool isEmpty = gachaInfo.currentLevelInfo.reward.tid == 0;
-			objReward.SetActive(!isEmpty);
+			buttonGachaReward.interactable = isEmpty == false;
 
-			textSlider.text = $"{gachaInfo.Exp}/{gachaInfo.currentLevelInfo.exp}";
-			slider.value = gachaInfo.Exp / (float)gachaInfo.currentLevelInfo.exp;
 			textLevel.text = $"Lv. {gachaInfo.Level}";
 
+
+
+			if (gachaInfo.Level >= gachaInfo.MaxLevel)
+			{
+				textSlider.text = "Max";
+				slider.value = 1f;
+			}
+			else
+			{
+				textSlider.text = $"{gachaInfo.Exp}/{gachaInfo.currentLevelInfo.exp}";
+				slider.value = gachaInfo.Exp / (float)gachaInfo.currentLevelInfo.exp;
+			}
 			objGachaRewardOn.SetActive(isEmpty == false && gachaInfo.CanGetReward());
 		}
 		else
 		{
-			objGachaRewardOn.SetActive(false);
+			objReward.SetActive(false);
 		}
 	}
 
@@ -176,7 +187,7 @@ public class UIItemGacha : MonoBehaviour
 			ToastUI.Instance.Enqueue("다이아가 부족합니다.");
 			return;
 		}
-		gachaInfo.OnClickGacha(GachaButtonType.Gacha30);
+		gachaInfo.OnClickGacha(GachaButtonType.Gacha100);
 
 		parent.OnUpdate();
 	}
@@ -188,10 +199,22 @@ public class UIItemGacha : MonoBehaviour
 			ToastUI.Instance.Enqueue(_contentMessage);
 			return;
 		}
+
+
 		int count = gachaInfo.gachaAds.summonMaxCount - gachaInfo.ViewAdsCount;
 		if (count <= 0)
 		{
-			ToastUI.Instance.Enqueue("광고 횟수가 없어요.");
+			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_no_more_ads_gacha"]);
+			return;
+		}
+
+		var item = PlatformManager.UserDB.inventory.GetPersistent(InventoryContainer.AdFreeTid);
+		bool free = item.unlock;
+		if (free)
+		{
+			gachaInfo.OnClickGachaAds();
+			gachaInfo.OnClickGacha(GachaButtonType.Ads);
+			parent.OnUpdate();
 			return;
 		}
 

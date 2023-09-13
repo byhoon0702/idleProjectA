@@ -31,7 +31,16 @@ public class SkillCoolTime : SkillCooldown
 		if (caster is PlayerUnit)
 		{
 			PlayerUnit player = caster as PlayerUnit;
-			modifiedCoolTime = slot.item.CooldownValue * (float)(1f + (player.info.stats.GetValue(StatsType.Skill_Cooltime).Value / 100f));
+			float reduce = player.info.stats.GetValue(StatsType.Skill_Cooltime).GetValueFloat();
+			if (reduce > 0)
+			{
+				modifiedCoolTime = slot.item.CooldownValue - (float)((slot.item.CooldownValue * reduce) / 100f);
+			}
+			else
+			{
+				modifiedCoolTime = slot.item.CooldownValue;
+			}
+
 		}
 
 		else
@@ -181,11 +190,11 @@ public class SkillSlot : DataSlot
 	{
 		get
 		{
-			if (item == null || item.icon == null)
+			if (item == null || item.IconImage == null)
 			{
 				return null;
 			}
-			return item.icon;
+			return item.IconImage;
 		}
 	}
 	public void Use()
@@ -346,7 +355,6 @@ public class SkillSlot : DataSlot
 			return;
 		}
 
-
 		item.itemObject.Trigger(caster, item);
 	}
 
@@ -421,6 +429,9 @@ public class SkillContainer : BaseContainer
 			}
 
 		}
+
+		isAutoSkill = temp.isAutoSkill;
+		isAutoHyper = temp.isAutoHyper;
 
 	}
 

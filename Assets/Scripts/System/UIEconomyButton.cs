@@ -99,6 +99,10 @@ public class UIEconomyButton : Selectable, IDragHandler, IEndDragHandler
 	Vector2 mousePosition;
 	public override void OnPointerDown(PointerEventData eventData)
 	{
+		if (this.interactable == false)
+		{
+			return;
+		}
 		base.OnPointerDown(eventData);
 		mousePosition = eventData.position;
 		if (onlyOnce || failed)
@@ -114,7 +118,7 @@ public class UIEconomyButton : Selectable, IDragHandler, IEndDragHandler
 		isPressed = false;
 		isHeldButton = false;
 	}
-
+	bool isOk = false;
 	private void Update()
 	{
 		if (isPressed)
@@ -128,8 +132,15 @@ public class UIEconomyButton : Selectable, IDragHandler, IEndDragHandler
 			{
 				if (_onButtonDown != null)
 				{
-					bool isOk = _onButtonDown.Invoke();
-					Debug.Log($"Button State : {isOk}");
+					try
+					{
+						isOk = _onButtonDown.Invoke();
+					}
+					catch (System.Exception ex)
+					{
+						isOk = false;
+					}
+					//Debug.Log($"Button State : {isOk}");
 					if (isOk == false)
 					{
 						isHeldButton = false;
@@ -163,10 +174,18 @@ public class UIEconomyButton : Selectable, IDragHandler, IEndDragHandler
 
 		base.OnPointerUp(eventData);
 
-		if (isHeldButton == false && _onButtonDown != null)
+		if (isHeldButton == false)
 		{
-			_onButtonDown.Invoke();
+			if (_onButtonDown != null)
+			{
+				_onButtonDown.Invoke();
+			}
+			else if (_onClick != null)
+			{
+				_onClick.Invoke();
+			}
 		}
+
 		touchTime = 0;
 		isHeldButton = false;
 		isPressed = false;

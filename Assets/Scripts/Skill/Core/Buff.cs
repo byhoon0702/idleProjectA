@@ -19,11 +19,13 @@ public class Buff : SkillCore
 			}
 		}
 
+		BuffInfo buffinfo = new BuffInfo(_caster.gameObject.layer, _info.Tid, _info.Duration, _info.skillAbility.type, _caster.HitInfo.TotalAttackPower);
+
 		if (_info.skillAbility.Value > 0)
 		{
-			_caster.HitInfo.TotalAttackPower *= _info.Value / 100f;
+			buffinfo.power = _info.skillAbility.Value;
 		}
-		_caster.StartCoroutine(Activation(_caster, _info, new BuffInfo(_caster.gameObject.layer, _info.Tid, _info.Duration, _info.skillAbility)));
+		_caster.StartCoroutine(Activation(_caster, _info, buffinfo));
 		return true;
 	}
 

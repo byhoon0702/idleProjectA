@@ -3,7 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
+public enum EffectPosType
+{
+	Target,
+	Self,
+	HitPosition,
+	Effect,
+}
 [Serializable]
 public class SKillEvolutionData
 {
@@ -69,11 +75,16 @@ public abstract class SkillCore : ScriptableObject
 		}
 
 		HitInfo hitInfo = _caster.HitInfo;
-		if (_info.skillAbility.Value > 0)
+		if (_caster is Pet)
 		{
-			hitInfo.TotalAttackPower *= _info.Value / 100f;
+			hitInfo = UnitManager.it.Player.HitInfo;
 		}
 
+		if (_info.skillAbility.Value > 0)
+		{
+			hitInfo.TotalAttackPower *= (_info.skillAbility.Value / 100f) * ((100 + _caster.SkillBuffValue) / 100f);
+		}
+		hitInfo.sprite = _info.IconImage;
 		_caster.StartCoroutine(Activation(_caster, _info, hitInfo));
 		return true;
 	}
@@ -103,23 +114,31 @@ public abstract class SkillCore : ScriptableObject
 			yield break;
 		}
 
-
-		if (hitInfo.targetLayer == LayerMask.NameToLayer("Enemy"))
+		if (caster is EnemyUnit)
 		{
 			Vector3 pos = caster.target != null ? caster.target.position : caster.position;
 			caster.skillModule.StartCoroutine(AffectNonTarget(caster, info, hitInfo, pos));
 		}
 		else
 		{
-			var list = UnitManager.it.GetRandomEnemies(caster.position, info.AttackRange, info.TargetCount);
-
-			for (int i = 0; i < list.Count; i++)
+			if (hitInfo.targetLayer == LayerMask.NameToLayer("Enemy"))
 			{
-				caster.skillModule.StartCoroutine(AffectNonTarget(caster, info, hitInfo, list[i].position));
+				Vector3 pos = caster.target != null ? caster.target.position : caster.position;
+				caster.skillModule.StartCoroutine(AffectNonTarget(caster, info, hitInfo, pos));
+			}
+			else
+			{
+				var list = UnitManager.it.GetRandomEnemies(caster.position, info.AttackRange, info.TargetCount);
+
+				for (int i = 0; i < list.Count; i++)
+				{
+					caster.skillModule.StartCoroutine(AffectNonTarget(caster, info, hitInfo, list[i].position));
+				}
 			}
 		}
 		yield return null;
 	}
+
 
 	protected virtual IEnumerator AffectNonTarget(Unit caster, RuntimeData.SkillInfo info, AffectedInfo hitInfo, Vector3 targetPos)
 	{

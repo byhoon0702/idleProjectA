@@ -27,13 +27,29 @@ public class UIBottomMenu : MonoBehaviour
 	{
 		SetToggle();
 	}
+	private bool IsNormalStage()
+	{
+		bool normal = StageManager.it.CheckNormalStage();
+
+		if (!normal)
+		{
+			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_use_only_normal_stage"]);
+		}
+		return normal;
+	}
 
 	private void SetToggle()
 	{
 		toggleHero.onValueChanged.AddListener((_isOn) =>
 		{
+
 			if (_isOn == true)
 			{
+				if (!IsNormalStage())
+				{
+					toggleHero.isOn = false;
+					return;
+				}
 				GameUIManager.it.Close();
 				UIController.it.ToggleManagement(() => { toggleHero.isOn = false; });
 			}
@@ -45,9 +61,15 @@ public class UIBottomMenu : MonoBehaviour
 
 		toggleEquipment.onValueChanged.AddListener((_isOn) =>
 		{
-			Debug.Log($"Toggle is {_isOn}");
+
+
 			if (_isOn == true)
 			{
+				if (!IsNormalStage())
+				{
+					toggleEquipment.isOn = false;
+					return;
+				}
 				GameUIManager.it.Close();
 				UIController.it.ToggleEquipment(onClose: () => { toggleEquipment.isOn = false; });
 			}
@@ -59,8 +81,14 @@ public class UIBottomMenu : MonoBehaviour
 
 		toggleRelic.onValueChanged.AddListener((_isOn) =>
 		{
+
 			if (_isOn == true)
 			{
+				if (!IsNormalStage())
+				{
+					toggleRelic.isOn = false;
+					return;
+				}
 				GameUIManager.it.Close();
 				UIController.it.ToggleRelic(() => { toggleRelic.isOn = false; });
 			}
@@ -73,8 +101,14 @@ public class UIBottomMenu : MonoBehaviour
 
 		toggleDungeon.onValueChanged.AddListener((_isOn) =>
 		{
+
 			if (_isOn == true)
 			{
+				if (!IsNormalStage())
+				{
+					toggleDungeon.isOn = false;
+					return;
+				}
 				GameUIManager.it.Close();
 				UIController.it.ShowDungeonList(() => { toggleDungeon.isOn = false; });
 			}
@@ -87,8 +121,14 @@ public class UIBottomMenu : MonoBehaviour
 
 		togglePet.onValueChanged.AddListener((_isOn) =>
 		{
+
 			if (_isOn == true)
 			{
+				if (!IsNormalStage())
+				{
+					togglePet.isOn = false;
+					return;
+				}
 				GameUIManager.it.Close();
 				UIController.it.TogglePet(() => { togglePet.isOn = false; });
 			}
@@ -100,8 +140,14 @@ public class UIBottomMenu : MonoBehaviour
 
 		toggleGacha.onValueChanged.AddListener((_isOn) =>
 		{
+
 			if (_isOn == true)
 			{
+				if (!IsNormalStage())
+				{
+					toggleGacha.isOn = false;
+					return;
+				}
 				GameUIManager.it.Close();
 				UIController.it.ToggleGacha(() => { toggleGacha.isOn = false; });
 			}
@@ -112,8 +158,14 @@ public class UIBottomMenu : MonoBehaviour
 		});
 		toggleShop.onValueChanged.AddListener((_isOn) =>
 		{
+
 			if (_isOn == true)
 			{
+				if (!IsNormalStage())
+				{
+					toggleShop.isOn = false;
+					return;
+				}
 				GameUIManager.it.Close();
 				UIController.it.ToggleShop(() => { toggleShop.isOn = false; });
 			}

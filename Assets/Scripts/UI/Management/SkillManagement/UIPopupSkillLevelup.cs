@@ -45,10 +45,8 @@ public class UIPopupSkillLevelup : UIBase
 		UpdateItemLevelupInfo();
 
 		int value = itemInfo.LevelUpNeedCount();
-		//textMeshButtonCurrency.text = value.ToString();
 
-
-		buttonUpgrade.SetButton(itemInfo.icon, $"{itemInfo.Count}/{value.ToString()}", itemInfo.Count >= value);
+		buttonUpgrade.SetButton(itemInfo.IconImage, $"{itemInfo.Count}/{value.ToString()}", itemInfo.Count >= value);
 
 		buttonMax.gameObject.SetActive(itemInfo.IsMax());
 		buttonUpgrade.gameObject.SetActive(itemInfo.IsMax() == false);

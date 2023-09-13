@@ -8,16 +8,39 @@ using Unity.Services.CloudSave;
 using System.Threading.Tasks;
 
 using System.Globalization;
+
+
+public enum NoticeButtonType
+{
+	OK = 0,
+	GOTOCOMMUNITY = 1,
+	QUIT = 2,
+
+}
+
+[System.Serializable]
+public class Notice
+{
+	public int id;
+	public string context;
+	public NoticeButtonType buttonType;
+}
+
 public class RemoteConfigManager : MonoBehaviour
 {
 	public static RemoteConfigManager Instance { get; private set; }
 	public const int MaxMailCount = 20;
-	public string Season;
+	public string Season { get; private set; }
 	List<string> m_OrderedMessageIds;
 
 	private int _userLevel;
 	private int _stageLevel;
 	public string Version { get; private set; }
+	public string TestVersion { get; private set; }
+	public bool Maintenance { get; private set; }
+
+	public Notice Notice { get; private set; }
+
 	private void Awake()
 	{
 		if (Instance == null)
@@ -54,72 +77,11 @@ public class RemoteConfigManager : MonoBehaviour
 		_stageLevel = stageLevel;
 	}
 
-	public async void CloudSave(bool showToast = false)
-	{
-		try
-		{
-			await CloudSaveAsync();
-			if (showToast)
-			{
-				ToastUI.Instance.Enqueue("클라우드 저장 완료");
-			}
-		}
-		catch (System.Exception ex)
-		{
-			Debug.LogError(ex);
-		}
-	}
 
-
-	const string k_CloudSave = "CloudSave";
-	public async Task CloudSaveAsync()
-	{
-		string json = PlatformManager.UserDB.Save();
-		if (json.IsNullOrEmpty())
-		{
-			return;
-		}
-		var data = new Dictionary<string, object> { { k_CloudSave, json } };
-
-		await CloudSaveService.Instance.Data.ForceSaveAsync(data);
-
-	}
-
-	public async Task<string> CloudData()
-	{
-		var data = await CloudSaveService.Instance.Data.LoadAsync(new HashSet<string> { k_CloudSave });
-		if (data.ContainsKey(k_CloudSave))
-		{
-			return data[k_CloudSave];
-		}
-		else
-		{
-			return "";
-		}
-	}
-
-
-	public async Task<UserDB> CloudLoad()
-	{
-		var data = await CloudSaveService.Instance.Data.LoadAsync(new HashSet<string> { k_CloudSave });
-		if (data.ContainsKey(k_CloudSave))
-		{
-			UserDBSave saveData = new UserDBSave();//Newtonsoft.Json.JsonConvert.DeserializeObject<UserDBSave>(data[k_CloudSave]);
-			UserDB temp = new UserDB();
-			temp.InitializeContainer();
-			saveData.LoadData(temp, data[k_CloudSave]);
-			return temp;
-		}
-		else
-		{
-			return null;
-		}
-
-	}
 	public async Task FetchConfigs()
 	{
 		//RemoteConfigService.Instance.FetchCompleted -= RemoteConfigLoaded;
-
+		RemoteConfigService.Instance.SetCustomUserID(PlatformManager.UserDB.userInfoContainer.userInfo.UUID);
 		await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes() { userLevel = _userLevel, stageLevel = _stageLevel }, new appAttributes());
 
 		if (this == null)
@@ -154,6 +116,7 @@ public class RemoteConfigManager : MonoBehaviour
 
 	private void RemoteConfigLoaded(ConfigResponse configResponse)
 	{
+		Notice = null;
 		switch (configResponse.requestOrigin)
 		{
 			case ConfigOrigin.Default:
@@ -163,25 +126,76 @@ public class RemoteConfigManager : MonoBehaviour
 			case ConfigOrigin.Remote:
 				Season = RemoteConfigService.Instance.appConfig.GetString("Season");
 				Version = RemoteConfigService.Instance.appConfig.GetString("Version");
+				TestVersion = RemoteConfigService.Instance.appConfig.GetString("TestVersion");
+				Maintenance = RemoteConfigService.Instance.appConfig.GetBool("Maintenance");
+				string json = RemoteConfigService.Instance.appConfig.GetJson("Notice");
+				if (json.IsNullOrEmpty() == false)
+				{
+					Notice = JsonUtility.FromJson<Notice>(json);
+				}
 				break;
 		}
 	}
 
+	public bool IsNoticeExist(System.Action onClose = null)
+	{
+		if (Notice == null)
+		{
+			return false;
+		}
+
+		if (PlayerPrefs.GetInt("Notice_Id") == Notice.id)
+		{
+			return false;
+		}
+
+		System.Action action = null;
+		string str_ok = "";
+		switch (Notice.buttonType)
+		{
+			case NoticeButtonType.OK:
+				str_ok = "str_ui_ok";
+				action = onClose;
+				break;
+			case NoticeButtonType.GOTOCOMMUNITY:
+				str_ok = "str_ui_go_to_community";
+				action = () => { GoToCommunity(); onClose.Invoke(); };
+				break;
+			case NoticeButtonType.QUIT:
+				str_ok = "str_ui_quit_game";
+#if !UNITY_EDITOR
+				action = Application.Quit;
+#else
+				action = () => { UnityEditor.EditorApplication.isPlaying = false; };
+#endif
+
+				break;
+		}
+
+		PopAlert.CreateNotice("공지", Notice.context, str_ok, action);
+		PlayerPrefs.SetInt("Notice_Id", Notice.id);
+		return true;
+	}
 	public bool NeedUpdate()
 	{
-		if (Version.Equals(Application.version) == false)
+		if (Version.Equals(Application.version) == false && TestVersion.Equals(Application.version) == false)
 		{
-			PopAlert.Create("알림", $"앱 업데이트가 필요합니다.\n최신버젼{Version}\n현재버젼{Application.version}", GoToStore);
+			PopAlert.Create("알림", $"앱 업데이트가 필요합니다.\n최신버젼{Version}\n현재버젼{Application.version}", "str_ui_go_to_store", "닫기", GoToStore);
 			return true;
 		}
 		return false;
 	}
 
+	public void GoToCommunity()
+	{
+		Application.OpenURL("https://game.naver.com/lounge/Rejuvenation_Hero_Idle_RPG/");
+	}
 	public void GoToStore()
 	{
 #if UNITY_ANDROID
 		Application.OpenURL("https://play.google.com/store/apps/details?id=com.nclo.aos.projectb");
 #endif
+		Application.Quit();
 	}
 
 	public List<InboxMessage> GetNextMessages(int numberOfMessages, string lastMessageId = "")
@@ -285,6 +299,7 @@ public class RemoteConfigManager : MonoBehaviour
 	{
 		public int userLevel;
 		public int stageLevel;
+		public string uuid;
 	}
 
 	public struct appAttributes

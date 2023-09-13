@@ -3,21 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class UIShopPackage : UIShopBase
+public class UIShopPackage : UIShopBase<RuntimeData.ShopInfo>
 {
-	public override void ShowBuyPopup(RuntimeData.ShopInfo info)
-	{
 
-	}
 	public override void OnUpdate(ShopType type)
 	{
 		currentType = type;
-		infoList = PlatformManager.UserDB.shopContainer[type];
+		infoList = PlatformManager.UserDB.shopContainer.GetNormal(type);
 		SetGrid();
 	}
 	public override void Refresh()
 	{
-		infoList = PlatformManager.UserDB.shopContainer[currentType];
+		infoList = PlatformManager.UserDB.shopContainer.GetNormal(currentType);
 		SetGrid();
 	}
 	protected override void SetGrid()

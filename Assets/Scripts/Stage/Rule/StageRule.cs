@@ -17,6 +17,9 @@ public enum StageType
 	/// 회춘 던전
 	/// </summary>
 	Youth = 40,
+	Event_Dungeon = 50,
+	Event_Tower = 60,
+	Event_Guardian = 70,
 }
 
 [System.Serializable]
@@ -45,6 +48,7 @@ public class StageRule : ScriptableObject
 	[SerializeField] protected Dictionary<StageStateType, StageFSM> stateDictionary;
 	[NonSerialized] public StageFSM currentFsm;
 
+	public List<RuntimeData.RewardInfo> displayRewardList = new List<RuntimeData.RewardInfo>();
 	public bool isWin { get; protected set; } = false;
 	public bool isEnd { get; protected set; } = false;
 	public virtual void Begin()
@@ -81,6 +85,7 @@ public class StageRule : ScriptableObject
 	{
 		return (StageFSM)stateSerializableDictionary[type].current.OnEnter();
 	}
+
 	public void SetCondition()
 	{
 		for (int i = 0; i < clearConditions.Length; i++)
@@ -91,9 +96,7 @@ public class StageRule : ScriptableObject
 		{
 			failConditions[i].SetCondition();
 		}
-
 	}
-
 
 	public virtual void Begin(StageStateType type)
 	{
@@ -157,8 +160,15 @@ public class StageRule : ScriptableObject
 
 	public virtual void AddReward()
 	{
+		displayRewardList = new List<RuntimeData.RewardInfo>();
 		StageManager.it.CurrentStage.SetStageReward((IdleNumber)StageManager.it.CurrentStage.StageNumber - 1);
-		PlatformManager.UserDB.AddRewards(StageManager.it.CurrentStage.StageClearReward, false);
+		List<RuntimeData.RewardInfo> rewardList = new List<RuntimeData.RewardInfo>();
+
+		var list = StageManager.it.CurrentStage.GetStageRewardList();
+		rewardList = RewardUtil.ReArrangReward(list);
+		displayRewardList.AddRange(rewardList);
+
+		PlatformManager.UserDB.AddRewards(rewardList, false);
 	}
 
 	public bool CheckEnd()
@@ -174,8 +184,16 @@ public class StageRule : ScriptableObject
 		{
 			isWin = true;
 			isEnd = true;
-			PlatformManager.UserDB.stageContainer.SavePlayStage(StageManager.it.CurrentStage, StageManager.it.cumulativeDamage, StageManager.it.currentKillCount);
-			StageManager.it.CurrentStage.isClear = true;
+
+			var stage = StageManager.it.CurrentStage;
+			if (stage.isClear == false && stage.StageType == StageType.Normal)
+			{
+				PlatformManager.Firebase.StageLog(stage.StageNumber);
+			}
+
+			StageManager.it.SaveStage();
+
+			stage.isClear = true;
 			AddReward();
 
 			StageManager.it.OnStageEnd(true);

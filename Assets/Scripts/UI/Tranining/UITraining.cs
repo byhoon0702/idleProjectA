@@ -18,6 +18,8 @@ public class UITraining : UIBase
 	[SerializeField] private UIItemTraining itemPrefab;
 	[SerializeField] private Transform itemRoot;
 
+	[SerializeField] Toggle[] toggles;
+
 	public LevelUpCount levelupCount { get; private set; } = LevelUpCount.ONE;
 
 	private List<UIItemTraining> items = new List<UIItemTraining>();
@@ -26,6 +28,24 @@ public class UITraining : UIBase
 	{
 		base.OnEnable();
 		EventCallbacks.onItemChanged += OnItemChanged;
+
+		switch (levelupCount)
+		{
+			case LevelUpCount.ONE:
+				toggles[0].isOn = true;
+				break;
+			case LevelUpCount.TEN:
+				toggles[1].isOn = true;
+				break;
+			case LevelUpCount.HUNDRED:
+				toggles[2].isOn = true;
+				break;
+			case LevelUpCount.MAX:
+				toggles[3].isOn = true;
+				break;
+
+		}
+
 	}
 
 	protected override void OnDisable()

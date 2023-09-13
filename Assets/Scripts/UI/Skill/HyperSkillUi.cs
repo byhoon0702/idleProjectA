@@ -39,6 +39,9 @@ public class HyperSkillUi : MonoBehaviour
 		{
 			v.fillAmount = 0;
 		}
+
+
+
 	}
 
 	public void AddEvent(HyperModule module)

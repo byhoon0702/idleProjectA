@@ -22,6 +22,7 @@ public class PlayerUnit : Unit
 	public override ControlSide ControlSide => ControlSide.PLAYER;
 	public override UnitType UnitType => UnitType.Player;
 
+
 	public override HitInfo HitInfo
 	{
 		get
@@ -49,6 +50,8 @@ public class PlayerUnit : Unit
 			return hit;
 		}
 	}
+
+	public override IdleNumber SkillBuffValue => info.stats.GetValue(StatsType.Skill_Damage);
 	public override IdleNumber AttackPower => info.AttackPower();
 	public override float AttackSpeed => info.AttackSpeed();
 	public override CriticalType RandomCriticalType => info.IsCritical();
@@ -311,17 +314,15 @@ public class PlayerUnit : Unit
 		}
 
 		IdleNumber totalAttackPower = AttackPower;
-		IdleNumber skillvalue = skillSlot.item.skillAbility.Value;
-		IdleNumber skillBuffvalue = PlatformManager.UserDB.GetValue(StatsType.Skill_Damage);
-
-		totalAttackPower = (totalAttackPower * (skillvalue + (skillvalue * skillBuffvalue))) / 100f;
+		//IdleNumber skillvalue = skillSlot.item.skillAbility.Value;
+		//IdleNumber skillBuffvalue = PlatformManager.UserDB.GetValue(StatsType.Skill_Damage);
 
 		HitInfo info = new HitInfo(gameObject.layer, AttackPower);
 		info = new HitInfo(gameObject.layer, totalAttackPower);
 
 		if (skillSlot.item.Instant)
 		{
-			skillModule.ActivateSkill(skillSlot, info);
+			skillModule.ActivateSkill(skillSlot);
 		}
 		else
 		{
@@ -337,7 +338,6 @@ public class PlayerUnit : Unit
 		//DialogueManager.it.CreateSkillBubble(skillSlot.item.Name, this);
 
 		unitAnimation.PlayAnimation(skillSlot.item.rawData.animation);
-
 
 		return true;
 	}
@@ -398,7 +398,9 @@ public class PlayerUnit : Unit
 
 		HeadingToTarget();
 
-		rigidbody2D.MovePosition(transform.position + headingDirection * MoveSpeed * delta);
+		Vector3 pos = StageManager.it.MoveRestrict(transform.position + headingDirection * MoveSpeed * delta);
+
+		rigidbody2D.MovePosition(pos);
 	}
 
 
@@ -547,7 +549,7 @@ public class PlayerUnit : Unit
 			reverse.x = HeadPosition.x + (0.7f * -currentDir);
 			reverse.y = HeadPosition.y + 0.6f;
 			reverse.z = HeadPosition.z;
-			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, HeadPosition, reverse, TextType.PLAYER_HIT);
+			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, HeadPosition, reverse, TextType.PLAYER_HIT, _hitInfo.sprite);
 			ShakeUnit();
 		}
 		Hp -= _hitInfo.TotalAttackPower;
@@ -607,12 +609,12 @@ public class PlayerUnit : Unit
 
 	public override void AddDebuff(AppliedBuff debuffInfo)
 	{
-		info.stats.UpdataModifier(debuffInfo.ability.type, new StatsModifier(debuffInfo.ability.Value, StatModeType.SkillDebuff, debuffInfo.key));
+		info.stats.UpdataModifier(debuffInfo.type, new StatsModifier(debuffInfo.power, StatModeType.SkillDebuff, debuffInfo.key));
 	}
 
 	public override void AddBuff(AppliedBuff buffinfo)
 	{
-		info.stats.UpdataModifier(buffinfo.ability.type, new StatsModifier(buffinfo.ability.Value, StatModeType.Buff, buffinfo.key));
+		info.stats.UpdataModifier(buffinfo.type, new StatsModifier(buffinfo.power, StatModeType.Buff, buffinfo.key));
 	}
 	public override void RemoveBuff(AppliedBuff key)
 	{

@@ -52,6 +52,7 @@ public struct SkillEvolutionData
 [System.Serializable]
 public class CommonData : ScriptableObject
 {
+	public int NickNameChangeCost;
 	/// <summary>
 	/// 강화 요구치
 	/// </summary>

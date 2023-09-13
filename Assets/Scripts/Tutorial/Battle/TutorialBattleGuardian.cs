@@ -5,18 +5,20 @@ using UnityEngine;
 public class TutorialBattleGuardian : TutorialStep
 {
 	UIManagementBattle uiBattle;
+	RectTransform rect;
 	// Start is called before the first frame update
 	public override ITutorial Enter(RuntimeData.QuestInfo quest)
 	{
 		_quest = quest;
 		uiBattle = FindObject<UIManagementBattle>();
-		TutorialManager.instance.SetPosition(uiBattle.UiPageBattleGuardian.ButtonPlay.transform as RectTransform);
+		rect = uiBattle.UiPageBattleGuardian.ButtonPlay.transform as RectTransform;
+		TutorialManager.instance.SetPosition(rect);
 		return this;
 	}
 
 	public override ITutorial OnUpdate(float time)
 	{
-		if (uiBattle.UiPageBattleTower.gameObject.activeInHierarchy == false)
+		if (rect != null && rect.gameObject.activeInHierarchy == false)
 		{
 			return Back();
 		}

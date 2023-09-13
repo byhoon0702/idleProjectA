@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class AffectedInfo
 {
-
-	public IdleNumber attackPower = new IdleNumber();
+	public Sprite sprite;
+	public IdleNumber amount = new IdleNumber();
 	public Color fontColor = Color.white;
 
 	public LayerMask LayerMask { get; protected set; }
@@ -46,10 +46,10 @@ public class HitInfo : AffectedInfo
 	public HitInfo(LayerMask layerMask, IdleNumber _attackPower, CriticalType criticalType = CriticalType.Normal) : base(layerMask)
 	{
 
-		attackPower = _attackPower;
+		amount = _attackPower;
 		this.criticalType = criticalType;
 
-		TotalAttackPower = attackPower * criticalChanceMul * CriticalX2ChanceMul;
+		TotalAttackPower = amount * criticalChanceMul * CriticalX2ChanceMul;
 
 		if (LayerMask == LayerMask.NameToLayer("Enemy"))
 		{

@@ -302,9 +302,9 @@ public class UnitStats
 	{
 		IdleNumber totalPower = (IdleNumber)0;
 		IdleNumber atkPower = GetStat(StatsType.Atk).Value;
-		IdleNumber atkSpeed = GetStat(StatsType.Atk_Speed).Value / 100f;
+		IdleNumber atkSpeed = GetStat(StatsType.Atk_Speed).Value / 1000f;
 
-		IdleNumber averageAtk = atkPower / atkSpeed;
+		IdleNumber averageAtk = atkPower * (1 + atkSpeed);
 
 		IdleNumber critChance = GetStat(StatsType.Crits_Chance).Value;
 		IdleNumber critDamage = GetStat(StatsType.Crits_Damage).Value / 100f;

@@ -19,11 +19,11 @@ public class SkillCameraShakeEffect : SkillScreenEffect
 	private float listenerFrequency = 1f;
 	private float listenerDuration = 1f;
 
-	public override void DoEffect()
+	public override void DoEffect(float multi = 1f)
 	{
 		if (SceneCamera.it != null)
 		{
-			SceneCamera.it.ShakeCamera(amount, duration, isFade);
+			SceneCamera.it.ShakeCamera(amount * multi, duration, isFade);
 		}
 	}
 }

@@ -40,6 +40,8 @@ public class StageManager : MonoBehaviour
 	private RuntimeData.StageInfo currentStage = null;
 
 	private int currentWaveCount;
+
+	public BoxCollider2D UnitMoveArea;
 	public int CurrentWave => currentWaveCount;
 
 	public Transform mapRoot;
@@ -123,6 +125,11 @@ public class StageManager : MonoBehaviour
 		PlayerPrefs.Save();
 
 	}
+
+	public bool CheckNormalStage()
+	{
+		return CurrentStage.StageType == StageType.Normal;
+	}
 	public void Init()
 	{
 		GetLocalSavedStage();
@@ -187,9 +194,7 @@ public class StageManager : MonoBehaviour
 	public void PlayStage(RuntimeData.StageInfo stageInfo)
 	{
 		playBoss = false;
-		if (stageInfo.StageType == StageType.Normal)
-		{
-		}
+
 		switch (stageInfo.StageType)
 		{
 			case StageType.Normal:
@@ -331,7 +336,16 @@ public class StageManager : MonoBehaviour
 
 			if (CurrentStage.StageType == StageType.Dungeon || CurrentStage.StageType == StageType.Guardian)
 			{
-				var data = DataManager.Get<BattleDataSheet>().Get(CurrentStage.stageData.dungeonTid);
+				BattleData data = null;
+				if (CurrentStage.isEventStage)
+				{
+					data = DataManager.Get<EventBattleDataSheet>().Get(CurrentStage.stageData.dungeonTid);
+				}
+				else
+				{
+					data = DataManager.Get<BattleDataSheet>().Get(CurrentStage.stageData.dungeonTid);
+				}
+
 
 				var currency = PlatformManager.UserDB.inventory.FindCurrency(data.dungeonItemTid);
 
@@ -394,18 +408,18 @@ public class StageManager : MonoBehaviour
 		{
 			return;
 		}
-		if (CurrentStage.StageType != StageType.Normal)
+		if (CheckNormalStage() == false)
 		{
 			return;
 		}
 
-		if (killCountForOffline >= 1000)
+		if (killCountForOffline >= UserDB.killLimit)
 		{
 			TimeSpan ts = TimeSpan.FromSeconds(Time.realtimeSinceStartupAsDouble - stagePlayTickForOffline);
 			PlatformManager.UserDB.userInfoContainer.userInfo.KillPerMinutes = (int)(1000 / ts.TotalMinutes);
 		}
 
-		if (killCountForOffline < 1000)
+		if (killCountForOffline < UserDB.killLimit)
 		{
 			killCountForOffline++;
 		}
@@ -447,7 +461,7 @@ public class StageManager : MonoBehaviour
 				var reward = totalReward[ii];
 				if (reward.Category == RewardCategory.RewardBox)
 				{
-					var list = PlatformManager.UserDB.OpenRewardBox(reward);
+					var list = RewardUtil.OpenRewardBox(reward);
 					for (int iii = 0; iii < list.Count; iii++)
 					{
 						AddItemToList(list[iii]);
@@ -493,13 +507,14 @@ public class StageManager : MonoBehaviour
 
 		void AddItemToList(RuntimeData.RewardInfo reward)
 		{
+			var _reward = reward.Clone();
 			if (infos.ContainsKey(reward.Tid) == false)
 			{
-				infos.Add(reward.Tid, reward.Clone());
+				infos.Add(reward.Tid, _reward);
 			}
 			else
 			{
-				infos[reward.Tid].AddCount(reward.fixedCount);
+				infos[reward.Tid].AddCount(_reward.fixedCount);
 			}
 		}
 		for (int i = 0; i < totalCount; i++)
@@ -510,7 +525,7 @@ public class StageManager : MonoBehaviour
 				var reward = totalReward[ii];
 				if (reward.Category == RewardCategory.RewardBox)
 				{
-					var list = PlatformManager.UserDB.OpenRewardBox(reward);
+					var list = RewardUtil.OpenRewardBox(reward);
 					for (int iii = 0; iii < list.Count; iii++)
 					{
 						AddItemToList(list[iii]);
@@ -533,10 +548,37 @@ public class StageManager : MonoBehaviour
 		PlatformManager.UserDB.AddRewards(rewardList, false);
 	}
 
+	public void SaveStage()
+	{
+		if (CurrentStage.isEventStage)
+		{
+			var eventInfo = PlatformManager.UserDB.eventContainer.GetCurrentEvent();
+			eventInfo.SaveEventStage(CurrentStage, cumulativeDamage, currentKillCount);
+		}
+		else
+		{
+			PlatformManager.UserDB.stageContainer.SavePlayStage(CurrentStage, cumulativeDamage, currentKillCount);
+		}
+	}
+	public Vector3 MoveRestrict(Vector3 pos)
+	{
+		Vector3 reposition = pos;
+
+		Vector3 bound_min = UnitMoveArea.bounds.min;
+		Vector3 bound_max = UnitMoveArea.bounds.max;
+
+		reposition.x = Mathf.Clamp(pos.x, bound_min.x, bound_max.x);
+		reposition.y = Mathf.Clamp(pos.y, bound_min.y, bound_max.y);
+		reposition.z = 0;
+		return reposition;
+	}
+
 	private void OnDestroy()
 	{
 		StageClearEvent = null;
 		OnStageTimeSpan = null;
 		OnStageRewardAcquired = null;
 	}
+
+
 }

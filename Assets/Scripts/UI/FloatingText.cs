@@ -5,6 +5,7 @@ using TMPro;
 
 using DG.Tweening;
 using UnityEngine.Pool;
+using UnityEngine.UI;
 
 public enum TextType
 {
@@ -18,30 +19,41 @@ public enum TextType
 
 public class FloatingText : MonoBehaviour
 {
-	public TextMeshPro floatingTextMesh;
+	public TextMeshProUGUI floatingTextMesh;
 
+	[SerializeField] private Image _image;
 	[SerializeField] private TMP_ColorGradient healColor;
 	[SerializeField] private TMP_ColorGradient playerHitColor;
 	[SerializeField] private TMP_ColorGradient enemyHitColor;
 	[SerializeField] private TMP_ColorGradient criticalColor;
+	[SerializeField] private TMP_ColorGradient superCriticalColor;
 
 	[SerializeField] private float healFontSize;
 	[SerializeField] private float playerHitFontSize;
 	[SerializeField] private float enemyHitFontSize;
 	[SerializeField] private float criticalFontSize;
+	[SerializeField] private float superCriticalFontSize;
 
 	private IObjectPool<FloatingText> managedPool;
+	Tweener scale;
 
+	Tweener movey;
 	public void SetManagedPool(IObjectPool<FloatingText> pool)
 	{
 		managedPool = pool;
 	}
 
-	public void Show(IdleNumber value, Vector3 position, Vector3 endPosition, TextType _textType)
+	public void Show(IdleNumber value, Vector3 position, Vector3 endPosition, TextType _textType, Sprite sprite)
 	{
 		gameObject.SetActive(true);
 
+		Vector2 startPos = GameUIManager.it.ToUIPosition(position);
+		Vector2 endPos = GameUIManager.it.ToUIPosition(endPosition);
 
+		RectTransform rect = transform as RectTransform;
+
+		_image.enabled = sprite != null;
+		_image.sprite = sprite;
 		Camera sceneCam = SceneCamera.it.sceneCamera;
 
 		if (floatingTextMesh != null)
@@ -49,54 +61,53 @@ public class FloatingText : MonoBehaviour
 			floatingTextMesh.gameObject.SetActive(false);
 		}
 		floatingTextMesh.enableVertexGradient = true;
+		float scaleSize = 1f;
 		switch (_textType)
 		{
 			case TextType.ENEMY_HIT:
 				floatingTextMesh.colorGradientPreset = enemyHitColor;
-				floatingTextMesh.fontSize = enemyHitFontSize;
+				scaleSize = enemyHitFontSize;
 				break;
 			case TextType.PLAYER_HIT:
 				floatingTextMesh.colorGradientPreset = playerHitColor;
-				floatingTextMesh.fontSize = playerHitFontSize;
+				scaleSize = playerHitFontSize;
 				break;
 			case TextType.HEAL:
 				floatingTextMesh.colorGradientPreset = healColor;
-				floatingTextMesh.fontSize = healFontSize;
+				scaleSize = healFontSize;
 				break;
 			case TextType.CRITICAL:
 				floatingTextMesh.colorGradientPreset = criticalColor;
-				floatingTextMesh.fontSize = criticalFontSize;
+				scaleSize = criticalFontSize;
 				break;
 			case TextType.CRITICAL_X2:
-				floatingTextMesh.colorGradientPreset = criticalColor;
-				floatingTextMesh.fontSize = criticalFontSize;
+				floatingTextMesh.colorGradientPreset = superCriticalColor;
+				scaleSize = superCriticalFontSize;
 				break;
 		}
 
 		floatingTextMesh.gameObject.SetActive(true);
 		floatingTextMesh.alpha = 1;
-		floatingTextMesh.text = value.ToFloatingString();
+		floatingTextMesh.text = value.ToString();
 
-		Vector2 endPos = endPosition;
-
+		_image.color = Color.white;
 
 		void FadeFont()
 		{
 			floatingTextMesh.DOFade(0, 0.2f).SetDelay(0.2f).OnComplete(OnReturnPool);
-			movey = transform.DOMoveY(endPos.y + 0.5f, 0.2f).SetDelay(0.2f);
+			_image.DOFade(0, 0.2f).SetDelay(0.2f);
+			movey = rect.DOAnchorPosY(endPos.y + 0.5f, 0.2f).SetDelay(0.2f);
 		}
 
 
-		endPos.x = position.x;
-		transform.position = endPos;
-		transform.transform.localScale = Vector3.one * 3;
-		scale = transform.DOScale(1, 0.1f).OnComplete(FadeFont);
+		endPos.x = startPos.x;
+		rect.anchoredPosition = startPos;
+		transform.transform.localScale = Vector3.one * 3 * scaleSize;
+		scale = transform.DOScale(1 * scaleSize, 0.1f).OnComplete(FadeFont);
 
 	}
 
-	Tweener scale;
 
-	Tweener movey;
 	void OnReturnPool()
 	{
 		//DOTween.Kill(transform);

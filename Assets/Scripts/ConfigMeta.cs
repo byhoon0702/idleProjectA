@@ -23,6 +23,8 @@ public class ConfigMeta : ScriptableObject
 		}
 	}
 
+	public bool CheckContent = false;
+
 	/// <summary>
 	/// 공격속도 최소치
 	/// </summary>
@@ -304,20 +306,23 @@ public class ConfigMeta : ScriptableObject
 	/// <summary>
 	/// State 가중치 1
 	/// </summary>
-	[Tooltip("State 가중치 1")]
+	[Tooltip("스테이지 가중치")]
 	[SerializeField] public float STAGE_WEIGHT = 1.85f;
 
 	/// <summary>
 	/// State 가중치 2
 	/// </summary>
-	[Tooltip("State 가중치 2")]
+	[Tooltip("레벨 가중치")]
 	[SerializeField] public float LEVEL_WEIGHT = 0.2f;
 
 	/// <summary>
 	/// State 가중치 3
 	/// </summary>
-	[Tooltip("State 가중치 3")]
-	[SerializeField] public float BOSS_WEIGHT = 2;
+	[Tooltip("보스 공격력 가중치")]
+	[SerializeField] public float BOSS_ATK_WEIGHT = 2;
+
+	[Tooltip("보스 체력 가중치")]
+	[SerializeField] public float BOSS_HP_WEIGHT = 2;
 
 	/// <summary>
 	/// State AttackPower 가중치

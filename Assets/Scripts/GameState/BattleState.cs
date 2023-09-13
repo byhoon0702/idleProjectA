@@ -7,6 +7,7 @@ public class BattleState : StageFSM
 	{
 		elapsedTime = 0;
 		stageRule.SetCondition();
+		UnitManager.it.Player.ChangeState(StateType.IDLE, true);
 		if (StageManager.it.bossSpawn)
 		{
 			UIController.it.UiStageInfo.ShowBossName();
@@ -18,12 +19,11 @@ public class BattleState : StageFSM
 			UIController.it.UiStageInfo.SwitchBossMode(false);
 		}
 
-		UIController.it.UiStageInfo.SwitchContentExitButton(StageManager.it.CurrentStage.StageType != StageType.Normal || StageManager.it.bossSpawn);
-		UIController.it.UiStageInfo.ShowNormalButtonGroup(StageManager.it.CurrentStage.StageType == StageType.Normal);
-
+		bool isNormal = StageManager.it.CheckNormalStage();
+		UIController.it.UiStageInfo.SwitchContentExitButton(!isNormal || StageManager.it.bossSpawn);
+		UIController.it.UiStageInfo.ShowNormalButtonGroup(isNormal);
 
 		StageManager.it.stagePlayTick = Time.realtimeSinceStartupAsDouble;
-
 
 		return this;
 	}

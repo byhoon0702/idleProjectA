@@ -35,6 +35,12 @@ public class UnitHyperMode : UnitModeBase
 		{
 			PlatformManager.UserDB.AddModifiers(stats.Key, new StatsModifier(stats.Value.Value, StatModeType.Hyper, hyperSlot));
 		}
+		if (unit is PlayerUnit)
+		{
+			PlayerUnit player = (unit as PlayerUnit);
+			player.UpdateMaxHp();
+			player.Heal(new HealInfo(player.gameObject.layer, player, player.MaxHp));
+		}
 	}
 
 	public override void OnSpawn()

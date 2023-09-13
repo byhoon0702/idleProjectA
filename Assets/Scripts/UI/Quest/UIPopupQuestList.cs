@@ -88,14 +88,8 @@ public class UIPopupQuestList : UIBase
 			}
 		}
 	}
-
-	public void Show()
+	protected override void OnActivate()
 	{
-		if (Activate() == false)
-		{
-			return;
-		}
-		gameObject.SetActive(true);
 		toggleDaily.SetIsOnWithoutNotify(true);
 		ToggleDaily(true);
 	}

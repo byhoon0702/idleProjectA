@@ -56,7 +56,7 @@ public class UIDungeonPopup : UIBase
 		currentStageInfo.SetStageReward((IdleNumber)currentStageInfo.StageNumber - 1);
 
 		var list = currentStageInfo.GetStageRewardList();
-		_rewardList = new List<RuntimeData.RewardInfo>(list);
+		_rewardList = RewardUtil.ReArrangReward(list);
 		_displayRewardList = new List<RuntimeData.RewardInfo>(currentStageInfo.StageClearReward);
 		CreateList();
 	}
@@ -74,29 +74,21 @@ public class UIDungeonPopup : UIBase
 			killcount = record != null ? record.killCount : 0;
 		}
 
-		currentStageInfo.SetReward((IdleNumber)1);
-
-		if (currentStageInfo.MonsterExp != null)
-		{
-			_displayRewardList.Add(currentStageInfo.MonsterExp.Clone());
-		}
-		if (currentStageInfo.MonsterGold != null)
-		{
-			_displayRewardList.Add(currentStageInfo.MonsterGold.Clone());
-		}
-		_displayRewardList.AddRange(new List<RuntimeData.RewardInfo>(currentStageInfo.MonsterReward));
-
-
 		currentStageInfo.SetReward((IdleNumber)killcount);
+		_displayRewardList.AddRange(currentStageInfo.GetDefaultMonsterRewardList());
+
 		if (currentStageInfo.MonsterExp != null)
 		{
-			_rewardList.Add(currentStageInfo.MonsterExp.Clone());
+			var reward = currentStageInfo.MonsterExp.Clone();
+			_rewardList.Add(reward);
 		}
 		if (currentStageInfo.MonsterGold != null)
 		{
-			_rewardList.Add(currentStageInfo.MonsterGold.Clone());
+			var reward = currentStageInfo.MonsterGold.Clone();
+			_rewardList.Add(reward);
 		}
-		_rewardList.AddRange(new List<RuntimeData.RewardInfo>(currentStageInfo.MonsterReward));
+
+		_rewardList.AddRange(RewardUtil.ReArrangReward(currentStageInfo.MonsterReward));
 
 		CreateList();
 	}

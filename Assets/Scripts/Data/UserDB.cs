@@ -10,9 +10,10 @@ using System.Reflection;
 
 using Newtonsoft.Json;
 using RuntimeData;
-using Unity.VisualScripting;
+
 using UnityEngine;
 using System.Threading.Tasks;
+
 
 
 [System.Serializable]
@@ -54,37 +55,37 @@ public class SaveData
 [System.Serializable]
 public struct UserDBSave
 {
-	public readonly string directory
-	{
-		get
-		{
-#if SALES
-			return "SalesSave";
-#else
-#if IS_EDITOR
-			return $"{Application.dataPath}/../LocalSave";
-#else
-			return $"{Application.persistentDataPath}/LocalSave";
-#endif
-#endif
-		}
-	}
-	public readonly string path
-	{
-		get
-		{
-#if SALES
-			return $"{directory}/SalesSaveData";
-#else
-#if IS_EDITOR
-			return $"{directory}/SaveData.txt";
+	//	public readonly string directory
+	//	{
+	//		get
+	//		{
+	//#if SALES
+	//			return "SalesSave";
+	//#else
+	//#if IS_EDITOR
+	//			return $"{Application.dataPath}/../LocalSave";
+	//#else
+	//			return $"{Application.persistentDataPath}/LocalSave";
+	//#endif
+	//#endif
+	//		}
+	//	}
+	//	public readonly string path
+	//	{
+	//		get
+	//		{
+	//#if SALES
+	//			return $"{directory}/SalesSaveData";
+	//#else
+	//#if IS_EDITOR
+	//			return $"{directory}/SaveData.txt";
 
-#else
-			return $"{directory}/SaveData.dat";
-#endif
-#endif
-		}
-	}
+	//#else
+	//			return $"{directory}/SaveData.dat";
+	//#endif
+	//#endif
+	//		}
+	//	}
 
 	[SerializeField] public LoginInfo loginInfo;
 	[SerializeField] public List<SaveData> savedata;
@@ -117,7 +118,8 @@ public struct UserDBSave
 			new SaveData().Set(userDb.battlePassContainer),
 			new SaveData().Set(userDb.shopContainer),
 			new SaveData().Set(userDb.attendanceContainer),
-
+			new SaveData().Set(userDb.eventContainer),
+			new  SaveData().Set(userDb.tradeContainer),
 		};
 	}
 
@@ -226,10 +228,10 @@ public struct UserDBSave
 		}
 	}
 
-	public void DeleteFile()
-	{
-		File.Delete(path);
-	}
+	//public void DeleteFile()
+	//{
+	//	File.Delete(path);
+	//}
 
 	public bool CheckFile(LoginInfo _loginInfo)
 	{
@@ -456,6 +458,7 @@ public abstract class BaseContainer : ScriptableObject
 
 public class UserDB
 {
+	public const float killLimit = 1000f;
 	public List<StatusData> statusDataList { get; private set; }
 	public UnitStats UserStats { get; private set; }
 	public Dictionary<StatsType, RuntimeData.AbilityInfo> HyperStats = new Dictionary<StatsType, RuntimeData.AbilityInfo>();
@@ -485,6 +488,8 @@ public class UserDB
 	public UnitContainer unitContainer;
 	public BattlePassContainer battlePassContainer;
 	public AttendanceContainer attendanceContainer;
+	public EventContainer eventContainer;
+	public TradeContainer tradeContainer;
 	#endregion
 
 	public UserDBSave saveData = new UserDBSave();
@@ -540,8 +545,18 @@ public class UserDB
 
 	public async Task<bool> LoadLoginData()
 	{
+#if UNITY_EDITOR
+		if (PlatformManager.Instance.overrideJson)
+		{
+
+			string json = JsonConvert.DeserializeObject<string>(PlatformManager.Instance.jsonText.text);
+			PlayerPrefs.SetString(UserDBSave.k_LocalSave, json);
+			PlayerPrefs.Save();
+			return true;
+		}
+#endif
 		//나중에는 클라우드에서 유저 정보 얻어 오도록 변경 해야 함
-		var cloudJson = await LoadDataFromCloud();
+		var cloudJson = await PlatformManager.RemoteSave.LoadDataFromCloud();
 		UserDB cloudDb = null;
 		if (cloudJson.IsNullOrEmpty() == false)
 		{
@@ -554,11 +569,18 @@ public class UserDB
 
 		var localData = LoadLocalSave();
 
+		UserDBSave userDbSave = new UserDBSave();
+		if (localData != null)
+		{
+			PlatformManager.UserDB.SetLoginInfo(localData.userInfoContainer.userInfo.UUID, localData.userInfoContainer.userInfo.UserName, localData.userInfoContainer.userInfo.LoginPlatform);
+		}
+
 		if (cloudDb != null)
 		{
 			if (localData == null)
 			{
 				PlayerPrefs.SetString(UserDBSave.k_LocalSave, cloudJson);
+				userDbSave.LoadUserInfoOnly(PlatformManager.UserDB, cloudJson);
 				return true;
 			}
 			if (cloudDb.userInfoContainer.userInfo.UUID == localData.userInfoContainer.userInfo.UUID)
@@ -566,6 +588,8 @@ public class UserDB
 				if (cloudDb.userInfoContainer.userInfo.UserLevel > localData.userInfoContainer.userInfo.UserLevel)
 				{
 					PlayerPrefs.SetString(UserDBSave.k_LocalSave, cloudJson);
+					userDbSave.LoadUserInfoOnly(PlatformManager.UserDB, cloudJson);
+
 					return true;
 				}
 				string json = PlayerPrefs.GetString(UserDBSave.k_LocalSave);
@@ -574,28 +598,25 @@ public class UserDB
 					PlayerPrefs.SetString(UserDBSave.k_LocalSave, cloudJson);
 				}
 			}
-			//PopAlert.Create("알림", $"Server : {cloudDb.userInfoContainer.userInfo.UUID}\nLocal : {localData.userInfoContainer.userInfo.UUID}");
+			userDbSave.LoadUserInfoOnly(PlatformManager.UserDB, cloudJson);
 			return true;
 		}
 		if (cloudJson.IsNullOrEmpty())
 		{
-			//PopAlert.Create("오류", "클라우드 데이터 없음");
+
 			PlayerPrefs.DeleteKey(UserDBSave.k_LocalSave);
 		}
 		else
 		{
+			userDbSave.LoadUserInfoOnly(PlatformManager.UserDB, cloudJson);
 			PlayerPrefs.SetString(UserDBSave.k_LocalSave, cloudJson);
 		}
+
+
+
 		return true;
 	}
 
-	public async Task<string> LoadDataFromCloud()
-	{
-
-		var result = await RemoteConfigManager.Instance.CloudData();
-
-		return result;
-	}
 
 	public void LogOut()
 	{
@@ -638,6 +659,9 @@ public class UserDB
 		buffContainer?.Dispose();
 		battlePassContainer?.Dispose();
 		attendanceContainer?.Dispose();
+		eventContainer?.Dispose();
+
+		tradeContainer?.Dispose();
 
 	}
 
@@ -714,6 +738,9 @@ public class UserDB
 			LoadContainer(ref unitContainer);
 			LoadContainer(ref battlePassContainer);
 			LoadContainer(ref attendanceContainer);
+
+			LoadContainer(ref eventContainer);
+			LoadContainer(ref tradeContainer);
 
 			saveData.Set(this);
 			Load();
@@ -800,12 +827,14 @@ public class UserDB
 		OnUpdateData(unitContainer);
 		OnUpdateData(battlePassContainer);
 		OnUpdateData(attendanceContainer);
+		OnUpdateData(eventContainer);
+		OnUpdateData(tradeContainer);
 
 		awakeningContainer.SetHyperActivate(null);
 
 		UpdateUserStats();
-
 	}
+
 	private void OnResetData<T>(T container) where T : BaseContainer
 	{
 		container.DailyResetData();
@@ -821,43 +850,15 @@ public class UserDB
 		OnResetData(inventory);
 		OnResetData(shopContainer);
 		OnResetData(attendanceContainer);
-
+		OnResetData(gachaContainer);
+		OnResetData(questContainer);
+		OnResetData(eventContainer);
+		OnResetData(tradeContainer);
 	}
 
 	public void UpdateUserStats()
 	{
 		UserStats.UpdateAll();
-	}
-
-	public void AddItem()
-	{
-
-	}
-
-	public List<RuntimeData.RewardInfo> OpenRewardBox(RuntimeData.RewardInfo info)
-	{
-		if (info == null)
-		{
-			return null;
-		}
-		if (info.Category != RewardCategory.RewardBox)
-		{
-			return null;
-		}
-
-		var rewardBoxdata = DataManager.Get<RewardBoxDataSheet>().Get(info.Tid);
-		List<RuntimeData.RewardInfo> rewardInfos = new List<RuntimeData.RewardInfo>();
-		for (int i = 0; i < rewardBoxdata.rewards.Count; i++)
-		{
-			RuntimeData.RewardInfo reward = new RuntimeData.RewardInfo(rewardBoxdata.rewards[i]);
-			reward.UpdateCount();
-			rewardInfos.Add(reward);
-		}
-
-		var rewardList = RandomReward(rewardInfos, RandomLogic.RewardBox);
-		//InternalAddStageRewards(rewardList, displayReward, showToast);
-
-		return rewardList;
 	}
 
 	public void AddRewards(List<RuntimeData.RewardInfo> rewardList, bool displayReward, bool showToast = false)
@@ -911,6 +912,7 @@ public class UserDB
 						costumeContainer.Buy(reward.tid);
 					}
 					break;
+				case RewardCategory.Event_Currency:
 				case RewardCategory.Currency:
 					{
 						var data = DataManager.Get<CurrencyDataSheet>().Get(reward.tid);
@@ -919,7 +921,8 @@ public class UserDB
 					break;
 				case RewardCategory.RewardBox:
 					{
-						inventory.AddRandomBox(reward.tid, reward.value.GetValueToInt());
+						//var list = RewardUtil.OpenRewardBox(new RewardInfo(reward.tid, reward.category, reward.value));
+						//AddRewards(list, false);
 					}
 					break;
 				case RewardCategory.Relic:
@@ -960,28 +963,6 @@ public class UserDB
 		}
 	}
 
-	public List<RuntimeData.RewardInfo> RandomReward(List<RuntimeData.RewardInfo> rewardList, System.Random r)
-	{
-		List<RuntimeData.RewardInfo> getReward = new List<RuntimeData.RewardInfo>();
-		var chance = r.Next(0, RandomLogic.maxChance);
-
-		int minChance = 0;
-		for (int i = 0; i < rewardList.Count; i++)
-		{
-			var reward = rewardList[i];
-			int maxChance = (int)(reward.Chance * 100);
-
-			if ((reward.Chance == 100) || chance >= minChance && chance < minChance + maxChance)
-			{
-				getReward.Add(reward);
-				break;
-			}
-			minChance += maxChance;
-
-		}
-		return getReward;
-
-	}
 
 
 	public void RemoveHyperAbility(object source)
@@ -1004,6 +985,7 @@ public class UserDB
 			HyperStats.Add(ability.type, ability.Clone());
 		}
 	}
+
 	public void AddHyperAbilityInfo(List<RuntimeData.AbilityInfo> abilities, object source)
 	{
 		for (int i = 0; i < abilities.Count; i++)
@@ -1012,5 +994,7 @@ public class UserDB
 			AddHyperAbilityInfo(ability, source);
 		}
 	}
+
+
 }
 

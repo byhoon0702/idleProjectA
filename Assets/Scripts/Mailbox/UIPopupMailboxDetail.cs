@@ -17,14 +17,16 @@ public class UIPopupMailboxDetail : UIBase
 
 	private InboxMessage _message;
 	private UIItemMail _item;
+	UIPopupMailbox _parent;
 	private void Awake()
 	{
 		_buttonGet.SetButtonEvent(OnClick);
 
 	}
 
-	public void Open(UIItemMail item)
+	public void Open(UIPopupMailbox parent, UIItemMail item)
 	{
+		_parent = parent;
 		_item = item;
 		_message = item.Message;
 		gameObject.SetActive(true);
@@ -50,10 +52,12 @@ public class UIPopupMailboxDetail : UIBase
 
 	}
 
-	public void OnClick()
+	public async void OnClick()
 	{
 		Close();
 
-		_item.GetReward();
+		await _item.GetReward();
+
+
 	}
 }

@@ -9,7 +9,7 @@ public class HyperModule : MonoBehaviour
 	public TimelineAsset hyperChangeTimeline;
 	private bool isHyper;
 	public bool IsHyper => isHyper;
-	public static readonly float[] hyperPhaseStepNumber = new float[] { 0f, 12f };
+	public static readonly float[] hyperPhaseStepNumber = new float[] { 0f, 5f };
 	private float hyperFullCharge => hyperPhaseStepNumber[hyperPhaseStepNumber.Length - 1];
 	private float hyperGaugePerHit
 	{

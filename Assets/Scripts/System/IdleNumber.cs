@@ -93,17 +93,30 @@ public struct IdleNumber
 	{
 		var value = Value;
 		value = value * Mathf.Pow(10, Exp);
-
+		if (double.IsInfinity(value))
+		{
+			value = double.MaxValue;
+		}
 		return value;
 	}
 	public float GetValueFloat()
 	{
-		return (float)GetValue();
+		double value = GetValue();
+		if (value >= float.MaxValue)
+		{
+			return float.MaxValue;
+		}
+		return (float)value;
 	}
 
 	public int GetValueToInt()
 	{
-		return (int)GetValue();
+		double value = GetValue();
+		if (value >= int.MaxValue)
+		{
+			return int.MaxValue;
+		}
+		return (int)value;
 	}
 
 	public void Check()
@@ -121,59 +134,54 @@ public struct IdleNumber
 		}
 
 		Exp = 0;
-		Value = Mathf.Round((float)(Value * Mathf.Pow(10, Exp)));
+		Value = Math.Min(Value * Mathf.Pow(10, Exp), double.MaxValue);
 	}
 
 	public long GetValueToLong()
 	{
-		return (long)GetValue();
+		double value = GetValue();
+		if (value >= long.MaxValue)
+		{
+			return long.MaxValue;
+		}
+		return (long)value;
 	}
 	public string ToFloatingString()
 	{
 		IdleNumber a = new IdleNumber(this);
 		a.NormalizeSelf();
-
+		a.Turncate();
 		double turncateValue = a.Value;
 		string unit = a.GetUnit_ABC();
 
-		if (turncateValue >= 100)
-		{
-			return $"{Math.Round(turncateValue, 2)}{unit}";
-		}
-		else if (turncateValue >= 10)
-		{
-			return $"{Math.Round(turncateValue * 10 / 10, 2):0.#}{unit}";
-		}
-		else
-		{
-			return $"{Math.Round(turncateValue * 100 / 100, 2):0.##}{unit}";
-		}
+		int left = Exp % 3;
+		return $"{turncateValue * Mathf.Pow(10, left):0.##}{unit}";
 	}
 
-	public string ToString(string format = "")
+	public override string ToString()
 	{
 		IdleNumber a = new IdleNumber(this);
 		a.NormalizeSelf();
-
+		a.Turncate();
 		double turncateValue = a.Value;
 		string unit = a.GetUnit_ABC();
 
-		if (format.IsNullOrEmpty() == false)
+		//if (format.IsNullOrEmpty() == false)
+		//{
+		//	return $"{string.Format(format, Math.Floor(turncateValue))}{unit}";
+		//}
+
+		if (Exp >= 3)
 		{
-			return $"{string.Format(format, Math.Round(turncateValue, 2))}{unit}";
-		}
-		if (turncateValue >= 100)
-		{
-			return $"{Math.Round(turncateValue, 2)}{unit}";
-		}
-		else if (turncateValue >= 10)
-		{
-			return $"{Math.Round(turncateValue * 10 / 10, 2):0.#}{unit}";
+			int left = Exp % 3;
+			return $"{turncateValue * Mathf.Pow(10, left):0.##}{unit}";
 		}
 		else
 		{
-			return $"{Math.Round(turncateValue * 100 / 100, 2):0.##}{unit}";
+			return $"{Math.Floor(turncateValue)}{unit}";
 		}
+
+
 	}
 
 	public void NormalizeSelf()
@@ -197,6 +205,12 @@ public struct IdleNumber
 		}
 		else
 		{
+			int left = Exp % position;
+			if (left > 0)
+			{
+				Value *= Mathf.Pow(10, left);
+			}
+			Exp -= left;
 			while (Value >= tencubed)
 			{
 				Value /= tencubed;
@@ -559,6 +573,8 @@ public struct IdleNumber
 	{
 		IdleNumber result = new IdleNumber(a);
 		result.Value *= b;
+
+		result.NormalizeSelf();
 		return result;
 	}
 
@@ -566,11 +582,12 @@ public struct IdleNumber
 	{
 		if (a.Value == 0 || b == 0)
 		{
-			Debug.LogWarning("Can not divide by Zero");
+			//Debug.LogWarning("Can not divide by Zero");
 			return a;
 		}
 		IdleNumber result = new IdleNumber(a);
 		result.Value /= b;
+		result.NormalizeSelf();
 		return result;
 	}
 
@@ -603,8 +620,10 @@ public struct IdleNumber
 					if (diff == 1)
 					{
 						//좌, 우의 승수를 더한다.
-						result.Exp = left.Exp + right.Exp;
+
 					}
+					result.Exp = left.Exp + right.Exp;
+
 					//AligningIdleNumber 함수에서 낮은 승수의 값을 소수점으로 변경시키기 때문에 결과에 최종 승수 만큼 곱한다.
 					result.Value = (left.Value * right.Value) * diff;
 				}

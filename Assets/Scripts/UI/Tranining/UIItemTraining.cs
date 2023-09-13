@@ -103,7 +103,15 @@ public class UIItemTraining : MonoBehaviour
 		textTitle.text = trainingInfo.type.ToUIString();
 
 		var baseValue = PlatformManager.UserDB.GetBaseValue(trainingInfo.type);
-		textCurrentStat.text = $"{(baseValue + trainingInfo.currentValue).ToString("{0:0.##}")}{trainingInfo.tailChar}";
+		if (trainingInfo.rawData.buff.isPercentage)
+		{
+			textCurrentStat.text = $"{(baseValue + trainingInfo.currentValue).ToFloatingString()}{trainingInfo.tailChar}";
+		}
+		else
+		{
+			textCurrentStat.text = $"{(baseValue + trainingInfo.currentValue).ToString()}";
+		}
+
 		currency = PlatformManager.UserDB.inventory.FindCurrency(CurrencyType.GOLD);
 		_cost = (IdleNumber)0;
 
@@ -115,9 +123,10 @@ public class UIItemTraining : MonoBehaviour
 					_cost = trainingInfo.GetCost(trainingInfo.Level);
 					int count = 0;
 					IdleNumber totalCost = (IdleNumber)0;
-					while (totalCost <= currency.Value)
+					int level = trainingInfo.Level + count;
+					while (totalCost <= currency.Value && level < trainingInfo.rawData.maxLevel)
 					{
-						var currentCost = trainingInfo.GetCost(trainingInfo.Level + count);
+						var currentCost = trainingInfo.GetCost(level);
 						totalCost += currentCost;
 
 						if (totalCost > currency.Value)
@@ -126,6 +135,7 @@ public class UIItemTraining : MonoBehaviour
 						}
 						count++;
 						_cost = totalCost;
+						level = trainingInfo.Level + count;
 					}
 					levelUpCount = Mathf.Max(1, count);
 				}

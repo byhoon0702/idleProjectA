@@ -46,6 +46,13 @@ public class FieldItem : PoolingObject<FieldItem>
 	private float gravity = 9.8f;
 	private float elapsedTime;
 
+	public void Appear(int index, Sprite sprite, Vector3 startPos, Transform target)
+	{
+		Appear(index, startPos, target);
+
+		itemObjects[3].GetComponent<SpriteRenderer>().sprite = sprite;
+	}
+
 	public void Appear(int index, Vector3 startPos, Transform target)
 	{
 		for (int i = 0; i < itemObjects.Length; i++)

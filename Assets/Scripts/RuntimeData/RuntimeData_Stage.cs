@@ -11,6 +11,7 @@ namespace RuntimeData
 	[System.Serializable]
 	public class StageInfo
 	{
+		public bool isEventStage { get; private set; }
 
 		public int playCount;
 		public bool isClear;
@@ -37,7 +38,6 @@ namespace RuntimeData
 		public List<StageMonsterInfo> spawnBoss { get; private set; }
 		public StageListData stageListData { get; private set; }
 		public StageData stageData { get; private set; }
-
 
 		public List<RuntimeData.RewardInfo> MonsterReward { get; private set; }
 		public List<RuntimeData.RewardInfo> StageClearReward { get; private set; }
@@ -79,8 +79,9 @@ namespace RuntimeData
 		public StageMapObject itemObject { get; private set; }
 
 
-		public StageInfo(long tid, int stageNumber)
+		public StageInfo(long tid, int stageNumber, bool isEventStage = false)
 		{
+			this.isEventStage = isEventStage;
 			stageData = DataManager.Get<StageDataSheet>().Get(tid);
 
 			if (stageData.stageType == StageType.Normal)
@@ -107,12 +108,17 @@ namespace RuntimeData
 			itemObject = PlatformManager.UserDB.stageContainer.GetScriptableObject<StageMapObject>(stageData.tid);
 		}
 
-		public StageInfo(StageData _dungeonData, StageListData _data)
+		public StageInfo(StageData _dungeonData, StageListData _data, bool isEventStage = false)
 		{
+			this.isEventStage = isEventStage;
 			stageData = _dungeonData;
 			stageListData = _data;
 			UpdateData();
 			itemObject = PlatformManager.UserDB.stageContainer.GetScriptableObject<StageMapObject>(stageData.tid);
+		}
+		public void SetItemObject(StageMapObject mapObject)
+		{
+			itemObject = mapObject;
 		}
 
 		public void UpdateData()
@@ -213,7 +219,24 @@ namespace RuntimeData
 			SetMonsterReward(multi);
 			SetStageReward((IdleNumber)0);
 		}
-
+		public List<RuntimeData.RewardInfo> GetDefaultMonsterRewardList()
+		{
+			List<RuntimeData.RewardInfo> list = new List<RewardInfo>();
+			for (int i = 0; i < stageData.monsterReward.Count; i++)
+			{
+				list.Add(new RewardInfo(stageData.monsterReward[i]));
+			}
+			return list;
+		}
+		public List<RuntimeData.RewardInfo> GetDefaultStageRewardList()
+		{
+			List<RuntimeData.RewardInfo> list = new List<RewardInfo>();
+			for (int i = 0; i < stageData.stageReward.Count; i++)
+			{
+				list.Add(new RewardInfo(stageData.stageReward[i]));
+			}
+			return list;
+		}
 		public IdleNumber GetMonsterExp()
 		{
 			if (MonsterExp == null)
@@ -316,7 +339,7 @@ namespace RuntimeData
 			//int difficultLv = ((int)Difficulty + 1);
 			float stageweight = GameManager.Config.STAGE_WEIGHT;
 			float levelweight = GameManager.Config.LEVEL_WEIGHT;
-			float bossweight = GameManager.Config.BOSS_WEIGHT;
+			float bossweight = GameManager.Config.BOSS_ATK_WEIGHT;
 			float atkWeight = GameManager.Config.UNIT_STATE_ATTACK_POWER_WEIGHT;
 
 			IdleNumber defaultValue = (IdleNumber)stageData.monsterStats.attackPower;
@@ -336,7 +359,7 @@ namespace RuntimeData
 			//int difficultLv = ((int)Difficulty + 1);
 			float stageweight = GameManager.Config.STAGE_WEIGHT;
 			float levelweight = GameManager.Config.LEVEL_WEIGHT;
-			float bossweight = GameManager.Config.BOSS_WEIGHT;
+			float bossweight = GameManager.Config.BOSS_HP_WEIGHT;
 			float hpWeight = GameManager.Config.UNIT_STATE_HP_WEIGHT;
 
 			IdleNumber defaultValue = (IdleNumber)stageData.monsterStats.hp;

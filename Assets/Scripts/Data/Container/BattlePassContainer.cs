@@ -50,12 +50,32 @@ namespace RuntimeData
 
 		public void GetFreeReward()
 		{
-			PlatformManager.UserDB.AddRewards(new List<RuntimeData.RewardInfo>() { freeReward }, true, true);
+			List<RuntimeData.RewardInfo> list = new List<RewardInfo>();
+
+			if (passReward.Category == RewardCategory.RewardBox)
+			{
+				list.AddRange(RewardUtil.OpenRewardBox(freeReward));
+			}
+			else
+			{
+				list.Add(freeReward);
+			}
+			PlatformManager.UserDB.AddRewards(list, true, true);
 			_isFreeRawardClaim = true;
 		}
 		public void GetPassReward()
 		{
-			PlatformManager.UserDB.AddRewards(new List<RuntimeData.RewardInfo>() { passReward }, true, true);
+			List<RuntimeData.RewardInfo> list = new List<RewardInfo>();
+
+			if (passReward.Category == RewardCategory.RewardBox)
+			{
+				list.AddRange(RewardUtil.OpenRewardBox(passReward));
+			}
+			else
+			{
+				list.Add(passReward);
+			}
+			PlatformManager.UserDB.AddRewards(list, true, true);
 			_isPassRawardClaim = true;
 		}
 	}
@@ -93,7 +113,7 @@ namespace RuntimeData
 		public override void UpdateData()
 		{
 			PersistentItem = PlatformManager.UserDB.inventory.GetPersistent(rawData.persistentItemTid);
-			ShopInfo = PlatformManager.UserDB.shopContainer[ShopType.BATTLEPASS].Find(x => x.Tid == rawData.shopTid);
+			ShopInfo = PlatformManager.UserDB.shopContainer.GetNormal(ShopType.BATTLEPASS).Find(x => x.Tid == rawData.shopTid);
 		}
 
 		public override void Load<T>(T info)

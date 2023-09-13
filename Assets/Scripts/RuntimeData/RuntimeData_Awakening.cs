@@ -109,9 +109,10 @@ namespace RuntimeData
 	[System.Serializable]
 	public class AwakeningInfo : ItemInfo
 	{
+		public override string ItemName => PlatformManager.Language[RawData.name];
 		[SerializeField] private bool _isAwaken;
 		public bool IsAwaken => _isAwaken;
-		public Sprite Icon => ItemObject != null ? ItemObject.ItemIcon : null;
+		public override Sprite IconImage => ItemObject != null ? ItemObject.ItemIcon : null;
 		public Sprite CostIcon { get; private set; }
 		public AwakeningItemObject ItemObject { get; private set; }
 		public CostumeItemObject Costume { get; private set; }

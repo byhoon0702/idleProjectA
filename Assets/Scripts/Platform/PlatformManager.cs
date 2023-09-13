@@ -1,8 +1,13 @@
 ﻿using System;
+#if UNITY_ANDROID
 using GooglePlayGames;
-using GooglePlayGames.OurUtils;
 using GooglePlayGames.BasicApi;
+using GooglePlayGames.BasicApi.SavedGame;
+#endif
+
 using UnityEngine;
+using UnityEngine.Analytics;
+using Unity.Services.Analytics;
 using Unity.Services.Core;
 using Unity.Services.Core.Environments;
 using Unity.Services.Authentication;
@@ -12,8 +17,13 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 
+
 public class PlatformManager : MonoBehaviour
 {
+	public bool overrideJson;
+	public TextAsset jsonText;
+
+
 	public static PlatformManager Instance;
 
 
@@ -25,7 +35,11 @@ public class PlatformManager : MonoBehaviour
 			return Instance.languageContainer;
 		}
 	}
+	[SerializeField] private FirebaseManager _firebaseManager;
+	public static FirebaseManager Firebase => Instance._firebaseManager;
 
+	[SerializeField] private RemoteSaveManager _remoteSaveManager;
+	public static RemoteSaveManager RemoteSave => Instance._remoteSaveManager;
 	[SerializeField] private CommonData _commonData;
 	public static CommonData CommonData => Instance._commonData;
 	[SerializeField] private ConfigMeta _configMeta;
@@ -44,6 +58,10 @@ public class PlatformManager : MonoBehaviour
 			return Instance.userDB;
 		}
 	}
+
+	public const int NickNameChangeCost = 100;
+
+
 	private void Awake()
 	{
 		if (Instance == null)
@@ -66,13 +84,13 @@ public class PlatformManager : MonoBehaviour
 			}
 		}
 
-
 		DontDestroyOnLoad(this);
 
-		//PlayGamesPlatform.DebugLogEnabled = true;
-
+#if UNITY_ANDROID
 		PlayGamesPlatform.Activate();
+#endif
 
+		Firebase.Init();
 		userDB = new UserDB();
 		userDB.InitializeContainer();
 	}
@@ -90,18 +108,17 @@ public class PlatformManager : MonoBehaviour
 	// Start is called before the first frame update
 	private async void Start()
 	{
-
 		InitializationOptions options = new InitializationOptions();
 #if UNITY_EDITOR
 		options.SetEnvironmentName("editor");
 #else
+		overrideJson = false;
 		options.SetEnvironmentName("production");
 #endif
 		await UnityServices.InitializeAsync(options);
-		//AuthenticationService.Instance.ClearSessionToken();
-		SetupEvents();
+		AnalyticsService.Instance.StartDataCollection();
 
-		notificationManager.Init();
+		SetupEvents();
 	}
 
 	public void ShowLoadingRotate(bool show)
@@ -128,12 +145,6 @@ public class PlatformManager : MonoBehaviour
 		long timeStamp = await CloudCodeService.Instance.CallEndpointAsync<long>("TimeStamp", new Dictionary<string, object>());
 		await AuthenticationService.Instance.GetPlayerInfoAsync();
 		if (this == null) return;
-		DateTime dt = new System.DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-		Debug.Log(timeStamp / 1000);
-
-		var utcerverTime = dt.AddSeconds(timeStamp / 1000);
-
-		DateTime createdTime = (DateTime)AuthenticationService.Instance.PlayerInfo.CreatedAt;
 
 		Debug.Log("Sign In Success");
 		SignInSuccess = true;
@@ -159,9 +170,7 @@ public class PlatformManager : MonoBehaviour
 
 	public void LogOut()
 	{
-
 		AuthenticationService.Instance.SignOut(true);
-
 		//PlatformManager.UserDB.
 		if (Intro.it == null)
 		{
@@ -187,6 +196,18 @@ public class PlatformManager : MonoBehaviour
 			}
 			else
 			{
+				PopAlert.Create("알림", "게임을 플레이 하기 위해서는 Google Play Service가 필수 입니다.\n다시 시도하시겠습니까?", "다시 시도", "게임 종료",
+					() => { OnClickGoogleLogin(); },
+					() =>
+					{
+#if !UNITY_EDITOR
+						Application.Quit();
+#else
+						UnityEditor.EditorApplication.isPlaying = false;
+#endif
+
+					});
+
 				Debug.Log("Login Unseccessful");
 			}
 		});
@@ -197,8 +218,6 @@ public class PlatformManager : MonoBehaviour
 		ShowLoadingRotate(true);
 		await SignInAnonymouslyAsync(onComplete);
 		if (this == null) return;
-
-		UserDB.SetLoginInfo(AuthenticationService.Instance.PlayerId, "Guest", "guest");
 		ShowLoadingRotate(false);
 
 	}
@@ -239,7 +258,7 @@ public class PlatformManager : MonoBehaviour
 		{
 			ShowLoadingRotate(true);
 			await AuthenticationService.Instance.SignInAnonymouslyAsync();
-			//await RemoteConfigManager.Instance.FetchConfigs();
+			UserDB.SetLoginInfo(AuthenticationService.Instance.PlayerId, PlayGamesPlatform.Instance.localUser.userName, "guest");
 			Debug.Log(Social.localUser.id);
 			onComplete?.Invoke();
 
@@ -274,4 +293,6 @@ public class PlatformManager : MonoBehaviour
 			Debug.LogException(ex);
 		}
 	}
+
+
 }

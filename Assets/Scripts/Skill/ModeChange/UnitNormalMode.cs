@@ -31,6 +31,12 @@ public class UnitNormalMode : UnitModeBase
 		//unit.SetTarget
 		//skillModule.Init(this, 1701500001);
 
+		if (unit is PlayerUnit)
+		{
+			PlayerUnit player = (unit as PlayerUnit);
+			player.UpdateMaxHp();
+			player.Heal(new HealInfo(player.gameObject.layer, player, player.MaxHp));
+		}
 	}
 
 	public override void OnModeExit()

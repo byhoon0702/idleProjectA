@@ -522,18 +522,17 @@ public class EquipContainer : BaseContainer
 		for (int i = 0; i < list.Count; i++)
 		{
 			var equipItem = list[i];
-			if (equipItem == null || equipItem.Count < needCount)
+			if (equipItem == null || equipItem.Count < needCount || equipItem.Count <= 0)
 			{
 				continue;
 			}
 			RuntimeData.EquipItemInfo nextItem = FindNextEquipItem(equipItem);
-			if (nextItem == null)
+			if (nextItem == null || equipItem.isLastItem)
 			{
 				continue;
 			}
 
-
-			int count = Mathf.FloorToInt(equipItem.Count / needCount);
+			int count = equipItem.Count / needCount;
 			UpgradeEquipItem(ref equipItem, ref nextItem, count);
 		}
 

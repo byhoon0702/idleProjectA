@@ -143,7 +143,7 @@ public class ContentOpenMessageSystem : MonoBehaviour
 		{
 			return;
 		}
-		if (StageManager.it.CurrentStage.StageType != StageType.Normal)
+		if (StageManager.it.CheckNormalStage() == false)
 		{
 			return;
 		}

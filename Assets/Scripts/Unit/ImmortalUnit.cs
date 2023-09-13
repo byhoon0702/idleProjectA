@@ -69,7 +69,7 @@ public class ImmortalUnit : EnemyUnit
 				textType = TextType.CRITICAL;
 			}
 
-			GameUIManager.it.ShowFloatingText(correctionDamage, HeadPosition, reverse, textType);
+			GameUIManager.it.ShowFloatingText(correctionDamage, HeadPosition, reverse, textType, _hitInfo.sprite);
 			ShakeUnit();
 			StageManager.it.cumulativeDamage += correctionDamage;
 			currentMode?.OnHit(_hitInfo);

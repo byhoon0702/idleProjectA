@@ -38,6 +38,7 @@ public abstract class UnitBase : MonoBehaviour
 	public virtual float AttackRange { get; } = 1;
 	public virtual float PursuitRange { get; } = 10;
 	public abstract IdleNumber AttackPower { get; }
+	public abstract IdleNumber SkillBuffValue { get; }
 	public abstract HitInfo HitInfo { get; }
 	public abstract float AttackSpeed { get; }
 	public virtual float AttackTime => 1;

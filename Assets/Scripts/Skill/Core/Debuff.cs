@@ -20,8 +20,14 @@ public class Debuff : SkillCore
 			}
 		}
 
-		DebuffInfo info = new DebuffInfo(_caster.gameObject.layer, _info.Tid, _info.Duration, _info.skillAbility);
-		_caster.StartCoroutine(Activation(_caster, _info, info));
+		DebuffInfo debuffinfo = new DebuffInfo(_caster.gameObject.layer, _info.Tid, _info.Duration, _info.skillAbility.type, _caster.HitInfo.TotalAttackPower);
+
+		if (_info.skillAbility.Value > 0)
+		{
+			debuffinfo.power = _info.skillAbility.Value;
+		}
+
+		_caster.StartCoroutine(Activation(_caster, _info, debuffinfo));
 		return true;
 	}
 	protected override IEnumerator AffectNonTarget(Unit caster, RuntimeData.SkillInfo info, AffectedInfo hitInfo, Vector3 targetPos)

@@ -39,6 +39,8 @@ public class UserSkillUi : MonoBehaviour
 		{
 			v.fillAmount = 0;
 		}
+		toggleAutoHyper.isOn = PlatformManager.UserDB.skillContainer.isAutoHyper;
+		toggleAutoSkill.isOn = PlatformManager.UserDB.skillContainer.isAutoSkill;
 	}
 
 	public void AddEvent(HyperModule module)

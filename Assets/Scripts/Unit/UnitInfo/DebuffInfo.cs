@@ -7,13 +7,15 @@ public class DebuffInfo : AffectedInfo
 	public string key { get; private set; }
 	public long tid;
 	public float duration;
-	public RuntimeData.AbilityInfo info;
+	public StatsType type;
+	public IdleNumber power;
 
-	public DebuffInfo(LayerMask layerMask, long tid, float duration, RuntimeData.AbilityInfo ability) : base(layerMask)
+	public DebuffInfo(LayerMask layerMask, long tid, float duration, StatsType type, IdleNumber power) : base(layerMask)
 	{
 		this.tid = tid;
 		this.duration = duration;
-		info = ability.Clone();
+		this.type = type;
+		this.power = power;
 		key = $"debuff_{tid}";
 
 

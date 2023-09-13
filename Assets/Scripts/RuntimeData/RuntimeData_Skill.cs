@@ -49,21 +49,6 @@ namespace RuntimeData
 
 		public int EvolutionMaxLevel { get; private set; }
 
-
-		public Sprite Icon
-		{
-			get
-			{
-				if (itemObject != null)
-				{
-					return itemObject.Icon;
-				}
-				return null;
-			}
-
-		}
-
-
 		public bool Instant => itemObject.Instant;
 		public bool IsSkillState => itemObject.IsChangeState;
 		public Grade grade
@@ -74,16 +59,9 @@ namespace RuntimeData
 				return rawData.itemGrade;
 			}
 		}
-		public override IdleNumber BaseValue
-		{
-			get
-			{
-				return skillAbility.Value;
-			}
-		}
 
 		public SkillCooldownType CooldownType => rawData.detailData.cooldownType;
-		public string Name
+		public override string ItemName
 		{
 			get
 			{
@@ -95,7 +73,7 @@ namespace RuntimeData
 		}
 
 		public bool HideInUI => rawData.hideInUI;
-		public Sprite icon => itemObject != null ? itemObject.Icon : null;
+		public override Sprite IconImage => itemObject != null ? itemObject.Icon : null;
 		public SkillData rawData { get; private set; }
 		public SkillLevelSheet levelSheet { get; private set; }
 		public SkillCore itemObject { get; private set; }
@@ -137,7 +115,7 @@ namespace RuntimeData
 			clone.rawData = rawData;
 			clone.tid = tid;
 			clone._count = _count;
-			clone._value = _value;
+
 			clone.evolutionLevel = evolutionLevel;
 			clone.levelSheet = levelSheet;
 			clone.itemObject = itemObject;
@@ -242,6 +220,7 @@ namespace RuntimeData
 			PlatformManager.UserDB.questContainer.ProgressAdd(QuestGoalType.LEVELUP_SKILL, tid, (IdleNumber)1);
 			_count -= LevelUpNeedCount();
 			SetLevel(++_level);
+			SetLevelSheetData();
 		}
 		public void Evoltion(bool useQuest = true)
 		{

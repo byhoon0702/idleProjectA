@@ -44,7 +44,7 @@ public class GameUIManager : MonoBehaviour
 
 	public Stack<IUIClosable> uIClosables = new Stack<IUIClosable>();
 
-	//public Dictionary<>
+	public UIContentButton[] buttons;
 
 	public event OnClose onClose;
 
@@ -53,6 +53,11 @@ public class GameUIManager : MonoBehaviour
 		instance = this;
 		floatingTextPool = new ObjectPool<FloatingText>(CreateFloatingText, OnGetFloatingtext, OnReleaseFloatingText, OnDestroyFloatingText);
 		unitStatusPool = new ObjectPool<UnitStatusUI>(CreateUnitStatusUI, OnGetUnitStatusUI, OnReleaseUnitStatusUI, OnDestroyUnitStatusUI);
+	}
+
+	private void Start()
+	{
+		buttons = GameObject.FindObjectsOfType<UIContentButton>(true);
 	}
 
 	private void OnEnable()
@@ -72,6 +77,7 @@ public class GameUIManager : MonoBehaviour
 		FloatingText tmp = Instantiate(resource);
 		tmp.gameObject.SetActive(false);
 		tmp.transform.SetParent(floatingUIGroup);
+		(tmp.transform as RectTransform).anchoredPosition3D = Vector3.zero;
 		tmp.SetManagedPool(floatingTextPool);
 
 		return tmp;
@@ -120,11 +126,7 @@ public class GameUIManager : MonoBehaviour
 	#endregion
 	public void ReleaseAllPool()
 	{
-
-		// floatingTextPool.Clear();
-
 		unitStatusPool.Clear();
-
 	}
 
 	public void ShowAdRewardBox(bool show)
@@ -160,6 +162,7 @@ public class GameUIManager : MonoBehaviour
 			}
 		}
 	}
+
 
 	public Vector2 ToUIPosition(Vector3 worldPosition)
 	{
@@ -199,10 +202,10 @@ public class GameUIManager : MonoBehaviour
 		uiStageClear.gameObject.SetActive(false);
 	}
 
-	public void ShowFloatingText(IdleNumber value, /*Color color,*/ Vector3 position, Vector3 endPosition, TextType _textType)
+	public void ShowFloatingText(IdleNumber value, Vector3 position, Vector3 endPosition, TextType _textType, Sprite sprite)
 	{
 		var floatingtext = floatingTextPool.Get();
-		floatingtext.Show(value, position, endPosition, _textType);
+		floatingtext.Show(value, position, endPosition, _textType, sprite);
 	}
 
 	public void AddContentOpenMessage(ContentOpenMessage message)

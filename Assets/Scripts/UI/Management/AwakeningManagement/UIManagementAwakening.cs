@@ -52,7 +52,9 @@ public class UIManagementAwakening : UIBase
 
 		if (info == null)
 		{
-			Debug.LogError("No Awakening INfo");
+			PlatformManager.UserDB.awakeningContainer.UpdateSelectedInfo();
+			info = PlatformManager.UserDB.awakeningContainer.SelectedInfo;
+			//Debug.LogError("No Awakening INfo");
 		}
 
 		textAwakeningLevel.text = PlatformManager.Language[info.RawData.name];

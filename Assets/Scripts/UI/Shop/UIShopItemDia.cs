@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UIShopItemDia : UIShopItemBase
+public class UIShopItemDia : UIShopItemBase<RuntimeData.ShopInfo>
 {
 	[SerializeField] private TextMeshProUGUI textBuyInfo;
 	[SerializeField] private Image item;
@@ -14,13 +14,20 @@ public class UIShopItemDia : UIShopItemBase
 
 	public override void OnClickAds()
 	{
-
 		if (info.IsUnlock() == false)
 		{
 			return;
 		}
 		if (limitOver)
 		{
+			return;
+		}
+		var item = PlatformManager.UserDB.inventory.GetPersistent(InventoryContainer.AdFreeTid);
+		bool free = item.unlock;
+		if (free)
+		{
+			info.OnPurchaseSuccess();
+			parent.Refresh();
 			return;
 		}
 		MobileAdsManager.Instance.ShowAds(() =>
@@ -94,7 +101,7 @@ public class UIShopItemDia : UIShopItemBase
 		parent.Refresh();
 	}
 
-	public override void OnUpdate(UIShopBase _parent, RuntimeData.ShopInfo _info)
+	public override void OnUpdate(UIShopBase<RuntimeData.ShopInfo> _parent, RuntimeData.ShopInfo _info)
 	{
 		base.OnUpdate(_parent, _info);
 		parent = _parent as UIShopDia;

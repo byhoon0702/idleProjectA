@@ -41,7 +41,7 @@ public struct AddItemInfo
 			case RewardCategory.Equip:
 				{
 					var item = PlatformManager.UserDB.equipContainer.FindEquipItem(tid);
-					iconImage = item?.Icon;
+					iconImage = item?.IconImage;
 					grade = item.grade;
 					starGrade = item.star;
 
@@ -50,7 +50,7 @@ public struct AddItemInfo
 			case RewardCategory.Pet:
 				{
 					var item = PlatformManager.UserDB.petContainer.FindPetItem(tid);
-					iconImage = item?.Icon;
+					iconImage = item?.IconImage;
 					grade = item.grade;
 
 				}
@@ -58,7 +58,7 @@ public struct AddItemInfo
 			case RewardCategory.Skill:
 				{
 					var item = PlatformManager.UserDB.skillContainer.FindSKill(tid);
-					iconImage = item?.Icon;
+					iconImage = item?.IconImage;
 					grade = item.grade;
 
 				}
@@ -66,11 +66,12 @@ public struct AddItemInfo
 			case RewardCategory.Costume:
 				{
 					var item = PlatformManager.UserDB.costumeContainer.FindCostumeItem(tid);
-					iconImage = item?.itemObject.ItemIcon;
+					iconImage = item?.IconImage;
 					grade = item.grade;
 
 				}
 				break;
+			case RewardCategory.Event_Currency:
 			case RewardCategory.Currency:
 				{
 					var item = PlatformManager.UserDB.inventory.FindCurrency(tid);
@@ -234,7 +235,35 @@ public class InventoryContainer : BaseContainer
 
 	public void OpenAllRewardBox()
 	{
+		if (rewardBoxList == null)
+		{
+			return;
+		}
 
+		Dictionary<long, RuntimeData.RewardInfo> rewardList = new Dictionary<long, RuntimeData.RewardInfo>();
+		for (int i = 0; i < rewardBoxList.Count; i++)
+		{
+			var list = rewardBoxList[i].Open();
+			for (int ii = 0; ii < list.Count; ii++)
+			{
+				if (rewardList.ContainsKey(list[ii].Tid))
+				{
+					rewardList[list[ii].Tid].AddCount(list[ii].fixedCount);
+				}
+				else
+				{
+					rewardList.Add(list[ii].Tid, list[ii]);
+				}
+			}
+		}
+
+		List<RuntimeData.RewardInfo> resultList = new List<RuntimeData.RewardInfo>();
+		foreach (var reward in rewardList.Values)
+		{
+			resultList.Add(reward);
+		}
+
+		PlatformManager.UserDB.AddRewards(resultList, true);
 	}
 
 	public RuntimeData.CurrencyInfo FindCurrency(CurrencyType type)

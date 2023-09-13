@@ -53,7 +53,7 @@ public class UIManagementSkillInfo : MonoBehaviour
 		buttonLevelup.gameObject.SetActive(isAvailable);
 		buttonEvolution.gameObject.SetActive(isAvailable);
 
-		textSkillName.text = info.Name;
+		textSkillName.text = info.ItemName;
 		textSkillCooldown.text = $"{info.CooldownValue}s";
 
 		textSkillDescription.text = info.Description;
@@ -81,6 +81,11 @@ public class UIManagementSkillInfo : MonoBehaviour
 
 	public void OnClickLevelUP()
 	{
+		if (info.IsMax())
+		{
+			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_warn_max_level"]);
+			return;
+		}
 		parent.OnClickLevelUp();
 	}
 

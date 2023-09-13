@@ -209,7 +209,7 @@ namespace InGameMailBox
 			return messagesDeletedCount;
 		}
 
-		public async Task ResetCloudSaveData()
+		public async Task ResetMessageInboxData()
 		{
 			try
 			{

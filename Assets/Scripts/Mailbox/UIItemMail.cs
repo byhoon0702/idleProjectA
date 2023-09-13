@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using System.Threading.Tasks;
 public class UIItemMail : MonoBehaviour
 {
 	[SerializeField] private TextMeshProUGUI _textTitle;
@@ -83,7 +83,7 @@ public class UIItemMail : MonoBehaviour
 
 	}
 
-	public async void GetReward()
+	public async Task GetReward()
 	{
 		if (Message.metadata.hasUnclaimedAttachment == false)
 		{

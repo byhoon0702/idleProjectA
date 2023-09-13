@@ -4,6 +4,40 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+public class StageListDataSource : LoopScrollDataSource, LoopScrollPrefabSource
+{
+	public Transform parent;
+	public List<RuntimeData.StageInfo> stageInfos = new List<RuntimeData.StageInfo>();
+	public GameObject prefab;
+	Stack<Transform> pool = new Stack<Transform>();
+	public GameObject GetObject(int index)
+	{
+		if (pool.Count == 0)
+		{
+			return Object.Instantiate(prefab);
+		}
+		Transform candidate = pool.Pop();
+		candidate.gameObject.SetActive(true);
+		return candidate.gameObject;
+	}
+
+	public void ProvideData(Transform transform, int idx)
+	{
+		UIItemStage item = transform.GetComponent<UIItemStage>();
+		item.OnUpdate(stageInfos[idx]);
+	}
+
+	public void ReturnObject(Transform trans)
+	{
+		// Use `DestroyImmediate` here if you don't need Pool
+		trans.SendMessage("ScrollCellReturn", SendMessageOptions.DontRequireReceiver);
+		trans.gameObject.SetActive(false);
+		trans.SetParent(parent, false);
+		pool.Push(trans);
+	}
+}
+
+
 public class UIPopupStageSelect : UIBase
 {
 	[SerializeField] private TextMeshProUGUI textAreaName;
@@ -11,6 +45,7 @@ public class UIPopupStageSelect : UIBase
 	[SerializeField] private Button buttonNextArea;
 	[SerializeField] private Button buttonPrevArea;
 
+	[SerializeField] private LoopVerticalScrollRect loopVerticalScrollRect;
 	[SerializeField] private ScrollRect scroll;
 	[SerializeField] private Transform content;
 	[SerializeField] private GameObject itemPrefab;
@@ -18,6 +53,7 @@ public class UIPopupStageSelect : UIBase
 
 	private List<RuntimeData.StageInfo> stageinfos;
 	private int currentAreaNumber = 1;
+	private StageListDataSource dataSource;
 	private void Awake()
 	{
 		buttonNextArea.onClick.RemoveAllListeners();
@@ -76,7 +112,16 @@ public class UIPopupStageSelect : UIBase
 	}
 	private void SetGrid()
 	{
-		content.CreateListCell(stageinfos.Count, itemPrefab, UpdateGrid);
+		dataSource = new StageListDataSource();
+		dataSource.stageInfos = stageinfos;
+		dataSource.parent = loopVerticalScrollRect.transform;
+		dataSource.prefab = itemPrefab;
+
+		loopVerticalScrollRect.prefabSource = dataSource;
+		loopVerticalScrollRect.dataSource = dataSource;
+		loopVerticalScrollRect.totalCount = stageinfos.Count;
+		loopVerticalScrollRect.RefillCells();
+		//content.CreateListCell(stageinfos.Count, itemPrefab, UpdateGrid);
 	}
 
 	private void UpdateGrid()

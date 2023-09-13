@@ -16,7 +16,6 @@ public class LoginInfo
 [System.Serializable]
 public class UserInfo
 {
-
 	public string UUID;
 	public int UserLevel;
 	private int _lastUserLevel = 0;
@@ -72,7 +71,6 @@ public class UserInfo
 		}
 	}
 	public UserInfo()
-
 	{
 		UUID = "";
 		UserLevel = 1;
@@ -120,9 +118,11 @@ public class UserInfoContainer : BaseContainer
 	public event OnExpEarned OnExpEarned;
 	public static event Action<int> OnLevelUpEvent;
 	public UserInfo userInfo;
-
+	public bool NameChanged;
 	public string LastLoginTime;
 	public int dailyKillCount = 0;
+
+	public string NextResetTime;
 	public override void Dispose()
 	{
 
@@ -136,6 +136,10 @@ public class UserInfoContainer : BaseContainer
 		SetUserInfo("", info.UserLevel, info.CurrentExp, info.UserExp);
 
 		userInfo.KillPerMinutes = info.KillPerMinutes;
+	}
+	public void NameChange(string name)
+	{
+		userInfo.UserName = name;
 	}
 
 	public override void DailyResetData()
@@ -219,7 +223,7 @@ public class UserInfoContainer : BaseContainer
 
 		if (isLevelUp)
 		{
-			RemoteConfigManager.Instance.CloudSave();
+			PlatformManager.RemoteSave.CloudSave();
 			//ToastUI.it.Enqueue($"레벨업!! {prevLevel} -> {userInfo.UserLevel}");
 		}
 	}
@@ -233,8 +237,9 @@ public class UserInfoContainer : BaseContainer
 		}
 		LastLoginTime = "";
 		dailyKillCount = 0;
-		//OnExpEarned = null;
+		NameChanged = false;
 	}
+
 	public override void UpdateData()
 	{
 
@@ -259,7 +264,9 @@ public class UserInfoContainer : BaseContainer
 		SetAccountInfo(temp.userInfo.UserName, temp.userInfo.UUID);
 		SetUserInfo(temp.userInfo);
 
+		NameChanged = temp.NameChanged;
 		LastLoginTime = temp.LastLoginTime;
 		dailyKillCount = temp.dailyKillCount;
+		NextResetTime = temp.NextResetTime;
 	}
 }

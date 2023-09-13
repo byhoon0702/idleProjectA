@@ -9,12 +9,10 @@ public class UIPopupLevelupPetItem : UIBase
 {
 	[SerializeField] private UIPetSlot uiPetSlot;
 
-	[SerializeField] Image imageButtonCurrency;
-	[SerializeField] protected TextMeshProUGUI textMeshButtonCurrency;
-
 	[SerializeField] protected Button buttonExit;
-	[SerializeField] protected Button buttonUpgrade;
-	public Button ButtonUpgrade => buttonUpgrade;
+	[SerializeField] protected Button buttonMax;
+	[SerializeField] protected UIEconomyButton buttonUpgrade;
+	public UIEconomyButton ButtonUpgrade => buttonUpgrade;
 
 	[SerializeField] protected TextMeshProUGUI textMeshProName;
 	[SerializeField] protected TextMeshProUGUI textEquipBuff;
@@ -28,10 +26,14 @@ public class UIPopupLevelupPetItem : UIBase
 		buttonExit.onClick.RemoveAllListeners();
 		buttonExit.onClick.AddListener(OnClose);
 
-		buttonUpgrade.onClick.RemoveAllListeners();
-		buttonUpgrade.onClick.AddListener(OnClickLevelUp);
+		buttonMax.SetButtonEvent(OnClickMax);
+		buttonUpgrade.SetButtonEvent(OnClickLevelUp, null);
 	}
 
+	private void OnClickMax()
+	{
+		ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_warn_max_level"]);
+	}
 
 	public void OnUpdate(UIManagementPet _parent, RuntimeData.PetInfo info)
 	{
@@ -50,23 +52,14 @@ public class UIPopupLevelupPetItem : UIBase
 
 		var currencyItem = PlatformManager.UserDB.inventory.FindCurrency(CurrencyType.PET_UPGRADE_ITEM);
 
-		///imageCurrency.sprite = currencyItem.IconImage;
-		imageButtonCurrency.sprite = currencyItem.IconImage;
-
 		IdleNumber value = itemInfo.LevelUpNeedCount();
-		//textMeshCurrency.text = currencyItem.Value.ToString();
-		textMeshButtonCurrency.text = $"{currencyItem.Value.ToString()}/{value.ToString()}";
-
-		if (value > currencyItem.Value)
-		{
-			textMeshButtonCurrency.color = Color.red;
-		}
-		else
-		{
-			textMeshButtonCurrency.color = Color.white;
-		}
 
 
+		bool isMax = itemInfo.IsMaxLevel();
+
+		buttonUpgrade.gameObject.SetActive(!isMax);
+		buttonMax.gameObject.SetActive(isMax);
+		buttonUpgrade.SetButton(currencyItem.IconImage, $"{currencyItem.Value.ToString()}/{value.ToString()}", value <= currencyItem.Value);
 	}
 
 	public void UpdateItemLevelupInfo()
@@ -97,11 +90,11 @@ public class UIPopupLevelupPetItem : UIBase
 		//ownedBuffs[0].OnUpdate().text = $"{sb.ToString()}";
 	}
 
-	public void OnClickLevelUp()
+	public bool OnClickLevelUp()
 	{
 		if (ItemLevelupable() == false)
 		{
-			return;
+			return false;
 		}
 
 
@@ -110,13 +103,14 @@ public class UIPopupLevelupPetItem : UIBase
 		if (currencyitem.Pay(itemInfo.LevelUpNeedCount()) == false)
 		{
 			ToastUI.Instance.Enqueue("펫 먹이가 부족합니다");
-			return;
+			return false;
 		}
 
 		PlatformManager.UserDB.petContainer.LevelUpPet(ref itemInfo);
 
 		parent.OnUpdate(false);
 		OnUpdateInfo();
+		return true;
 	}
 
 	public bool ItemLevelupable()
@@ -125,7 +119,7 @@ public class UIPopupLevelupPetItem : UIBase
 		{
 			return false;
 		}
-		if (itemInfo.CanLevelUp() == false)
+		if (itemInfo.IsMaxLevel())
 		{
 			ToastUI.Instance.Enqueue("최대 레벨입니다.");
 			return false;

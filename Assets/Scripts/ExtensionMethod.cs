@@ -3,7 +3,162 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using System.Text.RegularExpressions;
 
+public class RewardUtil
+{
+	public static List<RuntimeData.RewardInfo> ReArrangReward(List<RuntimeData.RewardInfo> list)
+	{
+		List<RuntimeData.RewardInfo> _rewardList = new List<RuntimeData.RewardInfo>();
+		Dictionary<long, RuntimeData.RewardInfo> dict = new Dictionary<long, RuntimeData.RewardInfo>();
+		for (int i = 0; i < list.Count; i++)
+		{
+			var reward = list[i];
+			if (reward == null)
+			{
+				continue;
+			}
+			if (list[i].Category == RewardCategory.RewardBox)
+			{
+				var _list = OpenRewardBox(reward);
+				for (int ii = 0; ii < _list.Count; ii++)
+				{
+					var rr = _list[ii];
+					if (dict.ContainsKey(rr.Tid))
+					{
+						dict[rr.Tid].AddCount(rr.fixedCount);
+					}
+					else
+					{
+						dict.Add(rr.Tid, rr);
+					}
+				}
+			}
+			else
+			{
+				if (dict.ContainsKey(reward.Tid))
+				{
+					dict[reward.Tid].AddCount(reward.fixedCount);
+				}
+				else
+				{
+					dict.Add(reward.Tid, reward);
+				}
+
+			}
+		}
+		foreach (var box_result in dict.Values)
+		{
+			_rewardList.Add(box_result);
+		}
+
+		return _rewardList;
+	}
+
+	public static List<RuntimeData.RewardInfo> OpenRewardBox(RuntimeData.RewardInfo info)
+	{
+		if (info == null)
+		{
+			return null;
+		}
+
+		if (info.Category != RewardCategory.RewardBox)
+		{
+			return null;
+		}
+
+		var rewardBoxdata = DataManager.Get<RewardBoxDataSheet>().Get(info.Tid);
+		List<RuntimeData.RewardInfo> rewardInfos = new List<RuntimeData.RewardInfo>();
+
+		for (int i = 0; i < rewardBoxdata.rewards.Count; i++)
+		{
+			RuntimeData.RewardInfo reward = new RuntimeData.RewardInfo(rewardBoxdata.rewards[i]);
+			reward.UpdateCount();
+			rewardInfos.Add(reward);
+		}
+
+		Dictionary<long, RuntimeData.RewardInfo> rewardDict = new Dictionary<long, RuntimeData.RewardInfo>();
+
+		List<RuntimeData.RewardInfo> results = new List<RuntimeData.RewardInfo>();
+
+		for (int i = 0; i < info.fixedCount.GetValueToInt(); i++)
+		{
+			var rewardList = RandomReward(rewardInfos, RandomLogic.RewardBox);
+			for (int ii = 0; ii < rewardList.Count; ii++)
+			{
+				var reward = rewardList[ii].Clone();
+				if (rewardDict.ContainsKey(reward.Tid))
+				{
+					rewardDict[reward.Tid].AddCount((IdleNumber)1);
+				}
+				else
+				{
+					rewardDict.Add(reward.Tid, reward);
+				}
+
+			}
+
+		}
+
+		foreach (var reward in rewardDict.Values)
+		{
+			results.Add(reward);
+		}
+
+		return results;
+	}
+
+	public static List<RuntimeData.RewardInfo> RandomReward(List<RuntimeData.RewardInfo> rewardList, System.Random r)
+	{
+		List<RuntimeData.RewardInfo> getReward = new List<RuntimeData.RewardInfo>();
+		var chance = r.Next(0, RandomLogic.maxChance);
+
+		int minChance = 0;
+		for (int i = 0; i < rewardList.Count; i++)
+		{
+			var reward = rewardList[i];
+			int maxChance = (int)(reward.Chance * 100);
+
+			if ((reward.Chance == 100) || chance >= minChance && chance < minChance + maxChance)
+			{
+				getReward.Add(reward);
+				break;
+			}
+			minChance += maxChance;
+
+		}
+		return getReward;
+
+	}
+
+}
+
+
+public static class MathExtension
+{
+	public static Vector3 GetAngledVector3(this Vector3 vector, float angle, bool inverse = false)
+	{
+		float radian = angle * Mathf.Deg2Rad;
+		Vector3 pos = Vector3.zero;
+
+		if (inverse)
+		{
+			pos.x = (vector.x * Mathf.Cos(radian)) + (vector.y * Mathf.Sin(radian));
+			pos.y = (vector.x * -Mathf.Sin(radian)) + (vector.y * Mathf.Cos(radian));
+		}
+		else
+		{
+			pos.x = (vector.x * Mathf.Cos(radian)) + (vector.y * -Mathf.Sin(radian));
+			pos.y = (vector.x * Mathf.Sin(radian)) + (vector.y * Mathf.Cos(radian));
+		}
+
+
+		pos.z = 0;
+
+		return pos;
+	}
+
+}
 public static class RenderExtension
 {
 
@@ -39,7 +194,28 @@ public static class RenderExtension
 
 public static class ExtensionMethod
 {
+	public static bool NickNameValidate(this string nickName, out string message)
+	{
+		message = "";
+		if (nickName.IsNullOrEmpty())
+		{
+			message = PlatformManager.Language["str_ui_input_nickname"];
+			return false;
+		}
+		string checker = Regex.Replace(nickName, @"[^a-zA-Z0-9가-힣]", "", RegexOptions.Singleline);
 
+		if (checker.Equals(nickName) == false)
+		{
+			message = PlatformManager.Language["str_ui_contain_special_character"];
+			return false;
+		}
+		if (nickName.Length > 12)
+		{
+			message = PlatformManager.Language["str_ui_nickname_length_over"];
+			return false;
+		}
+		return true;
+	}
 	public static void ChangeLayer(this GameObject go, int layer)
 	{
 		go.layer = layer;
@@ -330,6 +506,14 @@ public static class ConditionCheck
 	public static bool IsFulFillCondition(this OpenCondition condition, out string message)
 	{
 		message = "";
+
+#if UNITY_EDITOR
+		if (PlatformManager.ConfigMeta.CheckContent == false)
+		{
+			return true;
+		}
+#endif
+
 		switch (condition.type)
 		{
 			case ConditionType.CONTENT:
@@ -347,6 +531,10 @@ public static class ConditionCheck
 				{
 					var questInfo = PlatformManager.UserDB.questContainer.MainQuestList.Find(x => x.Tid == condition.tid);
 
+					if (questInfo == null)
+					{
+						return true;
+					}
 					message = $"{PlatformManager.Language[questInfo.rawData.questTitle]} 클리어 필요";
 
 					bool isOpen = questInfo.progressState == QuestProgressState.END;
@@ -389,6 +577,7 @@ public static class ConditionCheck
 			message = "사용자 데이터 정의가 되지 않음";
 			return false;
 		}
+
 
 		switch (info.type)
 		{
@@ -469,7 +658,7 @@ public static class ConditionCheck
 					int baseSkillLevel = info.parameter2;
 					var baseSkillInfo = PlatformManager.UserDB.skillContainer.FindSKill(tid);
 
-					message = $"{baseSkillInfo.Name} {baseSkillLevel} 필요";
+					message = $"{baseSkillInfo.ItemName} {baseSkillLevel} 필요";
 
 					if (baseSkillInfo == null)
 					{

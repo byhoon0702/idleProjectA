@@ -33,7 +33,7 @@ public class UIItemCollection : MonoBehaviour
 						return data;
 					}
 					data.grade = item.grade;
-					data.icon = item.Icon;
+					data.icon = item.IconImage;
 					data.level = item.Level;
 				}
 				break;
@@ -46,7 +46,7 @@ public class UIItemCollection : MonoBehaviour
 						return data;
 					}
 					data.grade = item.grade;
-					data.icon = item.Icon;
+					data.icon = item.IconImage;
 					data.level = item.Level;
 				}
 				break;
@@ -59,7 +59,7 @@ public class UIItemCollection : MonoBehaviour
 						return data;
 					}
 					data.grade = item.grade;
-					data.icon = item.Icon;
+					data.icon = item.IconImage;
 					data.level = item.Level;
 				}
 				break;

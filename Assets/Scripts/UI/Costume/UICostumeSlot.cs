@@ -23,6 +23,7 @@ public class UICostumeSlot : MonoBehaviour
 
 	private ISelectListener parent;
 	private RuntimeData.CostumeInfo costumeInfo;
+	public RuntimeData.CostumeInfo CostumeInfo => costumeInfo;
 	public bool isEquipped { get; private set; }
 	Action action;
 

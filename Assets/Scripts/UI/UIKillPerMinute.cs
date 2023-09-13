@@ -15,15 +15,15 @@ public class UIKillPerMinute : MonoBehaviour
 
 	private void Update()
 	{
-		if (StageManager.it.killCountForOffline < 1000)
+		if (StageManager.it.killCountForOffline < UserDB.killLimit)
 		{
 			if (slider.gameObject.activeInHierarchy == false)
 			{
 				slider.gameObject.SetActive(true);
 			}
 
-			textKillCount.text = $"{StageManager.it.killCountForOffline}/1000";
-			slider.value = StageManager.it.killCountForOffline / 1000f;
+			textKillCount.text = $"{StageManager.it.killCountForOffline}/{UserDB.killLimit}";
+			slider.value = StageManager.it.killCountForOffline / UserDB.killLimit;
 		}
 		else
 		{

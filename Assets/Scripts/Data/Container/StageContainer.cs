@@ -25,6 +25,7 @@ public class StageRecordData
 
 		stageNumber = data.stageNumber;
 		cumulativeDamage = data.cumulativeDamage;
+		killCount = data.killCount;
 	}
 	public void Save(StageRecordData data)
 	{
@@ -54,6 +55,27 @@ public class StageContainer : BaseContainer
 	}
 	public override void DailyResetData()
 	{
+
+	}
+	public override void LoadScriptableObject()
+	{
+		scriptableDictionary = new ScriptableDictionary();
+		foreach (var type in Enum.GetValues(typeof(StageType)))
+		{
+			string typename = type.ToString().ToLower().FirstCharacterToUpper();
+			var mapList = Resources.LoadAll<StageMapObject>($"RuntimeDatas/Maps/{typename}s");
+			if (mapList != null)
+			{
+				AddDictionary(scriptableDictionary, mapList);
+			}
+
+			var dungeonList = Resources.LoadAll<DungeonItemObject>($"RuntimeDatas/Dungeon/{typename}s");
+			if (dungeonList != null)
+			{
+				AddDictionary(scriptableDictionary, dungeonList);
+			}
+		}
+
 
 	}
 	public override string Save()
@@ -145,33 +167,53 @@ public class StageContainer : BaseContainer
 		return null;
 	}
 
-
-	public RuntimeData.StageInfo GetStage(StageType type, int stageNumber)
-	{
-		if (stageDataList.ContainsKey(type) == false)
-		{
-			return null;
-		}
-
-		var list = stageDataList[type];
-
-		for (int i = 0; i < list.Count; i++)
-		{
-			if (list[i].StageNumber == stageNumber)
-			{
-				return list[i];
-			}
-		}
-
-		return null;
-	}
-
 	public void SavePlayStage(RuntimeData.StageInfo info, IdleNumber cumulativeDamage, int _killCount)
 	{
 		SavePlayStage(info.stageData.dungeonTid, info.StageType, info.StageNumber, cumulativeDamage, _killCount);
 	}
 
-	public void SavePlayStage(long _tid, StageType _type, int _stageNumber, IdleNumber _cumulativeDamage, int _killCount)
+
+
+	public StageRecordData GetLastStage(StageType type, long tid)
+	{
+		StageRecordData data = new StageRecordData()
+		{
+			tid = tid,
+			stageType = type,
+			stageNumber = 1,
+		};
+		switch (type)
+		{
+			case StageType.Normal:
+				data = stageRecords;
+				break;
+			case StageType.Dungeon:
+				{
+					var record = dungeonRecords.Find(x => x.tid == tid);
+					if (record != null)
+					{
+						data = record;
+					}
+				}
+				break;
+			case StageType.Tower:
+				data = towerRecords;
+				break;
+			case StageType.Guardian:
+				{
+					var record = guardianRecords.Find(x => x.tid == tid);
+					if (record != null)
+					{
+						data = record;
+					}
+				}
+				break;
+		}
+		return data;
+	}
+
+
+	private void SavePlayStage(long _tid, StageType _type, int _stageNumber, IdleNumber _cumulativeDamage, int _killCount)
 	{
 		StageRecordData data = new StageRecordData()
 		{
@@ -221,68 +263,7 @@ public class StageContainer : BaseContainer
 				break;
 		}
 	}
-
-	public StageRecordData GetLastStage(StageType type, long tid)
-	{
-		StageRecordData data = new StageRecordData()
-		{
-			tid = tid,
-			stageType = type,
-			stageNumber = 1,
-		};
-		switch (type)
-		{
-			case StageType.Normal:
-				data = stageRecords;
-				break;
-			case StageType.Dungeon:
-				{
-					var record = dungeonRecords.Find(x => x.tid == tid);
-					if (record != null)
-					{
-						data = record;
-					}
-				}
-				break;
-			case StageType.Tower:
-				data = towerRecords;
-				break;
-			case StageType.Guardian:
-				{
-					var record = guardianRecords.Find(x => x.tid == tid);
-					if (record != null)
-					{
-						data = record;
-					}
-				}
-				break;
-		}
-		return data;
-	}
-
-	public override void LoadScriptableObject()
-	{
-		scriptableDictionary = new ScriptableDictionary();
-		foreach (var type in Enum.GetValues(typeof(StageType)))
-		{
-			string typename = type.ToString().ToLower().FirstCharacterToUpper();
-			var mapList = Resources.LoadAll<StageMapObject>($"RuntimeDatas/Maps/{typename}s");
-			if (mapList != null)
-			{
-				AddDictionary(scriptableDictionary, mapList);
-			}
-
-			var dungeonList = Resources.LoadAll<DungeonItemObject>($"RuntimeDatas/Dungeon/{typename}s");
-			if (dungeonList != null)
-			{
-				AddDictionary(scriptableDictionary, dungeonList);
-			}
-		}
-
-
-	}
-
-	public StageRecordData GetStageRecordData(StageType _type, long _tid)
+	private StageRecordData GetStageRecordData(StageType _type, long _tid)
 	{
 		StageRecordData data = new StageRecordData();
 		switch (_type)
@@ -348,7 +329,6 @@ public class StageContainer : BaseContainer
 
 	public RuntimeData.StageInfo LastPlayedStage(StageType _stageType, long _battleTid)
 	{
-
 		var stageList = GetStageList(_stageType, _battleTid);
 
 		StageRecordData data = GetStageRecordData(_stageType, _battleTid);

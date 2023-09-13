@@ -41,7 +41,8 @@ public class UITopMenu : UIBase
 
 	public void OnClickSave()
 	{
-		RemoteConfigManager.Instance.CloudSave(true);
+		PlatformManager.RemoteSave.CloudSave(true);
+		//PlatformManager.RemoteSave.OpenSavedData();
 	}
 
 	public void OnClickMail()
@@ -70,7 +71,7 @@ public class UITopMenu : UIBase
 	}
 	public void OnClickCommunity()
 	{
-
+		RemoteConfigManager.Instance.GoToCommunity();
 	}
 	public void OnClickRanking()
 	{
@@ -78,7 +79,7 @@ public class UITopMenu : UIBase
 	}
 	public void OnClickPowerSaveMode()
 	{
-		if (StageManager.it.CurrentStage.StageType != StageType.Normal)
+		if (StageManager.it.CheckNormalStage() == false)
 		{
 			return;
 		}

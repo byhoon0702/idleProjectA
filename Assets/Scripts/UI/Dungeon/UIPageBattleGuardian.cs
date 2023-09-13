@@ -1,22 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
+
 using UnityEngine.UI;
 using TMPro;
 
 public class UIPageBattleGuardian : UIPageBattle
 {
-	[SerializeField] private Button buttonNext;
-	[SerializeField] private Button buttonPrev;
-
-	//[SerializeField] private Button buttonPlay;
 	[SerializeField] private UIEconomyButton buttonPlay;
 	public UIEconomyButton ButtonPlay => buttonPlay;
 	[SerializeField] private UIEconomyButton buttonSweep;
 
 	[SerializeField] private Image imageStage;
 	[SerializeField] private TextMeshProUGUI textTitle;
+
+	[SerializeField] private Image imageCurrency;
+	[SerializeField] private TextMeshProUGUI textCurrency;
 
 	[SerializeField] private Transform content;
 	[SerializeField] private GameObject itemPrefab;
@@ -28,12 +27,9 @@ public class UIPageBattleGuardian : UIPageBattle
 
 	private void Awake()
 	{
-		//buttonNext.SetButtonEvent(OnClickNext);
-		//buttonPrev.SetButtonEvent(OnClickPrev);
 		buttonPlay.SetButtonEvent(OnClickPlay);
 		buttonSweep.SetButtonEvent(OnClickSweep);
 	}
-
 
 	private void OnClickNext()
 	{
@@ -70,24 +66,32 @@ public class UIPageBattleGuardian : UIPageBattle
 		var currency = PlatformManager.UserDB.inventory.FindCurrency(_battleData.dungeonItemTid);
 		if (currency.Check((IdleNumber)1) == false)
 		{
+			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_warn_lack_of_ticket"]);
 			return false;
 		}
 
 		StageManager.it.PlayStage(currentInfo);
-		parent.Close();
+		parent?.Close();
 		return true;
 	}
 
 	private bool OnClickSweep()
 	{
+		if (currentInfo.isClear == false)
+		{
+			ToastUI.Instance.EnqueueKey("str_ui_need_stage_clear");
+			return false;
+		}
 		var currency = PlatformManager.UserDB.inventory.FindCurrency(_battleData.dungeonItemTid);
 		if (currency.Check((IdleNumber)1) == false)
 		{
+			ToastUI.Instance.Enqueue(PlatformManager.Language["str_ui_warn_lack_of_sweep_ticket"]);
 			return false;
 		}
 
 		currency.Pay((IdleNumber)1);
 		PlatformManager.UserDB.AddRewards(currentInfo.StageClearReward, true);
+		OnUpdateUI();
 		return true;
 	}
 
@@ -115,15 +119,16 @@ public class UIPageBattleGuardian : UIPageBattle
 
 		}
 
-
 		PlatformManager.UserDB.inventory.GetScriptableObject(_battleData.dungeonItemTid, out CurrencyItemObject itemObject);
 		if (itemObject != null)
 		{
 			var currencyType = itemObject.currencyType;
 			var item = PlatformManager.UserDB.inventory.FindCurrency(itemObject.currencyType);
 
-			buttonPlay.SetButton(itemObject.ItemIcon, $"{item.Value.ToString()}", item.Value > 0);
-			buttonSweep.SetButton(itemObject.ItemIcon, $"{item.Value.ToString()}", item.Value > 0);
+			imageCurrency.sprite = itemObject.ItemIcon;
+			textCurrency.text = item.Value.ToString();
+			buttonPlay.SetButton(itemObject.ItemIcon, $"1", item.Value > 0);
+			buttonSweep.SetButton(itemObject.ItemIcon, $"1", item.Value > 0);
 		}
 
 		SetGrid();
@@ -146,8 +151,5 @@ public class UIPageBattleGuardian : UIPageBattle
 				reward.ShowChance(true);
 			}
 		}
-
 	}
-
-
 }

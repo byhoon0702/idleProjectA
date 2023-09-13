@@ -97,7 +97,7 @@ public class SystemSleepMode : MonoBehaviour
 	private void Update()
 	{
 		textBattery.text = $"{SystemInfo.batteryLevel * 100}%";
-		textTimeNow.text = $"{DateTime.Now.Hour}:{DateTime.Now.Minute}";
+		textTimeNow.text = $"{DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}";
 		TimeSpan ts = DateTime.Now - time;
 		textPlayTime.text = $"{ts.Hours.ToString("00")}:{ts.Minutes.ToString("00")}:{ts.Seconds.ToString("00")}";
 	}

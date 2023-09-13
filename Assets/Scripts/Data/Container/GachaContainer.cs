@@ -38,7 +38,10 @@ public class GachaContainer : BaseContainer
 	}
 	public override void DailyResetData()
 	{
-
+		for (int i = 0; i < gachaInfos.Count; i++)
+		{
+			gachaInfos[i].Reset();
+		}
 	}
 	public override void LoadScriptableObject()
 	{

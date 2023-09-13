@@ -91,6 +91,8 @@ public class GameManager : MonoBehaviour
 
 	long currTicks;
 	long prevPlayTicks;
+
+	DateTime updateCheckTime = new DateTime();
 	private void Awake()
 	{
 		instance = this;
@@ -113,6 +115,7 @@ public class GameManager : MonoBehaviour
 	// Start is called before the first frame update
 	async void Start()
 	{
+		PlatformManager.Instance.ShowLoadingRotate(false);
 		GameStop = false;
 		//DataManager.LoadAllJson();
 
@@ -140,6 +143,9 @@ public class GameManager : MonoBehaviour
 				StageManager.it.OfflineRewards((int)totalMinutes);
 			}
 			containerInit = true;
+
+
+			updateCheckTime = new DateTime(TimeManager.Instance.UtcNow.Ticks);
 		}
 
 		catch (Exception ex)
@@ -147,6 +153,7 @@ public class GameManager : MonoBehaviour
 
 		}
 	}
+
 	void OnAutoPowerSaveChanged(bool isOn)
 	{
 		touchTime = Time.realtimeSinceStartup;
@@ -185,26 +192,26 @@ public class GameManager : MonoBehaviour
 
 	public void SetLoginTime()
 	{
-		DateTime resetTime = TimeManager.Instance.UtcResetTime;
-
-		if (DateTime.TryParse(PlatformManager.UserDB.userInfoContainer.LastLoginTime, out DateTime result))
+		if (DateTime.TryParse(PlatformManager.UserDB.userInfoContainer.NextResetTime, out DateTime resetTime))
 		{
-			TimeSpan ts = resetTime - result;
+			TimeSpan ts = resetTime - TimeManager.Instance.UtcNow;
 			//최근 접속 시간과 하루 이상 차이가 나면 초기화
-			if (ts.TotalMinutes >= 0)
+			if (ts.TotalMinutes < 0)
 			{
 				PlatformManager.UserDB.ResetDataByDateTime();
+				PlatformManager.UserDB.userInfoContainer.NextResetTime = TimeUtil.NextDayResetTimeToString();
 			}
-
-			TimeManager.Instance.LastLoginTimeForOfflineReward = result.ToString();
 		}
 		else
 		{
 			Debug.LogWarning("Could not Parse 'String to Datetime'. Presume New User");
 			PlatformManager.UserDB.ResetDataByDateTime();
-			TimeManager.Instance.LastLoginTimeForOfflineReward = TimeManager.Instance.UtcNow.ToString();
+			PlatformManager.UserDB.userInfoContainer.NextResetTime = TimeUtil.NextDayResetTimeToString();
 		}
+
 		var time = TimeManager.Instance.UtcNow;
+
+		TimeManager.Instance.LastLoginTimeForOfflineReward = PlatformManager.UserDB.userInfoContainer.LastLoginTime;
 		PlatformManager.UserDB.userInfoContainer.LastLoginTime = time.ToString();
 
 	}
@@ -240,7 +247,7 @@ public class GameManager : MonoBehaviour
 	}
 	private void CheckSleepMode()
 	{
-		if (StageManager.it.CurrentStage.StageType != StageType.Normal)
+		if (StageManager.it.CheckNormalStage() == false)
 		{
 			touchTime = Time.realtimeSinceStartup;
 			return;
@@ -251,6 +258,7 @@ public class GameManager : MonoBehaviour
 		OnInputMobile();
 #endif
 	}
+
 
 	private void Update()
 	{
@@ -263,12 +271,18 @@ public class GameManager : MonoBehaviour
 		{
 			PlatformManager.UserDB.buffContainer.OnUpdateBuff();
 
-			currTicks = TimeManager.Instance.Now.Ticks;
-			PlatformManager.UserDB.userInfoContainer.userInfo.PlayTicks += (currTicks - prevPlayTicks);
-			PlatformManager.UserDB.userInfoContainer.userInfo.DailyPlayTicks += (currTicks - prevPlayTicks);
+			currTicks = TimeManager.Instance.UtcNow.Ticks;
+			long tick = (currTicks - prevPlayTicks);
+			PlatformManager.UserDB.userInfoContainer.userInfo.PlayTicks += tick;
+			PlatformManager.UserDB.userInfoContainer.userInfo.DailyPlayTicks += tick;
 			prevPlayTicks = currTicks;
-		}
 
+			if ((TimeManager.Instance.UtcNow - updateCheckTime).TotalMinutes > 10)
+			{
+				CheckUpdate(null);
+				updateCheckTime = new DateTime(currTicks);
+			}
+		}
 	}
 
 	float time = 0f;
@@ -290,32 +304,55 @@ public class GameManager : MonoBehaviour
 
 	public double GetOfflineRewardTime()
 	{
-		DateTime lastTime = DateTime.Now;
+		DateTime lastTime = TimeManager.Instance.UtcNow;
 		DateTime.TryParse(TimeManager.Instance.LastLoginTimeForOfflineReward, out lastTime);
+
+		TimeManager.Instance.LastLoginTimeForOfflineReward = TimeManager.Instance.UtcNow.ToString();
 		TimeSpan ts = TimeManager.Instance.UtcNow - lastTime;
 		return ts.TotalMinutes;
 	}
 
+	public async void CheckUpdate(System.Action action)
+	{
+		await RemoteConfigManager.Instance.FetchConfigs();
+
+		if (RemoteConfigManager.Instance.NeedUpdate())
+		{
+			return;
+		}
+
+		if (RemoteConfigManager.Instance.IsNoticeExist(action))
+		{
+			return;
+		}
+		action?.Invoke();
+	}
+
+
 	DateTime applicationTime;
-	private async void OnApplicationFocus(bool focus)
+	private void OnApplicationFocus(bool focus)
 	{
 		if (focus)
 		{
-
 			PlatformManager.Instance.ShowLoadingRotate(true);
-			await CallTimeStampEndPoint();
-			PlatformManager.Instance.ShowLoadingRotate(false);
-			TimeSpan ts = TimeManager.Instance.Now - applicationTime;
-			if (ts.TotalMinutes >= 1)
-			{
 
-				Debug.Log(ts.TotalMinutes);
-				StageManager.it.OfflineRewards((int)ts.TotalMinutes);
-			}
+			CheckUpdate(OnFocusGame);
 		}
 		else
 		{
-			applicationTime = new DateTime(TimeManager.Instance.Now.Ticks);
+			applicationTime = new DateTime(TimeManager.Instance.UtcNow.Ticks);
+		}
+	}
+
+	async void OnFocusGame()
+	{
+		await CallTimeStampEndPoint();
+		PlatformManager.Instance.ShowLoadingRotate(false);
+		TimeSpan ts = TimeManager.Instance.UtcNow - applicationTime;
+		if (ts.TotalMinutes >= 1)
+		{
+			Debug.Log(ts.TotalMinutes);
+			StageManager.it.OfflineRewards((int)ts.TotalMinutes);
 		}
 	}
 }

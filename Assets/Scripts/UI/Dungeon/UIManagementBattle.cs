@@ -40,6 +40,8 @@ public class UIManagementBattle : UIBase
 	[SerializeField] private UIDungeonPopup uiDungeonPopup;
 	public UIDungeonPopup UiDungeonPopup => uiDungeonPopup;
 
+	private Toggle toggle;
+
 	protected override void OnEnable()
 	{
 		AddCloseListener();
@@ -63,6 +65,12 @@ public class UIManagementBattle : UIBase
 		{
 			if (isTrue)
 			{
+				//if (dungeonButton.IsAvailable() == false)
+				//{
+				//	toggle.isOn = true;
+				//	return;
+				//}
+				//toggle = dungeonButton;
 				ChangeTab(BattleTab.DUNGEON);
 			}
 
@@ -72,6 +80,12 @@ public class UIManagementBattle : UIBase
 		{
 			if (isTrue)
 			{
+				//if (towerButton.IsAvailable() == false)
+				//{
+				//	toggle.isOn = true;
+				//	return;
+				//}
+				//toggle = towerButton;
 				ChangeTab(BattleTab.TOWER);
 			}
 		});
@@ -80,6 +94,12 @@ public class UIManagementBattle : UIBase
 		{
 			if (isTrue)
 			{
+				//if (guardianButton.IsAvailable() == false)
+				//{
+				//	toggle.isOn = true;
+				//	return;
+				//}
+				//toggle = guardianButton;
 				ChangeTab(BattleTab.GUARDIAN);
 			}
 		});
@@ -94,16 +114,19 @@ public class UIManagementBattle : UIBase
 		switch (type)
 		{
 			case BattleTab.DUNGEON:
-				uiPageBattleDungeon.OnUpdate(this);
 				uiPageBattleDungeon.gameObject.SetActive(true);
+				uiPageBattleDungeon.OnUpdate(this);
+
 				break;
 			case BattleTab.TOWER:
-				uiPageBattleTower.OnUpdate(this);
 				uiPageBattleTower.gameObject.SetActive(true);
+				uiPageBattleTower.OnUpdate(this);
+
 				break;
 			case BattleTab.GUARDIAN:
-				uiPageBattleGuardian.OnUpdate(this);
 				uiPageBattleGuardian.gameObject.SetActive(true);
+				uiPageBattleGuardian.OnUpdate(this);
+
 				break;
 		}
 	}

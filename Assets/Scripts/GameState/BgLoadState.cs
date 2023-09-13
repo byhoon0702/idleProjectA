@@ -7,23 +7,23 @@ public class BgLoadState : StageFSM
 	{
 		GameUIManager.it.FadeCurtain(false);
 		elapsedTime = 0;
-		long tid = StageManager.it.CurrentStage.stageData.tid;
-		StageType type = StageManager.it.CurrentStage.stageData.stageType;
-		var data = PlatformManager.UserDB.stageContainer.GetStageMap(type, tid);
-		StageManager.it.ChangeMap(data.mapPrefab);
 
-		SoundManager.Instance.PlayBgm(data.bgmClip);
+		var stage = StageManager.it.CurrentStage;
 
 
-		if (StageManager.it.IsSameStage(StageManager.it.CurrentStage) == false)
+		StageManager.it.ChangeMap(stage.itemObject.mapPrefab);
+
+		SoundManager.Instance.PlayBgm(stage.itemObject.bgmClip);
+
+		if (StageManager.it.IsSameStage(stage) == false)
 		{
 			PlatformManager.UserDB.userInfoContainer.userInfo.KillPerMinutes = 30;
 			StageManager.it.killCountForOffline = 0;
 			StageManager.it.stagePlayTickForOffline = Time.realtimeSinceStartupAsDouble;
 		}
 
-		var curStage = StageManager.it.CurrentStage;
-		StageManager.it.PrevStage = new PrevStageInfo(curStage.StageType, curStage.stageData.tid, curStage.StageNumber);
+
+		StageManager.it.PrevStage = new PrevStageInfo(stage.StageType, stage.stageData.tid, stage.StageNumber);
 
 
 		GameUIManager.it.ShowStageStart();

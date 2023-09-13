@@ -83,7 +83,7 @@ public class GoogleAds
 		{
 			if (error != null || ad == null)
 			{
-				ToastUI.Instance.Enqueue($"준비된 광고가 없습니다\n{error}");
+				ToastUI.Instance.Enqueue($"준비된 광고가 없습니다");
 				return;
 			}
 
@@ -116,6 +116,7 @@ public class GoogleAds
 		};
 		ad.OnAdFullScreenContentFailed += (AdError error) =>
 		{
+			ToastUI.Instance.Enqueue($"광고를 재생할 수 없어요.");
 			LoadRewardedAd();
 		};
 	}

@@ -77,21 +77,20 @@ public class UISkillSlot : MonoBehaviour
 		isEquipped = skillInfo.isEquipped;
 		equippedMark.SetActive(isEquipped);
 		OnUpdateLock();
-		//for (int i = 0; i < PlatformManager.UserDB.skillContainer.skillSlot.Length; i++)
-		//{
-		//	var data = PlatformManager.UserDB.skillContainer.skillSlot[i];
-		//	isEquipped = false;
-		//	if (data.item != null && data.item.isEquipped)
-		//	{
-		//		isEquipped = true;
-		//		equippedMark.SetActive(true);
-		//		break;
-		//	}
-		//}
 
-		int nextCount = skillInfo.EvolutionNeedCount();
-		expSlider.value = (float)skillInfo.Count / nextCount;
-		expText.text = $"{skillInfo.Count}/{nextCount}";
+		bool isMax = skillInfo.IsMax();
+		if (isMax)
+		{
+			expSlider.value = 1f;
+			expText.text = $"{skillInfo.Count}/MAX";
+		}
+		else
+		{
+			int nextCount = skillInfo.LevelUpNeedCount();
+			expSlider.value = (float)skillInfo.Count / nextCount;
+			expText.text = $"{skillInfo.Count}/{nextCount}";
+		}
+
 
 	}
 

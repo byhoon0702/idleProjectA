@@ -35,7 +35,7 @@ public class UIAdBuffInfoObject : MonoBehaviour
 			return;
 		}
 
-		System.TimeSpan ts = info.EndTime - TimeManager.Instance.Now;
+		System.TimeSpan ts = info.EndTime - TimeManager.Instance.UtcNow;
 		if (ts.TotalSeconds <= 0)
 		{
 			gameObject.SetActive(false);

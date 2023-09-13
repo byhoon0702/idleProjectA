@@ -21,9 +21,11 @@ public class UnitKnockbackState : UnitFSM
 
 	public override void OnUpdate(float time)
 	{
-		if (owner.rigidbody2D.velocity.magnitude <= 0)
+		//		owner.rigidbody2D.velocity = Vector2.Min(owner.rigidbody2D.velocity, new Vector2(20, 20));
+		if (owner.rigidbody2D.velocity == Vector2.zero)
 		{
 			owner.ChangeState(StateType.IDLE);
+
 			return;
 		}
 	}

@@ -33,6 +33,7 @@ public class TooltipManager : MonoBehaviour
 		string getPlace = "";
 		switch (category)
 		{
+			case RewardCategory.Event_Currency:
 			case RewardCategory.Currency:
 				{
 					var item = PlatformManager.UserDB.inventory.FindCurrency(tid);

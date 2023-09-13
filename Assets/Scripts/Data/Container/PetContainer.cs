@@ -74,7 +74,7 @@ public class PetSlot : DataSlot
 		Refresh();
 		PlatformManager.UserDB.UpdateUserStats();
 
-		PlatformManager.UserDB.skillContainer.EquipPetSkill(UnitManager.it.Player, index, info.rawData.skillTid);
+		//PlatformManager.UserDB.skillContainer.EquipPetSkill(UnitManager.it.Player, index, info.rawData.skillTid);
 		PlatformManager.UserDB.questContainer.ProgressOverwrite(QuestGoalType.EQUIP_PET, tid, (IdleNumber)1);
 		return true;
 	}

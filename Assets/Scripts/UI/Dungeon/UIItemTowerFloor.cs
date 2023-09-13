@@ -16,17 +16,17 @@ public class UIItemTowerFloor : MonoBehaviour
 	[SerializeField] private Sprite spriteComplete;
 
 	private RuntimeData.StageInfo info;
-	private ISelectListener selectListener;
+	private UIPageBattleTower selectListener;
 
-	private void OnEnable()
-	{
-		selectListener?.AddSelectListener(OnSelect);
-	}
+	//private void OnEnable()
+	//{
+	//	selectListener?.AddSelectListener(OnSelect);
+	//}
 
-	private void OnDisable()
-	{
-		selectListener?.AddSelectListener(OnSelect);
-	}
+	//private void OnDisable()
+	//{
+	//	selectListener?.RemoveSelectListener(OnSelect);
+	//}
 
 	private void Awake()
 	{
@@ -34,7 +34,7 @@ public class UIItemTowerFloor : MonoBehaviour
 		buttonFloor.onClick.AddListener(OnClickFloor);
 	}
 
-	public void OnUpdate(ISelectListener _selectListener, RuntimeData.StageInfo _info)
+	public void OnUpdate(UIPageBattleTower _selectListener, RuntimeData.StageInfo _info)
 	{
 		info = _info;
 		selectListener = _selectListener;

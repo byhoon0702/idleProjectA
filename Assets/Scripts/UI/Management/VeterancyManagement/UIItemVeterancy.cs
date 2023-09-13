@@ -78,15 +78,21 @@ public class UIItemVeterancy : MonoBehaviour
 		textTitle.text = PlatformManager.Language[info.Name];
 
 		string tail = "";
-		if (info != null && info.rawData.buff.isPercentage)
-		{
 
-			tail = "%";
-		}
 
 		textLevel.text = $"LV.{info.Level}";
-		textCurrentStat.text = $"{info.currentValue.ToString("{0:0.##}")}{tail}";
-		//textNextStat.text = $"{uiData.nextValue.ToString("{0:0.##}")}{tail}";
+		if (info.rawData.buff.isPercentage)
+		{
+			textCurrentStat.text = $"{info.currentValue.ToFloatingString()}%";
+
+		}
+		else
+		{
+			textCurrentStat.text = $"{info.currentValue.ToString()}";
+		}
+
+
+
 		textPrice.text = info.cost.ToString();
 
 		bool check = PlatformManager.UserDB.veterancyContainer.Check(info.cost);

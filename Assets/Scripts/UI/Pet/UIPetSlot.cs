@@ -69,17 +69,14 @@ public class UIPetSlot : MonoBehaviour
 			}
 		}
 
-		bool isMax = false;
+		bool isMax = petInfo.IsMaxEvolution();
 
-		if (petInfo.evolutionLevel >= PlatformManager.CommonData.PetEvolutionLevelDataList.Count)
-		{
-			isMax = true;
-		}
+
 		if (isMax)
 		{
 			slider.value = 1f;
 
-			textSlider.text = "Max";
+			textSlider.text = $"{petInfo.Count}/Max";
 		}
 		else
 		{

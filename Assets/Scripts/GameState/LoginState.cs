@@ -62,14 +62,39 @@ public class LoginState : RootState
 		{
 			return;
 		}
+
+		await PurchaseManager.Instance.LoadHistory();
+		if (this == null)
+		{
+			return;
+		}
 		PlatformManager.Instance.ShowLoadingRotate(false);
 
 		await RemoteConfigManager.Instance.FetchConfigs();
+
 		if (RemoteConfigManager.Instance.NeedUpdate())
 		{
 			return;
 		}
-		Intro.it.ChangeState(IntroState_e.ENTERGAME);
+
+		System.Action onClose = () =>
+		{
+			if (PlatformManager.UserDB.userInfoContainer.userInfo.UserName.IsNullOrEmpty() == false)
+			{
+				Intro.it.ChangeState(IntroState_e.ENTERGAME);
+			}
+			else
+			{
+				Intro.it.uiPopupLogin.Open(() => Intro.it.ChangeState(IntroState_e.ENTERGAME));
+			}
+		};
+
+		if (RemoteConfigManager.Instance.IsNoticeExist(onClose))
+		{
+			return;
+		}
+
+		onClose.Invoke();
 	}
 
 	private void OnExpired()
@@ -104,7 +129,8 @@ public class LoginState : RootState
 	{
 #if UNITY_EDITOR
 		PlatformManager.Instance.ShowLoadingRotate(false);
-		Intro.it.uiPopupLogin.OnUpdate();
+		OnClickLoginGuest();
+
 #else
 		OnClickLoginGoogle();
 #endif
@@ -112,19 +138,14 @@ public class LoginState : RootState
 	}
 	public void OnClickLoginGoogle()
 	{
-		PlatformManager.Instance.OnClickGoogleLogin(() =>
-		{
-
-		});
+		PlatformManager.Instance.LogOut();
+		PlatformManager.Instance.OnClickGoogleLogin();
 		//플랫폼 인증 아이디 사용할것 
 	}
 
 	public void OnClickLoginGuest()
 	{
-		PlatformManager.Instance.OnClickAnonymous(() =>
-		{
-
-		});
+		PlatformManager.Instance.OnClickAnonymous();
 	}
 
 	public override void OnUpdate(float time)

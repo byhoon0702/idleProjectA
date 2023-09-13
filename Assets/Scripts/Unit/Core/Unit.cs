@@ -170,6 +170,8 @@ public abstract class Unit : HittableUnit
 	public int killCount { get; set; }
 	public int hitCount { get; set; }
 	public bool isDeath { get; protected set; } = false;
+
+
 	public void InitState()
 	{
 		fsmModule = GetComponent<UnitFsmModule>();
@@ -265,10 +267,13 @@ public abstract class Unit : HittableUnit
 		if (stateType == StateType.DEATH && isRewardable)
 		{
 			isRewardable = false;
-			//StageManager.it.CheckKillRewards(UnitType, transform);
+		}
+		if (this is PlayerUnit)
+		{
+			Debug.Log($"{NameAndId} StateChange {currentState} -> {stateType}");
 		}
 		currentState = stateType;
-		VLog.AILog($"{NameAndId} StateChange {currentState} -> {stateType}");
+
 		fsmModule?.ChangeState(stateType, force);
 	}
 	public abstract void ActiveHyperEffect();
@@ -293,7 +298,7 @@ public abstract class Unit : HittableUnit
 				textType = TextType.CRITICAL;
 			}
 			PlayHitSound();
-			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, textType);
+			GameUIManager.it.ShowFloatingText(_hitInfo.TotalAttackPower, CenterPosition, CenterPosition, textType, _hitInfo.sprite);
 			ShakeUnit();
 		}
 		Hp -= _hitInfo.TotalAttackPower;
@@ -337,7 +342,7 @@ public abstract class Unit : HittableUnit
 			IdleNumber addHP = newHP - Hp;
 			Hp += addHP;
 			GameManager.it.battleRecord.RecordHeal(_healInfo, addHP);
-			GameUIManager.it.ShowFloatingText(_healInfo.healRecovery, CenterPosition, CenterPosition, TextType.HEAL);
+			GameUIManager.it.ShowFloatingText(_healInfo.healRecovery, CenterPosition, CenterPosition, TextType.HEAL, _healInfo.sprite);
 		}
 	}
 

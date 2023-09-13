@@ -76,6 +76,10 @@ public class AwakeningContainer : BaseContainer
 	public override void UpdateData()
 	{
 		ContentsContainer.AddEvent(SetHyperActivate);
+		for (int i = 0; i < InfoList.Count; i++)
+		{
+			InfoList[i].UpdateData();
+		}
 	}
 	public override void DailyResetData()
 	{
@@ -167,12 +171,12 @@ public class AwakeningContainer : BaseContainer
 		UpdateHyperStat();
 
 		parent.costumeContainer.Equip(costumetid);
-		PlatformManager.UserDB.questContainer.ProgressOverwrite(QuestGoalType.LEVELUP_AWAKENING, info.Tid, (IdleNumber)1);
+		//PlatformManager.UserDB.questContainer.ProgressOverwrite(QuestGoalType.LEVELUP_AWAKENING, info.Tid, (IdleNumber)1);
 		return true;
 	}
 
 
-	private void UpdateSelectedInfo()
+	public void UpdateSelectedInfo()
 	{
 		for (int i = 0; i < _infoList.Count; i++)
 		{

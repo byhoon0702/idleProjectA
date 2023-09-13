@@ -28,6 +28,10 @@ public class ToastUI : MonoBehaviour
 		}
 		toastMessageQueue.Enqueue(text);
 	}
+	public void EnqueueKey(string text)
+	{
+		Enqueue(PlatformManager.Language[text]);
+	}
 
 
 	void Update()

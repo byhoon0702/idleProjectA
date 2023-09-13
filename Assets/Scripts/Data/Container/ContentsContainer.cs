@@ -124,9 +124,16 @@ public class ContentsInfo : BaseInfo
 			case ConditionType.QUEST:
 				{
 					var questInfo = PlatformManager.UserDB.questContainer.MainQuestList.Find(x => x.Tid == condition.tid);
-					isOpen = questInfo.progressState == QuestProgressState.END;
+					if (questInfo == null)
+					{
+						isOpen = true;
+					}
+					else
+					{
+						isOpen = questInfo.progressState == QuestProgressState.END;
 
-					Description = $"{PlatformManager.Language[questInfo.rawData.questTitle]} 완료시 오픈";
+						Description = $"{PlatformManager.Language[questInfo.rawData.questTitle]} 완료시 오픈";
+					}
 				}
 				break;
 			case ConditionType.USELEVEL:
@@ -250,8 +257,25 @@ public class ContentsContainer : BaseContainer
 
 	public bool TryEnter(ContentType type)
 	{
+#if UNITY_EDITOR
+		if (PlatformManager.ConfigMeta.CheckContent == false)
+		{
+			return true;
+		}
+#endif
+
 		if (type == ContentType.NONE)
 		{
+			return true;
+		}
+
+		if (type == ContentType.EVENT)
+		{
+			string season = RemoteConfigManager.Instance.Season;
+			if (season.IsNullOrEmpty() || season.Equals("Default") || season.Equals("default"))
+			{
+				return false;
+			}
 			return true;
 		}
 
@@ -294,6 +318,13 @@ public class ContentsContainer : BaseContainer
 
 	public bool IsOpen(ContentType type, bool showToast = false)
 	{
+#if UNITY_EDITOR
+		if (PlatformManager.ConfigMeta.CheckContent == false)
+		{
+			return true;
+		}
+#endif
+
 		ContentType contentType = ContentType.NONE;
 		if (Enum.IsDefined(typeof(ContentType), type) == false)
 		{
@@ -304,6 +335,18 @@ public class ContentsContainer : BaseContainer
 		contentType = type;
 		if (contentType == ContentType.NONE)
 		{
+			return true;
+		}
+
+		if (type == ContentType.EVENT)
+		{
+			string season = RemoteConfigManager.Instance.Season;
+			if (season.IsNullOrEmpty() || season.Equals("Default") || season.Equals("default"))
+			{
+				ToastUI.Instance.EnqueueKey("str_ui_warn_no_event");
+				return false;
+			}
+
 			return true;
 		}
 
@@ -393,13 +436,17 @@ public class ContentsContainer : BaseContainer
 	}
 	public void OpenContentsByQuest(QuestInfo quest)
 	{
+		if (quest == null)
+		{
+			return;
+		}
 		var list = infoList.FindAll(x => x.rawData.Condition.type == ConditionType.QUEST);
 		if (list == null)
 		{
 			return;
 		}
 
-		var openedList = OpenContents(list, (content) => { return content.rawData.Condition.tid == quest.Tid; });
+		var openedList = OpenContents(list, (content) => { return content.rawData.Condition.tid == quest.Tid && quest.progressState == QuestProgressState.END; });
 		OpenContentsByContents(openedList);
 	}
 

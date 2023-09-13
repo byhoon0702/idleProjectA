@@ -44,6 +44,11 @@ public class UIItemStage : MonoBehaviour
 		isLocked = lastPlay.StageNumber < info.StageNumber;
 
 
+#if UNITY_EDITOR
+		isLocked = PlatformManager.ConfigMeta.CheckContent;
+#endif
+
+
 		objCleared.SetActive(info.isClear);
 		objLocked.SetActive(isLocked);
 		textStageTitle.text = $"STAGE {info.StageNumber} {info.StageName}";

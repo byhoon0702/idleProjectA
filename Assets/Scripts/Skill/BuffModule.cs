@@ -7,25 +7,28 @@ public class AppliedBuff
 	public string key { get; private set; }
 	public long tid { get; private set; }
 	public float duration { get; private set; }
-	public RuntimeData.AbilityInfo ability { get; private set; }
+	public StatsType type { get; private set; }
+
+	public IdleNumber power { get; private set; }
 
 	public bool isFinish { get; private set; }
 
 
-	public AppliedBuff(BuffInfo buff) : this(buff.tid, buff.duration, buff.info, buff.key)
+	public AppliedBuff(BuffInfo buff) : this(buff.tid, buff.duration, buff.type, buff.power, buff.key)
 	{
 
 	}
-	public AppliedBuff(DebuffInfo buff) : this(buff.tid, buff.duration, buff.info, buff.key)
+	public AppliedBuff(DebuffInfo buff) : this(buff.tid, buff.duration, buff.type, buff.power, buff.key)
 	{
 
 	}
 
-	public AppliedBuff(long tid, float duration, RuntimeData.AbilityInfo ability, string key)
+	public AppliedBuff(long tid, float duration, StatsType type, IdleNumber power, string key)
 	{
 		this.tid = tid;
 		this.duration = duration;
-		this.ability = ability;
+		this.type = type;
+		this.power = power;
 		this.key = key;
 		isFinish = false;
 	}

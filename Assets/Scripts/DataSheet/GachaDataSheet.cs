@@ -11,9 +11,11 @@ public enum GachaType
 
 public enum GachaButtonType
 {
-	Gacha10,
-	Gacha30,
-	Ads
+	Gacha10 = 0,
+	Gacha100 = 1,
+	Ads = 2,
+	Ticket10 = 3,
+	Ticket100 = 4,
 }
 [Serializable]
 public class GachaItem
@@ -38,6 +40,12 @@ public class GachaLevelInfo
 	public int exp;
 
 	public ChanceReward reward;
+	public GachaLevelInfo()
+	{
+		level = 0;
+		exp = 0;
+		reward = null;
+	}
 }
 
 [Serializable]

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.Services.Core;
-using Unity.Services.Authentication;
+using UnityEngine.Video;
 
 public enum IntroState_e
 {
@@ -19,14 +18,19 @@ public class Intro : MonoBehaviour
 {
 	public static Intro it { get; private set; }
 
-	public IntroState introState;
-	public DataLoadingState dataLoadingState;
-	public LoginState loginState;
-	public EnterGameState enterGameState;
-	public UserInfoContainer userinfoContainer;
+	public VideoPlayer videoPlayer;
+
 
 	public UIPopupLogin uiPopupLogin;
 	public UIPopupAgreement uiPopupAgreement;
+
+
+
+	public IntroState introState { get; private set; }
+	public DataLoadingState dataLoadingState { get; private set; }
+	public LoginState loginState { get; private set; }
+	public EnterGameState enterGameState { get; private set; }
+
 	public IntroState_e currentState { get; private set; }
 	public IntroFSM currentFSM;
 
@@ -67,6 +71,10 @@ public class Intro : MonoBehaviour
 	public void ShowTermsAgreementPopup()
 	{
 		uiPopupAgreement.Open(() => { ChangeState(IntroState_e.LOGIN); });
+	}
+	public void OnClickVideo()
+	{
+		ChangeState(IntroState_e.DATALOADING);
 	}
 
 	public void ChangeState(IntroState_e state)
